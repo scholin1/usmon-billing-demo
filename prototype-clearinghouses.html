@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — Clearinghouse Connections (admin, prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --hl:#fef9c3; --hl-line:#fde047;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+  select,input[type=text],input[type=number],input[type=password]{font-family:inherit}
+
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+
+  .wrap{max-width:1600px;margin:0 auto;padding:16px 18px 60px}
+
+  .page-head{display:flex;align-items:flex-end;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+  .page-head h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .page-head p{margin:2px 0 0;color:var(--muted);font-size:12.5px;max-width:680px}
+  .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .tag.admin{color:var(--gov);background:var(--gov-tint)}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:4px 9px;font-size:11.5px;border-radius:7px}
+  .btn.xs{padding:2px 7px;font-size:11px;border-radius:6px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark);border-color:var(--ai-dark)}
+  .btn:disabled{opacity:.55;cursor:default}
+
+  /* client switcher (from home-dashboard) */
+  .clientbar{display:flex;align-items:flex-end;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+  .clientbar .ctx{color:var(--muted);font-size:12.5px;margin:0}
+  .clientbar .ctx b{color:var(--ink)}
+  .clientpick{margin-left:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px 13px;min-width:300px}
+  .clientpick label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;margin-bottom:5px}
+  .clientpick .row{display:flex;align-items:center;gap:8px}
+  .clientpick select{flex:1;padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;font-size:13px;font-weight:600;background:#fff;color:var(--ink)}
+  .clientpick select:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .clientpick .badge{font-size:10px;font-weight:800;padding:3px 7px;border-radius:5px;background:var(--primary-tint);color:var(--primary-dark);white-space:nowrap}
+  .clientpick .note{margin:7px 0 0;font-size:10.5px;color:var(--faint);line-height:1.4}
+
+  /* Integrated clearinghouse callout */
+  .integrated{position:relative;overflow:hidden;background:linear-gradient(120deg,#f1ecff 0%,#eef0fd 60%,#e6f3f4 100%);border:1px solid var(--ai-line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .integrated::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--ai),var(--primary))}
+  .integrated .ig-main{flex:1;min-width:340px}
+  .integrated .ig-eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  .integrated .ig-eyebrow .k{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ai-dark)}
+  .integrated .st{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:999px;background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .integrated h2{margin:0 0 4px;font-size:17px;font-weight:800;letter-spacing:-.2px;color:#1c1440}
+  .integrated .bene{margin:0;font-size:12.5px;color:#3b3560;max-width:640px}
+  .integrated .bene b{color:var(--ai-dark)}
+  .integrated .ig-metrics{display:flex;gap:22px;margin-top:11px;flex-wrap:wrap}
+  .integrated .ig-metrics .m .n{font-size:19px;font-weight:800;color:var(--ai-dark);letter-spacing:-.3px}
+  .integrated .ig-metrics .m .l{font-size:10.5px;color:var(--muted);font-weight:600}
+  .integrated .ig-cta{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:200px}
+  .integrated .ig-cta .btn{justify-content:center}
+  .integrated .ig-cta .fine{font-size:10.5px;color:var(--faint);text-align:center;line-height:1.4}
+
+  /* health / monitoring strip */
+  .summary{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .sm{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .sm::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--faint)}
+  .sm.ok::before{background:var(--ok)} .sm.err::before{background:var(--block)} .sm.up::before{background:var(--hosp)} .sm.down::before{background:var(--idr)} .sm.time::before{background:var(--ink)}
+  .sm .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sm.ok .num{color:var(--ok)} .sm.err .num{color:var(--block)} .sm.up .num{color:var(--hosp)} .sm.down .num{color:var(--idr)}
+  .sm .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+  .sm .sub{font-size:10.5px;color:var(--faint);margin-top:2px}
+
+  /* ingestion note */
+  .ingest{display:flex;align-items:center;gap:11px;background:var(--idr-tint);border:1px solid var(--idr-line);border-radius:var(--radius);padding:9px 14px;margin-bottom:12px;font-size:12.5px;color:var(--idr-dark)}
+  .ingest .pulse{width:9px;height:9px;border-radius:50%;background:var(--idr);flex:none;box-shadow:0 0 0 0 rgba(79,70,196,.5);animation:pulse 2.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(79,70,196,.45)}70%{box-shadow:0 0 0 7px rgba(79,70,196,0)}100%{box-shadow:0 0 0 0 rgba(79,70,196,0)}}
+  .ingest a{font-weight:700;color:var(--idr-dark);text-decoration:underline}
+  .ingest .grow{margin-left:auto}
+
+  /* toolbar */
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .toolbar h3{margin:0;font-size:14px;font-weight:700}
+  .toolbar .cnt{font-size:12px;color:var(--muted);font-weight:600}
+  .toolbar .grow{margin-left:auto}
+  .toolbar .search{padding:6px 10px;border:1px solid var(--line-strong);border-radius:8px;font-size:12.5px;background:#fff;color:var(--ink);width:220px}
+  .toolbar .search:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .toolbar select{padding:6px 9px;border:1px solid var(--line-strong);border-radius:8px;font-size:12.5px;background:#fff;color:var(--ink)}
+
+  /* table */
+  .gridwrap{overflow:auto;max-height:calc(100vh - 210px);border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+  table.grid{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;min-width:1580px;width:100%}
+  .grid thead th{position:sticky;top:0;z-index:5;background:#eef2f6;color:var(--muted);font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:700;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-strong);border-right:1px solid var(--line);user-select:none}
+  .grid tbody td{padding:7px 10px;border-bottom:1px solid var(--line);border-right:1px solid #eef1f5;vertical-align:middle;background:var(--surface)}
+  .grid tbody tr:hover td{background:var(--surface-2)}
+  .grid tbody tr.err td{background:var(--block-tint)}
+  .grid tbody tr.err:hover td{background:#fce7e7}
+  .grid .frz{position:sticky;left:0;z-index:3;box-shadow:2px 0 0 rgba(16,32,46,.05)}
+  .grid thead th.frz{z-index:6}
+  .grid .nick{font-weight:700;color:var(--primary);cursor:pointer}
+  .grid .nick:hover{text-decoration:underline}
+  .grid .sub{color:var(--faint);font-size:10.5px;font-weight:500;margin-top:1px}
+  .grid td.mono{font-family:var(--mono)}
+  .chpill{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#eef2f7;color:var(--muted);white-space:nowrap}
+  .chpill.stedi{background:var(--ai-tint);color:var(--ai-dark)}
+  .dir{font-weight:700;font-size:11px;white-space:nowrap}
+  .dir .up{color:var(--hosp)} .dir .dn{color:var(--idr)}
+  .rt{display:inline-flex;align-items:center;gap:5px;font-size:10.5px}
+  .rt .b{font-weight:800;padding:1px 6px;border-radius:5px;font-size:9.5px}
+  .rt .b.pro{background:var(--idr-tint);color:var(--idr-dark)} .rt .b.tech{background:var(--hosp-tint);color:var(--hosp-dark)} .rt .b.both{background:#eef2f7;color:var(--muted)}
+  .rt .ent{color:var(--muted)}
+  .defbadge{font-size:9.5px;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .stat{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:11px;white-space:nowrap}
+  .stat .d{font-size:12px}
+  .stat.healthy{color:var(--ok)} .stat.error{color:var(--block)} .stat.idle{color:var(--faint)}
+  .stat .when{color:var(--faint);font-weight:500;font-size:10px}
+  .rowacts{display:flex;gap:5px}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(16,32,46,.42);opacity:0;pointer-events:none;transition:.2s;z-index:50}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%) scale(.98);opacity:0;pointer-events:none;transition:.22s cubic-bezier(.2,.7,.2,1);z-index:51;width:640px;max-width:94vw;max-height:92vh;background:var(--surface);border-radius:14px;box-shadow:0 24px 70px rgba(16,32,46,.34);display:flex;flex-direction:column;overflow:hidden}
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .modal-head{padding:15px 20px;border-bottom:1px solid var(--line);background:var(--surface-2);display:flex;align-items:center;gap:10px}
+  .modal-head h3{margin:0;font-size:16px;font-weight:700}
+  .modal-head .x{margin-left:auto;background:none;border:none;font-size:19px;color:var(--faint);font-weight:700}
+  .modal-body{padding:16px 20px;overflow-y:auto}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld.c2{grid-column:span 2}
+  .fld label{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .fld input,.fld select{padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;font-size:12.5px;background:#fff;color:var(--ink);width:100%}
+  .fld input:focus,.fld select:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .fld .hint{font-size:10px;color:var(--faint)}
+  .fld.check{flex-direction:row;align-items:center;gap:8px}
+  .fld.check input{width:auto}
+  .fld.check label{text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--ink);font-weight:600}
+  .seclock{display:flex;align-items:center;gap:9px;background:var(--ok-tint);border:1px solid var(--ok-line);border-radius:8px;padding:8px 12px;margin-top:14px;font-size:11.5px;color:var(--ok)}
+  .seclock .ic{font-size:14px}
+  .modal-foot{padding:13px 20px;border-top:1px solid var(--line);display:flex;gap:9px;align-items:center;background:var(--surface-2)}
+  .modal-foot .grow{margin-left:auto}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:560px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.ai .ic{background:var(--ai)}.toast.idr .ic{background:var(--idr)}.toast.warn .ic{background:var(--warn)}.toast.block .ic{background:var(--block)}
+</style>
+</head>
+<body>
+
+<!--
+  ============================================================================
+  USMON Pro — CLEARINGHOUSE CONNECTIONS · admin / supervisor screen
+  (client demo, SYNTHETIC clients + MASKED credentials only — no real logins,
+   no real client names, no real FTP hosts. Clearinghouse product names are public.)
+  Modernizes the legacy "Edit FTP Sites" screen ("our poor man's MCD").
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. Lead with the purple "USMON Integrated Clearinghouse — powered by Stedi
+       (beta)" card at top: ONE programmable API replaces ~30 SFTP configs —
+       837 out, 835/277 back as structured data straight into the worklist.
+       This is the "become an MCD for real" path.
+    2. Drop to the health strip + table: "Today this one client runs ~30
+       separate SFTP connections — split by billing entity, payer and region.
+       Monitoring that sprawl is the whole job." Point at 27/30 healthy.
+    3. Click a connection nickname -> Edit modal (masked credentials, encrypted
+       note) -> click "Test connection" -> "handshake succeeded" toast.
+    4. Point at the 2 red ⚠ Error rows ("auth failed 2h ago"). Click "Test" on
+       one -> toast. That's the daily firefight.
+    5. Switch client (top-right) to show every billing service can hold several
+       clients, each with its own connection sprawl.
+    6. Close with the card's "Switch this client to Integrated" -> toast:
+       collapse 30 connections into one.
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" onclick="return t('New Insurance Billing routes new cases')">New Insurance Billing</a>
+    <a href="#" onclick="return t('Ongoing worklist — separate screen in this demo set')">Ongoing</a>
+    <a href="#" onclick="return t('Folders')">Folders</a>
+    <a href="#" onclick="return t('Reports')">Reports</a>
+    <a href="#" class="on">Manage</a>
+  </nav>
+  <div class="appuser">
+    <span>Dr. Michael Scholin · Billing Supervisor</span>
+    <span class="avatar">MS</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div>
+      <h1>Clearinghouse Connections <span class="tag admin" style="vertical-align:middle">Admin · Supervisor only</span></h1>
+      <p>Manage how each client's claims reach their clearinghouse — upload 837 files, download 835/277 responses. Modernizes the legacy "Edit FTP Sites" screen. Configuration changes affect live billing, so this screen is limited to supervisors/admins.</p>
+    </div>
+  </div>
+
+  <!-- client switcher -->
+  <div class="clientbar">
+    <p class="ctx">Active client <b id="ctxClient">Sample Neuro Billing LLC</b> · <b id="ctxConns">18</b> configured connections · managed on the client's own clearinghouse account</p>
+    <div class="clientpick">
+      <label for="clientSel">Client (multi-tenant)</label>
+      <div class="row">
+        <select id="clientSel" onchange="switchClient(this.value)"></select>
+        <span class="badge" id="clientCount">3 clients</span>
+      </div>
+      <p class="note">Connections below belong to the active client. Each client chooses its own clearinghouse; USMON connects via their SFTP. Switching re-scopes this whole screen.</p>
+    </div>
+  </div>
+
+  <!-- Integrated (Stedi) callout -->
+  <div class="integrated">
+    <div class="ig-main">
+      <div class="ig-eyebrow">
+        <span class="k">The modern option</span>
+        <span class="st">● Available — beta</span>
+      </div>
+      <h2>USMON Integrated Clearinghouse — powered by Stedi</h2>
+      <p class="bene">Route this client's submissions and responses through <b>one programmable API</b> instead of managing many SFTP connections. Replace <b>~30 SFTP configs with a single integrated connection</b> — 837 out, 835/277 back as <b>structured data straight into the worklist</b>. No folders, no per-payer hosts, no rotating credentials to babysit.</p>
+      <div class="ig-metrics">
+        <div class="m"><div class="n">1</div><div class="l">integrated connection</div></div>
+        <div class="m"><div class="n">↓ 30</div><div class="l">SFTP configs retired</div></div>
+        <div class="m"><div class="n">API</div><div class="l">structured 835/277 in</div></div>
+        <div class="m"><div class="n">0</div><div class="l">credentials to rotate</div></div>
+      </div>
+    </div>
+    <div class="ig-cta">
+      <button class="btn ai" onclick="switchIntegrated()">Switch this client to Integrated →</button>
+      <button class="btn sm" onclick="t('Integrated vs SFTP: side-by-side cutover plan — synthetic demo')">Compare with current SFTP setup</button>
+      <div class="fine">Becomes USMON's own MCD path. Cutover is per-client and reversible.</div>
+    </div>
+  </div>
+
+  <!-- health / monitoring strip -->
+  <div class="summary" id="healthStrip"></div>
+
+  <!-- response ingestion note -->
+  <div class="ingest">
+    <span class="pulse"></span>
+    <span>Incoming <b>835 / 277</b> responses auto-flow into the <a href="#" onclick="return t('Hand-off → Ongoing worklist (separate screen)')">Ongoing worklist</a> and the <a href="#" onclick="return t('Hand-off → Post-835 auto-reconcile (separate screen)')">Post-835 auto-reconcile</a>. This screen manages the pipes; it does not rebuild those.</span>
+    <span class="grow"></span>
+    <span class="mono" style="font-size:11px;color:var(--muted)" id="lastResp">last 835 received 07:12 today</span>
+  </div>
+
+  <!-- toolbar -->
+  <div class="toolbar">
+    <h3>Connections</h3>
+    <span class="cnt" id="tblCnt"></span>
+    <span class="grow"></span>
+    <input type="text" class="search" id="search" placeholder="Filter nickname / clearinghouse / entity…" oninput="render()">
+    <select id="statusFilter" onchange="render()">
+      <option value="">All statuses</option>
+      <option value="healthy">● Healthy</option>
+      <option value="error">⚠ Error</option>
+      <option value="idle">○ Idle</option>
+    </select>
+    <button class="btn sm" onclick="t('Testing all connections for this client… (synthetic)')">Test all</button>
+    <button class="btn primary sm" onclick="openAdd()">+ Add connection</button>
+  </div>
+
+  <!-- table -->
+  <div class="gridwrap">
+    <table class="grid">
+      <thead><tr>
+        <th class="frz">Nickname</th>
+        <th>Clearinghouse</th>
+        <th>SFTP host</th>
+        <th>Direction</th>
+        <th>Folder</th>
+        <th>Port</th>
+        <th>Billing-type / entity routing</th>
+        <th>Default</th>
+        <th>Last used</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Add / Edit connection modal -->
+<div class="scrim" id="scrim" onclick="closeModal()"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-head">
+    <h3 id="modalTitle">Add connection</h3>
+    <button class="x" onclick="closeModal()" aria-label="Close">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fgrid">
+      <div class="fld c2"><label>Nickname</label><input type="text" id="mNick" placeholder="e.g. Availity — Neuro Pro (East)"></div>
+      <div class="fld"><label>Clearinghouse</label>
+        <select id="mCh">
+          <option>Availity</option><option>Zirmed</option><option>Change Healthcare</option>
+          <option>ClaimMD</option><option>Waystar</option><option>Stedi</option>
+        </select>
+      </div>
+      <div class="fld"><label>Direction</label>
+        <select id="mDir">
+          <option value="both">↕ Send 837 + Receive 835/277</option>
+          <option value="send">↑ Send 837 only</option>
+          <option value="recv">↓ Receive 835/277 only</option>
+        </select>
+      </div>
+      <div class="fld"><label>SFTP host</label><input type="text" id="mHost" placeholder="edi-host.example.net"></div>
+      <div class="fld"><label>Port</label><input type="number" id="mPort" value="22"></div>
+      <div class="fld"><label>Login</label><input type="text" id="mLogin" value="••••••••" autocomplete="off"><span class="hint">Masked — stored in secrets</span></div>
+      <div class="fld"><label>Password</label><input type="password" id="mPass" value="********" autocomplete="new-password"><span class="hint">Masked — never displayed</span></div>
+      <div class="fld"><label>Upload folder (837 out)</label><input type="text" id="mUp" placeholder="/outbound/837"></div>
+      <div class="fld"><label>Responses folder (835/277 in)</label><input type="text" id="mDown" placeholder="/inbound/835"></div>
+      <div class="fld"><label>Billing-type routing</label>
+        <select id="mBill"><option>Pro + Tech</option><option>Pro only</option><option>Tech only</option></select>
+      </div>
+      <div class="fld"><label>Billing entity</label>
+        <select id="mEnt"></select>
+      </div>
+      <div class="fld check c2"><input type="checkbox" id="mDefault"><label for="mDefault">Set as default send route for its billing type</label></div>
+    </div>
+    <div class="seclock">
+      <span class="ic">🔒</span>
+      <span>Credentials are encrypted at rest and stored in the secrets vault — logins and passwords are never shown back in the UI or in logs.</span>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn" onclick="testConn()">Test connection</button>
+    <span class="grow"></span>
+    <button class="btn" onclick="closeModal()">Cancel</button>
+    <button class="btn primary" onclick="saveConn()">Save connection</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ic" id="toastIc">✓</span><span id="toastMsg"></span></div>
+
+<script>
+/* ---------------- toast ---------------- */
+function toast(m,kind){const el=document.getElementById('toast');el.className='toast'+(kind?' '+kind:'');document.getElementById('toastIc').textContent=(kind==='ai'?'◈':kind==='idr'?'◆':kind==='warn'?'!':kind==='block'?'✕':'✓');document.getElementById('toastMsg').textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3400);}
+function t(m){toast(m);return false;}
+
+/* ---------------- synthetic clients + connections ---------------- */
+/* All synthetic. Clearinghouse product names are public; client/entity names
+   are invented and every credential is masked. */
+const CLIENTS=[
+  {id:'neuro', name:'Sample Neuro Billing LLC',   entities:['Sample Neurophysiology LLC','Demo Assessment Services LLC'] },
+  {id:'ionm',  name:'Demo IONM Partners',          entities:['Testcase Monitoring Group','Example Sensory Testing LLC'] },
+  {id:'mon',   name:'Example Monitoring Group',    entities:['Specimen Diagnostics LLC','Mockdata Neuro Partners','Example Monitoring West LLC'] },
+];
+/* target connection counts convey the real sprawl (one big client ~30) */
+const CONN_COUNT={neuro:18, ionm:16, mon:30};
+
+const CH_HOST={
+  'Availity':'edi-••••.availity-x.net',
+  'Zirmed':'sftp-••.zirmed-edi.net',
+  'Change Healthcare':'ftps-••••.chc-edi.net',
+  'ClaimMD':'sftp.claimmd-••.net',
+  'Waystar':'edi••••.waystar-x.net',
+  'Stedi':'api.stedi.com (HTTPS)'
+};
+/* weighted toward Availity + Zirmed to show sprawl */
+const CH_POOL=['Availity','Availity','Availity','Availity','Zirmed','Zirmed','Zirmed','Change Healthcare','Change Healthcare','ClaimMD','Waystar'];
+const REGIONS=['East','West','Central','South','National'];
+const PAYERS=['BCBS','Aetna','Cigna','UHC','Medicare B','TRICARE','Humana','Multi-payer'];
+const BILLTYPES=['Pro','Tech','Both'];
+
+function mkRng(seed){let s=seed>>>0;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+const pick=(rng,a)=>a[Math.floor(rng()*a.length)];
+
+function ago(rng){
+  const r=rng();
+  if(r<0.55) return {t:Math.floor(rng()*58)+2+'m ago', fresh:true};
+  if(r<0.85) return {t:Math.floor(rng()*11)+1+'h ago', fresh:true};
+  return {t:Math.floor(rng()*9)+1+'d ago', fresh:false};
+}
+
+function genConns(client){
+  const rng=mkRng(client.id.split('').reduce((a,c)=>a+c.charCodeAt(0),0)*104729+7);
+  const n=CONN_COUNT[client.id];
+  const out=[];
+  /* choose which indexes are forced error (2 for big client, 1-2 others) */
+  const errCount = n>=28?2:1;
+  const errIdx=new Set();
+  while(errIdx.size<errCount){errIdx.add(1+Math.floor(rng()*(n-1)));}
+  const idleIdx=new Set();
+  const idleCount=Math.max(2,Math.round(n*0.13));
+  while(idleIdx.size<idleCount){const x=Math.floor(rng()*n);if(!errIdx.has(x))idleIdx.add(x);}
+
+  let defAssigned=false;
+  for(let i=0;i<n;i++){
+    const ch=pick(rng,CH_POOL);
+    const ent=pick(rng,client.entities);
+    const region=pick(rng,REGIONS);
+    const payer=pick(rng,PAYERS);
+    const bt=pick(rng,BILLTYPES);
+    /* direction: most both; some split up/down to convey separate configs */
+    const dr=rng();
+    const dir = dr<0.62?'both':dr<0.82?'send':'recv';
+    const port = rng()<0.82?22:(rng()<0.5?2222:990);
+    const entShort=ent.replace(/ LLC| Group| Partners| Services/g,'');
+    const nick = ch+' — '+(bt==='Both'?'Pro+Tech':bt)+' '+payer+' ('+region+')';
+    let status,when;
+    if(errIdx.has(i)){status='error';when='auth failed '+ (rng()<0.5?'2h':'46m') +' ago';}
+    else if(idleIdx.has(i)){status='idle';when='no traffic '+(Math.floor(rng()*20)+8)+'d';}
+    else{const a=ago(rng);status='healthy';when=a.t;}
+    let isDefault=false;
+    if(!defAssigned && dir!=='recv' && status==='healthy'){isDefault=true;defAssigned=true;}
+    out.push({
+      id:client.id+'-'+i, nick, ch, host:CH_HOST[ch], dir, port,
+      up: dir==='recv'?'—':'/outbound/837/'+region.toLowerCase(),
+      down: dir==='send'?'—':'/inbound/'+(rng()<0.5?'835':'era'),
+      bt, ent, entShort, payer, region, isDefault, status, when
+    });
+  }
+  return out;
+}
+
+const DATA={};
+CLIENTS.forEach(c=>DATA[c.id]=genConns(c));
+
+let activeClient=CLIENTS[0].id;
+
+/* ---------------- client switch ---------------- */
+function initClients(){
+  document.getElementById('clientSel').innerHTML=CLIENTS.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('');
+  document.getElementById('clientCount').textContent=CLIENTS.length+' clients';
+}
+function switchClient(id,silent){
+  activeClient=id;
+  const c=CLIENTS.find(x=>x.id===id);
+  document.getElementById('ctxClient').textContent=c.name;
+  document.getElementById('ctxConns').textContent=DATA[id].length;
+  document.getElementById('clientSel').value=id;
+  document.getElementById('search').value='';
+  document.getElementById('statusFilter').value='';
+  renderHealth();render();
+  if(!silent)toast('Switched to '+c.name+' — '+DATA[id].length+' connections','idr');
+}
+
+/* ---------------- health strip ---------------- */
+function renderHealth(){
+  const conns=DATA[activeClient];
+  const total=conns.length;
+  const healthy=conns.filter(c=>c.status==='healthy').length;
+  const errors=conns.filter(c=>c.status==='error').length;
+  const rng=mkRng(total*31+11);
+  const sent=Math.round(total*7.4+rng()*40);
+  const recv=Math.round(total*6.1+rng()*30);
+  document.getElementById('healthStrip').innerHTML=
+    '<div class="sm ok"><div class="num">'+healthy+'/'+total+'</div><div class="lbl">Connections healthy</div><div class="sub">handshakes OK this cycle</div></div>'+
+    '<div class="sm err"><div class="num">'+errors+'</div><div class="lbl">Errors to resolve</div><div class="sub">'+(errors?'auth / handshake failures':'all clear')+'</div></div>'+
+    '<div class="sm up"><div class="num">'+sent.toLocaleString()+'</div><div class="lbl">837 files sent today</div><div class="sub">across all send routes</div></div>'+
+    '<div class="sm down"><div class="num">'+recv.toLocaleString()+'</div><div class="lbl">835/277 received today</div><div class="sub">auto-posted to worklist</div></div>'+
+    '<div class="sm time"><div class="num mono" style="font-size:16px">07:12</div><div class="lbl">Last response received</div><div class="sub">835 from Availity (East)</div></div>';
+}
+
+/* ---------------- table render ---------------- */
+function dirHtml(dir){
+  if(dir==='both') return '<span class="dir"><span class="up">↑ 837</span> · <span class="dn">↓ 835/277</span></span>';
+  if(dir==='send') return '<span class="dir"><span class="up">↑ Send 837</span></span>';
+  return '<span class="dir"><span class="dn">↓ Receive 835/277</span></span>';
+}
+function statHtml(c){
+  if(c.status==='error') return '<span class="stat error"><span class="d">⚠</span> Error <span class="when">'+c.when+'</span></span>';
+  if(c.status==='idle')  return '<span class="stat idle"><span class="d">○</span> Idle <span class="when">'+c.when+'</span></span>';
+  return '<span class="stat healthy"><span class="d">●</span> Healthy <span class="when">'+c.when+'</span></span>';
+}
+function btBadge(bt){
+  if(bt==='Pro') return '<span class="b pro">PRO</span>';
+  if(bt==='Tech') return '<span class="b tech">TECH</span>';
+  return '<span class="b both">PRO+TECH</span>';
+}
+function render(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const sf=document.getElementById('statusFilter').value;
+  const conns=DATA[activeClient].filter(c=>{
+    if(sf && c.status!==sf) return false;
+    if(q && !(c.nick+' '+c.ch+' '+c.ent+' '+c.payer).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('body').innerHTML=conns.map(c=>
+    '<tr class="'+(c.status==='error'?'err':'')+'">'+
+      '<td class="frz"><div class="nick" onclick="openEdit(\''+c.id+'\')">'+c.nick+'</div><div class="sub">'+c.entShort+'</div></td>'+
+      '<td><span class="chpill'+(c.ch==='Stedi'?' stedi':'')+'">'+c.ch+'</span></td>'+
+      '<td class="mono">'+c.host+'</td>'+
+      '<td>'+dirHtml(c.dir)+'</td>'+
+      '<td class="mono" style="font-size:10.5px">'+c.up+(c.down!=='—'?'<br>'+c.down:'')+'</td>'+
+      '<td class="mono">'+c.port+'</td>'+
+      '<td><span class="rt">'+btBadge(c.bt)+'<span class="ent">'+c.payer+' · '+c.region+'</span></span></td>'+
+      '<td>'+(c.isDefault?'<span class="defbadge">✓ Default</span>':'<span style="color:var(--faint)">—</span>')+'</td>'+
+      '<td class="mono" style="font-size:10.5px;color:var(--muted)">'+c.when+'</td>'+
+      '<td>'+statHtml(c)+'</td>'+
+      '<td><div class="rowacts">'+
+        '<button class="btn xs" onclick="openEdit(\''+c.id+'\')">Edit</button>'+
+        '<button class="btn xs" onclick="testRow(\''+c.id+'\')">Test</button>'+
+        '<button class="btn xs" onclick="disableRow(\''+c.id+'\')">Disable</button>'+
+      '</div></td>'+
+    '</tr>'
+  ).join('');
+  const total=DATA[activeClient].length;
+  document.getElementById('tblCnt').textContent=conns.length===total?(total+' connections'):(conns.length+' of '+total+' shown');
+}
+
+/* ---------------- row actions ---------------- */
+function findConn(id){return DATA[activeClient].find(c=>c.id===id);}
+function testRow(id){const c=findConn(id);if(c.status==='error'){toast('Test failed — '+c.ch+' still refusing auth. Check secrets vault entry.','block');}else{toast('Connection test OK — '+c.ch+' handshake succeeded ('+(c.host)+')');}}
+function disableRow(id){const c=findConn(id);toast('Connection "'+c.nick+'" disabled — no batches will route here until re-enabled','warn');}
+
+/* ---------------- add / edit modal ---------------- */
+let editingId=null;
+function fillEntitySelect(){
+  const c=CLIENTS.find(x=>x.id===activeClient);
+  document.getElementById('mEnt').innerHTML=c.entities.map(e=>'<option>'+e+'</option>').join('');
+}
+function openAdd(){
+  editingId=null;
+  document.getElementById('modalTitle').textContent='Add connection · '+CLIENTS.find(c=>c.id===activeClient).name;
+  fillEntitySelect();
+  document.getElementById('mNick').value='';
+  document.getElementById('mCh').value='Availity';
+  document.getElementById('mDir').value='both';
+  document.getElementById('mHost').value='';
+  document.getElementById('mPort').value='22';
+  document.getElementById('mLogin').value='';
+  document.getElementById('mPass').value='';
+  document.getElementById('mUp').value='/outbound/837';
+  document.getElementById('mDown').value='/inbound/835';
+  document.getElementById('mBill').value='Pro + Tech';
+  document.getElementById('mDefault').checked=false;
+  showModal();
+}
+function openEdit(id){
+  const c=findConn(id);if(!c)return;
+  editingId=id;
+  document.getElementById('modalTitle').textContent='Edit connection';
+  fillEntitySelect();
+  document.getElementById('mNick').value=c.nick;
+  document.getElementById('mCh').value=c.ch;
+  document.getElementById('mDir').value=c.dir;
+  document.getElementById('mHost').value=c.host;
+  document.getElementById('mPort').value=c.port;
+  document.getElementById('mLogin').value='••••••••';
+  document.getElementById('mPass').value='********';
+  document.getElementById('mUp').value=c.up==='—'?'':c.up;
+  document.getElementById('mDown').value=c.down==='—'?'':c.down;
+  document.getElementById('mBill').value=c.bt==='Pro'?'Pro only':c.bt==='Tech'?'Tech only':'Pro + Tech';
+  document.getElementById('mEnt').value=c.ent;
+  document.getElementById('mDefault').checked=c.isDefault;
+  showModal();
+}
+function showModal(){document.getElementById('scrim').classList.add('show');document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('scrim').classList.remove('show');document.getElementById('modal').classList.remove('show');}
+function testConn(){
+  const ch=document.getElementById('mCh').value;
+  toast('Connection test OK — '+ch+' handshake succeeded');
+}
+function saveConn(){
+  const nick=document.getElementById('mNick').value||'(unnamed connection)';
+  closeModal();
+  toast((editingId?'Saved changes to "':'Added connection "')+nick+'" — credentials stored encrypted');
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ---------------- integrated cutover ---------------- */
+function switchIntegrated(){
+  const c=CLIENTS.find(x=>x.id===activeClient);
+  toast('Cutover queued: '+c.name+' → USMON Integrated Clearinghouse (Stedi). '+DATA[activeClient].length+' SFTP configs collapse into 1 integrated connection.','ai');
+}
+
+/* ---------------- init ---------------- */
+initClients();
+switchClient(activeClient,true);
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>

@@ -15,7 +15,8 @@
     { f: 'prototype-cms1500.html', label: 'CMS-1500', group: 'Form' },
     { f: 'prototype-payments.html', label: 'Payments', group: 'Money' },
     { f: 'prototype-post-payments.html', label: 'Post 835', group: 'Money' },
-    { f: 'prototype-reports.html', label: 'Reports', group: 'Insights' }
+    { f: 'prototype-reports.html', label: 'Reports', group: 'Insights' },
+    { f: 'prototype-clearinghouses.html', label: 'Clearinghouses', group: 'Admin' }
   ];
   var cur = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (cur === '') cur = 'index.html';
