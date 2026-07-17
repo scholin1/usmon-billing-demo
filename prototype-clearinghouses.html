@@ -144,6 +144,24 @@
   .stat.healthy{color:var(--ok)} .stat.error{color:var(--block)} .stat.idle{color:var(--faint)}
   .stat .when{color:var(--faint);font-weight:500;font-size:10px}
   .rowacts{display:flex;gap:5px}
+  .btn.xs.danger{color:var(--block);border-color:var(--block-line)}
+  .btn.xs.danger:hover{background:var(--block-tint);border-color:var(--block)}
+  .btn.xs.locked{opacity:.6}
+
+  /* retired (soft-retired) connections - kept read-only for past 835s / refiles */
+  .grid tbody tr.retired td{background:#f4f6f8;color:var(--faint)}
+  .grid tbody tr.retired:hover td{background:#eef1f4}
+  .grid tbody tr.retired .nick{color:var(--muted)}
+  .grid tbody tr.retired td.mono{color:var(--faint)}
+  .retbadge{display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:1px 6px;border-radius:999px;background:var(--gov-tint);color:var(--gov);border:1px solid var(--gov-line)}
+  .stat.retired{color:var(--gov)}
+
+  /* lifecycle note + head toggles */
+  .lifenote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--gov);border-radius:8px;padding:8px 12px;margin:0 0 12px}
+  .lifenote b{color:var(--ink)}
+  .headctl{margin-left:auto;display:flex;align-items:center;gap:9px}
+  .btn.sm.on{background:var(--gov);border-color:var(--gov);color:#fff}
+  .btn.sm.on:hover{background:#374151;border-color:#374151}
 
   /* modal */
   .scrim{position:fixed;inset:0;background:rgba(16,32,46,.42);opacity:0;pointer-events:none;transition:.2s;z-index:50}
@@ -224,6 +242,10 @@
       <h1>Clearinghouse Connections <span class="tag admin" style="vertical-align:middle">Admin · Supervisor only</span></h1>
       <p>Manage how each client's claims reach their clearinghouse - upload 837 files, download 835/277 responses. Modernizes the legacy "Edit FTP Sites" screen. Configuration changes affect live billing, so this screen is limited to supervisors/admins.</p>
     </div>
+    <div class="headctl">
+      <span class="tag admin" id="roleTag">Role: Supervisor</span>
+      <button class="btn sm" id="adminToggle" onclick="toggleAdmin()" aria-pressed="false" title="Demo toggle: flip to high-level admin to enable permanent delete">Admin mode: Off</button>
+    </div>
   </div>
 
   <!-- client switcher -->
@@ -285,9 +307,16 @@
       <option value="error">⚠ Error</option>
       <option value="idle">○ Idle</option>
     </select>
+    <button class="btn sm on" id="retToggle" onclick="toggleRetired()" aria-pressed="true" title="Retired connections are kept read-only for past 835s and refiles">Show retired: On</button>
     <button class="btn sm" onclick="t('Testing all connections for this client… (synthetic)')">Test all</button>
     <button class="btn primary sm" onclick="openAdd()">+ Add connection</button>
   </div>
+
+  <!-- lifecycle guidance -->
+  <p class="lifenote">
+    <span>♻</span>
+    <span><b>Retiring</b> keeps a connection read-only for past 835s and refiles - this is the recommended way to remove one, and no data is lost. USMON <b>never auto-deletes</b>. Permanent hard delete is <b>high-level admin only</b>.</span>
+  </p>
 
   <!-- table -->
   <div class="gridwrap">
@@ -353,10 +382,32 @@
     </div>
   </div>
   <div class="modal-foot">
-    <button class="btn" onclick="testConn()">Test connection</button>
+    <button class="btn" id="mTestBtn" onclick="testConn()">Test connection</button>
+    <span class="fine" id="mReadNote" style="display:none;font-size:11px;color:var(--muted)">Retired - read-only. Kept for past 835s and refiles.</span>
     <span class="grow"></span>
     <button class="btn" onclick="closeModal()">Cancel</button>
-    <button class="btn primary" onclick="saveConn()">Save connection</button>
+    <button class="btn primary" id="mSaveBtn" onclick="saveConn()">Save connection</button>
+  </div>
+</div>
+
+<!-- Permanent delete confirmation (hard delete, admin-only path) -->
+<div class="scrim" id="confirmScrim" onclick="cancelDelete()"></div>
+<div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" style="width:480px">
+  <div class="modal-head">
+    <h3 id="confirmTitle">Permanently delete connection?</h3>
+    <button class="x" onclick="cancelDelete()" aria-label="Close">✕</button>
+  </div>
+  <div class="modal-body">
+    <p id="confirmName" style="margin:0 0 10px;font-weight:700"></p>
+    <div style="display:flex;gap:9px;background:var(--block-tint);border:1px solid var(--block-line);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--block)">
+      <span style="flex:none">⚠</span>
+      <span>This permanently removes the connection. Only delete if you are certain it is not needed for any past 835s or refiles. If in doubt, Retire instead - retired connections stay readable for historical responses.</span>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <span class="grow"></span>
+    <button class="btn" onclick="cancelDelete()">Cancel</button>
+    <button class="btn primary" style="background:var(--block);border-color:var(--block)" onclick="confirmDelete()">Delete permanently</button>
   </div>
 </div>
 
@@ -436,7 +487,29 @@ function genConns(client){
       id:client.id+'-'+i, nick, ch, host:CH_HOST[ch], dir, port,
       up: dir==='recv'?'-':'/outbound/837/'+region.toLowerCase(),
       down: dir==='send'?'-':'/inbound/'+(rng()<0.5?'835':'era'),
-      bt, ent, entShort, payer, region, isDefault, status, when
+      bt, ent, entShort, payer, region, isDefault, status, when, retired:false
+    });
+  }
+  /* ~2 connections the client already switched away from, kept read-only for
+     past 835s / refiles. USMON never auto-deletes these. */
+  const legacyPool=[
+    {ch:'Zirmed',            why:'switched to Availity in 2023'},
+    {ch:'Change Healthcare', why:'consolidated onto Availity'},
+    {ch:'Availity',          why:'old regional account, replaced'},
+  ];
+  for(let k=0;k<2;k++){
+    const lg=legacyPool[(k+client.id.length)%legacyPool.length];
+    const ent=client.entities[k%client.entities.length];
+    const region=REGIONS[k%REGIONS.length];
+    const entShort=ent.replace(/ LLC| Group| Partners| Services/g,'');
+    out.push({
+      id:client.id+'-ret'+k,
+      nick: lg.ch+' - legacy Pro+Tech ('+region+')',
+      ch: lg.ch, host:CH_HOST[lg.ch], dir:'both', port:22,
+      up:'/outbound/837/'+region.toLowerCase(), down:'/inbound/835',
+      bt:'Both', ent, entShort, payer:'Multi-payer', region,
+      isDefault:false, status:'retired', when:'retired '+(3+k)+'mo ago',
+      retired:true, why:lg.why
     });
   }
   return out;
@@ -466,7 +539,7 @@ function switchClient(id,silent){
 
 /* ---------------- health strip ---------------- */
 function renderHealth(){
-  const conns=DATA[activeClient];
+  const conns=DATA[activeClient].filter(c=>!c.retired);
   const total=conns.length;
   const healthy=conns.filter(c=>c.status==='healthy').length;
   const errors=conns.filter(c=>c.status==='error').length;
@@ -488,6 +561,7 @@ function dirHtml(dir){
   return '<span class="dir"><span class="dn">↓ Receive 835/277</span></span>';
 }
 function statHtml(c){
+  if(c.retired) return '<span class="stat retired"><span class="d">▪</span> Retired <span class="when">kept for past 835s / refiles</span></span>';
   if(c.status==='error') return '<span class="stat error"><span class="d">⚠</span> Error <span class="when">'+c.when+'</span></span>';
   if(c.status==='idle')  return '<span class="stat idle"><span class="d">○</span> Idle <span class="when">'+c.when+'</span></span>';
   return '<span class="stat healthy"><span class="d">●</span> Healthy <span class="when">'+c.when+'</span></span>';
@@ -501,13 +575,14 @@ function render(){
   const q=(document.getElementById('search').value||'').toLowerCase();
   const sf=document.getElementById('statusFilter').value;
   const conns=DATA[activeClient].filter(c=>{
+    if(!showRetired && c.retired) return false;
     if(sf && c.status!==sf) return false;
     if(q && !(c.nick+' '+c.ch+' '+c.ent+' '+c.payer).toLowerCase().includes(q)) return false;
     return true;
   });
   document.getElementById('body').innerHTML=conns.map(c=>
-    '<tr class="'+(c.status==='error'?'err':'')+'">'+
-      '<td class="frz"><div class="nick" onclick="openEdit(\''+c.id+'\')">'+c.nick+'</div><div class="sub">'+c.entShort+'</div></td>'+
+    '<tr class="'+(c.retired?'retired':(c.status==='error'?'err':''))+'">'+
+      '<td class="frz"><div class="nick" onclick="'+(c.retired?'openView':'openEdit')+'(\''+c.id+'\')">'+c.nick+'</div><div class="sub">'+c.entShort+(c.retired?' · <span class="retbadge">Retired</span>':'')+'</div></td>'+
       '<td><span class="chpill'+''+'">'+c.ch+'</span></td>'+
       '<td class="mono">'+c.host+'</td>'+
       '<td>'+dirHtml(c.dir)+'</td>'+
@@ -517,27 +592,117 @@ function render(){
       '<td>'+(c.isDefault?'<span class="defbadge">✓ Default</span>':'<span style="color:var(--faint)">-</span>')+'</td>'+
       '<td class="mono" style="font-size:10.5px;color:var(--muted)">'+c.when+'</td>'+
       '<td>'+statHtml(c)+'</td>'+
-      '<td><div class="rowacts">'+
-        '<button class="btn xs" onclick="openEdit(\''+c.id+'\')">Edit</button>'+
-        '<button class="btn xs" onclick="testRow(\''+c.id+'\')">Test</button>'+
-        '<button class="btn xs" onclick="disableRow(\''+c.id+'\')">Disable</button>'+
-      '</div></td>'+
+      '<td><div class="rowacts">'+rowActs(c)+'</div></td>'+
     '</tr>'
   ).join('');
   const total=DATA[activeClient].length;
   document.getElementById('tblCnt').textContent=conns.length===total?(total+' connections'):(conns.length+' of '+total+' shown');
 }
+function delBtn(c){
+  if(isAdmin) return '<button class="btn xs danger" onclick="deleteRow(\''+c.id+'\')">Delete</button>';
+  return '<button class="btn xs locked" disabled title="High-level admin only">🔒 Delete</button>';
+}
+function rowActs(c){
+  if(c.retired){
+    return '<button class="btn xs" onclick="openView(\''+c.id+'\')">View</button>'+
+           '<button class="btn xs" disabled title="Retired connections are read-only">Test</button>'+
+           delBtn(c);
+  }
+  return '<button class="btn xs" onclick="openEdit(\''+c.id+'\')">Edit</button>'+
+         '<button class="btn xs" onclick="testRow(\''+c.id+'\')">Test</button>'+
+         '<button class="btn xs" onclick="retireRow(\''+c.id+'\')">Retire</button>'+
+         delBtn(c);
+}
+
+/* ---------------- lifecycle state ---------------- */
+let showRetired=true;   /* retired connections visible by default (with badge) */
+let isAdmin=false;      /* demo Admin mode; gates the hard-delete path */
+let pendingDeleteId=null;
 
 /* ---------------- row actions ---------------- */
 function findConn(id){return DATA[activeClient].find(c=>c.id===id);}
-function testRow(id){const c=findConn(id);if(c.status==='error'){toast('Test failed - '+c.ch+' still refusing auth. Check secrets vault entry.','block');}else{toast('Connection test OK - '+c.ch+' handshake succeeded ('+(c.host)+')');}}
-function disableRow(id){const c=findConn(id);toast('Connection "'+c.nick+'" disabled - no batches will route here until re-enabled','warn');}
+function testRow(id){const c=findConn(id);if(c.retired){return;}if(c.status==='error'){toast('Test failed - '+c.ch+' still refusing auth. Check secrets vault entry.','block');}else{toast('Connection test OK - '+c.ch+' handshake succeeded ('+(c.host)+')');}}
+
+/* Retire (soft) - the recommended path. Keeps the row read-only for past 835s / refiles. No data lost. */
+function retireRow(id){
+  const c=findConn(id);if(!c||c.retired)return;
+  c.retired=true;c.status='retired';c.when='retired just now';c.isDefault=false;
+  renderHealth();render();
+  toast('Connection retired - kept read-only for past 835s and refiles','warn');
+}
+
+/* Delete (hard) - high-level admin only, single confirmation. USMON never auto-deletes. */
+function deleteRow(id){
+  if(!isAdmin){toast('Delete is locked - high-level admin only','warn');return;}
+  const c=findConn(id);if(!c)return;
+  pendingDeleteId=id;
+  document.getElementById('confirmName').textContent=c.nick+(c.retired?' (retired)':'')+' · '+c.ch;
+  document.getElementById('confirmScrim').classList.add('show');
+  document.getElementById('confirmModal').classList.add('show');
+}
+function cancelDelete(){
+  pendingDeleteId=null;
+  document.getElementById('confirmScrim').classList.remove('show');
+  document.getElementById('confirmModal').classList.remove('show');
+}
+function confirmDelete(){
+  if(!pendingDeleteId)return;
+  const arr=DATA[activeClient];
+  const i=arr.findIndex(c=>c.id===pendingDeleteId);
+  if(i>=0)arr.splice(i,1);
+  cancelDelete();
+  document.getElementById('ctxConns').textContent=DATA[activeClient].length;
+  renderHealth();render();
+  toast('Connection permanently deleted (logged)','block');
+}
+
+/* ---------------- head / toolbar toggles ---------------- */
+function toggleRetired(){
+  showRetired=!showRetired;
+  const b=document.getElementById('retToggle');
+  b.textContent='Show retired: '+(showRetired?'On':'Off');
+  b.setAttribute('aria-pressed',showRetired);
+  b.classList.toggle('on',showRetired);
+  render();
+}
+function toggleAdmin(){
+  isAdmin=!isAdmin;
+  const b=document.getElementById('adminToggle');
+  b.textContent='Admin mode: '+(isAdmin?'On':'Off');
+  b.setAttribute('aria-pressed',isAdmin);
+  b.classList.toggle('on',isAdmin);
+  document.getElementById('roleTag').textContent='Role: '+(isAdmin?'High-level admin':'Supervisor');
+  toast(isAdmin?'Admin mode on - permanent delete is now enabled':'Admin mode off - hard delete re-locked',isAdmin?'block':'warn');
+  render();
+}
 
 /* ---------------- add / edit modal ---------------- */
 let editingId=null;
 function fillEntitySelect(){
   const c=CLIENTS.find(x=>x.id===activeClient);
   document.getElementById('mEnt').innerHTML=c.entities.map(e=>'<option>'+e+'</option>').join('');
+}
+const MFIELDS=['mNick','mCh','mDir','mHost','mPort','mLogin','mPass','mUp','mDown','mBill','mEnt','mDefault'];
+function setModalReadonly(ro){
+  MFIELDS.forEach(id=>{document.getElementById(id).disabled=ro;});
+  document.getElementById('mTestBtn').disabled=ro;
+  document.getElementById('mSaveBtn').style.display=ro?'none':'';
+  document.getElementById('mReadNote').style.display=ro?'':'none';
+}
+function fillFields(c){
+  fillEntitySelect();
+  document.getElementById('mNick').value=c.nick;
+  document.getElementById('mCh').value=c.ch;
+  document.getElementById('mDir').value=c.dir;
+  document.getElementById('mHost').value=c.host;
+  document.getElementById('mPort').value=c.port;
+  document.getElementById('mLogin').value='••••••••';
+  document.getElementById('mPass').value='********';
+  document.getElementById('mUp').value=c.up==='-'?'':c.up;
+  document.getElementById('mDown').value=c.down==='-'?'':c.down;
+  document.getElementById('mBill').value=c.bt==='Pro'?'Pro only':c.bt==='Tech'?'Tech only':'Pro + Tech';
+  document.getElementById('mEnt').value=c.ent;
+  document.getElementById('mDefault').checked=c.isDefault;
 }
 function openAdd(){
   editingId=null;
@@ -554,25 +719,25 @@ function openAdd(){
   document.getElementById('mDown').value='/inbound/835';
   document.getElementById('mBill').value='Pro + Tech';
   document.getElementById('mDefault').checked=false;
+  setModalReadonly(false);
   showModal();
 }
 function openEdit(id){
   const c=findConn(id);if(!c)return;
+  if(c.retired){openView(id);return;}
   editingId=id;
   document.getElementById('modalTitle').textContent='Edit connection';
-  fillEntitySelect();
-  document.getElementById('mNick').value=c.nick;
-  document.getElementById('mCh').value=c.ch;
-  document.getElementById('mDir').value=c.dir;
-  document.getElementById('mHost').value=c.host;
-  document.getElementById('mPort').value=c.port;
-  document.getElementById('mLogin').value='••••••••';
-  document.getElementById('mPass').value='********';
-  document.getElementById('mUp').value=c.up==='-'?'':c.up;
-  document.getElementById('mDown').value=c.down==='-'?'':c.down;
-  document.getElementById('mBill').value=c.bt==='Pro'?'Pro only':c.bt==='Tech'?'Tech only':'Pro + Tech';
-  document.getElementById('mEnt').value=c.ent;
-  document.getElementById('mDefault').checked=c.isDefault;
+  fillFields(c);
+  setModalReadonly(false);
+  showModal();
+}
+/* View = read-only modal for retired connections (still reachable for history) */
+function openView(id){
+  const c=findConn(id);if(!c)return;
+  editingId=id;
+  document.getElementById('modalTitle').textContent='View connection (retired - read-only)';
+  fillFields(c);
+  setModalReadonly(true);
   showModal();
 }
 function showModal(){document.getElementById('scrim').classList.add('show');document.getElementById('modal').classList.add('show');}
@@ -587,7 +752,7 @@ function saveConn(){
   toast((editingId?'Saved changes to "':'Added connection "')+nick+'" - credentials stored encrypted');
 }
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();cancelDelete();}});
 
 /* ---------------- integrated cutover ---------------- */
 function switchIntegrated(){
