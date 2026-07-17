@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Home (post-login dashboard, prototype)</title>
+<title>USMON Pro - Home (post-login dashboard, prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -130,36 +130,36 @@
 
 <!--
   ============================================================================
-  USMON Pro — HOME / WELCOME dashboard (post-login landing)
-  (client demo, SYNTHETIC data only — no PHI, no real entities)
+  USMON Pro - HOME / WELCOME dashboard (post-login landing)
+  (client demo, SYNTHETIC data only - no PHI, no real entities)
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. "This is the calm landing page after login — greeting up top:
+    1. "This is the calm landing page after login - greeting up top:
        Good evening, Dr. Sample Reed · Billing Supervisor, scoped to the
        active client (Sample Neuro Billing LLC)."
-    2. Top-right "Switch client" — a billing service can own several client
+    2. Top-right "Switch client" - a billing service can own several client
        companies. Pick "Demo IONM Partners" -> greeting re-scopes and every
        tile count changes (toast: "Switched to Demo IONM Partners"). Note the
-       line: a single large client just sees one — no switching needed.
-    3. Point at the tiles: "Each tile is a SAVED FILTER the user chose — a
+       line: a single large client just sees one - no switching needed.
+    3. Point at the tiles: "Each tile is a SAVED FILTER the user chose - a
        one-click entry into the worklist. Counts are live per client."
     4. Click "Customize" -> tiles show remove (x) and a dashed "+ Add tile"
        card. Remove one (x), then "+ Add tile" -> pick "Parked / waiting on
        info" from the menu -> it appears. "The USER defines which filters open
        from home." Click "Done".
     5. Click any tile's "Open" -> toast "Opening worklist filtered to: <tile>"
-       — the hand-off into the dense Ongoing worklist (built separately).
+       - the hand-off into the dense Ongoing worklist (built separately).
   ============================================================================
 -->
 
 <header class="appbar">
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
-    <a href="#" onclick="return t('New Insurance Billing routes new cases — out of scope for this demo')">New Insurance Billing</a>
+    <a href="#" onclick="return t('New Insurance Billing routes new cases - out of scope for this demo')">New Insurance Billing</a>
     <a href="#" onclick="return t('Ongoing opens the dense follow-up worklist (built separately in this demo)')">Ongoing</a>
-    <a href="#" onclick="return t('Folders — out of scope for this demo')">Folders</a>
-    <a href="#" onclick="return t('Reports — out of scope for this demo')">Reports</a>
-    <a href="#" onclick="return t('Manage — out of scope for this demo')">Manage</a>
+    <a href="#" onclick="return t('Folders - out of scope for this demo')">Folders</a>
+    <a href="#" onclick="return t('Reports - out of scope for this demo')">Reports</a>
+    <a href="#" onclick="return t('Manage - out of scope for this demo')">Manage</a>
   </nav>
   <div class="appuser"><span id="userName">Dr. Sample Reed · Billing Supervisor</span><span class="avatar">SR</span></div>
 </header>
@@ -178,7 +178,7 @@
         <select id="clientSel" onchange="switchClient(this.value)"></select>
         <span class="badge" id="clientCount">4 clients</span>
       </div>
-      <p class="note">You manage more than one client company — this re-scopes the whole app. A single large client simply sees one here; no switching needed.</p>
+      <p class="note">You manage more than one client company - this re-scopes the whole app. A single large client simply sees one here; no switching needed.</p>
     </div>
   </div>
 
@@ -186,7 +186,7 @@
   <div class="sec-head">
     <div>
       <h2>Your worklist views</h2>
-      <p>Saved filters you pinned to home — each opens straight into the Ongoing worklist.</p>
+      <p>Saved filters you pinned to home - each opens straight into the Ongoing worklist.</p>
     </div>
     <span class="grow"></span>
     <button class="btn sm" id="custBtn" onclick="toggleCustomize()">Customize</button>
@@ -195,7 +195,7 @@
   <div class="tiles" id="tiles"></div>
 
   <p class="foothint">
-    Counts are <b>synthetic demo data</b> and re-scope to the active client. Tiles are <b>user-configurable</b> — each biller pins the filters they live in.
+    Counts are <b>synthetic demo data</b> and re-scope to the active client. Tiles are <b>user-configurable</b> - each biller pins the filters they live in.
     "Open" hands off to the dense <b>Ongoing worklist</b>; this home page stays deliberately calm.
   </p>
 </main>
@@ -301,7 +301,7 @@ function toggleCustomize(){
   b.classList.toggle('on',editing);
   closeAddMenu();
   renderTiles();
-  toast(editing?'Customize mode — remove tiles with ✕ or add saved views':'Layout saved');
+  toast(editing?'Customize mode - remove tiles with ✕ or add saved views':'Layout saved');
 }
 function removeTile(id){
   pinned=pinned.filter(x=>x!==id);

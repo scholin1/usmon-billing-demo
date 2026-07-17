@@ -1,4 +1,4 @@
-/* USMON insurance-billing concept demo — shared nav ribbon + "Ask Me" help assistant.
+/* USMON insurance-billing concept demo - shared nav ribbon + "Ask Me" help assistant.
    Drop-in: <script src="demo-nav.js"></script> before </body> on each page.
    Self-injecting, namespaced, no dependencies. Synthetic demo only. */
 (function () {
@@ -22,30 +22,30 @@
   if (cur === '') cur = 'index.html';
 
   var BLURB = {
-    'index.html': 'the overview — a one-minute explanation of the approach, with a link into each concept.',
-    'prototype-home-dashboard.html': 'the Home dashboard — where the day starts, with configurable count tiles and a switcher for billers who serve more than one client.',
-    'prototype-ops-worklist.html': 'the Operational Worklist — the dense daily grid built to handle tens of thousands of claims: filter, sort by deadline, edit in place, and act on many at once.',
-    'prototype-biller-review.html': 'the Biller Review view — confirm a mostly prefilled claim, with the AI-filled fields highlighted for a quick check.',
-    'prototype-guided-flow.html': 'the Guided Flow — the same claim, one calm step at a time, so a new biller can complete it without training.',
-    'prototype-familiar-modern.html': 'the Familiar-Modern view — today’s workflow and CMS-1500 layout, modernized onto one scrolling page.',
-    'prototype-v5-router.html': 'the Smart Cockpit — everything on one page with a workflow rail down the side and AI review assist.',
-    'prototype-cms1500.html': 'the CMS-1500 form — the billers’ main working screen: a prefilled, editable claim form where the reading physician’s Tech Report auto-fills the coding, plus “Coding Assist” that catches codes you might have missed.',
-    'prototype-payments.html': 'Payments & Collections — where out-of-network dollars get recovered: post payments per CPT over time, work underpayments and refiles, then close the claim or send it to arbitration to collect more.',
-    'prototype-post-payments.html': 'Post Payments — an incoming 835/ERA is auto-reconciled line-by-line against what the system expects; matched lines auto-post and only the discrepancies need your review.'
+    'index.html': 'the overview - a one-minute explanation of the approach, with a link into each concept.',
+    'prototype-home-dashboard.html': 'the Home dashboard - where the day starts, with configurable count tiles and a switcher for billers who serve more than one client.',
+    'prototype-ops-worklist.html': 'the Operational Worklist - the dense daily grid built to handle tens of thousands of claims: filter, sort by deadline, edit in place, and act on many at once.',
+    'prototype-biller-review.html': 'the Biller Review view - confirm a mostly prefilled claim, with the AI-filled fields highlighted for a quick check.',
+    'prototype-guided-flow.html': 'the Guided Flow - the same claim, one calm step at a time, so a new biller can complete it without training.',
+    'prototype-familiar-modern.html': 'the Familiar-Modern view - today’s workflow and CMS-1500 layout, modernized onto one scrolling page.',
+    'prototype-v5-router.html': 'the Smart Cockpit - everything on one page with a workflow rail down the side and AI review assist.',
+    'prototype-cms1500.html': 'the CMS-1500 form - the billers’ main working screen: a prefilled, editable claim form where the reading physician’s Tech Report auto-fills the coding, plus “Coding Assist” that catches codes you might have missed.',
+    'prototype-payments.html': 'Payments & Collections - where out-of-network dollars get recovered: post payments per CPT over time, work underpayments and refiles, then close the claim or send it to arbitration to collect more.',
+    'prototype-post-payments.html': 'Post Payments - an incoming 835/ERA is auto-reconciled line-by-line against what the system expects; matched lines auto-post and only the discrepancies need your review.'
   };
 
   var KB = [
-    { k: ['view', 'views', 'differ', 'style', 'switch', 'layout'], a: 'There’s no single “right” screen — the same claim and the same fields can be worked in whichever layout suits the biller: the dense Worklist grid, the step-by-step Guided flow, the Familiar layout, or the all-in-one Cockpit. Use the bar at the top to switch between them.' },
-    { k: ['ai', 'highlight', 'confirm', 'purple', 'suggest'], a: 'AI does a first pass and fills in the likely answers — like the principal diagnosis from the reading report. Every AI-filled field is highlighted in purple with a “✦ AI” tag so you always know what to double-check. You Confirm or Override each one, and it’s logged. AI proposes; the biller decides.' },
-    { k: ['coding assist', 'missed', 'coding', 'cpt', 'charge capture'], a: 'Coding Assist (on the CMS-1500 form) is a second-opinion AI scan of the Tech Report and the Cadwell IONM report — it flags CPT codes you might have missed, with a justification for each, so you can add them in one click. It’s USMON’s own take on comparable add-on coding tools.' },
-    { k: ['835', 'era', 'reconcile', 'remit', 'post payment'], a: 'On the Post 835 screen, an incoming ERA (835) is auto-reconciled line-by-line against what the system expects. Lines that match auto-post; only discrepancies are flagged for a human to confirm — so posting is accurate, not a manual guess.' },
+    { k: ['view', 'views', 'differ', 'style', 'switch', 'layout'], a: 'There’s no single “right” screen - the same claim and the same fields can be worked in whichever layout suits the biller: the dense Worklist grid, the step-by-step Guided flow, the Familiar layout, or the all-in-one Cockpit. Use the bar at the top to switch between them.' },
+    { k: ['ai', 'highlight', 'confirm', 'purple', 'suggest'], a: 'AI does a first pass and fills in the likely answers - like the principal diagnosis from the reading report. Every AI-filled field is highlighted in purple with a “✦ AI” tag so you always know what to double-check. You Confirm or Override each one, and it’s logged. AI proposes; the biller decides.' },
+    { k: ['coding assist', 'missed', 'coding', 'cpt', 'charge capture'], a: 'Coding Assist (on the CMS-1500 form) is a second-opinion AI scan of the Tech Report and the Cadwell IONM report - it flags CPT codes you might have missed, with a justification for each, so you can add them in one click. It’s USMON’s own take on comparable add-on coding tools.' },
+    { k: ['835', 'era', 'reconcile', 'remit', 'post payment'], a: 'On the Post 835 screen, an incoming ERA (835) is auto-reconciled line-by-line against what the system expects. Lines that match auto-post; only discrepancies are flagged for a human to confirm - so posting is accurate, not a manual guess.' },
     { k: ['collect', 'refile', 'appeal', 'negotiat', 'balance', 'recover', 'payment'], a: 'On Payments & Collections you post payments per CPT over time, work underpayments through refile/appeal and Pro/Tech negotiation, and keep collecting until you close the claim or send it to arbitration.' },
-    { k: ['idr', 'clock', 'deadline', 'nsa', 'timely', 'arbitr', 'underpaid'], a: 'Because ~99% of these claims are out-of-network, the real money is recovered through negotiation/IDR after an underpayment. Two clocks matter — the filing deadline and the IDR window — and the system surfaces them so a recoverable claim never slips past a missed deadline.' },
-    { k: ['supervisor', 'biller', 'role', 'stats', 'efficiency', 'time', 'idle'], a: 'Billers get a clean, stats-free screen for verifying claim after claim. A Billing Supervisor gets an extra toggle (top of the screen) that reveals team stats and a per-biller time & efficiency view — including a flag when a claim has been sitting idle. Billers never see it.' },
-    { k: ['real', 'data', 'hipaa', 'patient', 'phi', 'synthetic', 'fake'], a: 'Everything here is 100% synthetic — made-up patients, claims, and dollar amounts. No real patient data (no PHI) is used anywhere in these concepts.' },
-    { k: ['prefill', 'preload', 'schedul', 'tech', 'reader', 'mcp', 'entry', 'type'], a: '~95% of each claim arrives already filled in — from schedulers, techs, and the reading physicians — pulled straight from USMON. So the biller mostly reviews and confirms rather than typing.' },
+    { k: ['idr', 'clock', 'deadline', 'nsa', 'timely', 'arbitr', 'underpaid'], a: 'Because ~99% of these claims are out-of-network, the real money is recovered through negotiation/IDR after an underpayment. Two clocks matter - the filing deadline and the IDR window - and the system surfaces them so a recoverable claim never slips past a missed deadline.' },
+    { k: ['supervisor', 'biller', 'role', 'stats', 'efficiency', 'time', 'idle'], a: 'Billers get a clean, stats-free screen for verifying claim after claim. A Billing Supervisor gets an extra toggle (top of the screen) that reveals team stats and a per-biller time & efficiency view - including a flag when a claim has been sitting idle. Billers never see it.' },
+    { k: ['real', 'data', 'hipaa', 'patient', 'phi', 'synthetic', 'fake'], a: 'Everything here is 100% synthetic - made-up patients, claims, and dollar amounts. No real patient data (no PHI) is used anywhere in these concepts.' },
+    { k: ['prefill', 'preload', 'schedul', 'tech', 'reader', 'mcp', 'entry', 'type'], a: '~95% of each claim arrives already filled in - from schedulers, techs, and the reading physicians - pulled straight from USMON. So the biller mostly reviews and confirms rather than typing.' },
     { k: ['hospital', 'tech-fee', 'medicare', 'government', 'channel', 'invoice'], a: 'Each case routes to the channel that actually pays: a commercial out-of-network claim (the big one), a rare government in-network claim, or a hospital technical-fee invoice for government cases. The system routes each case to the right one.' },
-    { k: ['bulk', 'many', 'volume', 'scale', 'thousand', 'grid'], a: 'The Worklist is built for real volume — tens of thousands of active claims. Filter to what matters, sort by deadline, edit inline, and act on many claims at once (bulk validate, export, or route).' }
+    { k: ['bulk', 'many', 'volume', 'scale', 'thousand', 'grid'], a: 'The Worklist is built for real volume - tens of thousands of active claims. Filter to what matters, sort by deadline, edit inline, and act on many claims at once (bulk validate, export, or route).' }
   ];
 
   var SUGGEST = ['What am I looking at?', 'How do the AI fields work?', 'Biller vs Supervisor?', 'Is this real data?'];
@@ -172,7 +172,7 @@
         if (q.indexOf(KB[i].k[j]) !== -1) return KB[i].a;
       }
     }
-    return 'Good question. In the real product that would be handled in the workflow — for this concept demo, here are a few things I can explain:';
+    return 'Good question. In the real product that would be handled in the workflow - for this concept demo, here are a few things I can explain:';
   }
   function answer(q) {
     add(esc(q), 'me');
@@ -185,7 +185,7 @@
   function greet() {
     if (greeted) return;
     greeted = true;
-    add('Hi! I’m a demo assistant for these USMON billing concepts — everything here is <b>synthetic</b>. Right now you’re on ' + (BLURB[cur] || 'a concept screen.') + ' Ask me anything, or tap a question:', 'bot');
+    add('Hi! I’m a demo assistant for these USMON billing concepts - everything here is <b>synthetic</b>. Right now you’re on ' + (BLURB[cur] || 'a concept screen.') + ' Ask me anything, or tap a question:', 'bot');
     suggestions();
   }
   function open() { panel.classList.add('open'); greet(); setTimeout(function () { input.focus(); }, 60); }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Post Payments · 835 auto-post (prototype)</title>
+<title>USMON Pro - Post Payments · 835 auto-post (prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -245,8 +245,8 @@
 
 <!--
   ============================================================================
-  USMON Pro — POST PAYMENTS · 835 AUTO-POST with AI RECONCILIATION
-  (client demo, 100% synthetic data — no PHI, no real patients/entities)
+  USMON Pro - POST PAYMENTS · 835 AUTO-POST with AI RECONCILIATION
+  (client demo, 100% synthetic data - no PHI, no real patients/entities)
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
     1. An 835/ERA has arrived from United Healthcare (EFT #UHC-8830271, $7,877.50,
@@ -257,17 +257,17 @@
        side-by-side table: for every service line, "835 says" (allowed / paid /
        adjustment / CARC) sits next to "System expected" (CPT / charge / prior bal),
        with a Match column. Five lines reconcile as an EXPECTED out-of-network
-       underpayment (CARC 45, below QPA) — posts ~$6,158 of $48,088 -> IDR-eligible.
+       underpayment (CARC 45, below QPA) - posts ~$6,158 of $48,088 -> IDR-eligible.
     3. One line is a GENUINE discrepancy: the 835 paid CPT 95940, not billed on this
-       claim (system has 95939). AI does NOT auto-post it — Confirm/Override in the
+       claim (system has 95939). AI does NOT auto-post it - Confirm/Override in the
        purple ✦ AI-confirm card (AI proposes, biller decides, logged).
     4. Click "Auto-post reconciled lines" -> the 11 matched lines post in one click
        ("Posted 11 reconciled lines · $7,265.50 applied"). Confirm the discrepancy,
        then "Post all confirmed" finalizes the held $612.00.
     5. Posted results hand off to each claim's Payments & Collections screen
-       (link/toast — that screen is not rebuilt here).
+       (link/toast - that screen is not rebuilt here).
     6. Role toggle (top right): Supervisor adds a posting-accuracy / throughput
-       panel (auto-post rate, $ posted today, exceptions worked). Flip to Biller —
+       panel (auto-post rate, $ posted today, exceptions worked). Flip to Biller -
        billers post & reconcile, no stats.
   ============================================================================
 -->
@@ -275,7 +275,7 @@
 <header class="appbar">
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
-    <a href="#" onclick="toast('Worklist — 52,140 claims across all clients');return false">Worklist</a>
+    <a href="#" onclick="toast('Worklist - 52,140 claims across all clients');return false">Worklist</a>
     <a href="#" onclick="toast('Payments &amp; Collections opens per claim');return false">Payments</a>
     <a href="#" class="on" onclick="return false">Post Payments</a>
     <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
@@ -292,17 +292,17 @@
 </header>
 
 <main class="wrap">
-  <div class="crumb"><button onclick="toast('Back to remittance inbox — 4 unposted 835s')">← Remittance inbox</button><span>/</span><span>EFT #UHC-8830271</span></div>
+  <div class="crumb"><button onclick="toast('Back to remittance inbox - 4 unposted 835s')">← Remittance inbox</button><span>/</span><span>EFT #UHC-8830271</span></div>
 
   <div class="page-head">
     <div><h1>Post Payments <span class="tag ai" style="vertical-align:middle">835 auto-post · AI-reconciled</span></h1>
-      <p>An electronic remittance (835/ERA) arrives, the AI reconciles it line-by-line against what the system expects — charges, CPTs, prior balances — then auto-posts everything that matches and flags only true discrepancies for a human. Same extraction engine as USMON's <b>Remit</b> paper-EOB tool.</p></div>
+      <p>An electronic remittance (835/ERA) arrives, the AI reconciles it line-by-line against what the system expects - charges, CPTs, prior balances - then auto-posts everything that matches and flags only true discrepancies for a human. Same extraction engine as USMON's <b>Remit</b> paper-EOB tool.</p></div>
   </div>
 
   <!-- ===== SUPERVISOR-ONLY posting oversight (hidden from billers) ===== -->
   <div class="sup-panel" id="supPanel" aria-hidden="false">
     <div class="sp-card">
-      <div class="sp-head"><h2>Posting oversight</h2><span class="tag2">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-head"><h2>Posting oversight</h2><span class="tag2">Supervisor view</span><span class="hid">Supervisor view - billers don't see this.</span></div>
       <div class="sp-stats">
         <div class="sp-stat good"><div class="num">94.2%</div><div class="lbl">Auto-post rate (lines, 30d)</div></div>
         <div class="sp-stat"><div class="num mono">$412,880</div><div class="lbl">$ posted today (team)</div></div>
@@ -328,7 +328,7 @@
     <div class="era-top">
       <div class="era-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M8 13h8M8 16h5"/></svg></div>
       <div class="era-title">
-        <span class="t1">835 / ERA received — United Healthcare</span>
+        <span class="t1">835 / ERA received - United Healthcare</span>
         <span class="t2">EFT trace <b>#UHC-8830271</b> · deposited <b>07/14/2026</b> · <b>3</b> claim payments · <b>12</b> line items</span>
       </div>
       <div class="era-amt"><div class="a mono">$7,877.50</div><div class="l">Remittance total</div></div>
@@ -345,7 +345,7 @@
       <div class="spark">✦</div>
       <div class="ar-body">
         <div class="ar-h">AI reconciled this 835 <span class="conf">confidence 0.97</span></div>
-        <div class="ar-sum"><b>Matched 11 of 12 lines across 3 claims.</b> Every matched line was compared to the billed CPT, charge, and prior balance on file; all 11 reconcile as expected out-of-network underpayments (CARC 45, below QPA) and post automatically. <b>1 discrepancy needs review</b> — a paid line whose CPT is not on the claim. Reconciled by the USMON <b>Remit</b> engine, the same extractor used for paper EOBs.</div>
+        <div class="ar-sum"><b>Matched 11 of 12 lines across 3 claims.</b> Every matched line was compared to the billed CPT, charge, and prior balance on file; all 11 reconcile as expected out-of-network underpayments (CARC 45, below QPA) and post automatically. <b>1 discrepancy needs review</b> - a paid line whose CPT is not on the claim. Reconciled by the USMON <b>Remit</b> engine, the same extractor used for paper EOBs.</div>
         <div class="ar-chips">
           <span class="arc ok">✓ 11 reconciled · auto-post ready</span>
           <span class="arc disc">⚠ 1 discrepancy · needs confirm</span>
@@ -375,7 +375,7 @@
   <!-- ===== CLAIMS ACCORDION ===== -->
   <div class="claims">
 
-    <!-- CLAIM 1 · TESTCASE, ALICE (the centerpiece — underpayment + 1 discrepancy) -->
+    <!-- CLAIM 1 · TESTCASE, ALICE (the centerpiece - underpayment + 1 discrepancy) -->
     <div class="claim disc" id="claim-alice">
       <div class="claim-head" onclick="toggleClaim('alice')">
         <span class="chev">▶</span>
@@ -386,7 +386,7 @@
         <div><span class="pill review" id="status-alice">⚠ 1 discrepancy</span></div>
       </div>
       <div class="claim-body">
-        <div class="cb-strip"><span>6 service lines · <b>5 reconciled</b>, <b>1 discrepancy</b></span><span>·</span><span class="oonflag">◆ Out-of-network — NSA / IDR-eligible</span><span>·</span><span>QPA on file <b>~$7,697</b></span></div>
+        <div class="cb-strip"><span>6 service lines · <b>5 reconciled</b>, <b>1 discrepancy</b></span><span>·</span><span class="oonflag">◆ Out-of-network - NSA / IDR-eligible</span><span>·</span><span>QPA on file <b>~$7,697</b></span></div>
         <div class="recon-scroll">
           <table class="recon">
             <thead>
@@ -397,12 +397,12 @@
               <tr class="autop-line">
                 <td class="l"><span class="cpt">95887</span> <span class="desc">Needle EMG, non-extremity</span></td><td>1</td><td>$361.25</td><td>$0.00</td>
                 <td class="era-c first" style="text-align:right">$92.50</td><td class="era-c paid">$92.50</td><td class="era-c adj">$268.75</td><td class="era-c carc">CO/OA-45</td>
-                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge - expected underpayment</span></td>
               </tr>
               <tr class="autop-line">
                 <td class="l"><span class="cpt">95909</span> <span class="desc">Nerve conduction, 7–8 studies</span></td><td>1</td><td>$849.15</td><td>$0.00</td>
                 <td class="era-c first">$210.00</td><td class="era-c paid">$210.00</td><td class="era-c adj">$639.15</td><td class="era-c carc">CO/OA-45</td>
-                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge - expected underpayment</span></td>
               </tr>
               <tr class="autop-line">
                 <td class="l"><span class="cpt">95937</span> <span class="desc">Neuromuscular junction test</span></td><td>4</td><td>$6,332.50</td><td>$0.00</td>
@@ -412,17 +412,17 @@
               <tr class="autop-line">
                 <td class="l"><span class="cpt">95938</span> <span class="desc">SSEP upper &amp; lower</span></td><td>6</td><td>$11,900.01</td><td>$0.00</td>
                 <td class="era-c first">$2,540.00</td><td class="era-c paid">$2,540.00</td><td class="era-c adj">$9,360.01</td><td class="era-c carc">CO/OA-45</td>
-                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge - expected underpayment</span></td>
               </tr>
               <tr class="discrow" id="disc-row-alice">
                 <td class="l"><span class="cpt">95939</span> <span class="desc">MEP upper &amp; lower <b>(billed)</b></span></td><td>3</td><td>$17,850.01</td><td>$0.00</td>
-                <td class="era-c first"><span class="cpt" style="color:var(--warn)">95940</span> $612.00</td><td class="era-c paid" style="color:var(--warn)">$612.00</td><td class="era-c adj">—</td><td class="era-c carc">—</td>
-                <td class="l"><span class="rcpill disc" id="rc-disc-alice">⚠ Discrepancy</span><span class="rc-reason">835 paid CPT 95940 — not billed on this claim (system line is 95939)</span></td>
+                <td class="era-c first"><span class="cpt" style="color:var(--warn)">95940</span> $612.00</td><td class="era-c paid" style="color:var(--warn)">$612.00</td><td class="era-c adj">-</td><td class="era-c carc">-</td>
+                <td class="l"><span class="rcpill disc" id="rc-disc-alice">⚠ Discrepancy</span><span class="rc-reason">835 paid CPT 95940 - not billed on this claim (system line is 95939)</span></td>
               </tr>
               <tr class="autop-line">
                 <td class="l"><span class="cpt">95955</span> <span class="desc">EEG during surgery</span></td><td>1</td><td>$10,795.00</td><td>$0.00</td>
                 <td class="era-c first">$2,135.50</td><td class="era-c paid">$2,135.50</td><td class="era-c adj">$8,659.50</td><td class="era-c carc">CO/OA-45</td>
-                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge - expected underpayment</span></td>
               </tr>
             </tbody>
             <tfoot>
@@ -434,11 +434,11 @@
         <!-- AI-confirm discrepancy card -->
         <div class="aif" id="aif-alice">
           <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">flagged discrepancy · will NOT auto-post · via USMON Remit engine</span></div>
-          <div class="aival" id="aival-alice">835 paid line <b>CPT 95940</b> (2 units · $612.00) — no matching line on claim 1000001. The billed line 5 is <b>CPT 95939</b> (MEP), 3 units. Likely a payer recode of 95939 → 95940.</div>
+          <div class="aival" id="aival-alice">835 paid line <b>CPT 95940</b> (2 units · $612.00) - no matching line on claim 1000001. The billed line 5 is <b>CPT 95939</b> (MEP), 3 units. Likely a payer recode of 95939 → 95940.</div>
           <div class="aif-why">The remittance paid a code that was not billed. AI does not auto-post code mismatches. <b>Confirm</b> to accept the payer's recode and post $612.00 against line 95939, or <b>Override</b> to hold the line and open a corrected-claim / appeal task. Either way the choice is logged to the audit trail.</div>
           <div class="aif-act" id="aifact-alice">
-            <button class="btn ai sm" onclick="confirmDisc()">✓ Confirm — accept recode, post $612.00</button>
-            <button class="btn sm" onclick="overrideDisc()">Edit / Override — hold &amp; appeal</button>
+            <button class="btn ai sm" onclick="confirmDisc()">✓ Confirm - accept recode, post $612.00</button>
+            <button class="btn sm" onclick="overrideDisc()">Edit / Override - hold &amp; appeal</button>
           </div>
         </div>
 
@@ -450,7 +450,7 @@
           <div class="u-sep"></div>
           <div><div class="u-k">Underpayment</div><div class="u-v idr mono" id="under-bal-alice">$48,087.92</div></div>
           <div class="u-note">◆ Clear out-of-network underpayment (~86% below charge). IDR-eligible under the No Surprises Act.</div>
-          <div class="u-act"><button class="btn idr sm" style="background:var(--idr);border-color:var(--idr);color:#fff" onclick="toast('IDR packet drafted from posted underpayment — 30-day negotiation clock ready to start','idr')">Send to IDR →</button></div>
+          <div class="u-act"><button class="btn idr sm" style="background:var(--idr);border-color:var(--idr);color:#fff" onclick="toast('IDR packet drafted from posted underpayment - 30-day negotiation clock ready to start','idr')">Send to IDR →</button></div>
         </div>
       </div>
     </div>
@@ -546,8 +546,8 @@
   <!-- hand-off to Payments & Collections -->
   <div class="handoff">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    <span><b>Posted payments flow to each claim's Payments &amp; Collections screen</b> — the ledger, remaining balance, and IDR/appeal steps live there. This screen only reconciles &amp; posts the 835.</span>
-    <button class="btn" onclick="toast('Opening Payments &amp; Collections for claim 1000001 — posted lines now on the ledger')">Open Payments &amp; Collections →</button>
+    <span><b>Posted payments flow to each claim's Payments &amp; Collections screen</b> - the ledger, remaining balance, and IDR/appeal steps live there. This screen only reconciles &amp; posts the 835.</span>
+    <button class="btn" onclick="toast('Opening Payments &amp; Collections for claim 1000001 - posted lines now on the ledger')">Open Payments &amp; Collections →</button>
   </div>
 </main>
 
@@ -566,7 +566,7 @@
     document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Example, Priya · Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'EP':'SD';
-    toast(sup?'Supervisor view — posting accuracy &amp; throughput now visible':'Biller view — post &amp; reconcile, no stats');
+    toast(sup?'Supervisor view - posting accuracy &amp; throughput now visible':'Biller view - post &amp; reconcile, no stats');
   }
 
   /* ---------- claim expand / collapse ---------- */
@@ -627,7 +627,7 @@
     const c=document.getElementById('claim-'+id);c.classList.add('done');
     const s=document.getElementById('status-'+id);s.className='pill posted';s.textContent='✓ Posted';
   }
-  /* Alice's header (posted total + status pill) derived from state — order-independent */
+  /* Alice's header (posted total + status pill) derived from state - order-independent */
   function refreshAlice(){
     const posted=(autoPosted?6158.00:0)+(discPosted?612.00:0);
     document.getElementById('post-alice').textContent=money(posted);
@@ -645,18 +645,18 @@
     if(discState!=='pending')return;
     discState='confirmed';
     const box=document.getElementById('aif-alice');box.classList.add('confirmed');
-    document.getElementById('aifact-alice').innerHTML='<span class="aif-done">✓ Confirmed by you — recode accepted, $612.00 queued to post · logged to audit</span>';
+    document.getElementById('aifact-alice').innerHTML='<span class="aif-done">✓ Confirmed by you - recode accepted, $612.00 queued to post · logged to audit</span>';
     // discrepancy row now reconciled (confirmed), not yet posted
     const rc=document.getElementById('rc-disc-alice');rc.className='rcpill ok';rc.textContent='✓ Confirmed';
     // enable finalize
     const pc=document.getElementById('btnPostConfirmed');pc.disabled=false;pc.textContent='Post 1 confirmed line · $612.00';
     updateSummary();
-    toast('Discrepancy confirmed — payer recode accepted. Ready to post the held $612.00.','ai');
+    toast('Discrepancy confirmed - payer recode accepted. Ready to post the held $612.00.','ai');
   }
   function overrideDisc(){
     if(discState!=='pending')return;
     document.getElementById('aifact-alice').innerHTML=
-      '<input class="aiedit" id="aiedit-alice" value="Hold line 95940 — bill payer for 95939 as documented (open corrected-claim / appeal task)">'+
+      '<input class="aiedit" id="aiedit-alice" value="Hold line 95940 - bill payer for 95939 as documented (open corrected-claim / appeal task)">'+
       '<button class="btn ai sm" onclick="saveOverrideDisc()">Save hold</button>'+
       '<button class="btn sm" onclick="cancelOverrideDisc()">Cancel</button>';
     document.getElementById('aiedit-alice').focus();
@@ -666,18 +666,18 @@
     const v=document.getElementById('aiedit-alice').value.trim();
     const box=document.getElementById('aif-alice');box.classList.add('overridden');
     document.getElementById('aival-alice').textContent=v||'Line held for corrected-claim / appeal.';
-    document.getElementById('aifact-alice').innerHTML='<span class="aif-done ovr">✎ Overridden by you — line held, appeal task opened · logged to audit</span>';
+    document.getElementById('aifact-alice').innerHTML='<span class="aif-done ovr">✎ Overridden by you - line held, appeal task opened · logged to audit</span>';
     const rc=document.getElementById('rc-disc-alice');rc.className='rcpill disc';rc.textContent='⚠ Held';
     // nothing to finalize-post; keep Post-all-confirmed disabled but relabel
     const pc=document.getElementById('btnPostConfirmed');pc.disabled=true;pc.textContent='No confirmed lines to post';
     refreshAlice();
     updateSummary();
-    toast('Override saved — line held for appeal, biller decision logged to audit trail','warn');
+    toast('Override saved - line held for appeal, biller decision logged to audit trail','warn');
   }
   function cancelOverrideDisc(){
     document.getElementById('aifact-alice').innerHTML=
-      '<button class="btn ai sm" onclick="confirmDisc()">✓ Confirm — accept recode, post $612.00</button>'+
-      '<button class="btn sm" onclick="overrideDisc()">Edit / Override — hold &amp; appeal</button>';
+      '<button class="btn ai sm" onclick="confirmDisc()">✓ Confirm - accept recode, post $612.00</button>'+
+      '<button class="btn sm" onclick="overrideDisc()">Edit / Override - hold &amp; appeal</button>';
   }
 
   /* ---------- finalize: post all confirmed lines ---------- */

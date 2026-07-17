@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — CMS-1500 Claim Form (prototype)</title>
+<title>USMON Pro - CMS-1500 Claim Form (prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -169,7 +169,7 @@
   .dxslot input{border:none;padding:5px 2px;font-family:var(--mono);font-size:12.5px;width:100%;min-width:0}
   .dxslot input:focus{outline:none}
 
-  /* tech-report auto-filled fields — highlight-to-confirm */
+  /* tech-report auto-filled fields - highlight-to-confirm */
   .trhi{border-color:var(--ai)!important;background:var(--ai-tint)!important;box-shadow:0 0 0 2px var(--ai-tint)}
   .dxslot.trhi{border-color:var(--ai)!important}
   .trok{border-color:var(--ok-line)!important;background:var(--ok-tint)!important;box-shadow:none!important;transition:.3s}
@@ -333,7 +333,7 @@
   .pf-dx .dxl{font-size:7px;font-weight:800;color:var(--pfred);margin-right:3px}
   .pf-foot{font-size:6px;color:var(--pfred);text-align:center;padding:3px 8px;letter-spacing:.3px}
 
-  /* ===== @media print — only the CMS-1500 sheet prints ===== */
+  /* ===== @media print - only the CMS-1500 sheet prints ===== */
   @media print{
     html,body{background:#fff!important;overflow:visible!important;padding-top:0!important}
     body>*:not(#printcmsBack){display:none!important}
@@ -353,21 +353,21 @@
 
 <!--
   ============================================================================
-  USMON Pro — CMS-1500 CLAIM FORM (client demo, synthetic data only)
+  USMON Pro - CMS-1500 CLAIM FORM (client demo, synthetic data only)
   The billers' main working screen: a modernized, editable CMS-1500 (HCFA) form,
   mostly PREFILLED from the case + reading physician's Technical Report via USMON MCP.
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
     1. OPEN on Testcase, Alice (claim 1000001, United Healthcare OON, $48,087.92).
-       Note the banner: the whole CMS-1500 is PREFILLED — the biller reviews, not types.
+       Note the banner: the whole CMS-1500 is PREFILLED - the biller reviews, not types.
     2. Point at the purple ✦ fields: Box 24 CPT/HCPCS codes, service units, and the
        Box 21 principal diagnosis were AUTO-DERIVED from the reading physician's report.
        Strip up top: "Tech-report fields to confirm: 3".
-    3. Click "View Tech Report" — show the synthetic report. Each modality names a CPT
+    3. Click "View Tech Report" - show the synthetic report. Each modality names a CPT
        code, highlighted "→ Box 24"; the codes on the claim AUTO-FILLED from this report.
     4. Close the modal, Confirm the three tech-report fields (Dx / CPT set / units).
        Purple cells in the form turn green; the counter ticks 3 → 0.
-    5. Click Save ("Claim saved — synthetic"). (Flip View → Supervisor to reveal the
+    5. Click Save ("Claim saved - synthetic"). (Flip View → Supervisor to reveal the
        oversight panel; billers never see it.)
   ============================================================================
 -->
@@ -375,7 +375,7 @@
 <header class="appbar">
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
-    <a href="#" onclick="toast('Worklist — 52,140 claims across all clients');return false">Worklist</a>
+    <a href="#" onclick="toast('Worklist - 52,140 claims across all clients');return false">Worklist</a>
     <a href="#" class="on" onclick="return false">CMS-1500</a>
     <a href="#" onclick="toast('Ongoing follow-up is a separate view in this build');return false">Ongoing</a>
     <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
@@ -409,22 +409,22 @@
   <!-- prefilled banner -->
   <div class="pullbanner">
     <span class="pb-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>
-    <span><b>Most boxes are prefilled via USMON MCP</b> — from the case (scheduler, techs) and the reading physician's <b>Technical Report</b>. Every field below is editable, but your job is to <b>review and confirm</b>, not re-key. The purple ✦ fields were auto-derived from the Technical Report.</span>
+    <span><b>Most boxes are prefilled via USMON MCP</b> - from the case (scheduler, techs) and the reading physician's <b>Technical Report</b>. Every field below is editable, but your job is to <b>review and confirm</b>, not re-key. The purple ✦ fields were auto-derived from the Technical Report.</span>
   </div>
 
   <!-- toolbar (mirrors the real form's action bar) -->
   <div class="toolbar" role="toolbar" aria-label="Claim form actions">
     <button class="btn ai" onclick="openTechReport()">📄 View Tech Report</button>
-    <button class="btn primary" onclick="toast('Claim saved — synthetic')">💾 Save</button>
+    <button class="btn primary" onclick="toast('Claim saved - synthetic')">💾 Save</button>
     <span class="tb-sep"></span>
     <button class="btn sm" onclick="openEdi837()">Download 837</button>
     <button class="btn sm" onclick="toast('Documents: 4 items attached to this claim')">Documents</button>
     <button class="btn sm" onclick="openPrintCms(true)">Print on Blank</button>
     <button class="btn sm" onclick="openPrintCms(false)">Print</button>
-    <button class="btn sm" onclick="toast('Add Form to Uploads — queued to document store')">Add Form to Uploads</button>
+    <button class="btn sm" onclick="toast('Add Form to Uploads - queued to document store')">Add Form to Uploads</button>
     <span class="tb-sep"></span>
-    <button class="btn sm" onclick="toast('Payer lookup: United Healthcare — OON, NSA-eligible')">Lookup Payer</button>
-    <button class="btn sm" onclick="toast('Client Rules: Demo Neurophysiology LLC — OON fee schedule ~6× QPA')">Client Rules</button>
+    <button class="btn sm" onclick="toast('Payer lookup: United Healthcare - OON, NSA-eligible')">Lookup Payer</button>
+    <button class="btn sm" onclick="toast('Client Rules: Demo Neurophysiology LLC - OON fee schedule ~6× QPA')">Client Rules</button>
     <button class="btn sm" onclick="openCodingAssist()">✦ Coding Assist</button>
     <span class="tb-note">Auto-saved to draft · synthetic</span>
   </div>
@@ -432,7 +432,7 @@
   <!-- ===== supervisor-only oversight panel (hidden from billers) ===== -->
   <div class="sup-panel stats-gated" id="supPanel" aria-hidden="false">
     <div class="sp-card">
-      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view - billers don't see this.</span></div>
       <div class="sp-stats">
         <div class="sp-stat"><div class="num">96</div><div class="lbl">Claims worked today (team)</div></div>
         <div class="sp-stat"><div class="num mono">4:21</div><div class="lbl">Avg time / claim</div></div>
@@ -482,7 +482,7 @@
 
     <!-- ===== carrier / payer block ===== -->
     <div class="band">
-      <div class="band-head"><h3>Payer / Carrier</h3><span class="bsrc">Prefilled — Tech · via USMON MCP</span></div>
+      <div class="band-head"><h3>Payer / Carrier</h3><span class="bsrc">Prefilled - Tech · via USMON MCP</span></div>
       <div class="band-body">
         <div class="boxrow">
           <div class="box c5"><span class="bxn">Carrier</span><label>Payer name</label><input value="United Healthcare"></div>
@@ -494,7 +494,7 @@
 
     <!-- ===== boxes 1–13 ===== -->
     <div class="band">
-      <div class="band-head"><h3>Patient &amp; Insured · Boxes 1–13</h3><span class="bsrc">Prefilled — Scheduler · via USMON MCP</span></div>
+      <div class="band-head"><h3>Patient &amp; Insured · Boxes 1–13</h3><span class="bsrc">Prefilled - Scheduler · via USMON MCP</span></div>
       <div class="band-body">
         <div class="boxrow">
           <div class="box c4"><span class="bxn">1</span><label>Insurance type</label>
@@ -521,7 +521,7 @@
           <div class="box c4"><span class="bxn">9</span><label>Other insured's name</label><input placeholder="None on file" value=""></div>
           <div class="box c3"><span class="bxn">10a–c</span><label>Condition related to</label>
             <div class="chk"><label><input type="checkbox"> Employment</label><label><input type="checkbox"> Auto</label><label><input type="checkbox"> Other</label></div>
-            <span class="hint">All "No" — not accident-related</span></div>
+            <span class="hint">All "No" - not accident-related</span></div>
         </div>
         <div class="boxrow">
           <div class="box c4"><span class="bxn">12</span><label>Patient's signature</label><input value="Signature on file"></div>
@@ -538,8 +538,8 @@
       <div class="band-body">
         <div class="boxrow">
           <div class="box c3"><span class="bxn">14</span><label>Date of current illness / injury</label><input class="mono" value="10/20/2025"></div>
-          <div class="box c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="—" value=""></div>
-          <div class="box c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="—" value=""></div>
+          <div class="box c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="-" value=""></div>
+          <div class="box c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="-" value=""></div>
           <div class="box c3"><span class="bxn">18</span><label>Hospitalization dates</label><input class="mono" value="10/20/2025 – 10/22/2025"></div>
         </div>
         <div class="boxrow">
@@ -550,28 +550,28 @@
             <div class="chk"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
         </div>
         <div class="boxrow">
-          <div class="box c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+          <div class="box c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim - No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
           <div class="box c3"><span class="bxn">21</span><label>ICD indicator</label>
-            <select><option selected>0 — ICD-10-CM</option><option>9 — ICD-9-CM</option></select></div>
+            <select><option selected>0 - ICD-10-CM</option><option>9 - ICD-9-CM</option></select></div>
         </div>
         <div class="boxrow">
-          <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) — A is principal</label>
+          <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) - A is principal</label>
             <div class="dxgrid">
               <div class="dxslot trhi" id="bx21a"><span class="trflag">✦ AI</span><span class="lt">A</span><input class="mono" value="M50.121"></div>
               <div class="dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
               <div class="dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
               <div class="dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
-              <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="—" value=""></div>
-              <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="—" value=""></div>
-              <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="—" value=""></div>
-              <div class="dxslot"><span class="lt">H</span><input class="mono" placeholder="—" value=""></div>
+              <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="-" value=""></div>
+              <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="-" value=""></div>
+              <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="-" value=""></div>
+              <div class="dxslot"><span class="lt">H</span><input class="mono" placeholder="-" value=""></div>
             </div>
           </div>
         </div>
         <div class="boxrow">
-          <div class="box c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="—" value=""></div>
-          <div class="box c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="—" value=""></div>
-          <div class="box c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A — OON, no auth"></div>
+          <div class="box c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="-" value=""></div>
+          <div class="box c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="-" value=""></div>
+          <div class="box c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A - OON, no auth"></div>
         </div>
       </div>
     </div>
@@ -674,19 +674,19 @@
           </table>
         </div>
         <div class="smartnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          <span><b>OON pricing applied:</b> line charges set at the client's OON fee schedule (≈6× QPA). All rendering under NPI <span class="mono">1000000048</span> — Sample, Alan MD.</span></div>
+          <span><b>OON pricing applied:</b> line charges set at the client's OON fee schedule (≈6× QPA). All rendering under NPI <span class="mono">1000000048</span> - Sample, Alan MD.</span></div>
       </div>
     </div>
 
     <!-- ===== tech-report confirm panel ===== -->
     <div class="band">
-      <div class="band-head"><span class="aichip">✦ AI</span><h3 style="color:var(--ai-dark)">Tech-report coding — confirm</h3>
+      <div class="band-head"><span class="aichip">✦ AI</span><h3 style="color:var(--ai-dark)">Tech-report coding - confirm</h3>
         <span class="bsrc">Auto-derived from the reading physician's Technical Report</span></div>
       <div class="band-body">
         <div class="trconfirm">
           <div class="aif col2" id="aif-dx">
             <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">principal diagnosis · Box 21.A · via USMON MCP</span></div>
-            <div class="aival mono" id="aival-dx">M50.121 — Cervical disc disorder with radiculopathy, C6–C7</div>
+            <div class="aival mono" id="aival-dx">M50.121 - Cervical disc disorder with radiculopathy, C6–C7</div>
             <div class="aif-why">From Tech Report Diagnosis: "cervical disc disorder with radiculopathy, C6–C7." Placed as Box 21.A (principal) so the service-line Dx pointers resolve. Confidence 0.94.</div>
             <div class="aif-act" id="aifact-dx">
               <button class="btn ai sm" onclick="confirmTR('dx')">✓ Confirm</button>
@@ -705,7 +705,7 @@
           <div class="aif" id="aif-units">
             <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">Box 24G service units · via USMON MCP</span></div>
             <div class="aival mono" id="aival-units">1 · 1 · 4 · 6 · 3 · 1 units</div>
-            <div class="aif-why">Derived from documented monitoring time — e.g. line 4 SSEP <span class="code">95938</span> = 6 units from 268 min intraoperative monitoring (≈45 min/unit). Confirm units match the report.</div>
+            <div class="aif-why">Derived from documented monitoring time - e.g. line 4 SSEP <span class="code">95938</span> = 6 units from 268 min intraoperative monitoring (≈45 min/unit). Confirm units match the report.</div>
             <div class="aif-act" id="aifact-units">
               <button class="btn ai sm" onclick="confirmTR('units')">✓ Confirm units</button>
               <button class="btn sm" onclick="overrideTR('units')">Edit / Override</button>
@@ -729,12 +729,12 @@
         <div class="boxrow">
           <div class="box c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
           <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" id="box30" value="$48,087.92"></div>
-          <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+          <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
         </div>
         <div class="boxrow">
           <div class="box c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
           <div class="box c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
-          <div class="box c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="—" value=""></div>
+          <div class="box c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="-" value=""></div>
         </div>
         <div class="boxrow">
           <div class="box c6"><span class="bxn">33</span><label>Billing provider &amp; phone</label><input value="Demo Neurophysiology LLC · (555) 555-0190"></div>
@@ -748,7 +748,7 @@
   <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
     <button class="btn" onclick="openEdi837()">Download 837</button>
     <button class="btn" onclick="openPrintCms(false)">Print</button>
-    <button class="btn primary" onclick="toast('Claim saved — synthetic')">💾 Save claim</button>
+    <button class="btn primary" onclick="toast('Claim saved - synthetic')">💾 Save claim</button>
   </div>
 </main>
 
@@ -763,10 +763,10 @@
       <button class="mx" onclick="closeTechReport()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
-      <p class="tr-note"><span class="sp">✦</span><span>This is the reading physician's report USMON reads. The <b>CPT/HCPCS codes</b> below auto-filled into the claim (Box 24) and the principal diagnosis into Box 21. Matching codes are <span class="cptmatch">highlighted<span class="arrow">→ Box 24</span></span> — that's the code auto-filling from the tech report.</span></p>
+      <p class="tr-note"><span class="sp">✦</span><span>This is the reading physician's report USMON reads. The <b>CPT/HCPCS codes</b> below auto-filled into the claim (Box 24) and the principal diagnosis into Box 21. Matching codes are <span class="cptmatch">highlighted<span class="arrow">→ Box 24</span></span> - that's the code auto-filling from the tech report.</span></p>
 
       <div class="tr-doc">
-        <div class="tr-doc-head"><h3>Intraoperative Neurophysiologic Monitoring — Technical Report</h3>
+        <div class="tr-doc-head"><h3>Intraoperative Neurophysiologic Monitoring - Technical Report</h3>
           <p>Sample Specialists Hospital, Springfield ST · Report #TR-100001 · Synthetic</p></div>
 
         <div class="tr-sec">
@@ -777,7 +777,7 @@
             <div class="k">DOB: <b>08/29/1971</b></div>
             <div class="k">Date of service: <b>10/20/2025</b></div>
             <div class="k">Procedure: <b>Anterior cervical discectomy &amp; fusion, C5–C7</b></div>
-            <div class="k">Principal diagnosis: <b>M50.121 — cervical disc disorder w/ radiculopathy, C6–C7</b></div>
+            <div class="k">Principal diagnosis: <b>M50.121 - cervical disc disorder w/ radiculopathy, C6–C7</b></div>
           </div>
         </div>
 
@@ -797,12 +797,12 @@
             <div class="k">Monitoring start: <b>08:12</b></div>
             <div class="k">Monitoring stop: <b>13:05</b></div>
             <div class="k">Total monitored time: <b>293 min</b></div>
-            <div class="k">Continuous coverage: <b>Yes — one-to-one</b></div>
+            <div class="k">Continuous coverage: <b>Yes - one-to-one</b></div>
           </div>
         </div>
 
         <div class="tr-sec">
-          <h4>Modalities monitored — each maps to a billed CPT</h4>
+          <h4>Modalities monitored - each maps to a billed CPT</h4>
           <div class="tr-mod"><span class="nm">Needle electromyography (EMG), non-extremity</span><span class="mins">baseline + continuous</span><span class="cptmatch">95887<span class="arrow">→ Box 24</span></span></div>
           <div class="tr-mod"><span class="nm">Nerve conduction studies, 7–8 studies</span><span class="mins">8 studies</span><span class="cptmatch">95909<span class="arrow">→ Box 24</span></span></div>
           <div class="tr-mod"><span class="nm">Repetitive stimulation / neuromuscular junction</span><span class="mins">4 units</span><span class="cptmatch">95937<span class="arrow">→ Box 24</span></span></div>
@@ -839,12 +839,12 @@
   <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="codingTitle">
     <div class="modal-head">
       <span class="tag">Coding Assist</span>
-      <h2 id="codingTitle">Coding Assist <span style="font-weight:600;color:var(--faint);font-size:12px">— powered by USMON AI (Bedrock)</span></h2>
+      <h2 id="codingTitle">Coding Assist <span style="font-weight:600;color:var(--faint);font-size:12px">- powered by USMON AI (Bedrock)</span></h2>
       <button class="mx" onclick="closeCodingAssist()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
-      <p class="ca-scan"><span class="sp">✦</span><span>This is a <b>second-opinion coding scan</b> — separate from the inline field-confirm on the form. It reads the reading physician's <b>Tech Report</b> and the <b>Cadwell IONM system report</b> to surface CPT codes the biller may have <b>missed</b>. AI proposes, you decide — every action is logged to the audit trail.</span></p>
-      <p class="ca-sub" id="caSub">Analyzed the Tech Report + Cadwell IONM report — found <b>3 coding opportunities</b> (and confirmed <b>1 code</b> already on the claim).</p>
+      <p class="ca-scan"><span class="sp">✦</span><span>This is a <b>second-opinion coding scan</b> - separate from the inline field-confirm on the form. It reads the reading physician's <b>Tech Report</b> and the <b>Cadwell IONM system report</b> to surface CPT codes the biller may have <b>missed</b>. AI proposes, you decide - every action is logged to the audit trail.</span></p>
+      <p class="ca-sub" id="caSub">Analyzed the Tech Report + Cadwell IONM report - found <b>3 coding opportunities</b> (and confirmed <b>1 code</b> already on the claim).</p>
 
       <div class="ca-list">
 
@@ -856,7 +856,7 @@
             <span class="ca-meta">×2 · mod 26</span>
             <span class="ca-pill miss">Missing</span>
           </div>
-          <div class="ca-why">Tech Report: <span class="q">"needle EMG on bilateral intercostal (axial) muscles"</span> — a distinct limited study from the non-extremity EMG (<span class="code">95887</span>) already billed → <span class="code">95870 ×2</span>. Not on the claim.</div>
+          <div class="ca-why">Tech Report: <span class="q">"needle EMG on bilateral intercostal (axial) muscles"</span> - a distinct limited study from the non-extremity EMG (<span class="code">95887</span>) already billed → <span class="code">95870 ×2</span>. Not on the claim.</div>
           <div class="ca-act" id="caact-95870">
             <button class="btn idr sm" onclick="caAdd('95870','Needle EMG, limited (axial)','2','26','A','722.50','ca-95870')">＋ Add to claim</button>
             <button class="btn sm" onclick="caDismiss('ca-95870','95870')">Dismiss</button>
@@ -886,7 +886,7 @@
             <span class="ca-meta">Coding Assist: 4 · claim has 3</span>
             <span class="ca-pill differ">Units differ</span>
           </div>
-          <div class="ca-why">Cadwell IONM report logs MEP across <span class="q">all four monitored limbs</span> → <span class="code">95939 ×4</span>. The claim line currently shows <b>3</b> units — adjust to match the report.</div>
+          <div class="ca-why">Cadwell IONM report logs MEP across <span class="q">all four monitored limbs</span> → <span class="code">95939 ×4</span>. The claim line currently shows <b>3</b> units - adjust to match the report.</div>
           <div class="ca-act" id="caact-95939">
             <button class="btn ai sm" onclick="caAdjust('un5','4','ca-95939','95939')">Adjust units → 4</button>
             <button class="btn sm" onclick="caDismiss('ca-95939','95939')">Dismiss</button>
@@ -901,7 +901,7 @@
             <span class="ca-meta">×6 · mod 26</span>
             <span class="ca-pill have">On claim</span>
           </div>
-          <div class="ca-why">Tech Report: <span class="q">SSEP upper &amp; lower, 268 min → 6 units</span> → <span class="code">95938 ×6</span>. Already present on the claim and matches the report — no action needed.</div>
+          <div class="ca-why">Tech Report: <span class="q">SSEP upper &amp; lower, 268 min → 6 units</span> → <span class="code">95938 ×6</span>. Already present on the claim and matches the report - no action needed.</div>
           <div class="ca-act"><span class="ca-done added" style="color:var(--ok)">✓ Verified on claim</span></div>
         </div>
 
@@ -921,11 +921,11 @@
   <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="edi837Title">
     <div class="modal-head">
       <span class="tag" style="color:var(--idr);background:var(--idr-tint);border-color:var(--idr-line)">Electronic</span>
-      <h2 id="edi837Title">837P — electronic claim file</h2>
+      <h2 id="edi837Title">837P - electronic claim file</h2>
       <button class="mx" onclick="closeEdi837()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
-      <p class="edi837-note"><span>⇄</span><span><b>This is what's transmitted electronically to the clearinghouse.</b> X12 837P (005010X222A1) for claim 1000001 — Testcase, Alice · United Healthcare (OON) · 6 service lines · $48,087.92. Synthetic.</span></p>
+      <p class="edi837-note"><span>⇄</span><span><b>This is what's transmitted electronically to the clearinghouse.</b> X12 837P (005010X222A1) for claim 1000001 - Testcase, Alice · United Healthcare (OON) · 6 service lines · $48,087.92. Synthetic.</span></p>
 <pre class="edi837-pre mono" id="edi837Pre">ISA*00*          *00*          *ZZ*USMONBILLING   *ZZ*CHOUSE          *251020*1215*^*00501*000001001*0*P*:~
 GS*HC*USMONBILLING*CHOUSE*20251020*1215*1001*X*005010X222A1~
 ST*837*0001*005010X222A1~
@@ -984,17 +984,17 @@ IEA*1*000001001~</pre>
 </div>
 
 <!-- ============================================================= -->
-<!-- PRINT PREVIEW — official CMS-1500 (NUCC 02/12), filled         -->
+<!-- PRINT PREVIEW - official CMS-1500 (NUCC 02/12), filled         -->
 <!-- ============================================================= -->
 <div class="modal-back" id="printcmsBack" onclick="if(event.target===this)closePrintCms()">
   <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="printcmsTitle">
     <div class="modal-head">
       <span class="tag" style="color:var(--muted);background:var(--surface-2);border-color:var(--line-strong)">Print preview</span>
-      <h2 id="printcmsTitle">CMS-1500 — print preview</h2>
+      <h2 id="printcmsTitle">CMS-1500 - print preview</h2>
       <button class="mx" onclick="closePrintCms()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
-      <p class="printcms-note" id="printcmsNote"><span>🖨</span><span><b>For carriers that don't accept electronic 837 — prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span></p>
+      <p class="printcms-note" id="printcmsNote"><span>🖨</span><span><b>For carriers that don't accept electronic 837 - prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span></p>
       <div class="pf-scroll">
         <div class="pf-sheet" id="pfSheet">
           <!-- top strip: title / carrier block / PICA -->
@@ -1026,7 +1026,7 @@ IEA*1*000001001~</pre>
           </div>
           <!-- Box 8(reserved) / 9 / 10 -->
           <div class="pf-row" style="grid-template-columns:3fr 5fr 4fr">
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">8</span>Reserved for NUCC</span><span class="pf-val sm">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">8</span>Reserved for NUCC</span><span class="pf-val sm">-</span></div>
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">9</span>Other insured's name</span><span class="pf-val sm">NONE</span></div>
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">10a–c</span>Condition related to</span>
               <div class="pf-inline">Employment <span class="pf-chk"></span>No &nbsp; Auto <span class="pf-chk"></span>No &nbsp; Other <span class="pf-chk"></span>No</div></div>
@@ -1042,8 +1042,8 @@ IEA*1*000001001~</pre>
           <!-- Box 14 / 15 / 16 / 18 -->
           <div class="pf-row" style="grid-template-columns:3fr 3fr 3fr 3fr">
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">14</span>Date current illness</span><span class="pf-val">10 20 2025</span></div>
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">15</span>Other date</span><span class="pf-val">—</span></div>
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">16</span>Unable to work</span><span class="pf-val">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">15</span>Other date</span><span class="pf-val">-</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">16</span>Unable to work</span><span class="pf-val">-</span></div>
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">18</span>Hospitalization dates</span><span class="pf-val sm">10/20/2025 – 10/22/2025</span></div>
           </div>
           <!-- Box 17 / 17a / 17b / 20 -->
@@ -1055,7 +1055,7 @@ IEA*1*000001001~</pre>
           </div>
           <!-- Box 19 / 21 ICD ind -->
           <div class="pf-row" style="grid-template-columns:9fr 3fr">
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">19</span>Additional claim information</span><span class="pf-val sm">OON — NO SURPRISES ACT APPLIES; QPA ~$7,697; IDR-ELIGIBLE</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">19</span>Additional claim information</span><span class="pf-val sm">OON - NO SURPRISES ACT APPLIES; QPA ~$7,697; IDR-ELIGIBLE</span></div>
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">21</span>ICD ind.</span><span class="pf-val">0 (ICD-10)</span></div>
           </div>
           <!-- Box 21 diagnosis grid -->
@@ -1071,9 +1071,9 @@ IEA*1*000001001~</pre>
           </div>
           <!-- Box 22 / 23 -->
           <div class="pf-row" style="grid-template-columns:4fr 4fr 4fr">
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">22</span>Resubmission code</span><span class="pf-val">—</span></div>
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">22</span>Original ref. no.</span><span class="pf-val">—</span></div>
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">23</span>Prior authorization</span><span class="pf-val sm">N/A — OON, NO AUTH</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">22</span>Resubmission code</span><span class="pf-val">-</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">22</span>Original ref. no.</span><span class="pf-val">-</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">23</span>Prior authorization</span><span class="pf-val sm">N/A - OON, NO AUTH</span></div>
           </div>
 
           <div class="pf-band">Box 24 · Service lines</div>
@@ -1109,14 +1109,14 @@ IEA*1*000001001~</pre>
           <div class="pf-row" style="grid-template-columns:3fr 3fr 6fr">
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">29</span>Amount paid</span><span class="pf-val">$0.00</span></div>
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">30</span>Rsvd for NUCC</span><span class="pf-val">$48,087.92</span></div>
-            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">31</span>Signature of physician / supplier</span><span class="pf-val sm">SAMPLE, ALAN MD — SIGNATURE ON FILE · 10/22/2025</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">31</span>Signature of physician / supplier</span><span class="pf-val sm">SAMPLE, ALAN MD - SIGNATURE ON FILE · 10/22/2025</span></div>
           </div>
           <!-- Box 32 / 33 -->
           <div class="pf-row" style="grid-template-columns:6fr 6fr">
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">32</span>Service facility location · NPI</span><span class="pf-val sm">SAMPLE SPECIALISTS HOSPITAL, 400 DEMO BLVD, SPRINGFIELD, ST 00000<br>32a NPI 1000000032</span></div>
             <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">33</span>Billing provider · phone · NPI</span><span class="pf-val sm">DEMO NEUROPHYSIOLOGY LLC · (555) 555-0190<br>33a NPI 1000000017 &nbsp; 33b 2084N0400X</span></div>
           </div>
-          <div class="pf-foot">NUCC Instruction Manual available at www.nucc.org · CMS-1500 (02/12) · SYNTHETIC — DEMO ONLY</div>
+          <div class="pf-foot">NUCC Instruction Manual available at www.nucc.org · CMS-1500 (02/12) · SYNTHETIC - DEMO ONLY</div>
         </div>
       </div>
     </div>
@@ -1142,7 +1142,7 @@ IEA*1*000001001~</pre>
     document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
-    toast(sup?'Supervisor view — team stats & efficiency now visible':'Biller view — calm, no dashboards');
+    toast(sup?'Supervisor view - team stats & efficiency now visible':'Biller view - calm, no dashboards');
   }
 
   /* ---------- Tech Report modal (Esc + backdrop close) ---------- */
@@ -1169,7 +1169,7 @@ IEA*1*000001001~</pre>
     (TR_CELLS[key]||[]).forEach(id=>{const c=document.getElementById(id);if(c){c.classList.remove('trhi');c.classList.add('trok');const f=c.querySelector('.trflag');if(f)f.remove();}});
     updateTR();
   }
-  function confirmTR(key){resolveTR(key,'confirmed');toast('Tech-report field confirmed — logged to audit trail','ai');}
+  function confirmTR(key){resolveTR(key,'confirmed');toast('Tech-report field confirmed - logged to audit trail','ai');}
   function overrideTR(key){
     if(trState[key]!=='pending')return;
     const cur=document.getElementById('aival-'+key).textContent.trim();
@@ -1183,7 +1183,7 @@ IEA*1*000001001~</pre>
     const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
     document.getElementById('aival-'+key).textContent=v;
     resolveTR(key,'overridden');
-    toast('Override saved — biller value recorded, logged to audit trail','warn');
+    toast('Override saved - biller value recorded, logged to audit trail','warn');
   }
   function cancelOverrideTR(key){
     const cpt=key==='cpt', un=key==='units';
@@ -1201,8 +1201,8 @@ IEA*1*000001001~</pre>
     if(pending===0){
       bar.classList.add('done');
       document.getElementById('trbarIc').textContent='✓';
-      document.getElementById('trCap').textContent='All tech-report fields confirmed — the CPT/HCPCS codes, units, and principal diagnosis are verified against the report.';
-      m.className='master ready';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Reviewed — ready to save';
+      document.getElementById('trCap').textContent='All tech-report fields confirmed - the CPT/HCPCS codes, units, and principal diagnosis are verified against the report.';
+      m.className='master ready';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Reviewed - ready to save';
     }else{
       bar.classList.remove('done');
       document.getElementById('trbarIc').textContent='✦';
@@ -1277,7 +1277,7 @@ IEA*1*000001001~</pre>
   }
 
   /* ---------- 837P electronic claim file (EDI viewer + download) ---------- */
-  function openEdi837(){document.getElementById('edi837Back').classList.add('show');document.body.style.overflow='hidden';toast('837P (5010) generated — electronic claim file','ai');}
+  function openEdi837(){document.getElementById('edi837Back').classList.add('show');document.body.style.overflow='hidden';toast('837P (5010) generated - electronic claim file','ai');}
   function closeEdi837(){document.getElementById('edi837Back').classList.remove('show');document.body.style.overflow='';}
   function downloadEdi837(){
     const txt=document.getElementById('edi837Pre').textContent;
@@ -1287,16 +1287,16 @@ IEA*1*000001001~</pre>
     a.href=url;a.download='claim-1000001-837P.txt';
     document.body.appendChild(a);a.click();
     setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},0);
-    toast('Downloaded claim-1000001-837P.txt — synthetic','ai');
+    toast('Downloaded claim-1000001-837P.txt - synthetic','ai');
   }
 
-  /* ---------- Print preview — official CMS-1500 (mail/fax fallback) ---------- */
+  /* ---------- Print preview - official CMS-1500 (mail/fax fallback) ---------- */
   function openPrintCms(dataOnly){
     const note=document.getElementById('printcmsNote');
     if(dataOnly){
-      note.innerHTML='<span>🖨</span><span><b>Print on Blank — data-only:</b> prints just the claim values, aligned to drop onto a pre-printed red CMS-1500 form. Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
+      note.innerHTML='<span>🖨</span><span><b>Print on Blank - data-only:</b> prints just the claim values, aligned to drop onto a pre-printed red CMS-1500 form. Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
     }else{
-      note.innerHTML='<span>🖨</span><span><b>For carriers that don\'t accept electronic 837 — prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
+      note.innerHTML='<span>🖨</span><span><b>For carriers that don\'t accept electronic 837 - prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
     }
     document.getElementById('printcmsBack').classList.add('show');document.body.style.overflow='hidden';
   }

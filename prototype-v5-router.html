@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Case Monetization Router (prototype v5)</title>
+<title>USMON Pro - Case Monetization Router (prototype v5)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -43,7 +43,7 @@
   .appuser{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:#c7d2dd}
   .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
   #whoLabel{white-space:nowrap}
-  /* role toggle (Biller <-> Supervisor) — from Biller Review */
+  /* role toggle (Biller <-> Supervisor) - from Biller Review */
   .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
   .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
   .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
@@ -101,7 +101,7 @@
   .stat .lbl{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.25}
   .stat .sub{font-size:11px;color:var(--faint);margin-top:3px}
 
-  /* two-clocks exposure tile — the revenue-leak guard */
+  /* two-clocks exposure tile - the revenue-leak guard */
   .clocktile{grid-column:span 2;background:linear-gradient(180deg,#fff, #fdf3f3);border:1px solid var(--block-line);border-radius:var(--radius);padding:13px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   @media(max-width:680px){.clocktile{grid-column:span 2}}
   .clocktile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--block)}
@@ -370,7 +370,7 @@
   .ai-flag .ai-actions{display:flex;gap:8px;margin-top:9px}
   .ai-flag .ai-actions .btn{padding:5px 12px;font-size:12px}
 
-  /* ===== AI FIELD — highlight-to-confirm treatment (from Biller Review) ===== */
+  /* ===== AI FIELD - highlight-to-confirm treatment (from Biller Review) ===== */
   .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
   .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
   .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
@@ -530,20 +530,20 @@
 
 <!--
   ============================================================================
-  USMON Pro — prototype v5 · CASE-MONETIZATION ROUTER (client demo, synthetic data only)
+  USMON Pro - prototype v5 · CASE-MONETIZATION ROUTER (client demo, synthetic data only)
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. Land on "New Insurance Billing" — this is the ROUTER, not a queue.
+    1. Land on "New Insurance Billing" - this is the ROUTER, not a queue.
        Point at the color-coded CHANNEL column (Commercial OON -> IDR / Government
        in-network / Hospital tech-fee invoice) and the red TWO-CLOCKS tile up top
        ("recoverable at IDR-clock risk"). That is the revenue-leak guard.
-    2. On a Government (Tech Only) row, click "-> Route to Hospital Invoicing" —
+    2. On a Government (Tech Only) row, click "-> Route to Hospital Invoicing" -
        show it HANDS OFF to the existing portal; USMON does not rebuild that form.
     3. Click the Testcase, Alice row (Commercial OON) -> the REVIEW COCKPIT.
        Show provenance ("Preloaded by tech"), the readiness meter, then ACCEPT the
        AI-suggested principal ICD-10 and set the rendering provider. "AI proposes,
        biller decides, logged to audit." Click "Approve all" then "File claim".
-    4. Filing drops you into "Ongoing" — the SAME case is now filed. Open it.
+    4. Filing drops you into "Ongoing" - the SAME case is now filed. Open it.
     5. In follow-up: "Post UHC 835/ERA" -> AI flags the OON UNDERPAYMENT ->
        "Send to Arbitration" hands the IDR packet over MCP and starts the 30-day clock.
   ============================================================================
@@ -591,15 +591,15 @@
     <div class="head-actions"><button class="btn primary" onclick="toast('New case intake opens the router with a blank cockpit')">+ New case</button></div>
   </div>
 
-  <!-- dashboard stat row incl. two-clocks exposure — STATS, hidden in Biller mode -->
+  <!-- dashboard stat row incl. two-clocks exposure - STATS, hidden in Biller mode -->
   <div class="stats stats-gated">
     <div class="stat book"><div class="num">28</div><div class="lbl">Cases to route</div><div class="sub">this week</div></div>
     <div class="stat oon"><div class="num">$1.94M</div><div class="lbl">Commercial OON → IDR feeder</div><div class="sub">23 claims · 99% of book</div></div>
-    <!-- TWO-CLOCKS EXPOSURE — the revenue-leak guard -->
+    <!-- TWO-CLOCKS EXPOSURE - the revenue-leak guard -->
     <div class="clocktile">
       <div class="ct-h"><span>⏱</span> Two-clock exposure</div>
       <div class="ct-big">$312,400 recoverable at IDR-clock risk</div>
-      <div class="ct-sub">3 claims inside the IDR initiation window — a missed clock is lost money.</div>
+      <div class="ct-sub">3 claims inside the IDR initiation window - a missed clock is lost money.</div>
       <div class="ct-rows">
         <div class="ct-row idr"><span class="pipdot"></span>IDR window · <b>3 claims ≤ 4 biz days</b></div>
         <div class="ct-row filing"><span class="pipdot"></span>Timely filing · <b>2 claims ≤ 5 days</b></div>
@@ -611,7 +611,7 @@
   <!-- ===== SUPERVISOR-ONLY oversight panel (hidden from billers) ===== -->
   <div class="sup-panel" id="supPanel" aria-hidden="false">
     <div class="sp-card">
-      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view - billers don't see this.</span></div>
       <div class="sp-stats">
         <div class="sp-stat"><div class="num">96</div><div class="lbl">Claims worked today (team)</div></div>
         <div class="sp-stat"><div class="num mono">4:21</div><div class="lbl">Avg time / claim</div></div>
@@ -640,7 +640,7 @@
 
   <div class="bulkbar"><input type="checkbox"> <span>Select cases to review, approve, or route in bulk</span>
     <button class="btn" onclick="toast('Approved all cases already clean')">Approve correct</button>
-    <button class="btn" onclick="toast('Batch validated — 0 errors')">Validate</button>
+    <button class="btn" onclick="toast('Batch validated - 0 errors')">Validate</button>
     <button class="btn" onclick="toast('Batch export queued')">Export batch</button></div>
   <div class="card">
     <div class="legend"><b>Channel:</b>
@@ -722,7 +722,7 @@
           <td>Medicare<div class="sub">Government · can't go OON</div></td>
           <td><div class="chan"><span class="cpill hosp">▣ Hospital tech-fee invoice</span><span class="csub">facility contract · not an insurance claim</span></div></td>
           <td class="mono">$34,290.00</td>
-          <td><span class="clockcell">—</span></td>
+          <td><span class="clockcell">-</span></td>
           <td><button class="routebtn" onclick="routeHospital('Specimen, Tom')">→ Route to Hospital Invoicing (portal)</button></td>
           <td></td></tr>
 
@@ -734,7 +734,7 @@
           <td>Medicare<div class="sub">Government · can't go OON</div></td>
           <td><div class="chan"><span class="cpill hosp">▣ Hospital tech-fee invoice</span><span class="csub">facility contract · not an insurance claim</span></div></td>
           <td class="mono">$29,140.00</td>
-          <td><span class="clockcell">—</span></td>
+          <td><span class="clockcell">-</span></td>
           <td><button class="routebtn" onclick="routeHospital('Sample, Nora')">→ Route to Hospital Invoicing (portal)</button></td>
           <td></td></tr>
 
@@ -749,7 +749,7 @@
           <td class="mono">$30,695.01</td>
           <td><span class="clockcell okc">✓ Filing OK</span></td>
           <td><span class="pill await">Files as-is (low pay)</span></td>
-          <td><span class="openbtn" onclick="toast('Government in-network — files at contracted rate; no IDR path')">Details →</span></td></tr>
+          <td><span class="openbtn" onclick="toast('Government in-network - files at contracted rate; no IDR path')">Details →</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -771,9 +771,9 @@
       <button class="btn" onclick="togglePark(event)">⏸ Park / waiting on…</button>
       <button class="btn" onclick="openCMS1500()">CMS-1500</button>
       <div class="parkpop" id="parkpop">
-        <h4>Park this claim — what are you waiting on?</h4>
-        <button onclick="doPark('Waiting on tech — insurance policy #')">Tech — insurance policy #</button>
-        <button onclick="doPark('Waiting on provider — rendering NPI')">Provider — rendering NPI</button>
+        <h4>Park this claim - what are you waiting on?</h4>
+        <button onclick="doPark('Waiting on tech - insurance policy #')">Tech - insurance policy #</button>
+        <button onclick="doPark('Waiting on provider - rendering NPI')">Provider - rendering NPI</button>
         <button onclick="doPark('Waiting on updated authorization')">Updated authorization on file</button>
         <button onclick="doPark('Waiting on benefits re-verification')">Benefits re-verification</button>
       </div>
@@ -787,7 +787,7 @@
 
   <div class="pullbanner">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-    <span><b>95% preloaded from case #1000001</b> — techs entered demographics &amp; insurance, the reading neurologist's report set the coding. Review each section and approve; edit only what's wrong.</span>
+    <span><b>95% preloaded from case #1000001</b> - techs entered demographics &amp; insurance, the reading neurologist's report set the coding. Review each section and approve; edit only what's wrong.</span>
     <button class="btn" onclick="repull(this)">Re-pull from case</button>
   </div>
 
@@ -829,10 +829,10 @@
             <div class="f col4"><label>Verification of benefits (VOB) status</label>
               <div class="aif" id="aif-vob">
                 <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">flagged by AI · via USMON MCP</span></div>
-                <div class="aival" id="aival-vob">⚠ Stale — last verified 10/14/2025 (older than UHC's OON re-verify window at filing)</div>
+                <div class="aival" id="aival-vob">⚠ Stale - last verified 10/14/2025 (older than UHC's OON re-verify window at filing)</div>
                 <div class="aif-why">AI flag: benefits on file exceed United Healthcare's re-verification window for OON claims. Re-check eligibility &amp; OON benefits before filing so the QPA on record is current.</div>
                 <div class="aif-act" id="aifact-vob">
-                  <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm — re-verified</button>
+                  <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm - re-verified</button>
                   <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
                 </div>
               </div>
@@ -841,10 +841,10 @@
           <div class="benefit-cols">
             <div class="ben innet"><h3>In-network (not applicable)</h3>
               <dl><dt>Status</dt><dd>No in-net contract</dd><dt>Reason</dt><dd>OON by design</dd></dl></div>
-            <div class="ben oonet"><h3>◆ Out-of-network — NSA applies</h3>
+            <div class="ben oonet"><h3>◆ Out-of-network - NSA applies</h3>
               <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div></div>
           <div class="smartnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
-            <span><b>Channel: Commercial OON → IDR feeder.</b> Charges set above QPA by design. Expect a below-QPA remittance — the recovery happens in follow-up via NSA negotiation and IDR (Arbitration). Both clocks tracked in the rail.</span></div>
+            <span><b>Channel: Commercial OON → IDR feeder.</b> Charges set above QPA by design. Expect a below-QPA remittance - the recovery happens in follow-up via NSA negotiation and IDR (Arbitration). Both clocks tracked in the rail.</span></div>
         </div>
       </section>
 
@@ -853,11 +853,11 @@
           <button class="revbtn pend" id="rev-proc" onclick="review('proc')">Confirm AI + review</button></div>
         <div class="sec-body"><div class="fgrid">
           <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5–C7</div></div>
-          <div class="f col2"><label>Place of service</label><div class="val">21 — Inpatient Hospital</div></div>
+          <div class="f col2"><label>Place of service</label><div class="val">21 - Inpatient Hospital</div></div>
           <div class="f col4"><label>Principal diagnosis (ICD-10)</label>
             <div class="aif" id="aif-icd">
               <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-suggested principal code · via USMON MCP</span></div>
-              <div class="aival mono" id="aival-icd">M50.121 — Cervical disc disorder with radiculopathy, C6–C7</div>
+              <div class="aival mono" id="aival-icd">M50.121 - Cervical disc disorder with radiculopathy, C6–C7</div>
               <div class="aif-why">Extracted from the reading neurologist's report: "…moderate radiculopathy at the C6–C7 level with corresponding SSEP/MEP changes." Confidence 0.94. Placed first so the service-line Dx pointers resolve correctly.</div>
               <div class="aif-act" id="aifact-icd">
                 <button class="btn ai sm" onclick="confirmAI('icd')">✓ Confirm</button>
@@ -885,7 +885,7 @@
               <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Sample, Alan MD</td><td class="desc">EEG during surgery</td></tr>
             </tbody></table>
           <div class="fgrid" style="margin-top:14px">
-            <div class="f col2"><label>Units — line 4 (95938, SSEP)</label>
+            <div class="f col2"><label>Units - line 4 (95938, SSEP)</label>
               <div class="aif" id="aif-units">
                 <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-derived from monitoring minutes · via USMON MCP</span></div>
                 <div class="aival mono" id="aival-units">6 units</div>
@@ -896,10 +896,10 @@
                 </div>
               </div>
             </div>
-            <div class="f col2"><label>Rendering provider — line 1 (95887), Box 24J</label>
+            <div class="f col2"><label>Rendering provider - line 1 (95887), Box 24J</label>
               <div class="aif" id="aif-prov">
                 <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-matched from report signature · via USMON MCP</span></div>
-                <div class="aival" id="aival-prov">Sample, Alan MD — NPI 1000000048</div>
+                <div class="aival" id="aival-prov">Sample, Alan MD - NPI 1000000048</div>
                 <div class="aif-why">Line 1 had no rendering provider. AI matched the signing neurologist from the reading report against the NPI registry. Confidence 0.97.</div>
                 <div class="aif-act" id="aifact-prov">
                   <button class="btn ai sm" onclick="confirmAI('prov')">✓ Confirm</button>
@@ -922,8 +922,8 @@
           <div class="f"><label>Tax ID</label><div class="val mono">12-3456789</div></div>
           <div class="f col2"><label>Service facility (Box 32)</label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
           <div class="f"><label>Facility NPI</label><div class="val mono">1000000032</div></div>
-          <div class="f"><label>Signature</label><div class="val">On file — Sample, Alan MD</div></div>
-          <div class="f col2"><label>Referring (Box 17)</label><div class="val">A. Sample, M.D. — <span class="mono">1000000048</span></div></div>
+          <div class="f"><label>Signature</label><div class="val">On file - Sample, Alan MD</div></div>
+          <div class="f col2"><label>Referring (Box 17)</label><div class="val">A. Sample, M.D. - <span class="mono">1000000048</span></div></div>
           <div class="f col2"><label>Taxonomy (24J)</label><div class="val mono">2084N0400X</div></div>
         </div></div>
       </section>
@@ -935,7 +935,7 @@
         <div class="aicount" id="aiCountCard">
           <h3>✦ AI fields to confirm</h3>
           <div class="big" id="aiCount">4</div>
-          <div class="cap" id="aiCap">AI proposes, you decide — nothing files unconfirmed.</div>
+          <div class="cap" id="aiCap">AI proposes, you decide - nothing files unconfirmed.</div>
         </div>
 
         <div class="rail-top"><h2>Claim review</h2><p>Approve what's correct. Fix the exceptions.</p>
@@ -946,7 +946,7 @@
 
         <!-- two clocks, per-claim -->
         <div class="clockcard">
-          <h3>⏱ Clocks — never miss</h3>
+          <h3>⏱ Clocks - never miss</h3>
           <div class="clockrow filing"><span class="cdot"></span><div class="txt"><b>Timely filing</b><span>UHC · 90-day window</span></div><span class="cnt">5d left</span></div>
           <div class="clockrow idr"><span class="cdot"></span><div class="txt"><b>NSA negotiation / IDR</b><span>Opens once the OON remittance posts</span></div><span class="cnt">pending file</span></div>
         </div>
@@ -957,7 +957,7 @@
           <div class="ritem ai click" id="ai-item-icd" onclick="jumpAI('icd')"><span class="ic ai" id="aiic-icd">✦</span>
             <div class="txt"><b>Principal ICD-10 (M50.121)</b><span>Procedure &amp; Dx</span></div><span class="go">→</span></div>
           <div class="ritem ai click" id="ai-item-units" onclick="jumpAI('units')"><span class="ic ai" id="aiic-units">✦</span>
-            <div class="txt"><b>Derived units — 95938</b><span>Coding &amp; Lines</span></div><span class="go">→</span></div>
+            <div class="txt"><b>Derived units - 95938</b><span>Coding &amp; Lines</span></div><span class="go">→</span></div>
           <div class="ritem ai click" id="ai-item-prov" onclick="jumpAI('prov')"><span class="ic ai" id="aiic-prov">✦</span>
             <div class="txt"><b>Matched rendering provider</b><span>Coding &amp; Lines</span></div><span class="go">→</span></div>
         </div>
@@ -970,12 +970,12 @@
           <div class="ritem click" id="rl-bill" onclick="review('bill')"><span class="ic o" id="ic-bill">○</span><div class="txt"><b>Billing &amp; Provider</b><span>Preloaded</span></div></div>
         </div>
 
-        <div class="rgroup v"><h3>Validation — automatic <span class="ct">✓</span></h3>
+        <div class="rgroup v"><h3>Validation - automatic <span class="ct">✓</span></h3>
           <div class="ritem"><span class="ic d">✓</span><div class="txt"><b>NPI, charges, Dx pointers, POS, ICD-10, signature all valid</b></div></div>
         </div>
 
         <div class="rail-foot"><button class="btn primary" id="fileBtn" disabled>Finish review to file</button>
-          <div class="hint">Reviewed continuously — <span id="auditCt">6</span> events logged to audit trail.</div></div>
+          <div class="hint">Reviewed continuously - <span id="auditCt">6</span> events logged to audit trail.</div></div>
       </div>
     </aside>
   </div>
@@ -986,7 +986,7 @@
 <!-- ============================================================= -->
 <main class="wrap screen" id="ongoing">
   <div class="page-head">
-    <div><h1>Ongoing — Claim Follow-Up</h1><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitration.</p></div>
+    <div><h1>Ongoing - Claim Follow-Up</h1><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitration.</p></div>
     <div class="searchbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search patient, claim, payer, IDR case…"></div>
     <div class="head-actions"><button class="btn" onclick="toast('835 / ERA import opened')">Import 835 / ERA</button></div>
   </div>
@@ -999,7 +999,7 @@
     <div class="clocktile">
       <div class="ct-h"><span>⏱</span> IDR-clock exposure</div>
       <div class="ct-big">$248,000 aged &gt; 90 days</div>
-      <div class="ct-sub">11 OON claims at an IDR deadline — route to Arbitration before the window closes.</div>
+      <div class="ct-sub">11 OON claims at an IDR deadline - route to Arbitration before the window closes.</div>
       <div class="ct-rows">
         <div class="ct-row idr"><span class="pipdot"></span>IDR initiation · <b>4 claims ≤ 4 biz days</b></div>
         <div class="ct-row filing"><span class="pipdot"></span>Negotiation · <b>7 claims open</b></div>
@@ -1028,7 +1028,7 @@
           <td class="mono">$61,240.00</td><td class="mono">$9,210.00</td><td class="mono" style="color:var(--block);font-weight:700">$52,030.00</td>
           <td class="mono">38d</td><td><span class="pill idr">◆ In IDR · negotiating</span></td>
           <td><span class="pill idr">Sent to Arbitration</span></td><td><span class="openbtn">Open →</span></td></tr>
-        <tr class="rowlink" onclick="toast('Government in-network claim — paid at contracted rate, no IDR path')">
+        <tr class="rowlink" onclick="toast('Government in-network claim - paid at contracted rate, no IDR path')">
           <td><div class="pat">Example, Marta</div><div class="sub mono">PID 100006</div></td>
           <td><div class="mono">1000004</div><div class="sub mono">06/18/2025</div></td>
           <td>Mercy Care AZ<div class="sub">MCD HMO · in-network</div></td>
@@ -1043,7 +1043,7 @@
           <td><span class="cpill oon" style="font-size:11px">◆ OON → IDR</span></td>
           <td class="mono">$36,432.51</td><td class="mono">$2,140.00</td><td class="mono" style="color:var(--block);font-weight:700">$34,292.51</td>
           <td class="mono">71d</td><td><span class="pill denied">Underpaid</span></td>
-          <td><span class="pill denied">✕ Denied — appeal</span></td><td><span class="openbtn">Open →</span></td></tr>
+          <td><span class="pill denied">✕ Denied - appeal</span></td><td><span class="openbtn">Open →</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -1076,11 +1076,11 @@
         <div class="sec-body">
           <div class="tl" id="timeline">
             <div class="tl-item"><div class="tl-dot bot">✦</div><div class="tl-top"><span class="tl-actor">Tennr VOB Worker</span><span class="tl-badge auto">Automated</span><span class="tl-time">10/14 04:46 PM</span></div>
-              <div class="tl-msg">Per face sheet — INS: United Healthcare · OON · benefits active. <span class="mono">VOB complete</span>.</div></div>
+              <div class="tl-msg">Per face sheet - INS: United Healthcare · OON · benefits active. <span class="mono">VOB complete</span>.</div></div>
             <div class="tl-item"><div class="tl-dot ch">↑</div><div class="tl-top"><span class="tl-actor">Clearing House</span><span class="tl-badge sys">EDI</span><span class="tl-time">10/21 09:02 AM</span></div>
               <div class="tl-msg">Claim <span class="mono">1000001</span> (Pro + Tech) submitted to <span class="mono">sshftp.iirmed.com</span> · 837P batch.</div></div>
             <div class="tl-item"><div class="tl-dot ch">✓</div><div class="tl-top"><span class="tl-actor">Clearing House</span><span class="tl-badge sys">277CA</span><span class="tl-time">10/22 06:14 AM</span></div>
-              <div class="tl-msg">Payer acknowledged — claim accepted into adjudication.</div></div>
+              <div class="tl-msg">Payer acknowledged - claim accepted into adjudication.</div></div>
           </div>
         </div>
       </section>
@@ -1088,7 +1088,7 @@
       <section class="sec" id="sec-pay">
         <div class="sec-head"><h2>Payments &amp; posting</h2><div class="act"><button class="btn primary sm" id="postBtn" onclick="postERA()">Post UHC 835 / ERA</button></div></div>
         <div class="sec-body">
-          <div id="payEmpty" class="empty-pay">No remittance posted yet. The UHC 835 has arrived in your clearinghouse inbox —<br>post it to reconcile against the service lines.</div>
+          <div id="payEmpty" class="empty-pay">No remittance posted yet. The UHC 835 has arrived in your clearinghouse inbox -<br>post it to reconcile against the service lines.</div>
           <table class="pay" id="payTable" style="display:none">
             <thead><tr><th>CPT</th><th>Mod</th><th>Charged</th><th>Allowed</th><th>Ins paid</th><th>ANSI</th><th>Balance</th></tr></thead>
             <tbody>
@@ -1102,21 +1102,21 @@
             <tfoot><tr><td>Totals</td><td></td><td>$48,087.92</td><td>$7,697.50</td><td class="paid">$6,158.00</td><td></td><td class="bal">$41,929.92</td></tr></tfoot>
           </table>
           <div class="ai-flag" id="aiFlag"><span class="spark">✦</span>
-            <div><b>Underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> on $48,088 charged (≈13% of billed), below the qualifying payment amount on an out-of-network claim. This is <b>IDR-eligible</b> under the No Surprises Act. Neurology/neuromuscular IDR awards have averaged <b>12–17× the QPA</b>. Recommend opening the negotiation window and routing to Arbitration.
-              <div class="ai-actions"><button class="btn ai" onclick="confirmUnderpay()">✓ Confirm — open IDR</button><button class="btn" onclick="toast('Marked for manual review — logged')">Not now</button></div>
-              <span style="display:block;margin-top:7px;font-size:11px;color:var(--ai-dark);font-style:italic">AI proposes, you decide — logged to audit trail.</span></div></div>
+            <div><b>Underpayment detected - not a denial.</b> UHC paid <b>$6,158</b> on $48,088 charged (≈13% of billed), below the qualifying payment amount on an out-of-network claim. This is <b>IDR-eligible</b> under the No Surprises Act. Neurology/neuromuscular IDR awards have averaged <b>12–17× the QPA</b>. Recommend opening the negotiation window and routing to Arbitration.
+              <div class="ai-actions"><button class="btn ai" onclick="confirmUnderpay()">✓ Confirm - open IDR</button><button class="btn" onclick="toast('Marked for manual review - logged')">Not now</button></div>
+              <span style="display:block;margin-top:7px;font-size:11px;color:var(--ai-dark);font-style:italic">AI proposes, you decide - logged to audit trail.</span></div></div>
         </div>
       </section>
 
       <section class="sec" id="sec-doc">
-        <div class="sec-head"><h2>Documents — proof bundle</h2><div class="act"><button class="btn sm" id="bundleBtn" onclick="buildBundle()">Create combined proof PDF</button></div></div>
+        <div class="sec-head"><h2>Documents - proof bundle</h2><div class="act"><button class="btn sm" id="bundleBtn" onclick="buildBundle()">Create combined proof PDF</button></div></div>
         <div class="sec-body">
           <div class="doclist">
             <div class="docrow"><input type="checkbox" checked><span class="ico">✓</span><span class="nm">Verified Benefits</span><span class="ty">VOB</span><span class="dt">10/14/25</span></div>
-            <div class="docrow"><input type="checkbox" checked><span class="ico">📄</span><span class="nm">Ext Reader Report — Sample, Alan MD</span><span class="ty">Reader</span><span class="dt">10/15/25</span></div>
+            <div class="docrow"><input type="checkbox" checked><span class="ico">📄</span><span class="nm">Ext Reader Report - Sample, Alan MD</span><span class="ty">Reader</span><span class="dt">10/15/25</span></div>
             <div class="docrow"><input type="checkbox" checked><span class="ico">📄</span><span class="nm">Ext Tech Report</span><span class="ty">Tech</span><span class="dt">10/15/25</span></div>
             <div class="docrow"><input type="checkbox" checked><span class="ico">📄</span><span class="nm">Face Sheet</span><span class="ty">Face sheet</span><span class="dt">10/15/25</span></div>
-            <div class="docrow"><input type="checkbox" checked><span class="ico">🧾</span><span class="nm">CMS-1500 — Claim 1000001</span><span class="ty">CMS 1500</span><span class="dt">10/20/25</span></div>
+            <div class="docrow"><input type="checkbox" checked><span class="ico">🧾</span><span class="nm">CMS-1500 - Claim 1000001</span><span class="ty">CMS 1500</span><span class="dt">10/20/25</span></div>
             <div class="docrow"><input type="checkbox"><span class="ico">📑</span><span class="nm">UHC EOB / remittance</span><span class="ty">EOB</span><span class="dt">12/02/25</span></div>
             <div class="docrow"><input type="checkbox"><span class="ico">💬</span><span class="nm">Ext Chat log</span><span class="ty">Chat</span><span class="dt">10/15/25</span></div>
           </div>
@@ -1127,15 +1127,15 @@
         <div class="sec-head"><h2>IDR &amp; Arbitration</h2></div>
         <div class="sec-body">
           <div class="idrbox">
-            <div class="ih" id="idrHead">◆ No Surprises Act — eligibility &amp; arbitration</div>
+            <div class="ih" id="idrHead">◆ No Surprises Act - eligibility &amp; arbitration</div>
             <div class="ib">
               <div class="idr-stat">
                 <div><div class="k">Eligibility</div><div class="v" style="color:var(--idr)">OON · IDR-eligible</div></div>
-                <div><div class="k">Underpaid balance</div><div class="v big" id="idrBal">—</div></div>
-                <div><div class="k">QPA (as received)</div><div class="v mono" id="idrQpa">—</div></div>
-                <div><div class="k">Est. IDR potential</div><div class="v mono" id="idrPot">—</div></div>
+                <div><div class="k">Underpaid balance</div><div class="v big" id="idrBal">-</div></div>
+                <div><div class="k">QPA (as received)</div><div class="v mono" id="idrQpa">-</div></div>
+                <div><div class="k">Est. IDR potential</div><div class="v mono" id="idrPot">-</div></div>
               </div>
-              <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Routing to Arbitration hands off a complete IDR case packet — claim, service lines, QPA, CARC/RARC, and the selected proof documents — over the USMON↔Arbitration MCP. Arbitration runs the negotiation and arbitration; USMON stays the system of record.</p>
+              <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Routing to Arbitration hands off a complete IDR case packet - claim, service lines, QPA, CARC/RARC, and the selected proof documents - over the USMON↔Arbitration MCP. Arbitration runs the negotiation and arbitration; USMON stays the system of record.</p>
               <button class="btn idr" id="arbBtn" onclick="sendArbitration()" disabled>Send to Arbitration →</button>
               <div class="clock" id="idrClock"><span>⏱</span><span><b>Open negotiation started.</b> 30 business days to negotiate · IDR initiation window (4 biz days) opens after. Arbitration is tracking the clock.</span></div>
             </div>
@@ -1179,13 +1179,13 @@
 <main class="wrap screen" id="manage"><div class="placeholder"><h2>Manage</h2><p>Payer rules, OON fee schedules, client routing rules, and user permissions. Out of scope for this demo build.</p></div></main>
 
 <!-- ============================================================= -->
-<!-- CMS-1500 popup — editable, same claim (synthetic) · Box 33 emph -->
+<!-- CMS-1500 popup - editable, same claim (synthetic) · Box 33 emph -->
 <!-- ============================================================= -->
 <div class="c15-back" id="cms15Back" onclick="if(event.target===this)closeCMS1500()">
   <div class="c15-modal" role="dialog" aria-modal="true" aria-labelledby="cms15Title">
     <div class="c15-head">
       <span class="c15-tag">Same claim</span>
-      <h2 id="cms15Title">CMS-1500 — Testcase, Alice &middot; Claim 1000001</h2>
+      <h2 id="cms15Title">CMS-1500 - Testcase, Alice &middot; Claim 1000001</h2>
       <button class="c15-x" onclick="closeCMS1500()" aria-label="Close">&times;</button>
     </div>
     <div class="c15-body">
@@ -1267,7 +1267,7 @@
                 <div class="cbx"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
             </div>
             <div class="c15-row">
-              <div class="c15-box c15-c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+              <div class="c15-box c15-c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim - No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
               <div class="c15-box c15-c3"><span class="bxn">21</span><label>ICD indicator</label>
                 <select><option selected>0 &mdash; ICD-10-CM</option><option>9 &mdash; ICD-9-CM</option></select></div>
             </div>
@@ -1357,14 +1357,14 @@
             <div class="c15-row">
               <div class="c15-box c15-c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
               <div class="c15-box c15-c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
-              <div class="c15-box c15-c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+              <div class="c15-box c15-c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
             </div>
             <div class="c15-row">
               <div class="c15-box c15-c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
               <div class="c15-box c15-c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
               <div class="c15-box c15-c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="&mdash;" value=""></div>
             </div>
-            <!-- Box 33 — critical, emphasized: where the money goes -->
+            <!-- Box 33 - critical, emphasized: where the money goes -->
             <div class="c15-row">
               <div class="c15-box c15-box33 c15-c8" id="cms15B33Box">
                 <span class="bxn">33</span>
@@ -1396,7 +1396,7 @@
       </div>
     </div>
     <div class="c15-foot">
-      <button class="btn" onclick="toast('CMS-1500 saved — synthetic; edits kept for this claim','ai')">&#128190; Save form</button>
+      <button class="btn" onclick="toast('CMS-1500 saved - synthetic; edits kept for this claim','ai')">&#128190; Save form</button>
       <button class="btn primary" onclick="closeCMS1500()">Close &mdash; back to the claim</button>
     </div>
   </div>
@@ -1423,7 +1423,7 @@
   function backToRouter(){show('router');setNav('router');document.getElementById('tabstrip').classList.remove('show');}
   function openCockpit(){show('cockpit');setNav('router');document.getElementById('tabstrip').classList.add('show');}
   function openFollowup(){show('followup');setNav('ongoing');document.getElementById('tabstrip').classList.remove('show');}
-  function switchTab(who){if(who==='alice')return;toast(({ray:'Mockdata, Ray',charles:'Demo, Charles'}[who])+' opened — Testcase, Alice stays right where you left it');}
+  function switchTab(who){if(who==='alice')return;toast(({ray:'Mockdata, Ray',charles:'Demo, Charles'}[who])+' opened - Testcase, Alice stays right where you left it');}
 
   /* ---------- role toggle: Biller <-> Supervisor (default = Supervisor) ---------- */
   function setRole(role){
@@ -1435,10 +1435,10 @@
     const panel=document.getElementById('supPanel'); if(panel)panel.setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
-    toast(sup?'Supervisor view — team stats & oversight now visible':'Biller view — stats hidden; worklist & review tools stay','');
+    toast(sup?'Supervisor view - team stats & oversight now visible':'Biller view - stats hidden; worklist & review tools stay','');
   }
 
-  /* ---------- CMS-1500 popup — editable, same claim, Box 33 emphasized ---------- */
+  /* ---------- CMS-1500 popup - editable, same claim, Box 33 emphasized ---------- */
   /* Opens as an overlay so the biller never loses their place; Close/Esc/backdrop returns them. */
   function openCMS1500(){
     document.getElementById('cms15Back').classList.add('show');
@@ -1453,7 +1453,7 @@
     var b=document.getElementById('cms15Back');
     if(e.key==='Escape'&&b&&b.classList.contains('show'))closeCMS1500();
   });
-  /* Box 33 — critical billing-provider picker: where the payment is sent */
+  /* Box 33 - critical billing-provider picker: where the payment is sent */
   function cms15B33Parts(){return document.getElementById('cms15B33Select').value.split('|');}
   function cms15B33Actions(){
     return '<button class="btn ai sm" onclick="cms15ConfirmB33()">✓ Confirm entity</button>'+
@@ -1465,11 +1465,11 @@
     document.getElementById('cms15B33Box').classList.remove('confirmed');
     document.getElementById('cms15B33Tag').style.display='';
     document.getElementById('cms15B33Act').innerHTML=cms15B33Actions();
-    toast('Billing entity changed to '+p[0]+' — confirm to set where payment is sent','ai');
+    toast('Billing entity changed to '+p[0]+' - confirm to set where payment is sent','ai');
   }
   function cms15ChangeB33(){
     document.getElementById('cms15B33Select').focus();
-    toast('Pick a billing entity — Box 33 sets where the payment is sent','ai');
+    toast('Pick a billing entity - Box 33 sets where the payment is sent','ai');
   }
   function cms15ConfirmB33(){
     var p=cms15B33Parts();
@@ -1480,14 +1480,14 @@
       '<span class="b33done">✓ Billing entity confirmed by you · logged to audit</span>'+
       '<button class="btn sm" onclick="cms15ChangeB33()">Change</button>';
     if(typeof bumpAudit==='function')bumpAudit();
-    toast('Box 33 confirmed — payment routes to '+p[0]+' · logged to audit','ai');
+    toast('Box 33 confirmed - payment routes to '+p[0]+' · logged to audit','ai');
   }
 
   /* ---------- re-pull from case (cockpit) ---------- */
   function repull(btn){
     if(btn){btn.disabled=true;btn.textContent='Re-pulling…';}
     toast('Re-pulling latest from case #1000001…','');
-    setTimeout(()=>{if(btn){btn.disabled=false;btn.textContent='Re-pull from case';}toast('Re-pulled — still 95% preloaded, no changes since tech entry');},650);
+    setTimeout(()=>{if(btn){btn.disabled=false;btn.textContent='Re-pull from case';}toast('Re-pulled - still 95% preloaded, no changes since tech entry');},650);
   }
 
   /* ---------- add note (follow-up activity timeline) ---------- */
@@ -1496,7 +1496,7 @@
     const t=String(((now.getHours()+11)%12)+1)+':'+String(now.getMinutes()).padStart(2,'0')+' '+(now.getHours()<12?'AM':'PM');
     addTl('ch','You','human','Note','12/02 '+t,'Left VM with UHC provider line re: OON underpayment on claim <span class="mono">1000001</span>. Ref <span class="mono">#UHC-8841</span>.');
     bumpAudit();
-    toast('Note added to the activity timeline — logged');
+    toast('Note added to the activity timeline - logged');
   }
 
   /* hospital tech-fee routing hand-off (NOT a built form) */
@@ -1515,7 +1515,7 @@
 
   function bumpAudit(){audit++;const el=document.getElementById('auditCt');if(el)el.textContent=audit;}
 
-  // clean scroll-spy — single IntersectionObserver
+  // clean scroll-spy - single IntersectionObserver
   (function(){
     const navLinks=[...document.querySelectorAll('#cockpit .ws-nav a')];
     const secs=navLinks.map(a=>document.querySelector(a.getAttribute('href')));
@@ -1551,7 +1551,7 @@
     const ric=document.getElementById('aiic-'+key); if(ric){ric.className='ic '+(mode==='overridden'?'ov':'d');ric.textContent=(mode==='overridden'?'✎':'✓');}
     update();
   }
-  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed — logged to audit trail','ai'); }
+  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed - logged to audit trail','ai'); }
   function overrideAI(key){
     if(aiState[key]!=='pending')return;
     const cur=document.getElementById('aival-'+key).textContent.trim();
@@ -1565,7 +1565,7 @@
     const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
     document.getElementById('aival-'+key).textContent=v;
     resolveAI(key,'overridden');
-    toast('Override saved — biller value recorded, logged to audit trail','ai');
+    toast('Override saved - biller value recorded, logged to audit trail','ai');
   }
   function cancelOverride(key){
     document.getElementById('aifact-'+key).innerHTML=
@@ -1578,7 +1578,7 @@
     jumpAI(next); confirmAI(next);
   }
 
-  /* section "mark reviewed" — gated on the section's AI fields being resolved */
+  /* section "mark reviewed" - gated on the section's AI fields being resolved */
   function review(s){
     if(reviewed[s])return;
     const pend=pendingAIinSec(s);
@@ -1593,7 +1593,7 @@
   function approveAll(){
     let skipped=0;
     SECTIONS.forEach(s=>{ if(!reviewed[s]){ if(pendingAIinSec(s).length)skipped++; else review(s); } });
-    if(skipped)toast('Approved the clear sections — '+skipped+' still need their AI fields','ai');
+    if(skipped)toast('Approved the clear sections - '+skipped+' still need their AI fields','ai');
     else toast('All sections approved');
   }
 
@@ -1603,8 +1603,8 @@
     const ctAI=document.getElementById('ctAI'); if(ctAI)ctAI.textContent=aiPending;
     const card=document.getElementById('aiCountCard');
     if(card){
-      if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ — every choice logged to audit.';}
-      else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide — nothing files unconfirmed.';}
+      if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ - every choice logged to audit.';}
+      else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide - nothing files unconfirmed.';}
     }
     // AI sections whose AI fields are now all resolved drop the pending button style
     ['ins','proc','code'].forEach(s=>{const rb=document.getElementById('rev-'+s);if(rb&&!reviewed[s]&&pendingAIinSec(s).length===0){rb.className='revbtn';rb.textContent='Mark reviewed';}});
@@ -1644,7 +1644,7 @@
         '<td><span class="pill partial">▲ Awaiting ERA</span></td><td><span class="openbtn">Open →</span></td>';
       document.getElementById('ongoingBody').insertBefore(tr,document.getElementById('ongoingBody').firstChild);
     }
-    toast('Claim 1000001 filed — 837P batch queued. Moving to Ongoing follow-up.','idr');
+    toast('Claim 1000001 filed - 837P batch queued. Moving to Ongoing follow-up.','idr');
     setTimeout(()=>navTo('ongoing'),700);
   }
 
@@ -1655,7 +1655,7 @@
     document.getElementById('parkReason').textContent=reason;
     document.getElementById('parkbar').classList.add('show');
     const tt=document.getElementById('tab-alice'); tt.classList.add('parked'); tt.innerHTML='<span class="pk">⏸</span> Testcase, Alice <span style="font-weight:500;opacity:.8">· '+reason.replace('Waiting on ','')+'</span>';
-    update(); toast('Parked — open another patient and come back anytime');
+    update(); toast('Parked - open another patient and come back anytime');
   }
   function resumeClaim(){
     parked=false; document.getElementById('parkbar').classList.remove('show');
@@ -1685,19 +1685,19 @@
     document.getElementById('idrPot').textContent='$92k–$131k';
     document.getElementById('fuNeg').textContent='30 biz days'; document.getElementById('fuNeg').style.color='var(--idr)';
     document.getElementById('arbBtn').disabled=false;
-    addTl('pay','United Healthcare','sys','835 ERA','12/02 08:10 AM','EFT remittance posted — paid <span class="mono">$6,158.00</span> of $48,088. 4 lines coded <span class="mono">IDR</span>.');
-    addTl('ai','Claude','auto','AI','12/02 08:11 AM','Flagged out-of-network <b>underpayment</b> (≈13% of billed, below QPA) — IDR-eligible. Recommended routing to Arbitration.');
+    addTl('pay','United Healthcare','sys','835 ERA','12/02 08:10 AM','EFT remittance posted - paid <span class="mono">$6,158.00</span> of $48,088. 4 lines coded <span class="mono">IDR</span>.');
+    addTl('ai','Claude','auto','AI','12/02 08:11 AM','Flagged out-of-network <b>underpayment</b> (≈13% of billed, below QPA) - IDR-eligible. Recommended routing to Arbitration.');
     document.getElementById('na-1').classList.add('done');
     document.getElementById('na-2').classList.add('active');
     document.getElementById('na-3').classList.add('active');
     document.getElementById('na-4').classList.add('active');
-    toast('UHC ERA posted — AI flagged an out-of-network underpayment','ai');
+    toast('UHC ERA posted - AI flagged an out-of-network underpayment','ai');
   }
   function confirmUnderpay(){
     if(!eraPosted){toast('Post the ERA first');return;}
     document.getElementById('fuIdr').textContent='4 biz days'; document.getElementById('fuIdr').style.color='var(--idr)';
     document.getElementById('arbBtn').scrollIntoView({block:'center'});
-    toast('OON underpayment confirmed — IDR initiation clock started · logged','idr');
+    toast('OON underpayment confirmed - IDR initiation clock started · logged','idr');
   }
   function buildBundle(){
     if(!eraPosted){toast('Post the ERA first to include the remittance');return;}
@@ -1705,20 +1705,20 @@
     bundled=true;
     document.getElementById('bundleBtn').textContent='Proof PDF ready ✓';
     document.getElementById('na-3').classList.add('done');
-    addTl('bot','Document Service','sys','Bundle','12/02 08:14 AM','Combined proof PDF assembled — VOB, reader &amp; tech reports, face sheet, CMS-1500, EOB. Ready for Arbitration.');
-    toast('Combined proof PDF created — the same packet Arbitration will use');
+    addTl('bot','Document Service','sys','Bundle','12/02 08:14 AM','Combined proof PDF assembled - VOB, reader &amp; tech reports, face sheet, CMS-1500, EOB. Ready for Arbitration.');
+    toast('Combined proof PDF created - the same packet Arbitration will use');
   }
   function sendArbitration(){
     if(!eraPosted){toast('Post the ERA first');return;}
     if(sentToArbitration)return; sentToArbitration=true;
     if(!bundled)buildBundle();
     document.getElementById('arbBtn').textContent='Sent to Arbitration ✓'; document.getElementById('arbBtn').disabled=true;
-    document.getElementById('idrHead').textContent='◆ In IDR — routed to Arbitration · case ARB-26-4471';
+    document.getElementById('idrHead').textContent='◆ In IDR - routed to Arbitration · case ARB-26-4471';
     document.getElementById('idrClock').classList.add('show');
     document.getElementById('fuMasterLabel').textContent='In IDR · Arbitration ARB-26-4471';
     document.getElementById('na-4').classList.add('done');
-    addTl('idr','Arbitration','sys','MCP','12/02 08:15 AM','IDR case packet received over USMON↔Arbitration MCP — case <span class="mono">ARB-26-4471</span>. Open negotiation clock started (30 business days).');
-    toast('IDR case packet sent to Arbitration over MCP — case ARB-26-4471','idr');
+    addTl('idr','Arbitration','sys','MCP','12/02 08:15 AM','IDR case packet received over USMON↔Arbitration MCP - case <span class="mono">ARB-26-4471</span>. Open negotiation clock started (30 business days).');
+    toast('IDR case packet sent to Arbitration over MCP - case ARB-26-4471','idr');
   }
 
   /* keyboard fast path: C = confirm next AI field (cockpit only) */

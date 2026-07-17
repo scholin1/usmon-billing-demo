@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Clearinghouse Connections (admin, prototype)</title>
+<title>USMON Pro - Clearinghouse Connections (admin, prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -179,18 +179,18 @@
 
 <!--
   ============================================================================
-  USMON Pro — CLEARINGHOUSE CONNECTIONS · admin / supervisor screen
-  (client demo, SYNTHETIC clients + MASKED credentials only — no real logins,
+  USMON Pro - CLEARINGHOUSE CONNECTIONS · admin / supervisor screen
+  (client demo, SYNTHETIC clients + MASKED credentials only - no real logins,
    no real client names, no real FTP hosts. Clearinghouse product names are public.)
   Modernizes the legacy "Edit FTP Sites" screen ("our poor man's MCD").
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. Lead with the purple "USMON Integrated Clearinghouse — 
-       (beta)" card at top: ONE programmable API replaces ~30 SFTP configs —
+    1. Lead with the purple "USMON Integrated Clearinghouse - 
+       (beta)" card at top: ONE programmable API replaces ~30 SFTP configs -
        837 out, 835/277 back as structured data straight into the worklist.
        This is the "become an MCD for real" path.
     2. Drop to the health strip + table: "Today this one client runs ~30
-       separate SFTP connections — split by billing entity, payer and region.
+       separate SFTP connections - split by billing entity, payer and region.
        Monitoring that sprawl is the whole job." Point at 27/30 healthy.
     3. Click a connection nickname -> Edit modal (masked credentials, encrypted
        note) -> click "Test connection" -> "handshake succeeded" toast.
@@ -207,7 +207,7 @@
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
     <a href="#" onclick="return t('New Insurance Billing routes new cases')">New Insurance Billing</a>
-    <a href="#" onclick="return t('Ongoing worklist — separate screen in this demo set')">Ongoing</a>
+    <a href="#" onclick="return t('Ongoing worklist - separate screen in this demo set')">Ongoing</a>
     <a href="#" onclick="return t('Folders')">Folders</a>
     <a href="#" onclick="return t('Reports')">Reports</a>
     <a href="#" class="on">Manage</a>
@@ -222,7 +222,7 @@
   <div class="page-head">
     <div>
       <h1>Clearinghouse Connections <span class="tag admin" style="vertical-align:middle">Admin · Supervisor only</span></h1>
-      <p>Manage how each client's claims reach their clearinghouse — upload 837 files, download 835/277 responses. Modernizes the legacy "Edit FTP Sites" screen. Configuration changes affect live billing, so this screen is limited to supervisors/admins.</p>
+      <p>Manage how each client's claims reach their clearinghouse - upload 837 files, download 835/277 responses. Modernizes the legacy "Edit FTP Sites" screen. Configuration changes affect live billing, so this screen is limited to supervisors/admins.</p>
     </div>
   </div>
 
@@ -244,10 +244,10 @@
     <div class="ig-main">
       <div class="ig-eyebrow">
         <span class="k">The modern option</span>
-        <span class="st">● Available — beta</span>
+        <span class="st">● Available - beta</span>
       </div>
       <h2>USMON Integrated Clearinghouse</h2>
-      <p class="bene">Route this client's submissions and responses through <b>one programmable API</b> instead of managing many SFTP connections. Replace <b>~30 SFTP configs with a single integrated connection</b> — 837 out, 835/277 back as <b>structured data straight into the worklist</b>. No folders, no per-payer hosts, no rotating credentials to babysit.</p>
+      <p class="bene">Route this client's submissions and responses through <b>one programmable API</b> instead of managing many SFTP connections. Replace <b>~30 SFTP configs with a single integrated connection</b> - 837 out, 835/277 back as <b>structured data straight into the worklist</b>. No folders, no per-payer hosts, no rotating credentials to babysit.</p>
       <div class="ig-metrics">
         <div class="m"><div class="n">1</div><div class="l">integrated connection</div></div>
         <div class="m"><div class="n">↓ 30</div><div class="l">SFTP configs retired</div></div>
@@ -257,7 +257,7 @@
     </div>
     <div class="ig-cta">
       <button class="btn ai" onclick="switchIntegrated()">Switch this client to Integrated →</button>
-      <button class="btn sm" onclick="t('Integrated vs SFTP: side-by-side cutover plan — synthetic demo')">Compare with current SFTP setup</button>
+      <button class="btn sm" onclick="t('Integrated vs SFTP: side-by-side cutover plan - synthetic demo')">Compare with current SFTP setup</button>
       <div class="fine">Becomes USMON's own MCD path. Cutover is per-client and reversible.</div>
     </div>
   </div>
@@ -319,7 +319,7 @@
   </div>
   <div class="modal-body">
     <div class="fgrid">
-      <div class="fld c2"><label>Nickname</label><input type="text" id="mNick" placeholder="e.g. Availity — Neuro Pro (East)"></div>
+      <div class="fld c2"><label>Nickname</label><input type="text" id="mNick" placeholder="e.g. Availity - Neuro Pro (East)"></div>
       <div class="fld"><label>Clearinghouse</label>
         <select id="mCh">
           <option>Availity</option><option>Zirmed</option><option>Change Healthcare</option>
@@ -335,8 +335,8 @@
       </div>
       <div class="fld"><label>SFTP host</label><input type="text" id="mHost" placeholder="edi-host.example.net"></div>
       <div class="fld"><label>Port</label><input type="number" id="mPort" value="22"></div>
-      <div class="fld"><label>Login</label><input type="text" id="mLogin" value="••••••••" autocomplete="off"><span class="hint">Masked — stored in secrets</span></div>
-      <div class="fld"><label>Password</label><input type="password" id="mPass" value="********" autocomplete="new-password"><span class="hint">Masked — never displayed</span></div>
+      <div class="fld"><label>Login</label><input type="text" id="mLogin" value="••••••••" autocomplete="off"><span class="hint">Masked - stored in secrets</span></div>
+      <div class="fld"><label>Password</label><input type="password" id="mPass" value="********" autocomplete="new-password"><span class="hint">Masked - never displayed</span></div>
       <div class="fld"><label>Upload folder (837 out)</label><input type="text" id="mUp" placeholder="/outbound/837"></div>
       <div class="fld"><label>Responses folder (835/277 in)</label><input type="text" id="mDown" placeholder="/inbound/835"></div>
       <div class="fld"><label>Billing-type routing</label>
@@ -349,7 +349,7 @@
     </div>
     <div class="seclock">
       <span class="ic">🔒</span>
-      <span>Credentials are encrypted at rest and stored in the secrets vault — logins and passwords are never shown back in the UI or in logs.</span>
+      <span>Credentials are encrypted at rest and stored in the secrets vault - logins and passwords are never shown back in the UI or in logs.</span>
     </div>
   </div>
   <div class="modal-foot">
@@ -425,7 +425,7 @@ function genConns(client){
     const dir = dr<0.62?'both':dr<0.82?'send':'recv';
     const port = rng()<0.82?22:(rng()<0.5?2222:990);
     const entShort=ent.replace(/ LLC| Group| Partners| Services/g,'');
-    const nick = ch+' — '+(bt==='Both'?'Pro+Tech':bt)+' '+payer+' ('+region+')';
+    const nick = ch+' - '+(bt==='Both'?'Pro+Tech':bt)+' '+payer+' ('+region+')';
     let status,when;
     if(errIdx.has(i)){status='error';when='auth failed '+ (rng()<0.5?'2h':'46m') +' ago';}
     else if(idleIdx.has(i)){status='idle';when='no traffic '+(Math.floor(rng()*20)+8)+'d';}
@@ -434,8 +434,8 @@ function genConns(client){
     if(!defAssigned && dir!=='recv' && status==='healthy'){isDefault=true;defAssigned=true;}
     out.push({
       id:client.id+'-'+i, nick, ch, host:CH_HOST[ch], dir, port,
-      up: dir==='recv'?'—':'/outbound/837/'+region.toLowerCase(),
-      down: dir==='send'?'—':'/inbound/'+(rng()<0.5?'835':'era'),
+      up: dir==='recv'?'-':'/outbound/837/'+region.toLowerCase(),
+      down: dir==='send'?'-':'/inbound/'+(rng()<0.5?'835':'era'),
       bt, ent, entShort, payer, region, isDefault, status, when
     });
   }
@@ -461,7 +461,7 @@ function switchClient(id,silent){
   document.getElementById('search').value='';
   document.getElementById('statusFilter').value='';
   renderHealth();render();
-  if(!silent)toast('Switched to '+c.name+' — '+DATA[id].length+' connections','idr');
+  if(!silent)toast('Switched to '+c.name+' - '+DATA[id].length+' connections','idr');
 }
 
 /* ---------------- health strip ---------------- */
@@ -511,10 +511,10 @@ function render(){
       '<td><span class="chpill'+''+'">'+c.ch+'</span></td>'+
       '<td class="mono">'+c.host+'</td>'+
       '<td>'+dirHtml(c.dir)+'</td>'+
-      '<td class="mono" style="font-size:10.5px">'+c.up+(c.down!=='—'?'<br>'+c.down:'')+'</td>'+
+      '<td class="mono" style="font-size:10.5px">'+c.up+(c.down!=='-'?'<br>'+c.down:'')+'</td>'+
       '<td class="mono">'+c.port+'</td>'+
       '<td><span class="rt">'+btBadge(c.bt)+'<span class="ent">'+c.payer+' · '+c.region+'</span></span></td>'+
-      '<td>'+(c.isDefault?'<span class="defbadge">✓ Default</span>':'<span style="color:var(--faint)">—</span>')+'</td>'+
+      '<td>'+(c.isDefault?'<span class="defbadge">✓ Default</span>':'<span style="color:var(--faint)">-</span>')+'</td>'+
       '<td class="mono" style="font-size:10.5px;color:var(--muted)">'+c.when+'</td>'+
       '<td>'+statHtml(c)+'</td>'+
       '<td><div class="rowacts">'+
@@ -530,8 +530,8 @@ function render(){
 
 /* ---------------- row actions ---------------- */
 function findConn(id){return DATA[activeClient].find(c=>c.id===id);}
-function testRow(id){const c=findConn(id);if(c.status==='error'){toast('Test failed — '+c.ch+' still refusing auth. Check secrets vault entry.','block');}else{toast('Connection test OK — '+c.ch+' handshake succeeded ('+(c.host)+')');}}
-function disableRow(id){const c=findConn(id);toast('Connection "'+c.nick+'" disabled — no batches will route here until re-enabled','warn');}
+function testRow(id){const c=findConn(id);if(c.status==='error'){toast('Test failed - '+c.ch+' still refusing auth. Check secrets vault entry.','block');}else{toast('Connection test OK - '+c.ch+' handshake succeeded ('+(c.host)+')');}}
+function disableRow(id){const c=findConn(id);toast('Connection "'+c.nick+'" disabled - no batches will route here until re-enabled','warn');}
 
 /* ---------------- add / edit modal ---------------- */
 let editingId=null;
@@ -568,8 +568,8 @@ function openEdit(id){
   document.getElementById('mPort').value=c.port;
   document.getElementById('mLogin').value='••••••••';
   document.getElementById('mPass').value='********';
-  document.getElementById('mUp').value=c.up==='—'?'':c.up;
-  document.getElementById('mDown').value=c.down==='—'?'':c.down;
+  document.getElementById('mUp').value=c.up==='-'?'':c.up;
+  document.getElementById('mDown').value=c.down==='-'?'':c.down;
   document.getElementById('mBill').value=c.bt==='Pro'?'Pro only':c.bt==='Tech'?'Tech only':'Pro + Tech';
   document.getElementById('mEnt').value=c.ent;
   document.getElementById('mDefault').checked=c.isDefault;
@@ -579,12 +579,12 @@ function showModal(){document.getElementById('scrim').classList.add('show');docu
 function closeModal(){document.getElementById('scrim').classList.remove('show');document.getElementById('modal').classList.remove('show');}
 function testConn(){
   const ch=document.getElementById('mCh').value;
-  toast('Connection test OK — '+ch+' handshake succeeded');
+  toast('Connection test OK - '+ch+' handshake succeeded');
 }
 function saveConn(){
   const nick=document.getElementById('mNick').value||'(unnamed connection)';
   closeModal();
-  toast((editingId?'Saved changes to "':'Added connection "')+nick+'" — credentials stored encrypted');
+  toast((editingId?'Saved changes to "':'Added connection "')+nick+'" - credentials stored encrypted');
 }
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});

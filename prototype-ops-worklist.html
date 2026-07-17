@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Ongoing Insurance Billing (worklist at scale, prototype)</title>
+<title>USMON Pro - Ongoing Insurance Billing (worklist at scale, prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -46,7 +46,7 @@
   .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
   #whoLabel{white-space:nowrap}
 
-  /* role toggle (Biller <-> Supervisor) — mirrors biller-review */
+  /* role toggle (Biller <-> Supervisor) - mirrors biller-review */
   .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
   .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
   .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
@@ -80,7 +80,7 @@
   .sm.idr .num{color:var(--idr)} .sm.await .num{color:var(--warn)} .sm.aged .num{color:var(--block)}
   .sm .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
   .sm .sub{font-size:10.5px;color:var(--faint);margin-top:2px}
-  /* Biller mode: no stats strip — billers get maximum grid */
+  /* Biller mode: no stats strip - billers get maximum grid */
   body:not(.role-super) .summary{display:none}
 
   /* ===== SUPERVISOR-ONLY oversight panel (from biller-review) ===== */
@@ -262,15 +262,15 @@
 
 <!--
   ============================================================================
-  USMON Pro — ONGOING INSURANCE BILLING · operational worklist AT SCALE
-  (client demo, SYNTHETIC data only — no PHI, no real entities)
+  USMON Pro - ONGOING INSURANCE BILLING · operational worklist AT SCALE
+  (client demo, SYNTHETIC data only - no PHI, no real entities)
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
     1. Point at the footer: "52,172 records · Page 1 of 1,044 · 50 per page"
        and the summary strip (open A/R, at-IDR-deadline, awaiting payment).
-       This is the client's real legacy follow-up screen — modernized, still dense.
+       This is the client's real legacy follow-up screen - modernized, still dense.
     2. Click "Collapse search area" to reclaim vertical space for the grid.
-    3. Click the saved-view chip "Inside IDR window" — grid + result count
+    3. Click the saved-view chip "Inside IDR window" - grid + result count
        filter live. (Try "Deadline < 7 days", "Underpaid -> refile" too.)
     4. Click the header checkbox to Select all -> the bulk action bar appears
        with a live count. Click "Bulk export batch (837P)" -> counted toast.
@@ -285,7 +285,7 @@
 <header class="appbar">
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
-    <a href="#" onclick="return t('New Insurance Billing routes new cases — this demo is the Ongoing worklist')">New Insurance Billing</a>
+    <a href="#" onclick="return t('New Insurance Billing routes new cases - this demo is the Ongoing worklist')">New Insurance Billing</a>
     <a href="#" class="on">Ongoing</a>
     <a href="#" onclick="return t('Folders')">Folders</a>
     <a href="#" onclick="return t('Reports')">Reports</a>
@@ -305,7 +305,7 @@
 <main class="wrap">
   <div class="page-head">
     <div><h1>Ongoing Insurance Billing <span class="tag idr" style="vertical-align:middle">Follow-up worklist</span></h1>
-      <p>The daily follow-up grid — the same dense workspace billers live in, rebuilt faster. Filter, triage by deadline, edit inline, and act on thousands of claims in bulk.</p></div>
+      <p>The daily follow-up grid - the same dense workspace billers live in, rebuilt faster. Filter, triage by deadline, edit inline, and act on thousands of claims in bulk.</p></div>
   </div>
 
   <!-- summary strip (portfolio-wide, feels like 52,172) -->
@@ -319,7 +319,7 @@
   <!-- ===== SUPERVISOR-ONLY oversight panel (hidden from billers) ===== -->
   <div class="sup-panel" id="supPanel" aria-hidden="false">
     <div class="sp-card">
-      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view - billers don't see this.</span></div>
       <div class="sp-stats">
         <div class="sp-stat"><div class="num">318</div><div class="lbl">Claims worked today (team)</div></div>
         <div class="sp-stat"><div class="num mono">2:47</div><div class="lbl">Avg time / claim</div></div>
@@ -444,7 +444,7 @@
     <label style="display:flex;align-items:center;gap:6px">Per page
       <select id="perPage" onchange="changePer(this.value)"><option>25</option><option selected>50</option><option>100</option><option>200</option></select>
     </label>
-    <span class="virt">⚡ Production build uses row virtualization — all 52,172 rows stay instant.</span>
+    <span class="virt">⚡ Production build uses row virtualization - all 52,172 rows stay instant.</span>
   </div>
 </main>
 
@@ -453,7 +453,7 @@
 <aside class="slide" id="slide">
   <div class="slide-head">
     <button class="x" onclick="closeSlide()">✕</button>
-    <div class="nm" id="slNm">—</div>
+    <div class="nm" id="slNm">-</div>
     <div class="mt"><span>PID <b id="slPid" class="mono"></b></span><span>Claim <b id="slClaim" class="mono"></b></span><span>DOS <b id="slDos" class="mono"></b></span></div>
   </div>
   <div class="slide-body">
@@ -503,7 +503,7 @@ function setRole(role){
   document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
   document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Billing Supervisor':'Sample, Dana · Biller';
   document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
-  toast(sup?'Supervisor view — team stats & efficiency now visible':'Biller view — maximum grid, no stats');
+  toast(sup?'Supervisor view - team stats & efficiency now visible':'Biller view - maximum grid, no stats');
 }
 
 /* ---------------- synthetic data ---------------- */
@@ -659,7 +659,7 @@ function filtered(){
 
 /* ---------------- render ---------------- */
 function dlClass(v){if(v===null)return 'n';if(v<=3)return 'r';if(v<7)return 'w';return 'o';}
-function dlText(v){if(v===null)return '—';if(v<0)return 'OVERDUE';if(v===0)return 'today';return v+'d';}
+function dlText(v){if(v===null)return '-';if(v<0)return 'OVERDUE';if(v===0)return 'today';return v+'d';}
 function statusColor(s){
   if(s==='Paid in Full')return 'background:var(--ok-tint);color:var(--ok)';
   if(s==='Underpaid'||s==='Denied'||s==='Refile Needed')return 'background:var(--block-tint);color:var(--block)';
@@ -701,7 +701,7 @@ function rowHtml(r){
     '<td class="mono">'+r.initialFiling+'</td>'+
     '<td><select data-f="status" onchange="dirty('+r.pid+')">'+sel(STATUSES,r.status)+'</select></td>'+
     '<td class="mono">'+r.lastFollowUp+'</td>'+
-    '<td><button class="mini" onclick="t(\'Opening history for '+r.name+' (claim '+r.claim+') — synthetic\')">Hist</button></td>'+
+    '<td><button class="mini" onclick="t(\'Opening history for '+r.name+' (claim '+r.claim+') - synthetic\')">Hist</button></td>'+
     '<td><select data-f="action" onchange="dirty('+r.pid+')">'+sel(ACTIONS,r.action)+'</select></td>'+
     '<td style="text-align:center"><input type="checkbox" class="idrst" data-pid="'+r.pid+'"'+(r.idrState?' checked':'')+' onchange="dirty('+r.pid+')"></td>'+
     '<td style="text-align:center"><input type="checkbox" data-pid="'+r.pid+'"'+(r.idrNsa?' checked':'')+' onchange="dirty('+r.pid+')"></td>'+
@@ -712,11 +712,11 @@ function rowHtml(r){
     '<td>'+r.ins+'</td>'+
     '<td><input class="cmt" data-f="comment" value="'+r.comment.replace(/"/g,'&quot;')+'" placeholder="add note…" oninput="dirty('+r.pid+')"></td>'+
     '<td><span class="dl '+dlClass(r.deadline)+'">'+dlText(r.deadline)+'</span></td>'+
-    '<td><a class="lnk" onclick="t(\'Opening HCFA image for '+r.name+' — synthetic\')">HCFA</a></td>'+
-    '<td><button class="mini" onclick="t(\'Opening CMS-1500 for '+r.name+' — synthetic\')">1500</button></td>'+
+    '<td><a class="lnk" onclick="t(\'Opening HCFA image for '+r.name+' - synthetic\')">HCFA</a></td>'+
+    '<td><button class="mini" onclick="t(\'Opening CMS-1500 for '+r.name+' - synthetic\')">1500</button></td>'+
     '<td><button class="mini" onclick="openSlide('+r.pid+')">Info</button></td>'+
-    '<td><button class="mini" onclick="t(\'Opening documents for '+r.name+' — synthetic\')">Docs</button></td>'+
-    '<td><button class="mini" onclick="t(\'Opening notes for '+r.name+' — synthetic\')">Notes</button></td>'+
+    '<td><button class="mini" onclick="t(\'Opening documents for '+r.name+' - synthetic\')">Docs</button></td>'+
+    '<td><button class="mini" onclick="t(\'Opening notes for '+r.name+' - synthetic\')">Notes</button></td>'+
     '<td class="money">'+money(r.charged)+'</td>'+
     '<td class="money '+(r.collected?'coll':'zero')+'">'+money(r.collected)+'</td>'+
     '<td class="money '+(r.refund?'':'zero')+'">'+money(r.refund)+'</td>'+
@@ -740,7 +740,7 @@ function saveRow(pid,btn){
     const idr=tr.querySelector('.idrst');if(idr)r.idrState=idr.checked;
   }
   btn.classList.remove('dirty');btn.classList.add('saved');btn.textContent='Saved ✓';
-  toast('Claim '+ (r?r.claim:pid) +' saved — no reload');
+  toast('Claim '+ (r?r.claim:pid) +' saved - no reload');
   setTimeout(()=>{btn.classList.remove('saved');btn.textContent='Save';},1800);
 }
 
@@ -819,7 +819,7 @@ function updateActiveFilter(shown){
   if(document.getElementById('fStatus').value)parts.push(document.getElementById('fStatus').value);
   if(document.getElementById('fBilling').value)parts.push(document.getElementById('fBilling').value);
   const af=document.getElementById('activeFilter');
-  af.innerHTML=parts.length?('Active: <b>'+parts.join(' · ')+'</b> — '+shown+' on page'):'No filter — <b>all '+PER+'</b> rows on this page';
+  af.innerHTML=parts.length?('Active: <b>'+parts.join(' · ')+'</b> - '+shown+' on page'):'No filter - <b>all '+PER+'</b> rows on this page';
 }
 
 /* ---------------- filters / search ---------------- */
@@ -901,7 +901,7 @@ function openSlide(pid){
   document.getElementById('slDl').textContent=dlText(r.deadline);
   document.getElementById('slAged').textContent=r.aged+' days';
   document.getElementById('slAdded').textContent=r.dateAdded;
-  document.getElementById('slCmt').textContent=r.comment||'— no comment —';
+  document.getElementById('slCmt').textContent=r.comment||'- no comment -';
   document.getElementById('scrim').classList.add('show');
   document.getElementById('slide').classList.add('show');
 }

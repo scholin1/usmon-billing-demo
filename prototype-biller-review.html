@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Biller Review (prototype)</title>
+<title>USMON Pro - Biller Review (prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -56,7 +56,7 @@
   .crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:12px}
   .crumb button{background:none;border:none;color:var(--primary);font-size:13px;padding:0;cursor:pointer}
 
-  /* queue strip — throughput feel */
+  /* queue strip - throughput feel */
   .queuebar{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--muted);margin-bottom:14px}
   .queuebar b{color:var(--ink);font-weight:700}
   .qbtn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font-size:12px;font-weight:700;padding:5px 11px;border-radius:7px}
@@ -170,7 +170,7 @@
   .smartnote{font-size:12px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:7px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:8px 11px}
   .smartnote b{color:var(--ink)}
 
-  /* ===== AI FIELD — the centerpiece confirm treatment ===== */
+  /* ===== AI FIELD - the centerpiece confirm treatment ===== */
   .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
   .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
   .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
@@ -193,7 +193,7 @@
   /* readiness rail */
   .rail{position:sticky;top:70px}
   .rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-  /* AI-fields counter — the persistent countdown */
+  /* AI-fields counter - the persistent countdown */
   .aicount{padding:15px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);transition:.3s}
   .aicount h3{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--ai-dark);display:flex;align-items:center;gap:6px}
   .aicount .big{font-size:32px;font-weight:800;letter-spacing:-.6px;color:var(--ai-dark);line-height:1}
@@ -241,22 +241,22 @@
 
 <!--
   ============================================================================
-  USMON Pro — BILLER REVIEW (client demo, synthetic data only)
+  USMON Pro - BILLER REVIEW (client demo, synthetic data only)
   The worker-bee verification view: review-not-entry, AI-confirm, role toggle, time tracking.
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
     1. Open on Testcase, Alice (claim 1000001). Note the banner: ~95% PREFILLED
        via USMON MCP. Each section is labeled by source (Scheduler / Tech /
-       reading physician's report). The biller CONFIRMS — they don't type.
+       reading physician's report). The biller CONFIRMS - they don't type.
     2. Point at the highlighted purple AI fields (✦ AI) and the rail counter
-       "AI fields to confirm: 4". Click Confirm on each — stale VOB, principal
+       "AI fields to confirm: 4". Click Confirm on each - stale VOB, principal
        ICD-10 (M50.121), AI-derived units, AI-matched provider. Counter -> 0.
        (Shortcut: press C to confirm the next AI field. Try Edit/Override on one.)
     3. Confirm each section ("Looks right"). File button unlocks only after all
        AI fields + all sections are cleared.
-    4. Flip the header toggle to SUPERVISOR — the oversight panel appears: team
+    4. Flip the header toggle to SUPERVISOR - the oversight panel appears: team
        stats + per-biller time & efficiency table (Example, Priya flagged for
-       high dead time). Flip back to BILLER — calm, no dashboards.
+       high dead time). Flip back to BILLER - calm, no dashboards.
     5. Watch the subtle time-on-claim indicator (top right): counts up, goes
        amber "idle" if you stop interacting for a few seconds. Then File.
   ============================================================================
@@ -265,7 +265,7 @@
 <header class="appbar">
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
-    <a href="#" onclick="toast('Worklist — 47 claims queued for review');return false">Worklist</a>
+    <a href="#" onclick="toast('Worklist - 47 claims queued for review');return false">Worklist</a>
     <a href="#" class="on" onclick="return false">Biller Review</a>
     <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
   </nav>
@@ -284,9 +284,9 @@
   <div class="crumb"><button onclick="toast('Back to your review worklist')">← Worklist</button><span>/</span><span>Testcase, Alice</span></div>
 
   <div class="queuebar">
-    <button class="qbtn" onclick="toast('Previous claim loaded — your place is saved')">◀ Prev</button>
+    <button class="qbtn" onclick="toast('Previous claim loaded - your place is saved')">◀ Prev</button>
     <span>Claim <b>3</b> of <b>47</b> in your review queue</span>
-    <button class="qbtn" onclick="toast('Next claim loaded — synthetic demo stays on Alice')">Next ▶</button>
+    <button class="qbtn" onclick="toast('Next claim loaded - synthetic demo stays on Alice')">Next ▶</button>
     <span class="kbd-hint">Fast path: <kbd>C</kbd> confirm next AI field</span>
   </div>
 
@@ -304,7 +304,7 @@
 
   <div class="pullbanner">
     <span class="pb-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>
-    <span><b>~95% prefilled via USMON MCP</b> — the governed data layer over the legacy tables. Scheduler set demographics, techs set insurance, the reading physician's report set the coding. Your job: <b>confirm</b> what's right and clear the highlighted AI fields. You are reviewing, not entering.</span>
+    <span><b>~95% prefilled via USMON MCP</b> - the governed data layer over the legacy tables. Scheduler set demographics, techs set insurance, the reading physician's report set the coding. Your job: <b>confirm</b> what's right and clear the highlighted AI fields. You are reviewing, not entering.</span>
   </div>
 
   <!-- ===== SUPERVISOR-ONLY oversight panel (hidden from billers) ===== -->
@@ -350,7 +350,7 @@
 
       <!-- 1 · PATIENT -->
       <section class="sec" id="sec-pat">
-        <div class="sec-head"><h2>Patient</h2><span class="src">Prefilled — Scheduler</span><span class="mcp">via USMON MCP</span>
+        <div class="sec-head"><h2>Patient</h2><span class="src">Prefilled - Scheduler</span><span class="mcp">via USMON MCP</span>
           <button class="revbtn" id="rev-pat" onclick="confirmSection('pat')">Looks right</button></div>
         <div class="sec-body"><div class="fgrid">
           <div class="f col2"><label>Name</label><div class="val">Testcase, Alice</div></div>
@@ -366,7 +366,7 @@
 
       <!-- 2 · INSURANCE & BENEFITS (AI: stale VOB) -->
       <section class="sec" id="sec-ins">
-        <div class="sec-head"><h2>Insurance &amp; Benefits</h2><span class="src">Prefilled — Tech</span><span class="mcp">via USMON MCP</span>
+        <div class="sec-head"><h2>Insurance &amp; Benefits</h2><span class="src">Prefilled - Tech</span><span class="mcp">via USMON MCP</span>
           <button class="revbtn pend" id="rev-ins" onclick="confirmSection('ins')">Confirm AI + review</button></div>
         <div class="sec-body">
           <div class="fgrid">
@@ -379,10 +379,10 @@
             <div class="f col4"><label>Verification of benefits (VOB) status</label>
               <div class="aif" id="aif-vob">
                 <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">flagged by AI · via USMON MCP</span></div>
-                <div class="aival" id="aival-vob">⚠ Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
+                <div class="aival" id="aival-vob">⚠ Stale - last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
                 <div class="aif-why">AI flag: benefits on file exceed United Healthcare's re-verification window for OON claims. Recommend re-checking eligibility &amp; OON benefits before filing so the QPA on record is current.</div>
                 <div class="aif-act" id="aifact-vob">
-                  <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm — re-verified</button>
+                  <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm - re-verified</button>
                   <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
                 </div>
               </div>
@@ -391,7 +391,7 @@
           <div class="benefit-cols">
             <div class="ben innet"><h3>In-network (not applicable)</h3>
               <dl><dt>Status</dt><dd>No in-net contract</dd><dt>Reason</dt><dd>OON by design</dd></dl></div>
-            <div class="ben oonet"><h3>◆ Out-of-network — NSA applies</h3>
+            <div class="ben oonet"><h3>◆ Out-of-network - NSA applies</h3>
               <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div>
           </div>
         </div>
@@ -403,11 +403,11 @@
           <button class="revbtn pend" id="rev-proc" onclick="confirmSection('proc')">Confirm AI + review</button></div>
         <div class="sec-body"><div class="fgrid">
           <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5–C7</div></div>
-          <div class="f col2"><label>Place of service</label><div class="val">21 — Inpatient Hospital</div></div>
+          <div class="f col2"><label>Place of service</label><div class="val">21 - Inpatient Hospital</div></div>
           <div class="f col4"><label>Principal diagnosis (ICD-10)</label>
             <div class="aif" id="aif-icd">
               <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-suggested principal code · via USMON MCP</span></div>
-              <div class="aival mono" id="aival-icd">M50.121 — Cervical disc disorder with radiculopathy, C6–C7</div>
+              <div class="aival mono" id="aival-icd">M50.121 - Cervical disc disorder with radiculopathy, C6–C7</div>
               <div class="aif-why">Extracted from the reading physician's report: “…moderate radiculopathy at the C6–C7 level with corresponding SSEP/MEP changes.” Confidence 0.94. Placed first so the service-line Dx pointers resolve correctly.</div>
               <div class="aif-act" id="aifact-icd">
                 <button class="btn ai sm" onclick="confirmAI('icd')">✓ Confirm</button>
@@ -434,7 +434,7 @@
               <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td>Sample, Alan MD</td><td class="desc">EEG during surgery</td></tr>
             </tbody></table>
           <div class="fgrid" style="margin-top:14px">
-            <div class="f col2"><label>Units — line 4 (95938, SSEP)</label>
+            <div class="f col2"><label>Units - line 4 (95938, SSEP)</label>
               <div class="aif" id="aif-units">
                 <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-derived from monitoring minutes · via USMON MCP</span></div>
                 <div class="aival mono" id="aival-units">6 units</div>
@@ -445,10 +445,10 @@
                 </div>
               </div>
             </div>
-            <div class="f col2"><label>Rendering provider — line 1 (95887), Box 24J</label>
+            <div class="f col2"><label>Rendering provider - line 1 (95887), Box 24J</label>
               <div class="aif" id="aif-prov">
                 <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-matched from report signature · via USMON MCP</span></div>
-                <div class="aival" id="aival-prov">Sample, Alan MD — NPI 1000000048</div>
+                <div class="aival" id="aival-prov">Sample, Alan MD - NPI 1000000048</div>
                 <div class="aif-why">Line 1 had no rendering provider. AI matched the signing neurologist from the reading report against the NPI registry. Confidence 0.97.</div>
                 <div class="aif-act" id="aifact-prov">
                   <button class="btn ai sm" onclick="confirmAI('prov')">✓ Confirm</button>
@@ -472,8 +472,8 @@
           <div class="f"><label>Tax ID</label><div class="val mono">12-3456789</div></div>
           <div class="f col2"><label>Service facility (Box 32)</label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
           <div class="f"><label>Facility NPI</label><div class="val mono">1000000032</div></div>
-          <div class="f"><label>Signature</label><div class="val">On file — Sample, Alan MD</div></div>
-          <div class="f col2"><label>Referring (Box 17)</label><div class="val">A. Sample, M.D. — <span class="mono">1000000048</span></div></div>
+          <div class="f"><label>Signature</label><div class="val">On file - Sample, Alan MD</div></div>
+          <div class="f col2"><label>Referring (Box 17)</label><div class="val">A. Sample, M.D. - <span class="mono">1000000048</span></div></div>
           <div class="f col2"><label>Taxonomy (24J)</label><div class="val mono">2084N0400X</div></div>
         </div></div>
       </section>
@@ -485,7 +485,7 @@
         <div class="aicount" id="aiCountCard">
           <h3>✦ AI fields to confirm</h3>
           <div class="big" id="aiCount">4</div>
-          <div class="cap" id="aiCap">AI proposes, you decide — nothing files unconfirmed.</div>
+          <div class="cap" id="aiCap">AI proposes, you decide - nothing files unconfirmed.</div>
         </div>
 
         <div class="rail-top"><h2>Section review</h2><p>Confirm each section looks right.</p>
@@ -500,7 +500,7 @@
           <div class="ritem ai click" id="ai-item-icd" onclick="jumpAI('icd')"><span class="ic ai" id="aiic-icd">✦</span>
             <div class="txt"><b>Principal ICD-10 (M50.121)</b><span>Procedure &amp; Dx</span></div><span class="go">→</span></div>
           <div class="ritem ai click" id="ai-item-units" onclick="jumpAI('units')"><span class="ic ai" id="aiic-units">✦</span>
-            <div class="txt"><b>Derived units — 95938</b><span>Coding &amp; Lines</span></div><span class="go">→</span></div>
+            <div class="txt"><b>Derived units - 95938</b><span>Coding &amp; Lines</span></div><span class="go">→</span></div>
           <div class="ritem ai click" id="ai-item-prov" onclick="jumpAI('prov')"><span class="ic ai" id="aiic-prov">✦</span>
             <div class="txt"><b>Matched rendering provider</b><span>Coding &amp; Lines</span></div><span class="go">→</span></div>
         </div>
@@ -537,7 +537,7 @@
     document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Example, Priya · Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'EP':'SD';
-    toast(sup?'Supervisor view — team stats & efficiency now visible':'Biller view — calm, no dashboards','');
+    toast(sup?'Supervisor view - team stats & efficiency now visible':'Biller view - calm, no dashboards','');
     markActive();
   }
 
@@ -577,7 +577,7 @@
     const ric=document.getElementById('aiic-'+key); ric.className='ic '+(mode==='overridden'?'ov':'d'); ric.textContent=(mode==='overridden'?'✎':'✓');
     update();
   }
-  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed — logged to audit trail','ai'); }
+  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed - logged to audit trail','ai'); }
 
   function overrideAI(key){
     if(aiState[key]!=='pending')return;
@@ -593,7 +593,7 @@
     const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
     document.getElementById('aival-'+key).textContent=v;
     resolveAI(key,'overridden');
-    toast('Override saved — biller value recorded, logged to audit trail','warn');
+    toast('Override saved - biller value recorded, logged to audit trail','warn');
   }
   function cancelOverride(key){
     document.getElementById('aifact-'+key).innerHTML=
@@ -624,7 +624,7 @@
   function confirmAllSections(){
     let skipped=0;
     ['pat','ins','proc','code','bill'].forEach(s=>{ if(!reviewed[s]){ if(pendingAIinSec(s).length)skipped++; else confirmSection(s); } });
-    if(skipped)toast('Confirmed the clear sections — '+skipped+' still need their AI fields','ai');
+    if(skipped)toast('Confirmed the clear sections - '+skipped+' still need their AI fields','ai');
     else toast('All sections confirmed');
   }
 
@@ -634,8 +634,8 @@
     document.getElementById('aiCount').textContent=aiPending;
     document.getElementById('ctAI').textContent=aiPending;
     const card=document.getElementById('aiCountCard');
-    if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ — every choice logged to audit.';}
-    else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide — nothing files unconfirmed.';}
+    if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ - every choice logged to audit.';}
+    else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide - nothing files unconfirmed.';}
 
     const n=['pat','ins','proc','code','bill'].filter(s=>reviewed[s]).length;
     document.getElementById('secCount').textContent=n;
@@ -662,7 +662,7 @@
     bumpAudit();
     const m=document.getElementById('masterStatus');m.className='master filed';document.getElementById('masterIcon').textContent='◆';document.getElementById('masterLabel').textContent='Filed · 837P queued';
     const fb=document.getElementById('fileBtn');fb.disabled=true;fb.textContent='Filed ✓';
-    toast('Claim 1000001 verified & filed — 837P batch queued. Next claim in your queue.','ai');
+    toast('Claim 1000001 verified & filed - 837P batch queued. Next claim in your queue.','ai');
   }
 
   /* ---------- time-on-claim: active vs idle (dead time = inaction) ---------- */

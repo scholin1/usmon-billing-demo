@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Insurance Billing (Familiar-Modern prototype)</title>
+<title>USMON Pro - Insurance Billing (Familiar-Modern prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -111,7 +111,7 @@
   .pill.park{background:var(--park-tint);color:var(--park);border:1px solid var(--park-line)}
   .pill.await{background:#eef2f7;color:var(--muted);border:1px solid var(--line-strong)}
   .pill.filed{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
-  /* billing-type tag — the column billers scan */
+  /* billing-type tag - the column billers scan */
   .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
   .tag.bt-pt{color:var(--primary-dark);background:var(--primary-tint)}
   .tag.bt-pro{color:var(--idr-dark);background:var(--idr-tint)}
@@ -208,7 +208,7 @@
   .smartnote svg{flex:none}
   .smartnote b{color:var(--ink)}
 
-  /* always-on validation rail — the modern replacement for the end-of-process popup */
+  /* always-on validation rail - the modern replacement for the end-of-process popup */
   .rail{position:sticky;top:112px}
   .rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
   .rail-top{padding:15px 16px;border-bottom:1px solid var(--line)}
@@ -249,7 +249,7 @@
   .rail-foot .btn{width:100%;justify-content:center;font-size:13.5px;padding:11px}
   .hint{font-size:11.5px;color:var(--faint);text-align:center;margin-top:8px}
 
-  /* ===== AI FIELD — highlight-to-confirm (ported from Biller Review) ===== */
+  /* ===== AI FIELD - highlight-to-confirm (ported from Biller Review) ===== */
   .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark);border-color:var(--ai-dark)}
   .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
   .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
@@ -269,7 +269,7 @@
   .aif.overridden .aival{border-color:var(--warn-line)}
   .aif .aif-done{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok)}
   .aif .aif-done.ovr{color:var(--warn)}
-  /* AI-fields counter — persistent countdown in the validation rail */
+  /* AI-fields counter - persistent countdown in the validation rail */
   .aicount{padding:15px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);transition:.3s}
   .aicount h3{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--ai-dark);display:flex;align-items:center;gap:6px}
   .aicount .big{font-size:32px;font-weight:800;letter-spacing:-.6px;color:var(--ai-dark);line-height:1}
@@ -307,7 +307,7 @@
   .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
   .toast.info .ic{background:var(--primary)}
 
-  /* ===== role toggle (Biller <-> Supervisor) — ported from Biller Review ===== */
+  /* ===== role toggle (Biller <-> Supervisor) - ported from Biller Review ===== */
   .appuser #whoLabel{white-space:nowrap}
   .rolewrap{display:flex;flex-direction:column;gap:2px;align-items:flex-start}
   .roletoggle{display:flex;align-items:center;gap:6px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
@@ -321,7 +321,7 @@
   .qsummary{display:none}
   body.role-super .qsummary{display:flex}
 
-  /* ===== SUPERVISOR-ONLY oversight panel — ported from Biller Review ===== */
+  /* ===== SUPERVISOR-ONLY oversight panel - ported from Biller Review ===== */
   .sup-panel{display:none;margin-bottom:14px}
   body.role-super .sup-panel{display:block}
   .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
@@ -446,19 +446,19 @@
 
 <!--
   ============================================================================
-  USMON Pro — prototype "FAMILIAR-MODERN" (client demo, synthetic data only)
+  USMON Pro - prototype "FAMILIAR-MODERN" (client demo, synthetic data only)
   Thesis: keep the mental model tenured billers already know; modernize only
   the execution. The OPPOSITE of v5's case-monetization reframe.
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. Land on "New Insurance Billing" — the SAME dense worklist billers know:
+    1. Land on "New Insurance Billing" - the SAME dense worklist billers know:
        Patient, Claim/DOS, Billing Type (Pro/Tech/Pro+Tech), Payer, Charges,
        Days Aged, IDR State, Status. Click a column header to show it still sorts.
     2. Click the Testcase, Alice row -> the SINGLE-SCROLL claim page. Point out:
        everything on ONE page (no popups/tabs to see patient info or the CMS-1500),
        familiar sections (Demographics / Insurance / Facility / Procedure / Coding /
        Billing), and visible CMS-1500 BOX references (Box 21, 24J, 32, 33...).
-    3. Right rail = the ALWAYS-ON validation panel — the modern replacement for
+    3. Right rail = the ALWAYS-ON validation panel - the modern replacement for
        today's end-of-process "Information Required" popup. It says "Information
        required (2)" up front. Nothing is a surprise at export.
     4. Clear the 2 exceptions LIVE: "Add principal ICD-10 (Box 21)" and
@@ -483,7 +483,7 @@
         <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
         <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
       </div>
-      <span class="rt-cap">Supervisor view — billers don't see this</span>
+      <span class="rt-cap">Supervisor view - billers don't see this</span>
     </div>
     <span id="whoLabel">Dr. Michael Scholin · Billing Supervisor</span>
     <span class="avatar" id="whoAvatar">MS</span>
@@ -500,12 +500,12 @@
 </div>
 
 <!-- ============================================================= -->
-<!-- SCREEN 1 · WORKLIST — the familiar dense grid                  -->
+<!-- SCREEN 1 · WORKLIST - the familiar dense grid                  -->
 <!-- ============================================================= -->
 <main class="wrap screen active" id="worklist">
   <div class="page-head">
     <div><h1>New Insurance Billing</h1>
-      <p>The worklist you know — same columns, same billing-type tags, same aging &amp; IDR view. Cases are preloaded by your techs and reading neurologists; your job is to review, fix the exceptions, and file.</p></div>
+      <p>The worklist you know - same columns, same billing-type tags, same aging &amp; IDR view. Cases are preloaded by your techs and reading neurologists; your job is to review, fix the exceptions, and file.</p></div>
     <div class="searchbar">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input placeholder="Search patient, PID, claim, payer…"></div>
@@ -557,9 +557,9 @@
     <div class="toolbar"><input type="checkbox" aria-label="select all">
       <span>Select claims to review, approve, or file in bulk</span>
       <button class="btn" onclick="toast('All clean claims approved (0 exceptions)')">Approve correct</button>
-      <button class="btn" onclick="toast('Batch validated — 0 blocking errors')">Validate</button>
+      <button class="btn" onclick="toast('Batch validated - 0 blocking errors')">Validate</button>
       <button class="btn" onclick="toast('Batch export queued')">Export batch</button>
-      <span class="spacer"></span><span class="fnote">Columns sort — click a header</span>
+      <span class="spacer"></span><span class="fnote">Columns sort - click a header</span>
     </div>
     <div class="tablescroll">
     <table id="worklist-table">
@@ -693,18 +693,18 @@
       <div class="master work" id="masterStatus"><span id="masterIcon">&#9650;</span> <span id="masterLabel">Review in progress</span></div>
       <button class="btn" onclick="togglePark(event)">&#9208; Park / waiting on…</button>
       <button class="btn" onclick="openCms15()">View CMS-1500</button>
-      <button class="btn" onclick="toast('Documents — 3 on file: op report, tech worksheet, VOB capture (synthetic)','info')">Documents</button>
+      <button class="btn" onclick="toast('Documents - 3 on file: op report, tech worksheet, VOB capture (synthetic)','info')">Documents</button>
       <button class="btn" onclick="toggleNotes(event)">Notes <span class="notecount" id="noteCount">2</span></button>
-      <button class="btn" onclick="toast('Claim history — created 10/20, prefilled via MCP 10/21, opened for review today (synthetic)','info')">History</button>
+      <button class="btn" onclick="toast('Claim history - created 10/20, prefilled via MCP 10/21, opened for review today (synthetic)','info')">History</button>
       <div class="parkpop" id="parkpop">
-        <h4>Park this claim — what are you waiting on?</h4>
-        <button onclick="doPark('Waiting on tech — insurance policy #')">Tech — insurance policy #</button>
-        <button onclick="doPark('Waiting on provider — rendering NPI')">Provider — rendering NPI</button>
+        <h4>Park this claim - what are you waiting on?</h4>
+        <button onclick="doPark('Waiting on tech - insurance policy #')">Tech - insurance policy #</button>
+        <button onclick="doPark('Waiting on provider - rendering NPI')">Provider - rendering NPI</button>
         <button onclick="doPark('Waiting on updated authorization')">Updated authorization on file</button>
         <button onclick="doPark('Waiting on benefits re-verification')">Benefits re-verification</button>
       </div>
       <div class="notespop" id="notespop">
-        <h4>Claim notes — synthetic</h4>
+        <h4>Claim notes - synthetic</h4>
         <div id="noteList">
           <div class="note">Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
           <div class="note">Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
@@ -724,7 +724,7 @@
 
   <div class="pullbanner">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-    <span><b>The whole claim on one page.</b> 95% preloaded from case #1000001 — techs entered demographics &amp; insurance, the reading neurologist's report set the coding. No separate tabs or popups to see patient info or the CMS-1500 — just scroll, review each section, and fix the 2 flagged exceptions.</span>
+    <span><b>The whole claim on one page.</b> 95% preloaded from case #1000001 - techs entered demographics &amp; insurance, the reading neurologist's report set the coding. No separate tabs or popups to see patient info or the CMS-1500 - just scroll, review each section, and fix the 2 flagged exceptions.</span>
     <button class="btn" onclick="toast('Re-pulled latest from case #1000001')">Re-pull from case</button>
   </div>
 
@@ -777,10 +777,10 @@
             <div class="f col4"><label>Verification of benefits (VOB) status</label>
               <div class="aif" id="aif-vob">
                 <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">flagged by AI · via USMON MCP</span></div>
-                <div class="aival" id="aival-vob">&#9888; Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
+                <div class="aival" id="aival-vob">&#9888; Stale - last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
                 <div class="aif-why">AI flag: benefits on file exceed United Healthcare's re-verification window for OON claims. Recommend re-checking eligibility &amp; OON benefits before filing so the QPA on record is current.</div>
                 <div class="aif-act" id="aifact-vob">
-                  <button class="btn ai sm" onclick="confirmAI('vob')">&#10003; Confirm — re-verified</button>
+                  <button class="btn ai sm" onclick="confirmAI('vob')">&#10003; Confirm - re-verified</button>
                   <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
                 </div>
               </div>
@@ -789,7 +789,7 @@
           <div class="benefit-cols">
             <div class="ben innet"><h3>In-network (not applicable)</h3>
               <dl><dt>Status</dt><dd>No in-net contract</dd><dt>Reason</dt><dd>OON by design</dd></dl></div>
-            <div class="ben oonet"><h3>&#9670; Out-of-network — NSA applies</h3>
+            <div class="ben oonet"><h3>&#9670; Out-of-network - NSA applies</h3>
               <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div></div>
         </div>
       </section>
@@ -803,7 +803,7 @@
         <div class="sec-body"><div class="fgrid">
           <div class="f col2"><label>Service facility <span class="bx">(Box 32)</span></label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
           <div class="f"><label>Facility NPI <span class="bx">(Box 32a)</span></label><div class="val mono">1000000032</div></div>
-          <div class="f"><label>Place of service</label><div class="val">21 — Inpatient Hospital</div></div>
+          <div class="f"><label>Place of service</label><div class="val">21 - Inpatient Hospital</div></div>
           <div class="f col2"><label>Referring provider <span class="bx">(Box 17)</span></label><div class="val">A. Example, M.D.</div></div>
           <div class="f col2"><label>Referring NPI <span class="bx">(Box 17b)</span></label><div class="val mono">1000000048</div></div>
           <div class="f"><label>Admission <span class="bx">(Box 18)</span></label><div class="val mono">10/20/2025</div></div>
@@ -820,11 +820,11 @@
           <button class="revbtn" id="rev-proc" onclick="review('proc')">Mark reviewed</button></div>
         <div class="sec-body"><div class="fgrid">
           <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5&#8211;C7</div></div>
-          <div class="f col2"><label>Place of service <span class="bx">(Box 24B)</span></label><div class="val">21 — Inpatient Hospital</div></div>
-          <div class="f col4"><label>Principal diagnosis — ICD-10 <span class="bx">(Box 21)</span></label>
+          <div class="f col2"><label>Place of service <span class="bx">(Box 24B)</span></label><div class="val">21 - Inpatient Hospital</div></div>
+          <div class="f col4"><label>Principal diagnosis - ICD-10 <span class="bx">(Box 21)</span></label>
             <div class="aif" id="aif-icd">
               <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">AI-suggested principal code · via USMON MCP</span></div>
-              <div class="aival mono" id="aival-icd">M50.121 — Cervical disc disorder with radiculopathy, C6&#8211;C7</div>
+              <div class="aival mono" id="aival-icd">M50.121 - Cervical disc disorder with radiculopathy, C6&#8211;C7</div>
               <div class="aif-why">Extracted from the reading neurologist's report: "…moderate radiculopathy at the C6&#8211;C7 level with corresponding SSEP/MEP changes." Confidence 0.94. Placed first (pointer A) so the service-line Dx pointers resolve correctly.</div>
               <div class="aif-act" id="aifact-icd">
                 <button class="btn ai sm" onclick="confirmAI('icd')">&#10003; Confirm</button>
@@ -855,7 +855,7 @@
               <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Demo, Eric MD</td><td class="desc">EEG during surgery</td></tr>
             </tbody></table>
           <div class="fgrid" style="margin-top:14px">
-            <div class="f col2"><label>Units — line 4 (95938, SSEP) <span class="bx">(Box 24G)</span></label>
+            <div class="f col2"><label>Units - line 4 (95938, SSEP) <span class="bx">(Box 24G)</span></label>
               <div class="aif" id="aif-units">
                 <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">AI-derived from monitoring minutes · via USMON MCP</span></div>
                 <div class="aival mono" id="aival-units">6 units</div>
@@ -866,10 +866,10 @@
                 </div>
               </div>
             </div>
-            <div class="f col2"><label>Rendering provider — line 1 (95887) <span class="bx">(Box 24J)</span></label>
+            <div class="f col2"><label>Rendering provider - line 1 (95887) <span class="bx">(Box 24J)</span></label>
               <div class="aif" id="aif-prov">
                 <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">AI-matched from report signature · via USMON MCP</span></div>
-                <div class="aival" id="aival-prov">Demo, Eric MD — NPI 1000000048</div>
+                <div class="aival" id="aival-prov">Demo, Eric MD - NPI 1000000048</div>
                 <div class="aif-why">Line 1 had no rendering provider. AI matched the signing neurologist from the reading report against the NPI registry. Confidence 0.97.</div>
                 <div class="aif-act" id="aifact-prov">
                   <button class="btn ai sm" onclick="confirmAI('prov')">&#10003; Confirm</button>
@@ -893,9 +893,9 @@
           <div class="f col2"><label>Billing provider <span class="bx">(Box 33)</span></label><div class="val">Demo Neurophysiology LLC</div></div>
           <div class="f"><label>Billing NPI <span class="bx">(Box 33a)</span></label><div class="val mono">1000000017</div></div>
           <div class="f"><label>Tax ID <span class="bx">(Box 25)</span></label><div class="val mono">12-3456789</div></div>
-          <div class="f col2"><label>Signature <span class="bx">(Box 31)</span></label><div class="val">On file — Demo, Eric MD</div></div>
+          <div class="f col2"><label>Signature <span class="bx">(Box 31)</span></label><div class="val">On file - Demo, Eric MD</div></div>
           <div class="f col2"><label>Rendering taxonomy <span class="bx">(Box 24J)</span></label><div class="val mono">2084N0400X</div></div>
-          <div class="f col4"><label>Accept assignment <span class="bx">(Box 27)</span></label><div class="val">Yes — assignment accepted</div></div>
+          <div class="f col4"><label>Accept assignment <span class="bx">(Box 27)</span></label><div class="val">Yes - assignment accepted</div></div>
         </div></div>
       </section>
     </div>
@@ -907,11 +907,11 @@
         <div class="aicount" id="aiCountCard">
           <h3>&#10022; AI fields to confirm</h3>
           <div class="big" id="aiCount">4</div>
-          <div class="cap" id="aiCap">AI proposes, you decide — nothing files unconfirmed.</div>
+          <div class="cap" id="aiCap">AI proposes, you decide - nothing files unconfirmed.</div>
         </div>
         <div class="rail-top">
           <h2>Claim validation <span class="live"><span class="blip"></span>Live</span></h2>
-          <p>Replaces the old end-of-process "Information Required" popup. Updates as you work — no surprises at export.</p>
+          <p>Replaces the old end-of-process "Information Required" popup. Updates as you work - no surprises at export.</p>
           <div class="verdict block" id="verdict">
             <span class="vic" id="verdictIc">!</span>
             <div><span id="verdictTitle">Information required</span><small id="verdictSub">4 AI fields to confirm before this claim can file.</small></div>
@@ -927,7 +927,7 @@
           <div class="ritem ai click" id="ai-item-icd" onclick="jumpAI('icd')"><span class="ic ai" id="aiic-icd">&#10022;</span>
             <div class="txt"><b>Principal ICD-10 (M50.121)</b><span>Box 21 · Procedure &amp; Dx</span></div><span class="go">&#8594;</span></div>
           <div class="ritem ai click" id="ai-item-units" onclick="jumpAI('units')"><span class="ic ai" id="aiic-units">&#10022;</span>
-            <div class="txt"><b>Derived units — 95938</b><span>Box 24G · Coding &amp; Lines</span></div><span class="go">&#8594;</span></div>
+            <div class="txt"><b>Derived units - 95938</b><span>Box 24G · Coding &amp; Lines</span></div><span class="go">&#8594;</span></div>
           <div class="ritem ai click" id="ai-item-prov" onclick="jumpAI('prov')"><span class="ic ai" id="aiic-prov">&#10022;</span>
             <div class="txt"><b>Matched rendering provider</b><span>Box 24J · Coding &amp; Lines</span></div><span class="go">&#8594;</span></div>
         </div>
@@ -950,14 +950,14 @@
         </div>
 
         <div class="rail-foot"><button class="btn primary" id="fileBtn" disabled>Resolve required info to file</button>
-          <div class="hint">Validated continuously — <span id="auditCt">7</span> events logged to audit trail.</div></div>
+          <div class="hint">Validated continuously - <span id="auditCt">7</span> events logged to audit trail.</div></div>
       </div>
     </aside>
   </div>
 </main>
 
 <!-- placeholder screens so nav never dead-ends -->
-<main class="wrap screen" id="ongoing"><div class="placeholder"><h2>Ongoing — Claim Follow-Up</h2><p>Filed claims being worked: payments posting, out-of-network underpayment appeals, and IDR follow-up — the same follow-up worklist billers use today. Out of scope for this demo build.</p></div></main>
+<main class="wrap screen" id="ongoing"><div class="placeholder"><h2>Ongoing - Claim Follow-Up</h2><p>Filed claims being worked: payments posting, out-of-network underpayment appeals, and IDR follow-up - the same follow-up worklist billers use today. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="folders"><div class="placeholder"><h2>Folders</h2><p>Client &amp; entity folders, saved batches, and archived claims. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="reports"><div class="placeholder"><h2>Reports</h2><p>Aged-A/R, clean-claim rate, denial trends, and collections by payer. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="manage"><div class="placeholder"><h2>Manage</h2><p>Payer rules, fee schedules, providers, and user permissions. Out of scope for this demo build.</p></div></main>
@@ -983,13 +983,13 @@
 </div>
 
 <!-- ============================================================= -->
-<!-- Injected: editable CMS-1500 popup — same claim (synthetic)     -->
+<!-- Injected: editable CMS-1500 popup - same claim (synthetic)     -->
 <!-- ============================================================= -->
 <div class="c15-back" id="cms15Back" onclick="if(event.target===this)closeCms15()">
   <div class="c15-modal" role="dialog" aria-modal="true" aria-labelledby="cms15Title">
     <div class="c15-head">
       <span class="c15-tag">Same claim</span>
-      <h2 id="cms15Title">CMS-1500 — Testcase, Alice &middot; Claim 1000001</h2>
+      <h2 id="cms15Title">CMS-1500 - Testcase, Alice &middot; Claim 1000001</h2>
       <button class="c15-x" onclick="closeCms15()" aria-label="Close">&times;</button>
     </div>
     <div class="c15-body">
@@ -1071,7 +1071,7 @@
                 <div class="cbx"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
             </div>
             <div class="c15-row">
-              <div class="c15-box c15-c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+              <div class="c15-box c15-c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim - No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
               <div class="c15-box c15-c3"><span class="bxn">21</span><label>ICD indicator</label>
                 <select><option selected>0 &mdash; ICD-10-CM</option><option>9 &mdash; ICD-9-CM</option></select></div>
             </div>
@@ -1161,14 +1161,14 @@
             <div class="c15-row">
               <div class="c15-box c15-c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
               <div class="c15-box c15-c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
-              <div class="c15-box c15-c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+              <div class="c15-box c15-c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
             </div>
             <div class="c15-row">
               <div class="c15-box c15-c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
               <div class="c15-box c15-c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
               <div class="c15-box c15-c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="&mdash;" value=""></div>
             </div>
-            <!-- Box 33 — critical, emphasized: where the money goes -->
+            <!-- Box 33 - critical, emphasized: where the money goes -->
             <div class="c15-row">
               <div class="c15-box c15-box33 c15-c8" id="cms15B33Box">
                 <span class="bxn">33</span>
@@ -1200,7 +1200,7 @@
       </div>
     </div>
     <div class="c15-foot">
-      <button class="btn" onclick="toast('CMS-1500 saved — synthetic; edits kept for this claim')">&#128190; Save form</button>
+      <button class="btn" onclick="toast('CMS-1500 saved - synthetic; edits kept for this claim')">&#128190; Save form</button>
       <button class="btn primary" onclick="closeCms15()">Close &mdash; back to the claim</button>
     </div>
   </div>
@@ -1221,8 +1221,8 @@
   }
   function backToWorklist(){show('worklist');setNav('worklist');document.getElementById('tabstrip').classList.remove('show');}
   function openClaim(){show('claim');setNav('worklist');document.getElementById('tabstrip').classList.add('show');}
-  function switchTab(who){if(who==='alice')return;toast(({ray:'Mockdata, Ray',charles:'Demo, Charles'}[who])+' opened — Testcase, Alice stays right where you left it','info');}
-  function demoNote(){toast('This demo wires the Testcase, Alice claim end-to-end — open that row to see the full review.','info');}
+  function switchTab(who){if(who==='alice')return;toast(({ray:'Mockdata, Ray',charles:'Demo, Charles'}[who])+' opened - Testcase, Alice stays right where you left it','info');}
+  function demoNote(){toast('This demo wires the Testcase, Alice claim end-to-end - open that row to see the full review.','info');}
 
   /* ---------- role toggle: Biller <-> Supervisor (demo persona) ---------- */
   function setRole(role){
@@ -1233,7 +1233,7 @@
     const sp=document.getElementById('supPanel'); if(sp)sp.setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Billing Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
-    toast(sup?'Supervisor view — queue counts & team efficiency now visible':'Biller view — stats hidden; just the clean worklist a biller sees','info');
+    toast(sup?'Supervisor view - queue counts & team efficiency now visible':'Biller view - stats hidden; just the clean worklist a biller sees','info');
   }
 
   /* ---------- claim notes popover (activate Notes / Add note) ---------- */
@@ -1248,7 +1248,7 @@
     document.getElementById('noteList').appendChild(div);
     inp.value='';noteN++;document.getElementById('noteCount').textContent=noteN;
     bumpAudit();
-    toast('Note added — logged to audit trail','info');
+    toast('Note added - logged to audit trail','info');
   }
 
   /* ---------- worklist sort ---------- */
@@ -1312,7 +1312,7 @@
       const ric=document.getElementById('aiic-'+key); if(ric){ric.className='ic '+(mode==='overridden'?'ov':'d'); ric.textContent=(mode==='overridden'?'✎':'✓');}}
     update();
   }
-  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed — logged to audit trail','info'); }
+  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed - logged to audit trail','info'); }
   function overrideAI(key){
     if(aiState[key]!=='pending')return;
     const cur=document.getElementById('aival-'+key).textContent.trim();
@@ -1326,10 +1326,10 @@
     const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
     document.getElementById('aival-'+key).textContent=v;
     resolveAI(key,'overridden');
-    toast('Override saved — biller value recorded, logged to audit trail','info');
+    toast('Override saved - biller value recorded, logged to audit trail','info');
   }
   function cancelOverride(key){
-    const label=(key==='vob')?'✓ Confirm — re-verified':'✓ Confirm';
+    const label=(key==='vob')?'✓ Confirm - re-verified':'✓ Confirm';
     document.getElementById('aifact-'+key).innerHTML=
       '<button class="btn ai sm" onclick="confirmAI(\''+key+'\')">'+label+'</button>'+
       '<button class="btn sm" onclick="overrideAI(\''+key+'\')">Edit / Override</button>';
@@ -1356,7 +1356,7 @@
   function approveAll(){
     let skipped=0;
     SECTIONS.forEach(s=>{if(!reviewed[s]){if(pendingAIinSec(s).length)skipped++; else review(s);}});
-    if(skipped)toast('Approved the clear sections — '+skipped+' still need their AI field'+(skipped>1?'s':'')+' confirmed','info');
+    if(skipped)toast('Approved the clear sections - '+skipped+' still need their AI field'+(skipped>1?'s':'')+' confirmed','info');
   }
 
   function update(){
@@ -1365,8 +1365,8 @@
     document.getElementById('aiCount').textContent=aiPending;
     const ctAI=document.getElementById('ctAI'); if(ctAI)ctAI.textContent=aiPending;
     const card=document.getElementById('aiCountCard');
-    if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ — every choice logged to audit.';}
-    else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide — nothing files unconfirmed.';}
+    if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ - every choice logged to audit.';}
+    else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide - nothing files unconfirmed.';}
 
     // AI sections that are now clear but not yet reviewed → prompt to approve
     ['ins','proc','code'].forEach(s=>{
@@ -1399,7 +1399,7 @@
     }
     if(filed){
       m.className='master filed';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Filed';
-      v.className='verdict ready';vic.textContent='✓';vt.textContent='Filed';vs.textContent='Claim 1000001 submitted — 837P batch queued.';
+      v.className='verdict ready';vic.textContent='✓';vt.textContent='Filed';vs.textContent='Claim 1000001 submitted - 837P batch queued.';
       fb.disabled=true;fb.textContent='Filed ✓';return;
     }
     if(allDone){
@@ -1414,7 +1414,7 @@
         vs.textContent=aiPending+' AI field'+(aiPending>1?'s':'')+' to confirm before this claim can file.';
         fb.disabled=true;fb.textContent='Confirm '+aiPending+' AI field'+(aiPending>1?'s':'')+' to file';
       } else {
-        vt.textContent='Review in progress';vs.textContent='AI fields confirmed — approve the remaining sections to file.';
+        vt.textContent='Review in progress';vs.textContent='AI fields confirmed - approve the remaining sections to file.';
         fb.disabled=true;fb.textContent='Finish review to file';
       }
     }
@@ -1438,7 +1438,7 @@
     document.getElementById('parkReason').textContent=reason;
     document.getElementById('parkbar').classList.add('show');
     const tt=document.getElementById('tab-alice'); tt.classList.add('parked'); tt.innerHTML='<span class="pk">⏸</span> Testcase, Alice <span style="font-weight:500;opacity:.8">· '+reason.replace('Waiting on ','')+'</span>';
-    update(); toast('Parked — open another claim and come back anytime');
+    update(); toast('Parked - open another claim and come back anytime');
   }
   function resumeClaim(){
     parked=false; document.getElementById('parkbar').classList.remove('show');
@@ -1456,7 +1456,7 @@
   });
 
   /* ============================================================= */
-  /* Injected: editable CMS-1500 popup (same claim) — opens as an    */
+  /* Injected: editable CMS-1500 popup (same claim) - opens as an    */
   /* overlay so the biller never loses their place. Close/Esc/back-  */
   /* drop returns them exactly where they were. Box 33 emphasized.   */
   /* ============================================================= */
@@ -1484,11 +1484,11 @@
     document.getElementById('cms15B33Box').classList.remove('confirmed');
     document.getElementById('cms15B33Tag').style.display='';
     document.getElementById('cms15B33Act').innerHTML=cms15B33Actions();
-    toast('Billing entity changed to '+p[0]+' — confirm to set where payment is sent','info');
+    toast('Billing entity changed to '+p[0]+' - confirm to set where payment is sent','info');
   }
   function cms15ChangeB33(){
     document.getElementById('cms15B33Select').focus();
-    toast('Pick a billing entity — Box 33 sets where the payment is sent','info');
+    toast('Pick a billing entity - Box 33 sets where the payment is sent','info');
   }
   function cms15ConfirmB33(){
     var p=cms15B33Parts();
@@ -1499,7 +1499,7 @@
       '<span class="b33done">✓ Billing entity confirmed by you · logged to audit</span>'+
       '<button class="btn sm" onclick="cms15ChangeB33()">Change</button>';
     if(typeof bumpAudit==='function')bumpAudit();
-    toast('Box 33 confirmed — payment routes to '+p[0]+' · logged to audit','info');
+    toast('Box 33 confirmed - payment routes to '+p[0]+' · logged to audit','info');
   }
 
   update();

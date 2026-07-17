@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Guided Flow (prototype)</title>
+<title>USMON Pro - Guided Flow (prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -44,14 +44,14 @@
   .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
   #whoLabel{white-space:nowrap}
 
-  /* role toggle (Biller <-> Supervisor) — replicated from Biller Review */
+  /* role toggle (Biller <-> Supervisor) - replicated from Biller Review */
   .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
   .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
   .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
   .roletoggle .rt-btn:hover{color:#fff}
   .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
 
-  /* ===== SUPERVISOR-ONLY oversight panel (inbox) — replicated from Biller Review ===== */
+  /* ===== SUPERVISOR-ONLY oversight panel (inbox) - replicated from Biller Review ===== */
   .sup-panel{display:none;margin-bottom:20px}
   body.role-super .sup-panel{display:block}
   .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
@@ -241,7 +241,7 @@
   .ai-sug .ai-actions .btn{padding:6px 13px;font-size:12.5px}
   .ai-sug .ai-note{display:block;margin-top:8px;font-size:11px;color:var(--ai-dark);font-style:italic;opacity:.85}
 
-  /* ===== AI FIELD — highlight-to-confirm (replicated from Biller Review) ===== */
+  /* ===== AI FIELD - highlight-to-confirm (replicated from Biller Review) ===== */
   .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
   .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
   .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
@@ -326,7 +326,7 @@
   .toast.idr .ic{background:var(--idr)}.toast.ai .ic{background:var(--ai)}.toast.warn .ic{background:var(--warn)}
 
   /* ============================================================= */
-  /* FORM 1500 VIEW — per-stage button + modal (adapted from cms1500) */
+  /* FORM 1500 VIEW - per-stage button + modal (adapted from cms1500) */
   /* ============================================================= */
   .card{position:relative}
   .formview-btn{position:absolute;top:14px;right:16px;z-index:2;padding:6px 11px;font-size:12px;border:1px solid var(--primary-line);background:var(--primary-tint);color:var(--primary-dark);border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
@@ -403,7 +403,7 @@
   .svc tfoot td{padding:10px 7px;font-weight:800;font-family:var(--mono);border-top:2px solid var(--line-strong)}
   .svc tfoot .lbl{font-family:var(--sans);text-align:right}
 
-  /* Box 33 — critical billing-provider emphasis */
+  /* Box 33 - critical billing-provider emphasis */
   .box33{border:2px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);box-shadow:0 0 0 3px var(--ai-tint)}
   .box33 .b33-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-right:30px}
   .box33 .b33-title>label{padding-right:0;font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--ai-dark);font-weight:800}
@@ -420,30 +420,30 @@
 
 <!--
   ============================================================================
-  USMON Pro — GUIDED FLOW prototype (client demo · synthetic data only)
+  USMON Pro - GUIDED FLOW prototype (client demo · synthetic data only)
   Same product / brand / tokens / dataset as prototype-v5-router.html,
   presented in a calm, zero-training, staged MODE.
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. Land on the MINIMAL inbox — "Your claims to review — 6 waiting". Clean
+    1. Land on the MINIMAL inbox - "Your claims to review - 6 waiting". Clean
        list, no 30-column grid. Point at Testcase, Alice ("Start here"). Click it.
-    2. STAGE 1 · Pull — everything came preloaded from case #1000001. Read the
+    2. STAGE 1 · Pull - everything came preloaded from case #1000001. Read the
        calm money/clock strip (OON -> IDR downstream · Filing deadline 5 days,
-       on track). "Looks right — Continue".
-    3. STAGE 2 · Verify patient & insurance — confirm preloaded demographics +
+       on track). "Looks right - Continue".
+    3. STAGE 2 · Verify patient & insurance - confirm preloaded demographics +
        OON benefits. One AI field: the highlighted (purple ✦ AI) stale-VOB flag.
-       Confirm it (or Edit/Override) — the "AI fields to confirm" bar clears and
+       Confirm it (or Edit/Override) - the "AI fields to confirm" bar clears and
        Continue unlocks.
-    4. STAGE 3 · Coding & diagnosis — the ONLY stage with work. The "AI fields to
+    4. STAGE 3 · Coding & diagnosis - the ONLY stage with work. The "AI fields to
        confirm: 3 (this stage)" bar counts down as you clear the purple ✦ AI
        fields: principal ICD-10 (M50.121, conf 0.94), AI-derived units on line 4,
        and the AI-matched rendering provider on line 1 (Box 24J). Each field has
        Confirm (green "✓ Confirmed by you · logged to audit") + Edit / Override.
        When the bar hits 0 it turns green; Continue unlocks. Same highlight-to-
-       confirm treatment as Biller Review — "AI proposes, biller decides, logged."
-    5. STAGE 4 · Review — the whole claim in one calm summary + confirmed
+       confirm treatment as Biller Review - "AI proposes, biller decides, logged."
+    5. STAGE 4 · Review - the whole claim in one calm summary + confirmed
        checklist. Continue to file.
-    6. STAGE 5 · File — big "File claim now" -> "Filed" seal -> "Next claim"
+    6. STAGE 5 · File - big "File claim now" -> "Filed" seal -> "Next claim"
        drops you back to the inbox. Zero training, one correct path.
   ============================================================================
 -->
@@ -458,11 +458,11 @@
     <a href="#" id="nav-manage" onclick="return navTo('manage')">Manage</a>
   </nav>
   <div class="appuser">
-    <span class="rt-note biller-only">🔒 Demo device — a real biller can't switch to Supervisor (click still works here)</span>
+    <span class="rt-note biller-only">🔒 Demo device - a real biller can't switch to Supervisor (click still works here)</span>
     <div class="roletoggle" role="group" aria-label="View role">
       <span class="rt-lbl">View</span>
       <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
-      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')" title="Supervisor-only — billers don't see this control"><span class="rt-lock biller-only">🔒</span>Supervisor</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')" title="Supervisor-only - billers don't see this control"><span class="rt-lock biller-only">🔒</span>Supervisor</button>
     </div>
     <span id="whoLabel">Dr. Michael Scholin · Billing Supervisor</span>
     <span class="avatar" id="whoAvatar">MS</span>
@@ -474,15 +474,15 @@
 <!-- ============================================================= -->
 <main class="wrap screen active" id="inbox">
   <div class="inbox-head">
-    <h1><span class="biller-only">Your claims to review</span><span class="sup-only">Team claims — all billers</span></h1>
-    <p class="biller-only">Each claim was preloaded by your techs and the reading neurologist — about 95% is already filled in. Open one and confirm it's right. We'll walk you through it step by step.</p>
+    <h1><span class="biller-only">Your claims to review</span><span class="sup-only">Team claims - all billers</span></h1>
+    <p class="biller-only">Each claim was preloaded by your techs and the reading neurologist - about 95% is already filled in. Open one and confirm it's right. We'll walk you through it step by step.</p>
     <p class="sup-only">Every biller's queue in one place. Claims are tagged with who's working them, flagged for review, and held for your sign-off where required. Toggle to <b>Biller</b> to see the calm, single-queue view your team works in.</p>
   </div>
 
   <!-- ===== SUPERVISOR-ONLY oversight panel (hidden from billers) ===== -->
   <div class="sup-panel" id="supPanel" aria-hidden="false">
     <div class="sp-card">
-      <div class="sp-head"><h2>Team oversight</h2><span class="sp-tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-head"><h2>Team oversight</h2><span class="sp-tag">Supervisor view</span><span class="hid">Supervisor view - billers don't see this.</span></div>
       <div class="sp-stats">
         <div class="sp-stat"><div class="num">96</div><div class="lbl">Claims worked today (team)</div></div>
         <div class="sp-stat"><div class="num mono">4:21</div><div class="lbl">Avg time / claim</div></div>
@@ -581,8 +581,8 @@
     <div class="ov-meta"><span class="ov-tag">Supervisor oversight</span>Worked by <b>Sample, Dana</b> · ⏱ <b>4:12</b> on this claim · <b>1 AI override</b></div>
     <div class="ov-acts">
       <button class="btn sm" onclick="ovReassign(event)">Reassign ▾</button>
-      <button class="btn sm" onclick="toast('Flagged for review — Sample, Dana notified · logged to audit trail')">⚑ Flag for review</button>
-      <button class="btn sm primary" onclick="toast('Signed off &amp; approved — released to file · logged to audit trail')">✓ Sign off &amp; approve</button>
+      <button class="btn sm" onclick="toast('Flagged for review - Sample, Dana notified · logged to audit trail')">⚑ Flag for review</button>
+      <button class="btn sm primary" onclick="toast('Signed off &amp; approved - released to file · logged to audit trail')">✓ Sign off &amp; approve</button>
     </div>
   </div>
 
@@ -602,7 +602,7 @@
       <div class="stage-head">
         <div class="kick">Step 1 of 5 · Pull</div>
         <h2>Here's the case we pulled</h2>
-        <p class="prompt">Everything below came straight from case #1000001 — your techs entered the demographics and insurance, and the reading neurologist's report set the coding. Take a look and confirm it's the right case.</p>
+        <p class="prompt">Everything below came straight from case #1000001 - your techs entered the demographics and insurance, and the reading neurologist's report set the coding. Take a look and confirm it's the right case.</p>
       </div>
       <div class="stage-body">
         <div class="src">
@@ -621,14 +621,14 @@
           <div class="f col2"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
         </div>
         <div class="moneystrip">
-          <div class="ms-item oon"><span class="msdot"></span>Out-of-network — recovery continues at <b>IDR downstream</b> (No Surprises Act)</div>
-          <div class="ms-item clock"><span class="msdot"></span>Filing deadline: <b>5 days — on track</b></div>
+          <div class="ms-item oon"><span class="msdot"></span>Out-of-network - recovery continues at <b>IDR downstream</b> (No Surprises Act)</div>
+          <div class="ms-item clock"><span class="msdot"></span>Filing deadline: <b>5 days - on track</b></div>
         </div>
       </div>
       <div class="stage-foot">
         <button class="btn ghost" onclick="toast('Re-pulled latest from case #1000001')">Re-pull from case</button>
         <div class="spacer"></div>
-        <button class="btn primary big" onclick="confirmStage(1)">Looks right — Continue →</button>
+        <button class="btn primary big" onclick="confirmStage(1)">Looks right - Continue →</button>
       </div>
     </div>
     <div class="auditline">✦ <span id="audit-1">6</span> events logged to audit trail</div>
@@ -641,7 +641,7 @@
       <div class="stage-head">
         <div class="kick">Step 2 of 5 · Verify patient &amp; insurance</div>
         <h2>Confirm the patient and coverage</h2>
-        <p class="prompt">Here's what came from the case — confirm it's right, or fix anything that's off. One benefits item was flagged by AI for a quick check before you continue.</p>
+        <p class="prompt">Here's what came from the case - confirm it's right, or fix anything that's off. One benefits item was flagged by AI for a quick check before you continue.</p>
       </div>
       <div class="stage-body">
         <div class="aibar" id="aibar-2"><span class="aibar-ic">✦</span><span id="aibar-msg-2">AI fields to confirm: <b>1</b> (this stage)</span></div>
@@ -667,7 +667,7 @@
         <div class="benefit-cols">
           <div class="ben innet"><h3>In-network (not applicable)</h3>
             <dl><dt>Status</dt><dd>No in-net contract</dd><dt>Reason</dt><dd>OON by design</dd></dl></div>
-          <div class="ben oonet"><h3>◆ Out-of-network — NSA applies</h3>
+          <div class="ben oonet"><h3>◆ Out-of-network - NSA applies</h3>
             <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div>
         </div>
 
@@ -675,10 +675,10 @@
           <div class="f col4"><label>Verification of benefits (VOB) status</label>
             <div class="aif" id="aif-vob">
               <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">flagged by AI · via USMON MCP</span></div>
-              <div class="aival" id="aival-vob">⚠ Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
+              <div class="aival" id="aival-vob">⚠ Stale - last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
               <div class="aif-why">AI flag: benefits on file exceed United Healthcare's re-verification window for OON claims. Recommend re-checking eligibility &amp; OON benefits before filing so the QPA on record is current.</div>
               <div class="aif-act" id="aifact-vob">
-                <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm — re-verified</button>
+                <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm - re-verified</button>
                 <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
               </div>
             </div>
@@ -687,7 +687,7 @@
 
         <div class="smartnote">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
-          <span><b>Why out-of-network is expected here:</b> charges are set above QPA by design. The remittance will come in low — the real recovery happens later via NSA negotiation and IDR. You don't need to do anything about that now; the clocks are tracked for you.</span>
+          <span><b>Why out-of-network is expected here:</b> charges are set above QPA by design. The remittance will come in low - the real recovery happens later via NSA negotiation and IDR. You don't need to do anything about that now; the clocks are tracked for you.</span>
         </div>
       </div>
       <div class="stage-foot">
@@ -706,7 +706,7 @@
       <div class="stage-head">
         <div class="kick">Step 3 of 5 · Coding &amp; diagnosis</div>
         <h2>Coding from the reading report</h2>
-        <p class="prompt">The service lines and diagnoses came from the reading neurologist's report. A few AI-suggested fields need your confirmation before we move on — everything else is already set.</p>
+        <p class="prompt">The service lines and diagnoses came from the reading neurologist's report. A few AI-suggested fields need your confirmation before we move on - everything else is already set.</p>
       </div>
       <div class="stage-body">
         <div class="aibar" id="aibar-3"><span class="aibar-ic">✦</span><span id="aibar-msg-3">AI fields to confirm: <b>3</b> (this stage)</span></div>
@@ -721,7 +721,7 @@
           <div class="f col4"><label>Principal diagnosis (ICD-10)</label>
             <div class="aif" id="aif-icd">
               <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-suggested principal code · via USMON MCP</span></div>
-              <div class="aival mono" id="aival-icd">M50.121 — Cervical disc disorder with radiculopathy, C6–C7</div>
+              <div class="aival mono" id="aival-icd">M50.121 - Cervical disc disorder with radiculopathy, C6–C7</div>
               <div class="aif-why">Extracted from the reading neurologist's report: “…moderate radiculopathy at the C6–C7 level with corresponding SSEP/MEP changes.” Confidence 0.94. Placed first so the service-line Dx pointers resolve correctly.</div>
               <div class="aif-act" id="aifact-icd">
                 <button class="btn ai sm" onclick="confirmAI('icd')">✓ Confirm</button>
@@ -746,7 +746,7 @@
         </table>
 
         <div class="fgrid" style="margin-top:16px">
-          <div class="f col2"><label>Units — line 4 (95938, SSEP)</label>
+          <div class="f col2"><label>Units - line 4 (95938, SSEP)</label>
             <div class="aif" id="aif-units">
               <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-derived from monitoring minutes · via USMON MCP</span></div>
               <div class="aival mono" id="aival-units">6 units</div>
@@ -757,10 +757,10 @@
               </div>
             </div>
           </div>
-          <div class="f col2"><label>Rendering provider — line 1 (95887), Box 24J</label>
+          <div class="f col2"><label>Rendering provider - line 1 (95887), Box 24J</label>
             <div class="aif" id="aif-prov">
               <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-matched from report signature · via USMON MCP</span></div>
-              <div class="aival" id="aival-prov">Sample, Alan MD — NPI 1000000048</div>
+              <div class="aival" id="aival-prov">Sample, Alan MD - NPI 1000000048</div>
               <div class="aif-why">Line 1 had no rendering provider. AI matched the signing neurologist from the reading report against the NPI registry. Confidence 0.97.</div>
               <div class="aif-act" id="aifact-prov">
                 <button class="btn ai sm" onclick="confirmAI('prov')">✓ Confirm</button>
@@ -791,14 +791,14 @@
       <div class="stage-head">
         <div class="kick">Step 4 of 5 · Review</div>
         <h2>One last look</h2>
-        <p class="prompt">Everything's confirmed. Here's the whole claim in one place — if it all checks out, continue to file.</p>
+        <p class="prompt">Everything's confirmed. Here's the whole claim in one place - if it all checks out, continue to file.</p>
       </div>
       <div class="stage-body">
         <div class="fgrid">
           <div class="f col2"><label>Patient</label><div class="val">Testcase, Alice · PID 100001</div></div>
           <div class="f"><label>Claim #</label><div class="val mono">1000001</div></div>
           <div class="f"><label>Payer</label><div class="val">United Healthcare · OON</div></div>
-          <div class="f col2"><label>Principal diagnosis</label><div class="val mono" id="reviewDx">—</div></div>
+          <div class="f col2"><label>Principal diagnosis</label><div class="val mono" id="reviewDx">-</div></div>
           <div class="f"><label>Service lines</label><div class="val">6 lines</div></div>
           <div class="f"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
           <div class="f col2"><label>Billing provider (Box 33)</label><div class="val" id="reviewBox33">Demo Neurophysiology LLC · NPI 1000000017</div></div>
@@ -813,14 +813,14 @@
         </div>
 
         <div class="moneystrip">
-          <div class="ms-item oon"><span class="msdot"></span>Out-of-network — after filing, recovery continues at <b>IDR downstream</b></div>
-          <div class="ms-item clock"><span class="msdot"></span>Filing deadline: <b>5 days — on track</b></div>
+          <div class="ms-item oon"><span class="msdot"></span>Out-of-network - after filing, recovery continues at <b>IDR downstream</b></div>
+          <div class="ms-item clock"><span class="msdot"></span>Filing deadline: <b>5 days - on track</b></div>
         </div>
       </div>
       <div class="stage-foot">
         <button class="btn ghost" onclick="prevStage()">← Back</button>
         <div class="spacer"></div>
-        <button class="btn primary big" onclick="confirmStage(4)">Everything checks out — Continue →</button>
+        <button class="btn primary big" onclick="confirmStage(4)">Everything checks out - Continue →</button>
       </div>
     </div>
     <div class="auditline">✦ <span id="audit-4">6</span> events logged to audit trail</div>
@@ -859,7 +859,7 @@
       <div class="filed">
         <div class="seal">✓</div>
         <h2>Filed</h2>
-        <p>Claim <b class="mono">1000001</b> for <b>Testcase, Alice</b> was filed — 837P batch queued to the clearinghouse. It's now in Ongoing follow-up, where the ERA, underpayment check, and IDR clocks are tracked for you.</p>
+        <p>Claim <b class="mono">1000001</b> for <b>Testcase, Alice</b> was filed - 837P batch queued to the clearinghouse. It's now in Ongoing follow-up, where the ERA, underpayment check, and IDR clocks are tracked for you.</p>
         <div class="fbtns">
           <button class="btn" onclick="navTo('ongoing')">Go to Ongoing follow-up</button>
           <button class="btn primary big" onclick="nextClaim()">Next claim →</button>
@@ -872,25 +872,25 @@
 
 <!-- placeholder screens so nav never dead-ends -->
 <main class="wrap screen" id="ongoing">
-  <div class="ph-head"><h1>Ongoing — Claim Follow-Up</h1></div>
-  <div class="placeholder"><h2>Ongoing follow-up</h2><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitration. Wired end-to-end in the full router build — out of scope for this Guided Flow demo.</p></div>
+  <div class="ph-head"><h1>Ongoing - Claim Follow-Up</h1></div>
+  <div class="placeholder"><h2>Ongoing follow-up</h2><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitration. Wired end-to-end in the full router build - out of scope for this Guided Flow demo.</p></div>
 </main>
 <main class="wrap screen" id="folders"><div class="ph-head"><h1>Folders</h1></div><div class="placeholder"><h2>Folders</h2><p>Client &amp; entity folders, saved batches, and archived cases. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="reports"><div class="ph-head"><h1>Reports</h1></div><div class="placeholder"><h2>Reports</h2><p>Recovery by channel, IDR win rate, aged-A/R, and clock-exposure trend. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="manage"><div class="ph-head"><h1>Manage</h1></div><div class="placeholder"><h2>Manage</h2><p>Payer rules, OON fee schedules, client routing rules, and user permissions. Out of scope for this demo build.</p></div></main>
 
 <!-- ============================================================= -->
-<!-- FORM 1500 VIEW MODAL — the same claim as an editable CMS-1500  -->
+<!-- FORM 1500 VIEW MODAL - the same claim as an editable CMS-1500  -->
 <!-- ============================================================= -->
 <div class="modal-back" id="form1500Back" onclick="if(event.target===this)closeForm1500()">
   <div class="modal form1500" role="dialog" aria-modal="true" aria-labelledby="form1500Title">
     <div class="modal-head">
       <span class="m-tag">Same claim</span>
-      <h2 id="form1500Title">Form 1500 View — Testcase, Alice · Claim 1000001</h2>
+      <h2 id="form1500Title">Form 1500 View - Testcase, Alice · Claim 1000001</h2>
       <button class="mx" onclick="closeForm1500()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
-      <p class="modal-note"><span class="sp">▦</span><span><b>Same claim — the standard form view of what you're confirming in the steps.</b> Edits here and in the steps stay in sync. Every box is editable and prefilled with this claim's data.</span></p>
+      <p class="modal-note"><span class="sp">▦</span><span><b>Same claim - the standard form view of what you're confirming in the steps.</b> Edits here and in the steps stay in sync. Every box is editable and prefilled with this claim's data.</span></p>
 
       <div class="formsheet">
         <div class="fs-head">
@@ -912,7 +912,7 @@
 
         <!-- boxes 1-13 -->
         <div class="band">
-          <div class="band-head"><h3>Patient &amp; Insured · Boxes 1–13</h3><span class="bsrc">Prefilled — Scheduler · via USMON MCP</span></div>
+          <div class="band-head"><h3>Patient &amp; Insured · Boxes 1–13</h3><span class="bsrc">Prefilled - Scheduler · via USMON MCP</span></div>
           <div class="band-body">
             <div class="boxrow">
               <div class="box c4"><span class="bxn">1</span><label>Insurance type</label>
@@ -939,7 +939,7 @@
               <div class="box c4"><span class="bxn">9</span><label>Other insured's name</label><input placeholder="None on file" value=""></div>
               <div class="box c3"><span class="bxn">10a–c</span><label>Condition related to</label>
                 <div class="chk"><label><input type="checkbox"> Employment</label><label><input type="checkbox"> Auto</label><label><input type="checkbox"> Other</label></div>
-                <span class="hint">All "No" — not accident-related</span></div>
+                <span class="hint">All "No" - not accident-related</span></div>
             </div>
             <div class="boxrow">
               <div class="box c4"><span class="bxn">12</span><label>Patient's signature</label><input value="Signature on file"></div>
@@ -956,8 +956,8 @@
           <div class="band-body">
             <div class="boxrow">
               <div class="box c3"><span class="bxn">14</span><label>Date of current illness / injury</label><input class="mono" value="10/20/2025"></div>
-              <div class="box c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="—" value=""></div>
-              <div class="box c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="—" value=""></div>
+              <div class="box c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="-" value=""></div>
+              <div class="box c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="-" value=""></div>
               <div class="box c3"><span class="bxn">18</span><label>Hospitalization dates</label><input class="mono" value="10/20/2025 – 10/22/2025"></div>
             </div>
             <div class="boxrow">
@@ -968,28 +968,28 @@
                 <div class="chk"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
             </div>
             <div class="boxrow">
-              <div class="box c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+              <div class="box c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim - No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
               <div class="box c3"><span class="bxn">21</span><label>ICD indicator</label>
-                <select><option selected>0 — ICD-10-CM</option><option>9 — ICD-9-CM</option></select></div>
+                <select><option selected>0 - ICD-10-CM</option><option>9 - ICD-9-CM</option></select></div>
             </div>
             <div class="boxrow">
-              <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) — A is principal</label>
+              <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) - A is principal</label>
                 <div class="dxgrid">
                   <div class="dxslot trhi" id="frmBx21slot"><span class="trflag" id="frmBx21flag">✦ from Coding</span><span class="lt">A</span><input class="mono" id="frmBx21a" value="M50.121"></div>
                   <div class="dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
                   <div class="dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
                   <div class="dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
-                  <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="—" value=""></div>
-                  <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="—" value=""></div>
-                  <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="—" value=""></div>
-                  <div class="dxslot"><span class="lt">H</span><input class="mono" placeholder="—" value=""></div>
+                  <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="-" value=""></div>
+                  <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="-" value=""></div>
+                  <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="-" value=""></div>
+                  <div class="dxslot"><span class="lt">H</span><input class="mono" placeholder="-" value=""></div>
                 </div>
               </div>
             </div>
             <div class="boxrow">
-              <div class="box c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="—" value=""></div>
-              <div class="box c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="—" value=""></div>
-              <div class="box c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A — OON, no auth"></div>
+              <div class="box c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="-" value=""></div>
+              <div class="box c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="-" value=""></div>
+              <div class="box c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A - OON, no auth"></div>
             </div>
           </div>
         </div>
@@ -1058,28 +1058,28 @@
             <div class="boxrow">
               <div class="box c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
               <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
-              <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+              <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
             </div>
             <div class="boxrow">
               <div class="box c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
               <div class="box c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
-              <div class="box c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="—" value=""></div>
+              <div class="box c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="-" value=""></div>
             </div>
-            <!-- Box 33 — critical, emphasized -->
+            <!-- Box 33 - critical, emphasized -->
             <div class="boxrow">
               <div class="box box33 c8" id="frmBox33">
                 <span class="bxn">33</span>
                 <div class="b33-title">
-                  <label>Billing provider — where payment is sent</label>
+                  <label>Billing provider - where payment is sent</label>
                   <span class="b33-crit">Critical</span>
-                  <span class="aichip" id="frmB33Tag">✦ auto-assigned by billing rules — confirm</span>
+                  <span class="aichip" id="frmB33Tag">✦ auto-assigned by billing rules - confirm</span>
                 </div>
                 <select id="frmB33Select" onchange="b33Changed()">
                   <option value="Demo Neurophysiology LLC|1000000017|(555) 555-0190" selected>Demo Neurophysiology LLC · (555) 555-0190</option>
                   <option value="Sample IONM Partners LLC|1000000025|(555) 555-0288">Sample IONM Partners LLC · (555) 555-0288</option>
                   <option value="Example Monitoring Group LLC|1000000033|(555) 555-0377">Example Monitoring Group LLC · (555) 555-0377</option>
                 </select>
-                <span class="b33-note">Box 33 determines where the payment is sent — confirm the billing entity is correct before filing.</span>
+                <span class="b33-note">Box 33 determines where the payment is sent - confirm the billing entity is correct before filing.</span>
                 <div class="b33-act" id="frmB33Act">
                   <button class="btn ai sm" onclick="confirmB33()">✓ Confirm entity</button>
                   <button class="btn sm" onclick="changeB33()">Change entity</button>
@@ -1097,8 +1097,8 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="toast('CMS-1500 saved — synthetic; edits stay in sync with the steps')">💾 Save form</button>
-      <button class="btn primary" onclick="closeForm1500()">Close — back to the steps</button>
+      <button class="btn" onclick="toast('CMS-1500 saved - synthetic; edits stay in sync with the steps')">💾 Save form</button>
+      <button class="btn primary" onclick="closeForm1500()">Close - back to the steps</button>
     </div>
   </div>
 </div>
@@ -1112,10 +1112,10 @@
   function setNav(id){['review','ongoing','folders','reports','manage'].forEach(n=>{const a=document.getElementById('nav-'+n);if(a)a.classList.toggle('on',n===id);});}
 
   const NAV_MSG={
-    ongoing:'Ongoing follow-up — ERA, underpayment & IDR clocks (out of scope for this demo)',
-    folders:'Folders — client & entity folders (out of scope for this demo)',
-    reports:'Reports — recovery by channel & IDR win rate (out of scope for this demo)',
-    manage:'Manage — payer rules & permissions (out of scope for this demo)'
+    ongoing:'Ongoing follow-up - ERA, underpayment & IDR clocks (out of scope for this demo)',
+    folders:'Folders - client & entity folders (out of scope for this demo)',
+    reports:'Reports - recovery by channel & IDR win rate (out of scope for this demo)',
+    manage:'Manage - payer rules & permissions (out of scope for this demo)'
   };
   function navTo(which){
     if(which==='inbox'){show('inbox');setNav('review');}
@@ -1133,7 +1133,7 @@
     if(panel)panel.setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Billing Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
-    toast(sup?'Supervisor view — team time & efficiency now visible':'Biller view — calm, no dashboards');
+    toast(sup?'Supervisor view - team time & efficiency now visible':'Biller view - calm, no dashboards');
   }
 
   /* ---------- flow state ---------- */
@@ -1147,16 +1147,16 @@
   /* ---------- AI fields (highlight-to-confirm, per stage) ---------- */
   const AI_FIELDS={ vob:{stage:2}, icd:{stage:3}, units:{stage:3}, prov:{stage:3} };
   const AI_INIT={
-    vob:{val:'⚠ Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)',confirm:'✓ Confirm — re-verified'},
-    icd:{val:'M50.121 — Cervical disc disorder with radiculopathy, C6–C7',confirm:'✓ Confirm'},
+    vob:{val:'⚠ Stale - last verified 10/14/2025 (VOB older than payer re-verify window at filing)',confirm:'✓ Confirm - re-verified'},
+    icd:{val:'M50.121 - Cervical disc disorder with radiculopathy, C6–C7',confirm:'✓ Confirm'},
     units:{val:'6 units',confirm:'✓ Confirm'},
-    prov:{val:'Sample, Alan MD — NPI 1000000048',confirm:'✓ Confirm'}
+    prov:{val:'Sample, Alan MD - NPI 1000000048',confirm:'✓ Confirm'}
   };
   const STAGE_CONTINUE={2:'verifyContinue',3:'codeContinue'};
   const aiState={}; Object.keys(AI_FIELDS).forEach(k=>aiState[k]='pending'); // pending | confirmed | overridden
   function stageFields(n){return Object.keys(AI_FIELDS).filter(k=>AI_FIELDS[k].stage===n);}
   function stagePending(n){return stageFields(n).filter(k=>aiState[k]==='pending');}
-  function leadPart(s){return s.split(' — ')[0].trim();}
+  function leadPart(s){return s.split(' - ')[0].trim();}
   function aiActionsHTML(key){
     return '<button class="btn ai sm" onclick="confirmAI(\''+key+'\')">'+AI_INIT[key].confirm+'</button>'+
            '<button class="btn sm" onclick="overrideAI(\''+key+'\')">Edit / Override</button>';
@@ -1187,7 +1187,7 @@
 
   function enterFlow(){resetFlow();show('flow');setNav('review');}
   function exitFlow(){show('inbox');setNav('review');}
-  function stubClaim(name){toast(name+' — this demo wires Testcase, Alice end-to-end. Click her row to walk the flow.');}
+  function stubClaim(name){toast(name+' - this demo wires Testcase, Alice end-to-end. Click her row to walk the flow.');}
 
   /* ---------- supervisor authority: sign-off + oversight controls ---------- */
   function signOffClaim(ev,id){
@@ -1196,11 +1196,11 @@
     if(box)box.innerHTML='<span class="pill signed">✓ Signed off · released to file</span>';
     const held=document.getElementById('held-'+id);
     if(held){held.className='pill ready';held.textContent='✓ Released to file';}
-    toast('Signed off — released to file · logged');
+    toast('Signed off - released to file · logged');
   }
   function ovReassign(ev){
     if(ev&&ev.stopPropagation)ev.stopPropagation();
-    toast('Reassign — pick a biller (demo: Demo, Alex · Example, Priya) · logged');
+    toast('Reassign - pick a biller (demo: Demo, Alex · Example, Priya) · logged');
   }
 
   function renderStage(){
@@ -1265,7 +1265,7 @@
     aiSideEffect(key,mode);
     updateAIStage(AI_FIELDS[key].stage);
   }
-  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed — logged to audit trail','ai'); }
+  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed - logged to audit trail','ai'); }
   function overrideAI(key){
     if(aiState[key]!=='pending')return;
     const cur=document.getElementById('aival-'+key).textContent.trim();
@@ -1279,7 +1279,7 @@
     const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
     document.getElementById('aival-'+key).textContent=v;
     resolveAI(key,'overridden');
-    toast('Override saved — biller value recorded, logged to audit trail','ai');
+    toast('Override saved - biller value recorded, logged to audit trail','ai');
   }
   function cancelOverride(key){
     document.getElementById('aifact-'+key).innerHTML=aiActionsHTML(key);
@@ -1294,18 +1294,18 @@
       bar.classList.toggle('done',pend===0);
       bar.querySelector('.aibar-ic').textContent=pend===0?'✓':'✦';
       if(msg) msg.innerHTML = pend===0
-        ? 'All AI fields confirmed — you can continue'
+        ? 'All AI fields confirmed - you can continue'
         : 'AI fields to confirm: <b>'+pend+'</b> (this stage)';
     }
     const btn=STAGE_CONTINUE[n] && document.getElementById(STAGE_CONTINUE[n]);
-    if(btn){ btn.disabled=pend>0; btn.textContent=pend>0?'Continue →':'Looks right — Continue →'; }
+    if(btn){ btn.disabled=pend>0; btn.textContent=pend>0?'Continue →':'Looks right - Continue →'; }
   }
 
   function refreshReview(){
     document.getElementById('reviewDx').textContent =
       (aiState.icd!=='pending')
         ? (leadPart(document.getElementById('dxLead').textContent.replace(' · principal','')) || 'M50.121')
-        : '—';
+        : '-';
   }
 
   /* ---------- stage 5: file ---------- */
@@ -1314,12 +1314,12 @@
     document.getElementById('fileCard').style.display='none';
     document.getElementById('filedCard').style.display='';
     renderStage();
-    toast('Claim 1000001 filed — 837P batch queued','idr');
+    toast('Claim 1000001 filed - 837P batch queued','idr');
   }
-  function nextClaim(){ show('inbox'); setNav('review'); toast('Back to your claims — 5 more waiting'); }
+  function nextClaim(){ show('inbox'); setNav('review'); toast('Back to your claims - 5 more waiting'); }
 
   /* ============================================================= */
-  /* FORM 1500 VIEW — the same claim rendered as an editable CMS-1500 */
+  /* FORM 1500 VIEW - the same claim rendered as an editable CMS-1500 */
   /* ============================================================= */
   let billingEntity='Demo Neurophysiology LLC';   // Box 33 selection, shared with the stages
   let b33State='pending';                          // pending | confirmed
@@ -1356,7 +1356,7 @@
     }
   }
 
-  /* Box 33 — critical billing-provider picker (drives the stage indicator too) */
+  /* Box 33 - critical billing-provider picker (drives the stage indicator too) */
   function b33Parts(){return document.getElementById('frmB33Select').value.split('|');}
   function b33ActionsHTML(){
     return '<button class="btn ai sm" onclick="confirmB33()">✓ Confirm entity</button>'+
@@ -1372,12 +1372,12 @@
     document.getElementById('frmB33Tag').style.display='';
     document.getElementById('frmB33Act').innerHTML=b33ActionsHTML();
     updateFlowEntity();
-    toast('Billing entity changed to '+billingEntity+' — confirm to set where payment is sent','ai');
+    toast('Billing entity changed to '+billingEntity+' - confirm to set where payment is sent','ai');
   }
   function changeB33(){
     const s=document.getElementById('frmB33Select');
     s.focus();
-    toast('Pick a billing entity — Box 33 sets where the payment is sent');
+    toast('Pick a billing entity - Box 33 sets where the payment is sent');
   }
   function confirmB33(){
     const p=b33Parts();
@@ -1391,7 +1391,7 @@
       '<button class="btn sm" onclick="changeB33()">Change</button>';
     updateFlowEntity();
     bumpAudit();
-    toast('Box 33 confirmed — payment routes to '+billingEntity+' · logged to audit','ai');
+    toast('Box 33 confirmed - payment routes to '+billingEntity+' · logged to audit','ai');
   }
   /* reflect the chosen billing entity back on the stages (indicator + Review stage) */
   function updateFlowEntity(){

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Pro — Payments &amp; Collections (prototype)</title>
+<title>USMON Pro - Payments &amp; Collections (prototype)</title>
 <style>
   :root{
     --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
@@ -197,33 +197,33 @@
 
 <!--
   ============================================================================
-  USMON Pro — PAYMENTS & COLLECTIONS (client demo, synthetic data only)
+  USMON Pro - PAYMENTS & COLLECTIONS (client demo, synthetic data only)
   The screen where filed out-of-network claims get collected: post remittances
   per CPT, watch the underpayment, and pull the OON recovery levers.
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. Open on Testcase, Alice — claim 1000001, United Healthcare (out-of-network).
-       The purple ✦ AI flag up top: UHC paid $6,158 of $48,088 (~13%, below QPA) —
+    1. Open on Testcase, Alice - claim 1000001, United Healthcare (out-of-network).
+       The purple ✦ AI flag up top: UHC paid $6,158 of $48,088 (~13%, below QPA) -
        an OON underpayment, IDR-eligible. Recommend Pro/Tech negotiation or Arbitration.
     2. Look at the dense per-CPT posting grid. Each service line has its own
-       payment postings — note lines 95939 and 95955 each show TWO postings
+       payment postings - note lines 95939 and 95955 each show TWO postings
        (an initial 11/05 below-QPA payment, then a later 12/01 posting after a
        refile). Big open balance: ~$41,929.92. Comments AI-coded "BELOW QPA"
        (purple) wait to be confirmed.
-    3. Click "Add Additional Payment" — a new check posts against a line, the
+    3. Click "Add Additional Payment" - a new check posts against a line, the
        Insurance Paid / Balance and the Totals + summary recompute live.
-    4. Set Pro Claim Negotiation and Tech Claim Negotiation amounts + dates —
+    4. Set Pro Claim Negotiation and Tech Claim Negotiation amounts + dates -
        the professional vs technical OON recovery levers.
-    5. Click "Send to Arbitration" — the IDR packet is handed off, the 30-day
+    5. Click "Send to Arbitration" - the IDR packet is handed off, the 30-day
        negotiation clock starts. (Supervisor toggle adds a collections
-       oversight panel — $ recovered, recovery rate, aged balance.)
+       oversight panel - $ recovered, recovery rate, aged balance.)
   ============================================================================
 -->
 
 <header class="appbar">
   <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
   <nav class="appnav">
-    <a href="#" onclick="toast('Worklist — filed claims awaiting collection');return false">Ongoing</a>
+    <a href="#" onclick="toast('Worklist - filed claims awaiting collection');return false">Ongoing</a>
     <a href="#" class="on" onclick="return false">Payments &amp; Collections</a>
     <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
   </nav>
@@ -255,26 +255,26 @@
 
   <!-- payer context banner -->
   <div class="payerbar">
-    <span>◆</span><span><b>Payments from United Healthcare for Claim# 1000001</b> — out-of-network, No Surprises Act applies. Charges billed above QPA by design; the recovery happens here through refile, negotiation, and IDR.</span>
+    <span>◆</span><span><b>Payments from United Healthcare for Claim# 1000001</b> - out-of-network, No Surprises Act applies. Charges billed above QPA by design; the recovery happens here through refile, negotiation, and IDR.</span>
     <span class="badge">Commercial OON → IDR</span>
   </div>
 
   <!-- AI underpayment flag (canonical ✦) -->
   <div class="ai-flag" id="aiFlag"><span class="spark" id="aiFlagSpark">✦</span>
     <div>
-      <b>Out-of-network underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> of <b>$48,088</b> charged (<b>≈13%</b>, below the qualifying payment amount). This claim is <b>IDR-eligible</b> under the No Surprises Act. Recommend Pro/Tech negotiation or routing to Arbitration. AI also pre-coded the remittance <b>Insurance Comments = BELOW QPA</b> on the affected lines (purple) for you to confirm.
+      <b>Out-of-network underpayment detected - not a denial.</b> UHC paid <b>$6,158</b> of <b>$48,088</b> charged (<b>≈13%</b>, below the qualifying payment amount). This claim is <b>IDR-eligible</b> under the No Surprises Act. Recommend Pro/Tech negotiation or routing to Arbitration. AI also pre-coded the remittance <b>Insurance Comments = BELOW QPA</b> on the affected lines (purple) for you to confirm.
       <div class="ai-actions" id="aiFlagActions">
-        <button class="btn ai" onclick="confirmUnderpay()">✓ Confirm — open IDR track</button>
+        <button class="btn ai" onclick="confirmUnderpay()">✓ Confirm - open IDR track</button>
         <button class="btn" onclick="dismissUnderpay()">Dismiss</button>
       </div>
-      <span class="ai-note">AI proposes, biller decides — every choice logged to the audit trail.</span>
+      <span class="ai-note">AI proposes, biller decides - every choice logged to the audit trail.</span>
     </div>
   </div>
 
   <!-- ===== SUPERVISOR-ONLY collections oversight (gated, hidden from billers) ===== -->
   <div class="sup-panel" id="supPanel" aria-hidden="false">
     <div class="sp-card">
-      <div class="sp-head"><h2>Collections oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-head"><h2>Collections oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view - billers don't see this.</span></div>
       <div class="sp-stats">
         <div class="sp-stat good"><div class="num">$1.42M</div><div class="lbl">Recovered this month (team)</div></div>
         <div class="sp-stat oon"><div class="num" id="spRecovery">12.8%</div><div class="lbl">First-pass recovery rate</div></div>
@@ -287,7 +287,7 @@
   <!-- ===== dense editable per-CPT payment-posting table ===== -->
   <div class="card">
     <div class="panel-head">
-      <h2>Payments from United Healthcare — Claim# 1000001</h2>
+      <h2>Payments from United Healthcare - Claim# 1000001</h2>
       <span class="src">EOB / 835 ERA posted 11/05/2025 · refile posting 12/01/2025</span>
       <div class="act">
         <button class="btn ai sm aicount-pill show" id="aiCommentsBtn" onclick="confirmAIComments()">✦ Confirm AI comments (<span id="aiCommentsCt">6</span>)</button>
@@ -319,7 +319,7 @@
         </tr></tfoot>
       </table>
     </div>
-    <div class="postnote"><span>✦</span><span><b>Multiple postings per CPT:</b> lines <b class="mono">95939</b> and <b class="mono">95955</b> each carry a second posting (a later 12/01 payment after the corrected refile). Insurance Balance is the running balance after each posting. Every field is editable — Balance and Totals recompute live.</span></div>
+    <div class="postnote"><span>✦</span><span><b>Multiple postings per CPT:</b> lines <b class="mono">95939</b> and <b class="mono">95955</b> each carry a second posting (a later 12/01 payment after the corrected refile). Insurance Balance is the running balance after each posting. Every field is editable - Balance and Totals recompute live.</span></div>
   </div>
 
   <!-- lower grid: recovery levers + summary -->
@@ -338,7 +338,7 @@
         <div class="fgrid">
           <div class="f col2"><label>Denial Reason 1</label>
             <select id="denial1">
-              <option>— none —</option>
+              <option>- none -</option>
               <option selected>Below QPA (NSA out-of-network)</option>
               <option>CO-45 · Charge exceeds fee schedule</option>
               <option>CO-97 · Service bundled / included</option>
@@ -348,7 +348,7 @@
             </select></div>
           <div class="f col2"><label>Denial Reason 2</label>
             <select id="denial2">
-              <option selected>— none —</option>
+              <option selected>- none -</option>
               <option>Below QPA (NSA out-of-network)</option>
               <option>CO-45 · Charge exceeds fee schedule</option>
               <option>CO-97 · Service bundled / included</option>
@@ -356,7 +356,7 @@
               <option>CO-16 · Missing / incomplete information</option>
               <option>OA-23 · Prior payer adjustment</option>
             </select></div>
-          <div class="f col4"><label>Notes</label><textarea id="collNotes" placeholder="Collections notes…">11/05 EFT posted — UHC underpaid all lines below QPA. 12/01 refile released a partial adjustment. Opening NSA negotiation on Pro + Tech components; escalate to Arbitration if not resolved in 30 biz days.</textarea></div>
+          <div class="f col4"><label>Notes</label><textarea id="collNotes" placeholder="Collections notes…">11/05 EFT posted - UHC underpaid all lines below QPA. 12/01 refile released a partial adjustment. Opening NSA negotiation on Pro + Tech components; escalate to Arbitration if not resolved in 30 biz days.</textarea></div>
         </div>
       </div>
       <!-- action bar -->
@@ -389,7 +389,7 @@
         <div class="track"><div class="fill" id="recFill" style="width:12.8%"></div></div>
         <div class="lbl"><span>Recovery rate</span><span><b id="recPct">12.8%</b> of charged collected</span></div>
       </div>
-      <div class="idrclock" id="idrClock"><span>⏱</span><span><b>Sent to Arbitration.</b> Open negotiation started — 30 business days; the IDR initiation window opens after. Arbitration is tracking the clock.</span></div>
+      <div class="idrclock" id="idrClock"><span>⏱</span><span><b>Sent to Arbitration.</b> Open negotiation started - 30 business days; the IDR initiation window opens after. Arbitration is tracking the clock.</span></div>
     </div>
   </div>
 </main>
@@ -412,7 +412,7 @@
     document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
     document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Supervisor':'Sample, Dana · Biller';
     document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
-    toast(sup?'Supervisor view — collections oversight now visible':'Biller view — post payments, no performance stats','');
+    toast(sup?'Supervisor view - collections oversight now visible':'Biller view - post payments, no performance stats','');
   }
 
   /* ---------- data model: per-CPT service lines, each with >=1 posting ---------- */
@@ -468,30 +468,30 @@
         }else{
           html+='<td><span class="cont">↳ '+ln.cpt+' · posting '+(pi+1)+'</span></td>';
         }
-        /* Units / Charged — line-level, first row only */
+        /* Units / Charged - line-level, first row only */
         if(first){
           html+='<td><input class="ci sm" type="number" step="1" value="'+ln.units+'" oninput="onSyncLine('+li+',\'units\',this)"></td>';
           html+='<td><input class="ci wide" type="number" step="0.01" value="'+ln.charged.toFixed(2)+'" oninput="onSyncLine('+li+',\'charged\',this)"></td>';
         }else{
-          html+='<td><span class="dash">—</span></td><td><span class="dash">—</span></td>';
+          html+='<td><span class="dash">-</span></td><td><span class="dash">-</span></td>';
         }
         if(patrow){
           /* insurance columns not applicable to a patient payment */
-          html+='<td><span class="dash">—</span></td>';/* allowed */
-          html+='<td><span class="dash">—</span></td>';/* ded */
-          html+='<td><span class="dash">—</span></td>';/* coins */
-          html+='<td><span class="dash">—</span></td>';/* ins paid */
+          html+='<td><span class="dash">-</span></td>';/* allowed */
+          html+='<td><span class="dash">-</span></td>';/* ded */
+          html+='<td><span class="dash">-</span></td>';/* coins */
+          html+='<td><span class="dash">-</span></td>';/* ins paid */
           html+='<td><select class="ci tiny" onchange="onSync('+li+','+pi+',\'ptype\',this,\'sel\')">'+selOpts(['CK','EFT'],ps.ptype)+'</select></td>';
           html+='<td class="lft"><input class="ci" type="text" value="'+esc(ps.check)+'" oninput="onSync('+li+','+pi+',\'check\',this,\'txt\')"></td>';
-          html+='<td><span class="dash">—</span></td>';/* eob */
+          html+='<td><span class="dash">-</span></td>';/* eob */
           html+='<td class="lft"><input class="ci date" type="text" value="'+esc(ps.date)+'" oninput="onSync('+li+','+pi+',\'date\',this,\'txt\')"></td>';
-          html+='<td><span class="dash">—</span></td>';/* comment */
-          html+='<td><span class="dash">—</span></td>';/* ins balance */
-          html+='<td><span class="dash">—</span></td>';/* refunded */
-          html+='<td class="ctr"><span class="dash">—</span></td>';/* adjusted */
-          html+='<td><span class="dash">—</span></td>';/* adjustment */
+          html+='<td><span class="dash">-</span></td>';/* comment */
+          html+='<td><span class="dash">-</span></td>';/* ins balance */
+          html+='<td><span class="dash">-</span></td>';/* refunded */
+          html+='<td class="ctr"><span class="dash">-</span></td>';/* adjusted */
+          html+='<td><span class="dash">-</span></td>';/* adjustment */
           html+='<td class="ctr"><input class="chk" type="checkbox"'+(ps.completed?' checked':'')+' onchange="onSync('+li+','+pi+',\'completed\',this,\'chk\')"></td>';
-          html+='<td class="ctr"><span class="dash">—</span></td>';/* zero */
+          html+='<td class="ctr"><span class="dash">-</span></td>';/* zero */
         }else{
           html+='<td><input class="ci" type="number" step="0.01" value="'+ps.allowed.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'allowed\',this,\'num\')"></td>';
           html+='<td><input class="ci" type="number" step="0.01" value="'+ps.ded.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'ded\',this,\'num\')"></td>';
@@ -586,7 +586,7 @@
     });
     lines[target].postings.push({allowed:1200.00,ded:0,coins:0,paid:1200.00,ptype:'EFT',check:'',eob:'UHC-4499'+(500+Math.floor(Math.random()*400)),date:'12/18/2025',comment:'ADJUSTED',ai:false,refunded:0,adjusted:true,adjustment:0,completed:false,zero:false,pliab:0,ppaid:0});
     renderTable();recompute();bumpAudit();
-    toast('Payment posted on CPT '+lines[target].cpt+' — balance updated','');
+    toast('Payment posted on CPT '+lines[target].cpt+' - balance updated','');
   }
   function addPatientPayment(){
     /* apply a patient payment to the line with the largest patient balance */
@@ -599,7 +599,7 @@
     });
     lines[target].postings.push({isPatient:true,allowed:0,ded:0,coins:0,paid:0,ptype:'CK',check:'2041',eob:'',date:'12/18/2025',comment:'',ai:false,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:0,ppaid:250.00});
     renderTable();recompute();bumpAudit();
-    toast('Patient payment posted on CPT '+lines[target].cpt+' — patient balance updated','');
+    toast('Patient payment posted on CPT '+lines[target].cpt+' - patient balance updated','');
   }
 
   /* ---------- AI-coded comment confirm ---------- */
@@ -614,7 +614,7 @@
     if(!n){toast('No AI-coded comments pending');return;}
     lines.forEach(l=>l.postings.forEach(p=>{if(p.ai)p.aiOK=true;}));
     renderTable();recompute();bumpAudit(n);
-    toast('Confirmed '+n+' AI-coded remittance comment'+(n>1?'s':'')+' (BELOW QPA) — logged to audit','ai');
+    toast('Confirmed '+n+' AI-coded remittance comment'+(n>1?'s':'')+' (BELOW QPA) - logged to audit','ai');
   }
 
   /* ---------- AI underpayment flag ---------- */
@@ -622,34 +622,34 @@
     const f=document.getElementById('aiFlag');
     f.classList.add('confirmed');
     document.getElementById('aiFlagSpark').textContent='✓';
-    document.getElementById('aiFlagActions').innerHTML='<span style="font-weight:700">✓ OON underpayment confirmed — IDR track opened, logged to audit</span>';
+    document.getElementById('aiFlagActions').innerHTML='<span style="font-weight:700">✓ OON underpayment confirmed - IDR track opened, logged to audit</span>';
     bumpAudit();
-    toast('OON underpayment confirmed — IDR track opened · logged','idr');
+    toast('OON underpayment confirmed - IDR track opened · logged','idr');
   }
   function dismissUnderpay(){
     document.getElementById('aiFlag').classList.add('gone');
     bumpAudit();
-    toast('AI underpayment flag dismissed — logged to audit','warn');
+    toast('AI underpayment flag dismissed - logged to audit','warn');
   }
 
   /* ---------- action buttons ---------- */
   function refile(){bumpAudit();toast('Corrected 837P queued for refile','');}
-  function addRecoupment(){bumpAudit();toast('Recoupment / refund line added — logged','warn');}
-  function patientReceipt(){toast('Patient receipt generated (PDF) — synthetic demo','');}
-  function openDocuments(){toast('Documents panel opened — EOB, CMS-1500, reader & tech reports','');}
-  function saveAll(){bumpAudit();toast('Payments saved — '+audit+' events in audit trail','');}
+  function addRecoupment(){bumpAudit();toast('Recoupment / refund line added - logged','warn');}
+  function patientReceipt(){toast('Patient receipt generated (PDF) - synthetic demo','');}
+  function openDocuments(){toast('Documents panel opened - EOB, CMS-1500, reader & tech reports','');}
+  function saveAll(){bumpAudit();toast('Payments saved - '+audit+' events in audit trail','');}
   function closeClaim(){
     const m=document.getElementById('masterStatus');
     m.className='master closed';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Closed';
     bumpAudit();
-    toast('Claim closed — moved to Closed folder','');
+    toast('Claim closed - moved to Closed folder','');
   }
   function sendArbitration(){
     const m=document.getElementById('masterStatus');
     m.className='master idr';document.getElementById('masterIcon').textContent='◆';document.getElementById('masterLabel').textContent='In IDR · Arbitration';
     document.getElementById('idrClock').classList.add('show');
     bumpAudit();
-    toast('IDR packet sent to Arbitration — case opened, 30-day negotiation clock started','idr');
+    toast('IDR packet sent to Arbitration - case opened, 30-day negotiation clock started','idr');
   }
 
   /* ---------- init ---------- */
