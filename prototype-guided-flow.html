@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — Guided Flow (prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;   /* Commercial OON -> IDR feeder */
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;                          /* Government in-network */
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;  /* Hospital tech-fee invoice */
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+  #whoLabel{white-space:nowrap}
+
+  /* role toggle (Biller <-> Supervisor) — replicated from Biller Review */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+
+  /* ===== SUPERVISOR-ONLY oversight panel (inbox) — replicated from Biller Review ===== */
+  .sup-panel{display:none;margin-bottom:20px}
+  body.role-super .sup-panel{display:block}
+  .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .sp-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--gov-tint)}
+  .sp-head h2{font-size:14px;margin:0;font-weight:700;color:var(--gov)}
+  .sp-head .sp-tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line);border-radius:5px;padding:2px 7px}
+  .sp-head .hid{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  @media(max-width:680px){.sp-stats{grid-template-columns:repeat(2,1fr)}}
+  .sp-stat{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+  .sp-stat .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sp-stat .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+  .sp-stat.flag .num{color:var(--block)}
+  .eff{width:100%;border-collapse:collapse;font-size:12.5px}
+  .eff th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:right;padding:9px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+  .eff th:first-child{text-align:left}
+  .eff td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono)}
+  .eff td:first-child{text-align:left;font-family:var(--sans);font-weight:600}
+  .eff tr:last-child td{border-bottom:none}
+  .eff tr.flagged{background:var(--block-tint)}
+  .eff .bar{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+  .eff .track{width:52px;height:6px;border-radius:4px;background:#eef2f7;overflow:hidden}
+  .eff .fill{height:100%;border-radius:4px;background:var(--ok)}
+  .eff .fill.mid{background:var(--warn)} .eff .fill.low{background:var(--block)}
+  .deadflag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;font-family:var(--sans)}
+  .deadflag.low{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .deadflag.mid{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .deadflag.high{background:var(--block-tint);color:var(--block);border:1px solid var(--block-line)}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:26px 20px 90px}
+  .screen{display:none}.screen.active{display:block}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.big{padding:12px 20px;font-size:14.5px;border-radius:9px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.primary:disabled{background:#cbd5e1;border-color:#cbd5e1;cursor:not-allowed}
+  .btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+  .btn.ghost:hover{background:var(--surface-2);color:var(--ink)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark)}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .pill.ready{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .pill.review{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .pill.oon{background:var(--idr-tint);color:var(--idr);border:1px solid var(--idr-line)}
+  .pill.gov{background:var(--gov-tint);color:var(--gov);border:1px solid var(--gov-line)}
+  .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .tag.pt{color:var(--idr-dark);background:var(--idr-tint)}
+
+  /* ---------- inbox (calm conveyor entry) ---------- */
+  .inbox-head{margin-bottom:20px}
+  .inbox-head h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .inbox-head p{margin:5px 0 0;color:var(--muted);font-size:13.5px;max-width:640px}
+  .inbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .inbox-bar{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);font-size:13px;color:var(--muted);font-weight:600}
+  .inbox-bar b{color:var(--ink)}
+  .claimrow{display:flex;align-items:center;gap:16px;padding:15px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.12s}
+  .claimrow:last-child{border-bottom:none}
+  .claimrow:hover{background:var(--surface-2)}
+  .claimrow.headline{background:linear-gradient(90deg,var(--primary-tint),transparent 62%)}
+  .claimrow.headline:hover{background:linear-gradient(90deg,#d9eef0,transparent 62%)}
+  .cr-who{min-width:210px}
+  .cr-who .nm{font-weight:700;font-size:14.5px}
+  .cr-who .sub{color:var(--muted);font-size:12px;margin-top:1px}
+  .cr-payer{min-width:150px;font-size:13px}
+  .cr-payer .net{font-size:11px;font-weight:700;color:var(--idr);margin-top:1px}
+  .cr-payer .net.gov{color:var(--gov)}
+  .cr-amt{min-width:120px;font-family:var(--mono);font-weight:700;font-size:14px}
+  .cr-flag{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .cr-open{color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap}
+  .starthere{font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--primary-dark);background:#fff;border:1px solid var(--primary-line);border-radius:6px;padding:3px 8px}
+
+  /* ---------- guided flow ---------- */
+  .flow-top{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+  .flow-top .exit{background:none;border:none;color:var(--primary);font-size:13px;padding:0;font-weight:600}
+  .flow-who{font-size:13px;color:var(--muted)}
+  .flow-who b{color:var(--ink);font-weight:700}
+
+  /* stepper */
+  .stepper{display:flex;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 10px;margin-bottom:22px}
+  .step{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;text-align:center;padding:0 6px}
+  .step::after{content:"";position:absolute;top:16px;left:calc(50% + 20px);right:calc(-50% + 20px);height:2px;background:var(--line);z-index:0}
+  .step:last-child::after{display:none}
+  .step.done::after{background:var(--ok)}
+  .step .circ{width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid var(--line-strong);color:var(--faint);display:grid;place-items:center;font-weight:800;font-size:13px;z-index:1;transition:.2s}
+  .step.current .circ{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 0 0 4px var(--primary-tint)}
+  .step.done .circ{border-color:var(--ok);background:var(--ok);color:#fff}
+  .step.done{cursor:pointer}
+  .step .slbl{font-size:11.5px;font-weight:700;color:var(--faint);line-height:1.25;max-width:110px}
+  .step.current .slbl{color:var(--ink)}
+  .step.done .slbl{color:var(--ok)}
+  @media(max-width:720px){.step .slbl{display:none}.step::after{top:16px}}
+
+  /* stage card */
+  .stage{display:none}
+  .stage.active{display:block;animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .stage-head{padding:22px 26px 4px}
+  .stage-head .kick{font-size:11.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--primary)}
+  .stage-head h2{margin:6px 0 0;font-size:20px;font-weight:700;letter-spacing:-.2px}
+  .stage-head .prompt{margin:8px 0 0;color:var(--muted);font-size:13.5px;max-width:620px}
+  .stage-body{padding:20px 26px 4px}
+  .src{font-size:11.5px;color:var(--faint);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+  .src svg{color:var(--primary)}
+
+  /* field grid (from v5) */
+  .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 16px}
+  .f{display:flex;flex-direction:column;gap:4px}
+  .f.col2{grid-column:span 2}.f.col3{grid-column:span 3}.f.col4{grid-column:span 4}
+  .f label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .f .val{font-size:13.5px;font-weight:500;padding:8px 11px;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;min-height:34px;display:flex;align-items:center}
+  .f .val.mono{font-family:var(--mono)}
+  @media(max-width:720px){.fgrid{grid-template-columns:repeat(2,1fr)}.f.col2,.f.col3,.f.col4{grid-column:span 2}}
+
+  .blocktitle{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin:22px 0 10px}
+  .blocktitle:first-child{margin-top:4px}
+
+  .benefit-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  @media(max-width:720px){.benefit-cols{grid-template-columns:1fr}}
+  .ben{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .ben h3{margin:0;font-size:12px;padding:9px 13px;font-weight:700}
+  .ben.innet h3{background:var(--ok-tint);color:var(--ok)} .ben.oonet h3{background:var(--idr-tint);color:var(--idr)}
+  .ben dl{margin:0;padding:8px 13px 12px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:12.5px}
+  .ben dt{color:var(--muted)} .ben dd{margin:0;font-weight:600;font-family:var(--mono)}
+
+  /* service lines (from v5) */
+  .lines{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+  .lines th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:left;padding:8px;border-bottom:1px solid var(--line);font-weight:700}
+  .lines td{padding:9px 8px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+  .lines tr:last-child td{border-bottom:none}
+  .lines .desc{font-family:var(--sans);color:var(--muted)}
+  .lines .needs{color:var(--block);font-style:italic;cursor:pointer;font-family:var(--sans);font-weight:700}
+  .lines .needs:hover{text-decoration:underline}
+  .lines .set{color:var(--ok);font-weight:700}
+  .lines tr.hot{background:var(--block-tint)}
+  .lines tr.hot.fixed{background:var(--ok-tint)}
+
+  .dxrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0 2px}
+  .dxchip{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--line-strong);border-radius:6px;padding:5px 10px;font-weight:600}
+  .dxchip.new{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .dxchip.lead{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-tint)}
+  .dxlabel{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;margin-right:2px}
+
+  /* gate banner */
+  .gate{display:flex;align-items:center;gap:10px;background:var(--warn-tint);border:1px solid var(--warn-line);border-radius:9px;padding:11px 14px;margin:4px 0 16px;font-size:13px;color:var(--warn);font-weight:600}
+  .gate.clear{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok)}
+  .gate .gc{flex:none;width:20px;height:20px;border-radius:50%;background:var(--warn);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .gate.clear .gc{background:var(--ok)}
+
+  /* AI suggestion (from v5) */
+  .ai-sug{display:flex;align-items:flex-start;gap:11px;background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border:1px solid var(--ai-line);border-radius:9px;padding:13px 15px;margin-top:14px;font-size:12.5px;color:#3c2b8a}
+  .ai-sug.gone{display:none}
+  .ai-sug .spark{flex:none;width:24px;height:24px;border-radius:6px;background:var(--ai);color:#fff;display:grid;place-items:center;font-size:14px}
+  .ai-sug b{color:var(--ai-dark)}
+  .ai-sug .ai-actions{display:flex;gap:8px;margin-top:10px}
+  .ai-sug .ai-actions .btn{padding:6px 13px;font-size:12.5px}
+  .ai-sug .ai-note{display:block;margin-top:8px;font-size:11px;color:var(--ai-dark);font-style:italic;opacity:.85}
+
+  /* ===== AI FIELD — highlight-to-confirm (replicated from Biller Review) ===== */
+  .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
+  .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
+  .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .aif .aif-src{font-size:11px;color:var(--ai-dark);font-weight:600}
+  .aif .aival{font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--ai-line);border-radius:7px;padding:8px 10px;min-height:33px;display:flex;align-items:center}
+  .aif .aival.mono{font-family:var(--mono)}
+  .aif .aif-why{font-size:11.5px;color:#3c2b8a;margin-top:7px;line-height:1.4;font-style:italic}
+  .aif .aif-act{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+  .aif .aif-act .btn{padding:5px 12px;font-size:12px}
+  .aif .aiedit{flex:1;min-width:160px;font-family:var(--sans);font-size:13px;padding:7px 9px;border:1px solid var(--ai);border-radius:7px;box-shadow:0 0 0 3px var(--ai-tint)}
+  .aif.flash{box-shadow:0 0 0 4px var(--ai-tint)}
+  .aif.confirmed{border-color:var(--ok-line);border-left-color:var(--ok);background:var(--ok-tint)}
+  .aif.confirmed .aival{border-color:var(--ok-line)}
+  .aif.confirmed .aif-src,.aif.confirmed .aif-why{color:var(--ok)}
+  .aif.overridden{border-color:var(--warn-line);border-left-color:var(--warn);background:var(--warn-tint)}
+  .aif.overridden .aival{border-color:var(--warn-line)}
+  .aif .aif-done{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok)}
+  .aif .aif-done.ovr{color:var(--warn)}
+
+  /* per-stage "AI fields to confirm: N" indicator */
+  .aibar{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border:1px solid var(--ai-line);border-radius:9px;padding:11px 14px;margin:4px 0 16px;font-size:13px;color:var(--ai-dark);font-weight:600}
+  .aibar .aibar-ic{flex:none;width:20px;height:20px;border-radius:50%;background:var(--ai);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .aibar b{font-weight:800}
+  .aibar.done{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok)}
+  .aibar.done .aibar-ic{background:var(--ok)}
+
+  /* provider fix inline card */
+  .fixcard{display:flex;align-items:center;gap:12px;border:1px solid var(--block-line);background:var(--block-tint);border-radius:9px;padding:13px 15px;margin-top:12px;font-size:13px;color:var(--block)}
+  .fixcard.done{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .fixcard .fi{flex:none;width:24px;height:24px;border-radius:50%;background:var(--block);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+  .fixcard.done .fi{background:var(--ok)}
+  .fixcard .fx-txt{flex:1}
+  .fixcard .fx-txt b{display:block;font-weight:700;color:inherit}
+  .fixcard .fx-txt span{color:var(--muted);font-weight:500}
+  .fixcard .btn{margin-left:auto}
+
+  /* money / clock awareness strip (calm, not loud) */
+  .moneystrip{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:11px 15px;margin:16px 0 4px;font-size:12.5px}
+  .ms-item{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--muted)}
+  .ms-item .msdot{width:8px;height:8px;border-radius:50%;flex:none}
+  .ms-item.oon .msdot{background:var(--idr)} .ms-item.oon b{color:var(--idr-dark)}
+  .ms-item.clock .msdot{background:var(--ok)} .ms-item.clock b{color:var(--ok)}
+  .ms-item b{font-weight:700}
+
+  .smartnote{font-size:12px;color:var(--muted);margin-top:14px;display:flex;align-items:flex-start;gap:8px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:9px 12px}
+  .smartnote b{color:var(--ink)}
+  .smartnote svg{flex:none;margin-top:1px}
+
+  /* review stage confirm list */
+  .checklist{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:4px}
+  .chk{display:flex;align-items:center;gap:11px;padding:12px 15px;border-bottom:1px solid var(--line);font-size:13px}
+  .chk:last-child{border-bottom:none}
+  .chk .ci{flex:none;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .chk .ck-txt b{font-weight:700}
+  .chk .ck-txt span{color:var(--muted);display:block;font-size:12px}
+  .chk .ck-go{margin-left:auto}
+  .chk .ck-go button{background:none;border:none;color:var(--primary);font-weight:600;font-size:12.5px;padding:0}
+
+  /* filed success */
+  .filed{text-align:center;padding:44px 26px 40px}
+  .filed .seal{width:64px;height:64px;border-radius:50%;background:var(--ok-tint);border:2px solid var(--ok-line);color:var(--ok);display:grid;place-items:center;font-size:30px;margin:0 auto 16px}
+  .filed h2{margin:0;font-size:22px;font-weight:700}
+  .filed p{margin:8px auto 0;color:var(--muted);font-size:13.5px;max-width:440px}
+  .filed .fbtns{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+
+  /* stage footer (primary action) */
+  .stage-foot{display:flex;align-items:center;gap:12px;padding:18px 26px;border-top:1px solid var(--line);background:var(--surface-2);margin-top:20px;flex-wrap:wrap}
+  .stage-foot .spacer{flex:1}
+  .auditline{font-size:11.5px;color:var(--faint);margin-top:14px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
+
+  /* placeholders */
+  .placeholder{background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:48px;text-align:center;color:var(--muted);box-shadow:var(--shadow)}
+  .placeholder h2{margin:0 0 6px;font-size:16px;color:var(--ink)}
+  .placeholder p{margin:0;font-size:13px}
+  .ph-head{margin-bottom:16px}
+  .ph-head h1{font-size:22px;margin:0;font-weight:700}
+
+  /* toast (from v5) */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:460px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.idr .ic{background:var(--idr)}.toast.ai .ic{background:var(--ai)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro — GUIDED FLOW prototype (client demo · synthetic data only)
+  Same product / brand / tokens / dataset as prototype-v5-router.html,
+  presented in a calm, zero-training, staged MODE.
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. Land on the MINIMAL inbox — "Your claims to review — 6 waiting". Clean
+       list, no 30-column grid. Point at Testcase, Alice ("Start here"). Click it.
+    2. STAGE 1 · Pull — everything came preloaded from case #1000001. Read the
+       calm money/clock strip (OON -> IDR downstream · Filing deadline 5 days,
+       on track). "Looks right — Continue".
+    3. STAGE 2 · Verify patient & insurance — confirm preloaded demographics +
+       OON benefits. One AI field: the highlighted (purple ✦ AI) stale-VOB flag.
+       Confirm it (or Edit/Override) — the "AI fields to confirm" bar clears and
+       Continue unlocks.
+    4. STAGE 3 · Coding & diagnosis — the ONLY stage with work. The "AI fields to
+       confirm: 3 (this stage)" bar counts down as you clear the purple ✦ AI
+       fields: principal ICD-10 (M50.121, conf 0.94), AI-derived units on line 4,
+       and the AI-matched rendering provider on line 1 (Box 24J). Each field has
+       Confirm (green "✓ Confirmed by you · logged to audit") + Edit / Override.
+       When the bar hits 0 it turns green; Continue unlocks. Same highlight-to-
+       confirm treatment as Biller Review — "AI proposes, biller decides, logged."
+    5. STAGE 4 · Review — the whole claim in one calm summary + confirmed
+       checklist. Continue to file.
+    6. STAGE 5 · File — big "File claim now" -> "Filed" seal -> "Next claim"
+       drops you back to the inbox. Zero training, one correct path.
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" id="nav-review" class="on" onclick="return navTo('inbox')">Review claims</a>
+    <a href="#" id="nav-ongoing" onclick="return navTo('ongoing')">Ongoing</a>
+    <a href="#" id="nav-folders" onclick="return navTo('folders')">Folders</a>
+    <a href="#" id="nav-reports" onclick="return navTo('reports')">Reports</a>
+    <a href="#" id="nav-manage" onclick="return navTo('manage')">Manage</a>
+  </nav>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="View role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="whoLabel">Dr. Michael Scholin · Billing Supervisor</span>
+    <span class="avatar" id="whoAvatar">MS</span>
+  </div>
+</header>
+
+<!-- ============================================================= -->
+<!-- SCREEN · INBOX (calm conveyor entry)                           -->
+<!-- ============================================================= -->
+<main class="wrap screen active" id="inbox">
+  <div class="inbox-head">
+    <h1>Your claims to review</h1>
+    <p>Each claim was preloaded by your techs and the reading neurologist — about 95% is already filled in. Open one and confirm it's right. We'll walk you through it step by step.</p>
+  </div>
+
+  <!-- ===== SUPERVISOR-ONLY oversight panel (hidden from billers) ===== -->
+  <div class="sup-panel" id="supPanel" aria-hidden="false">
+    <div class="sp-card">
+      <div class="sp-head"><h2>Team oversight</h2><span class="sp-tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-stats">
+        <div class="sp-stat"><div class="num">96</div><div class="lbl">Claims worked today (team)</div></div>
+        <div class="sp-stat"><div class="num mono">4:21</div><div class="lbl">Avg time / claim</div></div>
+        <div class="sp-stat"><div class="num">78%</div><div class="lbl">Team active time</div></div>
+        <div class="sp-stat flag"><div class="num">1</div><div class="lbl">Dead-time flag</div></div>
+      </div>
+      <table class="eff">
+        <thead><tr><th>Biller</th><th>Claims today</th><th>Avg time/claim</th><th>Active %</th><th>Claims/hr</th><th>Dead time</th></tr></thead>
+        <tbody>
+          <tr><td>Sample, Dana</td><td>34</td><td>3:12</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:91%"></span></span>91%</span></td><td>8.4</td>
+            <td><span class="deadflag low">Low</span></td></tr>
+          <tr><td>Demo, Alex</td><td>29</td><td>3:48</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:88%"></span></span>88%</span></td><td>7.1</td>
+            <td><span class="deadflag low">Low</span></td></tr>
+          <tr><td>Mockdata, Sam</td><td>21</td><td>4:40</td>
+            <td><span class="bar"><span class="track"><span class="fill mid" style="width:79%"></span></span>79%</span></td><td>5.6</td>
+            <td><span class="deadflag mid">Moderate</span></td></tr>
+          <tr class="flagged"><td>Example, Priya</td><td>12</td><td>9:26</td>
+            <td><span class="bar"><span class="track"><span class="fill low" style="width:54%"></span></span>54%</span></td><td>2.9</td>
+            <td><span class="deadflag high">⚑ High</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="inbox">
+    <div class="inbox-bar">⏱ <span><b>6 waiting</b> · sorted by filing deadline</span></div>
+
+    <div class="claimrow headline" onclick="enterFlow()">
+      <div class="cr-who"><div class="nm">Testcase, Alice</div><div class="sub mono">PID 100001 · Claim 1000001 · DOS 10/20/2025</div></div>
+      <div class="cr-payer">United Healthcare<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-amt">$48,087.92</div>
+      <div class="cr-flag"><span class="starthere">Start here</span><span class="pill review">✦ AI fields to confirm</span><span class="cr-open">Open →</span></div>
+    </div>
+
+    <div class="claimrow" onclick="stubClaim('Mockdata, Ray')">
+      <div class="cr-who"><div class="nm">Mockdata, Ray</div><div class="sub mono">PID 100002 · Claim 1000007 · DOS 10/18/2025</div></div>
+      <div class="cr-payer">Aetna<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-amt">$53,905.00</div>
+      <div class="cr-flag"><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
+    </div>
+
+    <div class="claimrow" onclick="stubClaim('Sample, David')">
+      <div class="cr-who"><div class="nm">Sample, David</div><div class="sub mono">PID 100004 · Claim 1000002 · DOS 10/20/2025</div></div>
+      <div class="cr-payer">Humana<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-amt">$61,240.00</div>
+      <div class="cr-flag"><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
+    </div>
+
+    <div class="claimrow" onclick="stubClaim('Demo, Charles')">
+      <div class="cr-who"><div class="nm">Demo, Charles</div><div class="sub mono">PID 100005 · Claim 1000003 · DOS 10/14/2025</div></div>
+      <div class="cr-payer">BCBS<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-amt">$52,030.00</div>
+      <div class="cr-flag"><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
+    </div>
+
+    <div class="claimrow" onclick="stubClaim('Testcase, Bruce')">
+      <div class="cr-who"><div class="nm">Testcase, Bruce</div><div class="sub mono">PID 100009 · Claim 1000009 · DOS 10/09/2025</div></div>
+      <div class="cr-payer">Cigna<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-amt">$41,880.00</div>
+      <div class="cr-flag"><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
+    </div>
+
+    <div class="claimrow" onclick="stubClaim('Example, Marta')">
+      <div class="cr-who"><div class="nm">Example, Marta</div><div class="sub mono">PID 100006 · Claim 1000004 · DOS 06/18/2025</div></div>
+      <div class="cr-payer">Mercy Care AZ<div class="net gov">● Government in-network</div></div>
+      <div class="cr-amt">$30,695.01</div>
+      <div class="cr-flag"><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================= -->
+<!-- SCREEN · GUIDED FLOW                                            -->
+<!-- ============================================================= -->
+<main class="wrap screen" id="flow">
+  <div class="flow-top">
+    <button class="exit" onclick="exitFlow()">← Back to your claims</button>
+    <span class="flow-who">Reviewing <b>Testcase, Alice</b> · Claim <b class="mono">1000001</b> · <b>United Healthcare</b> <span style="color:var(--idr)">◆ OON</span></span>
+  </div>
+
+  <!-- stepper -->
+  <div class="stepper" id="stepper">
+    <div class="step" id="step-1" onclick="stepClick(1)"><div class="circ">1</div><div class="slbl">Pull</div></div>
+    <div class="step" id="step-2" onclick="stepClick(2)"><div class="circ">2</div><div class="slbl">Verify patient &amp; insurance</div></div>
+    <div class="step" id="step-3" onclick="stepClick(3)"><div class="circ">3</div><div class="slbl">Coding &amp; diagnosis</div></div>
+    <div class="step" id="step-4" onclick="stepClick(4)"><div class="circ">4</div><div class="slbl">Review</div></div>
+    <div class="step" id="step-5" onclick="stepClick(5)"><div class="circ">5</div><div class="slbl">File</div></div>
+  </div>
+
+  <!-- STAGE 1 · PULL -->
+  <section class="stage" id="stage-1">
+    <div class="card">
+      <div class="stage-head">
+        <div class="kick">Step 1 of 5 · Pull</div>
+        <h2>Here's the case we pulled</h2>
+        <p class="prompt">Everything below came straight from case #1000001 — your techs entered the demographics and insurance, and the reading neurologist's report set the coding. Take a look and confirm it's the right case.</p>
+      </div>
+      <div class="stage-body">
+        <div class="src">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          Pulled from case #1000001 · 95% preloaded
+        </div>
+        <div class="fgrid">
+          <div class="f col2"><label>Patient</label><div class="val">Testcase, Alice</div></div>
+          <div class="f"><label>PID</label><div class="val mono">100001</div></div>
+          <div class="f"><label>Claim #</label><div class="val mono">1000001</div></div>
+          <div class="f"><label>Date of service</label><div class="val mono">10/20/2025</div></div>
+          <div class="f"><label>Component</label><div class="val">Professional + Technical</div></div>
+          <div class="f"><label>Payer</label><div class="val">United Healthcare</div></div>
+          <div class="f"><label>Network</label><div class="val" style="color:var(--idr);font-weight:600">Out-of-network</div></div>
+          <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5–C7</div></div>
+          <div class="f col2"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+        </div>
+        <div class="moneystrip">
+          <div class="ms-item oon"><span class="msdot"></span>Out-of-network — recovery continues at <b>IDR downstream</b> (No Surprises Act)</div>
+          <div class="ms-item clock"><span class="msdot"></span>Filing deadline: <b>5 days — on track</b></div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <button class="btn ghost" onclick="toast('Re-pulled latest from case #1000001')">Re-pull from case</button>
+        <div class="spacer"></div>
+        <button class="btn primary big" onclick="confirmStage(1)">Looks right — Continue →</button>
+      </div>
+    </div>
+    <div class="auditline">✦ <span id="audit-1">6</span> events logged to audit trail</div>
+  </section>
+
+  <!-- STAGE 2 · VERIFY PATIENT & INSURANCE -->
+  <section class="stage" id="stage-2">
+    <div class="card">
+      <div class="stage-head">
+        <div class="kick">Step 2 of 5 · Verify patient &amp; insurance</div>
+        <h2>Confirm the patient and coverage</h2>
+        <p class="prompt">Here's what came from the case — confirm it's right, or fix anything that's off. One benefits item was flagged by AI for a quick check before you continue.</p>
+      </div>
+      <div class="stage-body">
+        <div class="aibar" id="aibar-2"><span class="aibar-ic">✦</span><span id="aibar-msg-2">AI fields to confirm: <b>1</b> (this stage)</span></div>
+        <div class="blocktitle">Patient</div>
+        <div class="fgrid">
+          <div class="f col2"><label>Name</label><div class="val">Testcase, Alice</div></div>
+          <div class="f"><label>Sex</label><div class="val">Female</div></div>
+          <div class="f"><label>DOB</label><div class="val mono">08/29/1971</div></div>
+          <div class="f col3"><label>Address</label><div class="val">1200 Sample Ridge Ln, Springfield, ST</div></div>
+          <div class="f"><label>Phone</label><div class="val mono">555 555 0142</div></div>
+          <div class="f"><label>SSN</label><div class="val mono">•••-••-4407</div></div>
+          <div class="f"><label>EMR status</label><div class="val">Inpatient</div></div>
+          <div class="f col2"><label>Relation to insured</label><div class="val">Self</div></div>
+        </div>
+
+        <div class="blocktitle">Insurance &amp; benefits</div>
+        <div class="fgrid">
+          <div class="f"><label>Type</label><div class="val">Commercial</div></div>
+          <div class="f"><label>Payer</label><div class="val">United Healthcare</div></div>
+          <div class="f"><label>Policy #</label><div class="val mono">2W76y49mp67</div></div>
+          <div class="f"><label>Network</label><div class="val" style="color:var(--idr);font-weight:600">Out-of-network</div></div>
+        </div>
+        <div class="benefit-cols">
+          <div class="ben innet"><h3>In-network (not applicable)</h3>
+            <dl><dt>Status</dt><dd>No in-net contract</dd><dt>Reason</dt><dd>OON by design</dd></dl></div>
+          <div class="ben oonet"><h3>◆ Out-of-network — NSA applies</h3>
+            <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div>
+        </div>
+
+        <div class="fgrid" style="margin-top:16px">
+          <div class="f col4"><label>Verification of benefits (VOB) status</label>
+            <div class="aif" id="aif-vob">
+              <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">flagged by AI · via USMON MCP</span></div>
+              <div class="aival" id="aival-vob">⚠ Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
+              <div class="aif-why">AI flag: benefits on file exceed United Healthcare's re-verification window for OON claims. Recommend re-checking eligibility &amp; OON benefits before filing so the QPA on record is current.</div>
+              <div class="aif-act" id="aifact-vob">
+                <button class="btn ai sm" onclick="confirmAI('vob')">✓ Confirm — re-verified</button>
+                <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="smartnote">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span><b>Why out-of-network is expected here:</b> charges are set above QPA by design. The remittance will come in low — the real recovery happens later via NSA negotiation and IDR. You don't need to do anything about that now; the clocks are tracked for you.</span>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <button class="btn ghost" onclick="prevStage()">← Back</button>
+        <div class="spacer"></div>
+        <button class="btn primary big" id="verifyContinue" onclick="confirmStage(2)" disabled>Continue →</button>
+      </div>
+    </div>
+    <div class="auditline">✦ <span id="audit-2">6</span> events logged to audit trail</div>
+  </section>
+
+  <!-- STAGE 3 · CODING & DIAGNOSIS (the only stage with work) -->
+  <section class="stage" id="stage-3">
+    <div class="card">
+      <div class="stage-head">
+        <div class="kick">Step 3 of 5 · Coding &amp; diagnosis</div>
+        <h2>Coding from the reading report</h2>
+        <p class="prompt">The service lines and diagnoses came from the reading neurologist's report. A few AI-suggested fields need your confirmation before we move on — everything else is already set.</p>
+      </div>
+      <div class="stage-body">
+        <div class="aibar" id="aibar-3"><span class="aibar-ic">✦</span><span id="aibar-msg-3">AI fields to confirm: <b>3</b> (this stage)</span></div>
+
+        <!-- AI field 1: AI-suggested principal ICD-10 -->
+        <div class="dxrow">
+          <span class="dxlabel">Diagnoses (ICD-10)</span>
+          <span class="dxchip">M50.120</span><span class="dxchip">M54.12</span><span class="dxchip">G89.18</span>
+          <span id="dxLead"></span>
+        </div>
+        <div class="fgrid" style="margin-top:6px">
+          <div class="f col4"><label>Principal diagnosis (ICD-10)</label>
+            <div class="aif" id="aif-icd">
+              <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-suggested principal code · via USMON MCP</span></div>
+              <div class="aival mono" id="aival-icd">M50.121 — Cervical disc disorder with radiculopathy, C6–C7</div>
+              <div class="aif-why">Extracted from the reading neurologist's report: “…moderate radiculopathy at the C6–C7 level with corresponding SSEP/MEP changes.” Confidence 0.94. Placed first so the service-line Dx pointers resolve correctly.</div>
+              <div class="aif-act" id="aifact-icd">
+                <button class="btn ai sm" onclick="confirmAI('icd')">✓ Confirm</button>
+                <button class="btn sm" onclick="overrideAI('icd')">Edit / Override</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px" class="blocktitle">Service lines</div>
+        <table class="lines">
+          <thead><tr><th>#</th><th>CPT</th><th>Mods</th><th>Units</th><th>Dx</th><th>Charge</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr class="hot" id="line1"><td>1</td><td>95887</td><td>26</td><td>1</td><td>A</td><td>$361.25</td>
+              <td id="line1prov"><span class="needs" onclick="flashAI('prov')">Set provider →</span></td><td class="desc">Needle EMG, non-extremity</td></tr>
+            <tr><td>2</td><td>95909</td><td>26</td><td>1</td><td>A</td><td>$849.15</td><td class="set">Sample, Alan MD</td><td class="desc">Nerve conduction, 7–8 studies</td></tr>
+            <tr><td>3</td><td>95937</td><td>26</td><td>4</td><td>A B</td><td>$6,332.50</td><td class="set">Sample, Alan MD</td><td class="desc">Neuromuscular junction test</td></tr>
+            <tr id="line4"><td>4</td><td>95938</td><td>26</td><td id="line4units">6</td><td>A B</td><td>$11,900.01</td><td class="set">Sample, Alan MD</td><td class="desc">SSEP upper &amp; lower</td></tr>
+            <tr><td>5</td><td>95939</td><td>26</td><td>3</td><td>A</td><td>$17,850.01</td><td class="set">Sample, Alan MD</td><td class="desc">MEP upper &amp; lower</td></tr>
+            <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Sample, Alan MD</td><td class="desc">EEG during surgery</td></tr>
+          </tbody>
+        </table>
+
+        <div class="fgrid" style="margin-top:16px">
+          <div class="f col2"><label>Units — line 4 (95938, SSEP)</label>
+            <div class="aif" id="aif-units">
+              <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-derived from monitoring minutes · via USMON MCP</span></div>
+              <div class="aival mono" id="aival-units">6 units</div>
+              <div class="aif-why">Derived from 268 minutes of intraoperative SSEP monitoring on the tech report (≈45 min/unit). AI proposed the unit count; confirm it matches the documented time.</div>
+              <div class="aif-act" id="aifact-units">
+                <button class="btn ai sm" onclick="confirmAI('units')">✓ Confirm</button>
+                <button class="btn sm" onclick="overrideAI('units')">Edit / Override</button>
+              </div>
+            </div>
+          </div>
+          <div class="f col2"><label>Rendering provider — line 1 (95887), Box 24J</label>
+            <div class="aif" id="aif-prov">
+              <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">AI-matched from report signature · via USMON MCP</span></div>
+              <div class="aival" id="aival-prov">Sample, Alan MD — NPI 1000000048</div>
+              <div class="aif-why">Line 1 had no rendering provider. AI matched the signing neurologist from the reading report against the NPI registry. Confidence 0.97.</div>
+              <div class="aif-act" id="aifact-prov">
+                <button class="btn ai sm" onclick="confirmAI('prov')">✓ Confirm</button>
+                <button class="btn sm" onclick="overrideAI('prov')">Edit / Override</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="smartnote">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          <span><b>OON pricing applied:</b> charges set at the client's out-of-network fee schedule (≈6× QPA). Units derived from 268 min of monitoring on file. Charged <span class="mono">$48,087.92</span> total.</span>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <button class="btn ghost" onclick="prevStage()">← Back</button>
+        <div class="spacer"></div>
+        <button class="btn primary big" id="codeContinue" onclick="confirmStage(3)" disabled>Continue →</button>
+      </div>
+    </div>
+    <div class="auditline">✦ <span id="audit-3">6</span> events logged to audit trail</div>
+  </section>
+
+  <!-- STAGE 4 · REVIEW -->
+  <section class="stage" id="stage-4">
+    <div class="card">
+      <div class="stage-head">
+        <div class="kick">Step 4 of 5 · Review</div>
+        <h2>One last look</h2>
+        <p class="prompt">Everything's confirmed. Here's the whole claim in one place — if it all checks out, continue to file.</p>
+      </div>
+      <div class="stage-body">
+        <div class="fgrid">
+          <div class="f col2"><label>Patient</label><div class="val">Testcase, Alice · PID 100001</div></div>
+          <div class="f"><label>Claim #</label><div class="val mono">1000001</div></div>
+          <div class="f"><label>Payer</label><div class="val">United Healthcare · OON</div></div>
+          <div class="f col2"><label>Principal diagnosis</label><div class="val mono" id="reviewDx">—</div></div>
+          <div class="f"><label>Service lines</label><div class="val">6 lines</div></div>
+          <div class="f"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f col2"><label>Billing provider (Box 33)</label><div class="val">Demo Neurophysiology LLC · NPI 1000000017</div></div>
+          <div class="f col2"><label>Service facility (Box 32)</label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
+        </div>
+
+        <div class="blocktitle">Confirmed</div>
+        <div class="checklist">
+          <div class="chk"><span class="ci">✓</span><div class="ck-txt"><b>Case pulled</b><span>From case #1000001 · 95% preloaded</span></div><div class="ck-go"><button onclick="stepClick(1)">View</button></div></div>
+          <div class="chk"><span class="ci">✓</span><div class="ck-txt"><b>Patient &amp; insurance verified</b><span>OON benefits active · QPA ~$7,697 · timely filing 90 days</span></div><div class="ck-go"><button onclick="stepClick(2)">View</button></div></div>
+          <div class="chk"><span class="ci">✓</span><div class="ck-txt"><b>Coding &amp; diagnosis</b><span id="reviewCode">Principal Dx, derived units, and rendering provider all confirmed</span></div><div class="ck-go"><button onclick="stepClick(3)">View</button></div></div>
+        </div>
+
+        <div class="moneystrip">
+          <div class="ms-item oon"><span class="msdot"></span>Out-of-network — after filing, recovery continues at <b>IDR downstream</b></div>
+          <div class="ms-item clock"><span class="msdot"></span>Filing deadline: <b>5 days — on track</b></div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <button class="btn ghost" onclick="prevStage()">← Back</button>
+        <div class="spacer"></div>
+        <button class="btn primary big" onclick="confirmStage(4)">Everything checks out — Continue →</button>
+      </div>
+    </div>
+    <div class="auditline">✦ <span id="audit-4">6</span> events logged to audit trail</div>
+  </section>
+
+  <!-- STAGE 5 · FILE -->
+  <section class="stage" id="stage-5">
+    <div class="card" id="fileCard">
+      <div class="stage-head">
+        <div class="kick">Step 5 of 5 · File</div>
+        <h2>Ready to file</h2>
+        <p class="prompt">This claim is complete and validated. Filing submits an 837P batch to the clearinghouse and moves the claim into Ongoing follow-up.</p>
+      </div>
+      <div class="stage-body">
+        <div class="fgrid">
+          <div class="f col2"><label>Claim</label><div class="val">Testcase, Alice · 1000001</div></div>
+          <div class="f"><label>Charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f"><label>Channel</label><div class="val" style="color:var(--idr);font-weight:600">Commercial OON → IDR</div></div>
+        </div>
+        <div class="smartnote">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ok)"><path d="M20 6 9 17l-5-5"/></svg>
+          <span><b>All checks pass automatically:</b> NPI, charges, Dx pointers, place of service, ICD-10, and signature are valid. Nothing else needs your attention.</span>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <button class="btn ghost" onclick="prevStage()">← Back</button>
+        <div class="spacer"></div>
+        <button class="btn primary big" onclick="fileClaim()">File claim now →</button>
+      </div>
+    </div>
+
+    <!-- filed success (revealed after file) -->
+    <div class="card" id="filedCard" style="display:none">
+      <div class="filed">
+        <div class="seal">✓</div>
+        <h2>Filed</h2>
+        <p>Claim <b class="mono">1000001</b> for <b>Testcase, Alice</b> was filed — 837P batch queued to the clearinghouse. It's now in Ongoing follow-up, where the ERA, underpayment check, and IDR clocks are tracked for you.</p>
+        <div class="fbtns">
+          <button class="btn" onclick="navTo('ongoing')">Go to Ongoing follow-up</button>
+          <button class="btn primary big" onclick="nextClaim()">Next claim →</button>
+        </div>
+      </div>
+    </div>
+    <div class="auditline">✦ <span id="audit-5">6</span> events logged to audit trail</div>
+  </section>
+</main>
+
+<!-- placeholder screens so nav never dead-ends -->
+<main class="wrap screen" id="ongoing">
+  <div class="ph-head"><h1>Ongoing — Claim Follow-Up</h1></div>
+  <div class="placeholder"><h2>Ongoing follow-up</h2><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitron. Wired end-to-end in the full router build — out of scope for this Guided Flow demo.</p></div>
+</main>
+<main class="wrap screen" id="folders"><div class="ph-head"><h1>Folders</h1></div><div class="placeholder"><h2>Folders</h2><p>Client &amp; entity folders, saved batches, and archived cases. Out of scope for this demo build.</p></div></main>
+<main class="wrap screen" id="reports"><div class="ph-head"><h1>Reports</h1></div><div class="placeholder"><h2>Reports</h2><p>Recovery by channel, IDR win rate, aged-A/R, and clock-exposure trend. Out of scope for this demo build.</p></div></main>
+<main class="wrap screen" id="manage"><div class="ph-head"><h1>Manage</h1></div><div class="placeholder"><h2>Manage</h2><p>Payer rules, OON fee schedules, client routing rules, and user permissions. Out of scope for this demo build.</p></div></main>
+
+<div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  /* ---------- shared ---------- */
+  function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+  function toast(m,kind){const t=document.getElementById('toast');t.className='toast'+(kind?' '+kind:'');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+  function setNav(id){['review','ongoing','folders','reports','manage'].forEach(n=>{const a=document.getElementById('nav-'+n);if(a)a.classList.toggle('on',n===id);});}
+
+  const NAV_MSG={
+    ongoing:'Ongoing follow-up — ERA, underpayment & IDR clocks (out of scope for this demo)',
+    folders:'Folders — client & entity folders (out of scope for this demo)',
+    reports:'Reports — recovery by channel & IDR win rate (out of scope for this demo)',
+    manage:'Manage — payer rules & permissions (out of scope for this demo)'
+  };
+  function navTo(which){
+    if(which==='inbox'){show('inbox');setNav('review');}
+    else{show(which);setNav(which);if(NAV_MSG[which])toast(NAV_MSG[which]);}
+    return false;
+  }
+
+  /* ---------- role toggle: Biller <-> Supervisor (default Supervisor) ---------- */
+  function setRole(role){
+    const sup=role==='supervisor';
+    document.body.classList.toggle('role-super',sup);
+    document.getElementById('rt-biller').classList.toggle('on',!sup);
+    document.getElementById('rt-super').classList.toggle('on',sup);
+    const panel=document.getElementById('supPanel');
+    if(panel)panel.setAttribute('aria-hidden',sup?'false':'true');
+    document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Billing Supervisor':'Sample, Dana · Biller';
+    document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
+    toast(sup?'Supervisor view — team time & efficiency now visible':'Biller view — calm, no dashboards');
+  }
+
+  /* ---------- flow state ---------- */
+  let stage=1;              // current visible stage 1..5
+  let maxReached=1;         // furthest stage unlocked
+  let confirmed={1:false,2:false,3:false,4:false,5:false};
+  let filed=false, audit=6;
+
+  function bumpAudit(){audit++;for(let i=1;i<=5;i++){const el=document.getElementById('audit-'+i);if(el)el.textContent=audit;}}
+
+  /* ---------- AI fields (highlight-to-confirm, per stage) ---------- */
+  const AI_FIELDS={ vob:{stage:2}, icd:{stage:3}, units:{stage:3}, prov:{stage:3} };
+  const AI_INIT={
+    vob:{val:'⚠ Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)',confirm:'✓ Confirm — re-verified'},
+    icd:{val:'M50.121 — Cervical disc disorder with radiculopathy, C6–C7',confirm:'✓ Confirm'},
+    units:{val:'6 units',confirm:'✓ Confirm'},
+    prov:{val:'Sample, Alan MD — NPI 1000000048',confirm:'✓ Confirm'}
+  };
+  const STAGE_CONTINUE={2:'verifyContinue',3:'codeContinue'};
+  const aiState={}; Object.keys(AI_FIELDS).forEach(k=>aiState[k]='pending'); // pending | confirmed | overridden
+  function stageFields(n){return Object.keys(AI_FIELDS).filter(k=>AI_FIELDS[k].stage===n);}
+  function stagePending(n){return stageFields(n).filter(k=>aiState[k]==='pending');}
+  function leadPart(s){return s.split(' — ')[0].trim();}
+  function aiActionsHTML(key){
+    return '<button class="btn ai sm" onclick="confirmAI(\''+key+'\')">'+AI_INIT[key].confirm+'</button>'+
+           '<button class="btn sm" onclick="overrideAI(\''+key+'\')">Edit / Override</button>';
+  }
+
+  function resetFlow(){
+    stage=1; maxReached=1; confirmed={1:false,2:false,3:false,4:false,5:false};
+    filed=false; audit=6;
+    for(let i=1;i<=5;i++){const el=document.getElementById('audit-'+i);if(el)el.textContent=6;}
+    // reset every AI field back to pending
+    Object.keys(AI_FIELDS).forEach(k=>{
+      aiState[k]='pending';
+      const box=document.getElementById('aif-'+k); box.classList.remove('confirmed','overridden','flash');
+      document.getElementById('aival-'+k).textContent=AI_INIT[k].val;
+      document.getElementById('aifact-'+k).innerHTML=aiActionsHTML(k);
+    });
+    // reset coding-stage side effects
+    document.getElementById('dxLead').innerHTML='';
+    document.getElementById('line4units').textContent='6';
+    const l1=document.getElementById('line1prov'); l1.innerHTML='<span class="needs" onclick="flashAI(\'prov\')">Set provider →</span>';
+    document.getElementById('line1').className='hot';
+    // reset file stage
+    document.getElementById('fileCard').style.display='';
+    document.getElementById('filedCard').style.display='none';
+    updateAIStage(2); updateAIStage(3);
+    renderStage();
+  }
+
+  function enterFlow(){resetFlow();show('flow');setNav('review');}
+  function exitFlow(){show('inbox');setNav('review');}
+  function stubClaim(name){toast(name+' — this demo wires Testcase, Alice end-to-end. Click her row to walk the flow.');}
+
+  function renderStage(){
+    for(let i=1;i<=5;i++){
+      document.getElementById('stage-'+i).classList.toggle('active',i===stage);
+      const st=document.getElementById('step-'+i);
+      st.classList.remove('current','done');
+      if(confirmed[i]) st.classList.add('done');
+      if(i===stage) st.classList.add('current');
+      const circ=st.querySelector('.circ');
+      circ.textContent=confirmed[i]?'✓':i;
+    }
+  }
+
+  function goStage(n){ if(n<1||n>5)return; stage=n; if(n>maxReached)maxReached=n; renderStage(); window.scrollTo(0,0); }
+  function prevStage(){ goStage(stage-1); }
+  function stepClick(n){ if(n<=maxReached) goStage(n); else toast('Finish the current step first'); }
+
+  function confirmStage(n){
+    const pend=stagePending(n);
+    if(pend.length){ toast('Confirm the AI field'+(pend.length>1?'s':'')+' in this step first','ai'); flashAI(pend[0]); return; }
+    if(!confirmed[n]){ confirmed[n]=true; bumpAudit(); }
+    if(n===4) refreshReview();
+    if(n<5) goStage(n+1); else renderStage();
+    renderStage();
+  }
+
+  /* ---------- AI-field confirm loop (highlight-to-confirm) ---------- */
+  function flashAI(key){
+    const el=document.getElementById('aif-'+key);
+    if(!el)return;
+    el.scrollIntoView({block:'center'});
+    el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),700);
+  }
+  function aiSideEffect(key,mode){
+    if(key==='icd'){
+      const code=leadPart(document.getElementById('aival-icd').textContent);
+      const chip=document.createElement('span'); chip.className='dxchip new lead'; chip.textContent=code+' · principal';
+      const lead=document.getElementById('dxLead'); lead.innerHTML=''; lead.appendChild(chip);
+    }
+    if(key==='prov'){
+      const name=leadPart(document.getElementById('aival-prov').textContent);
+      const s=document.createElement('span'); s.className='set'; s.textContent=name;
+      const cell=document.getElementById('line1prov'); cell.innerHTML=''; cell.appendChild(s);
+      document.getElementById('line1').className='hot fixed';
+    }
+    if(key==='units'){
+      const u=document.getElementById('aival-units').textContent.replace(/[^0-9]/g,'')||'6';
+      document.getElementById('line4units').textContent=u;
+    }
+  }
+  function resolveAI(key,mode){
+    if(aiState[key]!=='pending')return;
+    aiState[key]=mode; bumpAudit();
+    const box=document.getElementById('aif-'+key);
+    box.classList.remove('overridden','confirmed');
+    box.classList.add(mode==='overridden'?'overridden':'confirmed');
+    document.getElementById('aifact-'+key).innerHTML =
+      mode==='overridden'
+        ? '<span class="aif-done ovr">✎ Overridden by you · logged to audit</span>'
+        : '<span class="aif-done">✓ Confirmed by you · logged to audit</span>';
+    aiSideEffect(key,mode);
+    updateAIStage(AI_FIELDS[key].stage);
+  }
+  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed — logged to audit trail','ai'); }
+  function overrideAI(key){
+    if(aiState[key]!=='pending')return;
+    const cur=document.getElementById('aival-'+key).textContent.trim();
+    document.getElementById('aifact-'+key).innerHTML=
+      '<input class="aiedit" id="aiedit-'+key+'" value="'+cur.replace(/"/g,'&quot;')+'">'+
+      '<button class="btn ai sm" onclick="saveOverride(\''+key+'\')">Save</button>'+
+      '<button class="btn sm" onclick="cancelOverride(\''+key+'\')">Cancel</button>';
+    const inp=document.getElementById('aiedit-'+key); inp.focus(); inp.select();
+  }
+  function saveOverride(key){
+    const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
+    document.getElementById('aival-'+key).textContent=v;
+    resolveAI(key,'overridden');
+    toast('Override saved — biller value recorded, logged to audit trail','ai');
+  }
+  function cancelOverride(key){
+    document.getElementById('aifact-'+key).innerHTML=aiActionsHTML(key);
+  }
+
+  /* per-stage AI indicator + continue-gate */
+  function updateAIStage(n){
+    const pend=stagePending(n).length;
+    const bar=document.getElementById('aibar-'+n);
+    if(bar){
+      const msg=document.getElementById('aibar-msg-'+n);
+      bar.classList.toggle('done',pend===0);
+      bar.querySelector('.aibar-ic').textContent=pend===0?'✓':'✦';
+      if(msg) msg.innerHTML = pend===0
+        ? 'All AI fields confirmed — you can continue'
+        : 'AI fields to confirm: <b>'+pend+'</b> (this stage)';
+    }
+    const btn=STAGE_CONTINUE[n] && document.getElementById(STAGE_CONTINUE[n]);
+    if(btn){ btn.disabled=pend>0; btn.textContent=pend>0?'Continue →':'Looks right — Continue →'; }
+  }
+
+  function refreshReview(){
+    document.getElementById('reviewDx').textContent =
+      (aiState.icd!=='pending')
+        ? (leadPart(document.getElementById('dxLead').textContent.replace(' · principal','')) || 'M50.121')
+        : '—';
+  }
+
+  /* ---------- stage 5: file ---------- */
+  function fileClaim(){
+    if(filed)return; filed=true; confirmed[5]=true; bumpAudit();
+    document.getElementById('fileCard').style.display='none';
+    document.getElementById('filedCard').style.display='';
+    renderStage();
+    toast('Claim 1000001 filed — 837P batch queued','idr');
+  }
+  function nextClaim(){ show('inbox'); setNav('review'); toast('Back to your claims — 5 more waiting'); }
+
+  /* init */
+  updateAIStage(2); updateAIStage(3);
+  renderStage();
+</script>
+</body>
+</html>

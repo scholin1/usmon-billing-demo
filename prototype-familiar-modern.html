@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — Insurance Billing (Familiar-Modern prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;   /* Commercial OON -> IDR feeder */
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;                          /* Government in-network */
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;  /* Hospital tech-fee invoice */
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+
+  /* open-claim tabs */
+  .tabstrip{display:none;align-items:center;gap:6px;background:#0f1824;padding:0 16px;height:42px;position:sticky;top:52px;z-index:39;border-top:1px solid #233247}
+  .tabstrip.show{display:flex}
+  .ptab{display:flex;align-items:center;gap:8px;background:#1b2738;color:#c7d2dd;border:1px solid transparent;border-radius:8px 8px 0 0;padding:8px 12px;font-size:12.5px;font-weight:600;max-width:250px;position:relative;top:1px}
+  .ptab:hover{background:#22334a;color:#fff}
+  .ptab.active{background:var(--canvas);color:var(--ink);border-color:var(--line)}
+  .ptab.parked{background:var(--park-tint);color:var(--park);border-color:var(--park-line)}
+  .ptab .x{opacity:.5;font-weight:700}.ptab .x:hover{opacity:1}
+  .ptab .pk{font-size:11px}
+  .ptab-add{color:#9fb0c0;background:none;border:1px dashed #34465e;border-radius:8px;padding:7px 11px;font-size:12.5px;font-weight:600}
+  .ptab-add:hover{color:#fff;border-color:#5a7189}
+  .ptab-note{margin-left:auto;color:#7e8ea0;font-size:12px}
+
+  .wrap{max-width:1320px;margin:0 auto;padding:22px 20px 70px}
+  .screen{display:none}.screen.active{display:block}
+
+  .crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:14px}
+  .crumb button{background:none;border:none;color:var(--primary);font-size:13px;padding:0;cursor:pointer}
+
+  .page-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .page-head h1{font-size:21px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .page-head p{margin:3px 0 0;color:var(--muted);font-size:13px;max-width:660px}
+  .head-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.primary:disabled{background:#cbd5e1;border-color:#cbd5e1;cursor:not-allowed}
+  .btn.ghost{background:none;border-color:transparent;color:var(--primary)}
+  .searchbar{flex:1;min-width:220px;max-width:340px;position:relative}
+  .searchbar input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line-strong);border-radius:8px;font-size:13px}
+  .searchbar svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+  .searchbar input:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+
+  /* compact queue-count strip (full tiles live on the configurable home dashboard) */
+  .qsummary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:8px 13px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);font-size:12.5px}
+  .qs{color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:5px;padding-right:9px;border-right:1px solid var(--line)}
+  .qs b{color:var(--ink);font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+  .qs.ready b{color:var(--ok)} .qs.wait b{color:var(--park)} .qs.aged b{color:var(--block)}
+  .qs-note{margin-left:auto;color:var(--faint);font-size:11.5px}
+  .qs-note a{font-weight:600}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .tablescroll{overflow-x:auto}
+  .toolbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--primary-tint);border:1px solid var(--primary);border-bottom:none;border-radius:var(--radius) var(--radius) 0 0;font-size:13px;color:var(--primary-dark);font-weight:600}
+  .toolbar .btn{padding:5px 10px;font-size:12px}
+  .toolbar .spacer{margin-left:auto}
+  .toolbar .fnote{font-weight:600;color:var(--primary-dark);font-size:12px}
+
+  table{width:100%;border-collapse:collapse}
+  thead th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+  th.sortable{cursor:pointer;user-select:none}
+  th.sortable:hover{color:var(--muted)}
+  th.sortable .cw{opacity:.35;font-size:9px;margin-left:3px}
+  th.sortable.sorted{color:var(--primary)} th.sortable.sorted .cw{opacity:1;color:var(--primary)}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr.rowlink:hover{background:var(--surface-2);cursor:pointer}
+  tbody tr:last-child td{border-bottom:none}
+  .pat{font-weight:600}.sub{color:var(--muted);font-size:12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .pill.ready{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .pill.review{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .pill.block{background:var(--block-tint);color:var(--block);border:1px solid var(--block-line)}
+  .pill.oon{background:var(--idr-tint);color:var(--idr);border:1px solid var(--idr-line)}
+  .pill.park{background:var(--park-tint);color:var(--park);border:1px solid var(--park-line)}
+  .pill.await{background:#eef2f7;color:var(--muted);border:1px solid var(--line-strong)}
+  .pill.filed{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  /* billing-type tag — the column billers scan */
+  .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .tag.bt-pt{color:var(--primary-dark);background:var(--primary-tint)}
+  .tag.bt-pro{color:var(--idr-dark);background:var(--idr-tint)}
+  .tag.bt-tech{color:var(--hosp-dark);background:var(--hosp-tint)}
+  .net{font-size:11px;font-weight:700;color:var(--idr)}
+  .aged{font-family:var(--mono);font-weight:700;font-feature-settings:"tnum" 1}
+  .aged.warnc{color:var(--warn)} .aged.riskc{color:var(--block)}
+  .idrstate{font-size:11.5px;font-weight:700}
+  .idrstate.elig{color:var(--idr)} .idrstate.na{color:var(--faint);font-weight:600} .idrstate.dash{color:var(--faint)}
+  .openbtn{color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap}
+
+  /* claim workspace */
+  .ws-head{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px;flex-wrap:wrap}
+  .ws-id .name{font-size:19px;font-weight:700;letter-spacing:-.2px}
+  .ws-id .meta{display:flex;gap:14px;color:var(--muted);font-size:12.5px;flex-wrap:wrap;margin-top:3px}
+  .ws-id .meta b{color:var(--ink);font-weight:600}
+  .ws-head .right{margin-left:auto;display:flex;align-items:center;gap:10px;position:relative}
+  .master{display:flex;align-items:center;gap:9px;padding:8px 13px;border-radius:9px;font-weight:700;font-size:13px}
+  .master.work{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .master.ready{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .master.park{background:var(--park-tint);color:var(--park);border:1px solid var(--park-line)}
+  .master.filed{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+
+  .parkpop{position:absolute;top:46px;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 34px rgba(16,32,46,.16);padding:8px;width:280px;z-index:20;display:none}
+  .parkpop.show{display:block}
+  .parkpop h4{margin:6px 8px 8px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint)}
+  .parkpop button{display:block;width:100%;text-align:left;background:none;border:none;padding:9px 8px;border-radius:7px;font-size:13px;color:var(--ink);font-weight:600}
+  .parkpop button:hover{background:var(--park-tint);color:var(--park)}
+
+  .parkbar{display:none;align-items:center;gap:11px;background:var(--park-tint);border:1px solid var(--park-line);border-radius:var(--radius);padding:11px 15px;margin-bottom:14px;font-size:13px;color:var(--park)}
+  .parkbar.show{display:flex}
+  .parkbar b{font-weight:700}.parkbar .btn{margin-left:auto;padding:6px 11px;font-size:12px}
+
+  .pullbanner{display:flex;align-items:center;gap:12px;background:var(--primary-tint);border:1px solid var(--primary-line);border-radius:var(--radius);padding:11px 15px;margin-bottom:16px;font-size:13px;color:var(--primary-dark)}
+  .pullbanner svg{flex:none}
+  .pullbanner b{font-weight:700}.pullbanner .btn{margin-left:auto;padding:6px 11px;font-size:12px;white-space:nowrap}
+
+  .ws-grid{display:grid;grid-template-columns:200px 1fr 328px;gap:18px;align-items:start}
+  @media(max-width:1100px){.ws-grid{grid-template-columns:1fr}.ws-nav,.rail{position:static!important}}
+  .ws-nav{position:sticky;top:112px;display:flex;flex-direction:column;gap:2px}
+  .ws-nav .navttl{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:700;padding:4px 12px 6px}
+  .ws-nav a{padding:9px 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;display:flex;align-items:center;gap:9px;border-left:3px solid transparent}
+  .ws-nav a:hover{background:var(--surface);color:var(--ink)}
+  .ws-nav a.on{background:var(--surface);color:var(--ink);border-left-color:var(--primary);box-shadow:var(--shadow)}
+  .ws-nav .dotstat{width:15px;height:15px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:9px;color:#fff;font-weight:800;background:var(--faint)}
+  .ws-nav .dotstat.rv{background:var(--ok)} .ws-nav .dotstat.inp{background:var(--block)}
+  .ws-nav .bx{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:600}
+
+  .sections{display:flex;flex-direction:column;gap:16px}
+  .sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:118px}
+  .sec-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
+  .sec-head h2{font-size:14px;margin:0;font-weight:700}
+  .sec-head .boxes{display:flex;gap:5px;flex-wrap:wrap}
+  .boxtag{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);background:#fff;border:1px solid var(--line-strong);border-radius:4px;padding:1px 6px;white-space:nowrap}
+  .sec-head .src{font-size:11.5px;color:var(--faint);font-weight:600}
+  .revbtn{margin-left:auto;border:1px solid var(--line-strong);background:#fff;color:var(--ink);font-size:12px;font-weight:700;padding:5px 11px;border-radius:7px;display:inline-flex;align-items:center;gap:6px}
+  .revbtn:hover{border-color:var(--ok);color:var(--ok)}
+  .revbtn.done{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok);pointer-events:none}
+  .revbtn.input{background:var(--block-tint);border-color:var(--block-line);color:var(--block)}
+  .sec-body{padding:16px 18px}
+  .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 16px}
+  .f{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .f.col2{grid-column:span 2}.f.col3{grid-column:span 3}.f.col4{grid-column:span 4}
+  @media(max-width:560px){.fgrid{grid-template-columns:repeat(2,1fr)}.f.col3,.f.col4{grid-column:span 2}}
+  .f label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .f label .bx{color:var(--muted);font-family:var(--mono);font-size:10px}
+  .f .val{font-size:13.5px;font-weight:500;padding:7px 10px;background:var(--surface-2);border:1px solid var(--line);border-radius:7px;min-height:33px;display:flex;align-items:center}
+  .f .val.mono{font-family:var(--mono)}
+  .f .val.edit{background:#fff;border-color:var(--primary-line);box-shadow:0 0 0 3px var(--primary-tint)}
+  .f .val.highlight{box-shadow:0 0 0 3px var(--block-tint);border-color:var(--block);transition:.2s}
+
+  .benefit-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  @media(max-width:560px){.benefit-cols{grid-template-columns:1fr}}
+  .ben{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .ben h3{margin:0;font-size:12px;padding:8px 12px;font-weight:700}
+  .ben.innet h3{background:var(--ok-tint);color:var(--ok)} .ben.oonet h3{background:var(--idr-tint);color:var(--idr)}
+  .ben dl{margin:0;padding:6px 12px 10px;display:grid;grid-template-columns:1fr auto;gap:5px 10px;font-size:12.5px}
+  .ben dt{color:var(--muted)} .ben dd{margin:0;font-weight:600;font-family:var(--mono)}
+
+  .lines{width:100%;border-collapse:collapse;font-size:12.5px;min-width:640px}
+  .lines th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+  .lines td{padding:8px;border-bottom:1px solid var(--line);font-family:var(--mono)}
+  .lines tr:last-child td{border-bottom:none}
+  .lines .desc{font-family:var(--sans);color:var(--muted)}
+  .lines .needs{color:var(--block);font-style:italic;cursor:pointer;font-family:var(--sans);font-weight:600}
+  .lines .needs:hover{text-decoration:underline}
+  .lines .set{color:var(--ok);font-weight:700}
+  .dxedit{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dxchip{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--line-strong);border-radius:6px;padding:4px 9px;font-weight:600}
+  .dxchip.pr{border-color:var(--faint)}
+  .dxchip.new{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .addcode{border:1px dashed var(--block);color:var(--block);background:var(--block-tint);border-radius:6px;padding:4px 10px;font-size:12.5px;font-weight:700}
+  .smartnote{font-size:12px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:7px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:8px 11px}
+  .smartnote svg{flex:none}
+  .smartnote b{color:var(--ink)}
+
+  /* always-on validation rail — the modern replacement for the end-of-process popup */
+  .rail{position:sticky;top:112px}
+  .rail-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .rail-top{padding:15px 16px;border-bottom:1px solid var(--line)}
+  .rail-top h2{margin:0 0 2px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .rail-top h2 .live{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);border-radius:999px;padding:1px 7px;display:inline-flex;align-items:center;gap:4px}
+  .rail-top h2 .live .blip{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+  .rail-top p{margin:0;font-size:12px;color:var(--muted)}
+  .verdict{margin-top:12px;border-radius:9px;padding:11px 13px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;border:1px solid}
+  .verdict.block{background:var(--block-tint);color:var(--block);border-color:var(--block-line)}
+  .verdict.ready{background:var(--ok-tint);color:var(--ok);border-color:var(--ok-line)}
+  .verdict .vic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;flex:none}
+  .verdict.block .vic{background:var(--block)} .verdict.ready .vic{background:var(--ok)}
+  .verdict small{display:block;font-weight:600;font-size:11px;opacity:.85;margin-top:1px}
+  .meter{margin-top:12px}
+  .meter .track{height:8px;border-radius:5px;background:#eef2f7;overflow:hidden}
+  .meter .fill{height:100%;border-radius:5px;background:var(--warn);transition:width .5s cubic-bezier(.2,.7,.2,1),background .4s;width:0}
+  .meter .lbl{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--muted);font-weight:600}
+  .meter .lbl b{color:var(--ink)}
+  .approveall{margin-top:11px;width:100%;justify-content:center;font-size:12.5px;padding:8px}
+  .rgroup{padding:11px 16px;border-bottom:1px solid var(--line)}.rgroup:last-of-type{border-bottom:none}
+  .rgroup h3{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .rgroup h3 .ct{margin-left:auto;background:#eef2f7;color:var(--muted);border-radius:999px;padding:1px 8px;font-size:11px}
+  .rgroup.i h3{color:var(--block)} .rgroup.i.clear h3{color:var(--ok)} .rgroup.r h3{color:var(--ink)} .rgroup.v h3{color:var(--ok)}
+  .rgroup.i.clear h3 .ct{background:var(--ok-tint);color:var(--ok)}
+  .allclear{display:none;gap:9px;align-items:center;padding:7px 8px;font-size:12.5px;color:var(--ok);font-weight:600}
+  .rgroup.i.clear .allclear{display:flex}
+  .allclear .ic{flex:none;width:17px;height:17px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+  .ritem{display:flex;gap:9px;align-items:flex-start;padding:7px 8px;font-size:12.5px;line-height:1.35;border-radius:7px;margin:0 -8px}
+  .ritem.click{cursor:pointer}
+  .ritem.click:hover{background:var(--surface-2)}
+  .ritem.input.click:hover{background:var(--block-tint)}
+  .ritem .ic{flex:none;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;margin-top:1px;font-size:10px;color:#fff;font-weight:800}
+  .ic.b{background:var(--block)} .ic.w{background:var(--warn)} .ic.d{background:var(--ok)} .ic.o{background:#cbd5e1}
+  .ritem .txt b{display:block;font-weight:700} .ritem .txt span{color:var(--muted);font-size:11.5px}
+  .ritem .go{margin-left:auto;font-weight:800;flex:none;color:var(--faint)}
+  .rail-foot{padding:14px 16px}
+  .rail-foot .btn{width:100%;justify-content:center;font-size:13.5px;padding:11px}
+  .hint{font-size:11.5px;color:var(--faint);text-align:center;margin-top:8px}
+
+  /* ===== AI FIELD — highlight-to-confirm (ported from Biller Review) ===== */
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark);border-color:var(--ai-dark)}
+  .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
+  .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
+  .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .aif .aif-src{font-size:11px;color:var(--ai-dark);font-weight:600}
+  .aif .aival{font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--ai-line);border-radius:7px;padding:8px 10px;min-height:33px;display:flex;align-items:center}
+  .aif .aival.mono{font-family:var(--mono)}
+  .aif .aif-why{font-size:11.5px;color:#3c2b8a;margin-top:7px;line-height:1.4;font-style:italic}
+  .aif .aif-act{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+  .aif .aif-act .btn{padding:5px 12px;font-size:12px}
+  .aif .aiedit{flex:1;min-width:160px;font-family:var(--sans);font-size:13px;padding:7px 9px;border:1px solid var(--ai);border-radius:7px;box-shadow:0 0 0 3px var(--ai-tint)}
+  .aif.flash{box-shadow:0 0 0 4px var(--ai-tint)}
+  .aif.confirmed{border-color:var(--ok-line);border-left-color:var(--ok);background:var(--ok-tint)}
+  .aif.confirmed .aival{border-color:var(--ok-line)}
+  .aif.confirmed .aif-src,.aif.confirmed .aif-why{color:var(--ok)}
+  .aif.overridden{border-color:var(--warn-line);border-left-color:var(--warn);background:var(--warn-tint)}
+  .aif.overridden .aival{border-color:var(--warn-line)}
+  .aif .aif-done{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok)}
+  .aif .aif-done.ovr{color:var(--warn)}
+  /* AI-fields counter — persistent countdown in the validation rail */
+  .aicount{padding:15px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);transition:.3s}
+  .aicount h3{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--ai-dark);display:flex;align-items:center;gap:6px}
+  .aicount .big{font-size:32px;font-weight:800;letter-spacing:-.6px;color:var(--ai-dark);line-height:1}
+  .aicount .cap{font-size:12px;color:#3c2b8a;font-weight:600;margin-top:3px}
+  .aicount.done{background:var(--ok-tint)}
+  .aicount.done h3{color:var(--ok)} .aicount.done .big{color:var(--ok)} .aicount.done .cap{color:var(--ok)}
+  /* AI rail items + nav dot */
+  .ws-nav .dotstat.ai{background:var(--ai)}
+  .ic.ai{background:var(--ai)} .ic.ov{background:var(--warn)}
+  .ritem.ai.click:hover{background:var(--ai-tint)}
+  .ritem.done .txt b{text-decoration:line-through;color:var(--muted)}
+  .ritem.done .go{color:var(--ok)}
+  .rgroup.ai h3{color:var(--ai-dark)}
+  .rgroup.ai h3 .ct{background:var(--ai);color:#fff}
+
+  /* filing success overlay */
+  .overlay{position:fixed;inset:0;background:rgba(16,32,46,.55);display:none;place-items:center;z-index:80;padding:20px}
+  .overlay.show{display:grid}
+  .successcard{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:30px 30px 24px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+  .successcard .big{width:64px;height:64px;border-radius:50%;background:var(--ok-tint);color:var(--ok);display:grid;place-items:center;font-size:30px;margin:0 auto 16px;border:2px solid var(--ok-line)}
+  .successcard h2{margin:0 0 6px;font-size:19px}
+  .successcard p{margin:0 0 4px;color:var(--muted);font-size:13px}
+  .successcard .rcpt{margin:16px 0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-align:left;display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:12.5px}
+  .successcard .rcpt .k{color:var(--muted)} .successcard .rcpt .v{font-weight:700;font-family:var(--mono);text-align:right}
+  .successcard .sactions{display:flex;gap:9px;margin-top:6px}
+  .successcard .sactions .btn{flex:1;justify-content:center}
+
+  /* placeholder screens */
+  .placeholder{background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:44px;text-align:center;color:var(--muted);box-shadow:var(--shadow)}
+  .placeholder h2{margin:0 0 6px;font-size:16px;color:var(--ink)}
+  .placeholder p{margin:0 auto;font-size:13px;max-width:520px}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:100;max-width:460px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.info .ic{background:var(--primary)}
+
+  /* ===== role toggle (Biller <-> Supervisor) — ported from Biller Review ===== */
+  .appuser #whoLabel{white-space:nowrap}
+  .rolewrap{display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+  .roletoggle{display:flex;align-items:center;gap:6px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+  .rt-cap{font-size:10px;color:#7e8ea0;font-weight:600;white-space:nowrap;letter-spacing:.1px}
+
+  /* stats are supervisor-only: hidden for billers, shown only in Supervisor role */
+  .qsummary{display:none}
+  body.role-super .qsummary{display:flex}
+
+  /* ===== SUPERVISOR-ONLY oversight panel — ported from Biller Review ===== */
+  .sup-panel{display:none;margin-bottom:14px}
+  body.role-super .sup-panel{display:block}
+  .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .sp-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--gov-tint);flex-wrap:wrap}
+  .sp-head h2{font-size:14px;margin:0;font-weight:700;color:var(--gov)}
+  .sp-head .sp-tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line);border-radius:5px;padding:2px 7px}
+  .sp-head .hid{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  @media(max-width:680px){.sp-stats{grid-template-columns:repeat(2,1fr)}}
+  .sp-stat{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+  .sp-stat .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sp-stat .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+  .sp-stat.flag .num{color:var(--block)}
+  .eff-scroll{overflow-x:auto}
+  .eff{width:100%;border-collapse:collapse;font-size:12.5px;min-width:560px}
+  .eff th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:right;padding:9px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+  .eff th:first-child{text-align:left}
+  .eff td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono)}
+  .eff td:first-child{text-align:left;font-family:var(--sans);font-weight:600}
+  .eff tr:last-child td{border-bottom:none}
+  .eff tr.flagged{background:var(--block-tint)}
+  .eff .bar{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+  .eff .track{width:52px;height:6px;border-radius:4px;background:#eef2f7;overflow:hidden}
+  .eff .fill{height:100%;border-radius:4px;background:var(--ok)}
+  .eff .fill.mid{background:var(--warn)} .eff .fill.low{background:var(--block)}
+  .deadflag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;font-family:var(--sans)}
+  .deadflag.low{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .deadflag.mid{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .deadflag.high{background:var(--block-tint);color:var(--block);border:1px solid var(--block-line)}
+
+  /* ===== claim notes popover ===== */
+  .notecount{font-family:var(--mono);font-size:10px;background:var(--primary-tint);color:var(--primary-dark);border:1px solid var(--primary-line);border-radius:999px;padding:0 6px;font-weight:800}
+  .notespop{position:absolute;top:46px;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 34px rgba(16,32,46,.16);padding:12px;width:330px;z-index:20;display:none;text-align:left}
+  .notespop.show{display:block}
+  .notespop h4{margin:2px 4px 9px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint)}
+  .notespop .note{font-size:12.5px;border-left:3px solid var(--line-strong);background:var(--surface-2);border-radius:0 7px 7px 0;padding:6px 10px;margin-bottom:7px;color:var(--ink);line-height:1.35}
+  .notespop .note .who{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-top:2px}
+  .notespop .naddrow{display:flex;gap:7px;margin-top:10px}
+  .notespop textarea{flex:1;font-family:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 8px;resize:vertical;min-height:36px}
+  .notespop textarea:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro — prototype "FAMILIAR-MODERN" (client demo, synthetic data only)
+  Thesis: keep the mental model tenured billers already know; modernize only
+  the execution. The OPPOSITE of v5's case-monetization reframe.
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. Land on "New Insurance Billing" — the SAME dense worklist billers know:
+       Patient, Claim/DOS, Billing Type (Pro/Tech/Pro+Tech), Payer, Charges,
+       Days Aged, IDR State, Status. Click a column header to show it still sorts.
+    2. Click the Testcase, Alice row -> the SINGLE-SCROLL claim page. Point out:
+       everything on ONE page (no popups/tabs to see patient info or the CMS-1500),
+       familiar sections (Demographics / Insurance / Facility / Procedure / Coding /
+       Billing), and visible CMS-1500 BOX references (Box 21, 24J, 32, 33...).
+    3. Right rail = the ALWAYS-ON validation panel — the modern replacement for
+       today's end-of-process "Information Required" popup. It says "Information
+       required (2)" up front. Nothing is a surprise at export.
+    4. Clear the 2 exceptions LIVE: "Add principal ICD-10 (Box 21)" and
+       "Set rendering provider (Box 24J)". Watch the panel + section dots update.
+    5. Click "Approve all reviewed", then "File claim" -> success state.
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" id="nav-worklist" class="on" onclick="return navTo('worklist')">New Insurance Billing</a>
+    <a href="#" id="nav-ongoing" onclick="return navTo('ongoing')">Ongoing</a>
+    <a href="#" id="nav-folders" onclick="return navTo('folders')">Folders</a>
+    <a href="#" id="nav-reports" onclick="return navTo('reports')">Reports</a>
+    <a href="#" id="nav-manage" onclick="return navTo('manage')">Manage</a>
+  </nav>
+  <div class="appuser">
+    <div class="rolewrap">
+      <div class="roletoggle" role="group" aria-label="Demo view role">
+        <span class="rt-lbl">View</span>
+        <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+        <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+      </div>
+      <span class="rt-cap">Supervisor view — billers don't see this</span>
+    </div>
+    <span id="whoLabel">Dr. Michael Scholin · Billing Supervisor</span>
+    <span class="avatar" id="whoAvatar">MS</span>
+  </div>
+</header>
+
+<!-- open-claim tabs (claim page only) -->
+<div class="tabstrip" id="tabstrip">
+  <div class="ptab active" id="tab-alice" onclick="switchTab('alice')">Testcase, Alice <span class="x" onclick="event.stopPropagation();backToWorklist()">&#10005;</span></div>
+  <div class="ptab" onclick="switchTab('ray')">Mockdata, Ray <span class="x">&#10005;</span></div>
+  <div class="ptab parked" onclick="switchTab('charles')"><span class="pk">&#9208;</span> Demo, Charles <span style="font-weight:500;opacity:.8">· waiting on tech</span></div>
+  <button class="ptab-add" onclick="backToWorklist()">+ Open claim</button>
+  <span class="ptab-note">3 claims open · each keeps its place</span>
+</div>
+
+<!-- ============================================================= -->
+<!-- SCREEN 1 · WORKLIST — the familiar dense grid                  -->
+<!-- ============================================================= -->
+<main class="wrap screen active" id="worklist">
+  <div class="page-head">
+    <div><h1>New Insurance Billing</h1>
+      <p>The worklist you know — same columns, same billing-type tags, same aging &amp; IDR view. Cases are preloaded by your techs and reading neurologists; your job is to review, fix the exceptions, and file.</p></div>
+    <div class="searchbar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="Search patient, PID, claim, payer…"></div>
+    <div class="head-actions"><button class="btn primary" onclick="toast('New claim opens a blank single-scroll claim page','info')">+ New claim</button></div>
+  </div>
+
+  <!-- familiar queue counts -->
+  <div class="qsummary">
+    <span class="qs rev"><b>28</b> needs review</span>
+    <span class="qs ready"><b>12</b> ready to file</span>
+    <span class="qs wait"><b>3</b> waiting on info</span>
+    <span class="qs aged"><b>4</b> aged &gt; 90d</span>
+    <span class="qs-note"><a href="#" onclick="return demoNote()">Customize these on your home dashboard →</a></span>
+  </div>
+
+  <!-- ===== SUPERVISOR-ONLY oversight panel (hidden from billers) ===== -->
+  <div class="sup-panel" id="supPanel" aria-hidden="false">
+    <div class="sp-card">
+      <div class="sp-head"><h2>Supervisor oversight</h2><span class="sp-tag">Supervisor view</span><span class="hid">Hidden from billers · same worklist underneath</span></div>
+      <div class="sp-stats">
+        <div class="sp-stat"><div class="num">96</div><div class="lbl">Claims worked today (team)</div></div>
+        <div class="sp-stat"><div class="num mono">4:21</div><div class="lbl">Avg time / claim</div></div>
+        <div class="sp-stat"><div class="num">78%</div><div class="lbl">Team active time</div></div>
+        <div class="sp-stat flag"><div class="num">1</div><div class="lbl">Dead-time flag</div></div>
+      </div>
+      <div class="eff-scroll">
+      <table class="eff">
+        <thead><tr><th>Biller</th><th>Claims today</th><th>Avg time/claim</th><th>Active %</th><th>Claims/hr</th><th>Dead time</th></tr></thead>
+        <tbody>
+          <tr><td>Sample, Dana</td><td>34</td><td>3:12</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:91%"></span></span>91%</span></td><td>8.4</td>
+            <td><span class="deadflag low">Low</span></td></tr>
+          <tr><td>Demo, Alex</td><td>29</td><td>3:48</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:88%"></span></span>88%</span></td><td>7.1</td>
+            <td><span class="deadflag low">Low</span></td></tr>
+          <tr><td>Mockdata, Sam</td><td>21</td><td>4:40</td>
+            <td><span class="bar"><span class="track"><span class="fill mid" style="width:79%"></span></span>79%</span></td><td>5.6</td>
+            <td><span class="deadflag mid">Moderate</span></td></tr>
+          <tr class="flagged"><td>Example, Priya</td><td>12</td><td>9:26</td>
+            <td><span class="bar"><span class="track"><span class="fill low" style="width:54%"></span></span>54%</span></td><td>2.9</td>
+            <td><span class="deadflag high">&#9873; High</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="toolbar"><input type="checkbox" aria-label="select all">
+      <span>Select claims to review, approve, or file in bulk</span>
+      <button class="btn" onclick="toast('All clean claims approved (0 exceptions)')">Approve correct</button>
+      <button class="btn" onclick="toast('Batch validated — 0 blocking errors')">Validate</button>
+      <button class="btn" onclick="toast('Batch export queued')">Export batch</button>
+      <span class="spacer"></span><span class="fnote">Columns sort — click a header</span>
+    </div>
+    <div class="tablescroll">
+    <table id="worklist-table">
+      <thead><tr>
+        <th style="width:28px"></th>
+        <th class="sortable" onclick="sortTable('pat',this)">Patient<span class="cw">&#8597;</span></th>
+        <th class="sortable" onclick="sortTable('claim',this)">Claim / DOS<span class="cw">&#8597;</span></th>
+        <th>Billing type</th>
+        <th>Payer</th>
+        <th class="sortable" onclick="sortTable('charges',this)">Charges<span class="cw">&#8597;</span></th>
+        <th class="sortable sorted" data-dir="desc" onclick="sortTable('aged',this)">Days aged<span class="cw">&#8595;</span></th>
+        <th>IDR state</th>
+        <th class="sortable" onclick="sortTable('status',this)">Status<span class="cw">&#8597;</span></th>
+        <th></th>
+      </tr></thead>
+      <tbody id="wlBody">
+        <!-- headline traveling case -->
+        <tr class="rowlink" id="row-alice" data-pat="Testcase, Alice" data-claim="1000001" data-charges="48087.92" data-aged="5" data-status="1" onclick="openClaim()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Testcase, Alice</div><div class="sub mono">PID 100001</div></td>
+          <td><div class="mono">1000001</div><div class="sub mono">10/20/2025</div></td>
+          <td><span class="tag bt-pt">PRO + TECH</span></td>
+          <td>United Healthcare<div class="net">&#9670; Out-of-network</div></td>
+          <td class="mono">$48,087.92</td>
+          <td><span class="aged warnc">5d</span></td>
+          <td><span class="idrstate elig">Eligible (OON)</span></td>
+          <td id="alice-status"><span class="pill review">&#9650; Needs review</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Sample, David" data-claim="1000002" data-charges="61240.00" data-aged="5" data-status="1" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Sample, David</div><div class="sub mono">PID 100004</div></td>
+          <td><div class="mono">1000002</div><div class="sub mono">10/20/2025</div></td>
+          <td><span class="tag bt-pt">PRO + TECH</span></td>
+          <td>Humana<div class="net">&#9670; Out-of-network</div></td>
+          <td class="mono">$61,240.00</td>
+          <td><span class="aged warnc">5d</span></td>
+          <td><span class="idrstate elig">Eligible (OON)</span></td>
+          <td><span class="pill review">&#9650; Needs review</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Mockdata, Ray" data-claim="1000007" data-charges="53905.00" data-aged="7" data-status="0" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Mockdata, Ray</div><div class="sub mono">PID 100002</div></td>
+          <td><div class="mono">1000007</div><div class="sub mono">10/18/2025</div></td>
+          <td><span class="tag bt-pro">PRO ONLY</span></td>
+          <td>Aetna<div class="net">&#9670; Out-of-network</div></td>
+          <td class="mono">$53,905.00</td>
+          <td><span class="aged">7d</span></td>
+          <td><span class="idrstate elig">Eligible (OON)</span></td>
+          <td><span class="pill ready">&#10003; Ready to file</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Demo, Charles" data-claim="1000003" data-charges="52030.00" data-aged="11" data-status="2" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Demo, Charles</div><div class="sub mono">PID 100005</div></td>
+          <td><div class="mono">1000003</div><div class="sub mono">10/14/2025</div></td>
+          <td><span class="tag bt-pro">PRO ONLY</span></td>
+          <td>BCBS<div class="net">&#9670; Out-of-network</div></td>
+          <td class="mono">$52,030.00</td>
+          <td><span class="aged">11d</span></td>
+          <td><span class="idrstate elig">Eligible (OON)</span></td>
+          <td><span class="pill park">&#9208; Waiting on tech</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Testcase, Bruce" data-claim="1000009" data-charges="41880.00" data-aged="16" data-status="0" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Testcase, Bruce</div><div class="sub mono">PID 100009</div></td>
+          <td><div class="mono">1000009</div><div class="sub mono">10/09/2025</div></td>
+          <td><span class="tag bt-pt">PRO + TECH</span></td>
+          <td>Cigna<div class="net">&#9670; Out-of-network</div></td>
+          <td class="mono">$41,880.00</td>
+          <td><span class="aged">16d</span></td>
+          <td><span class="idrstate elig">Eligible (OON)</span></td>
+          <td><span class="pill ready">&#10003; Ready to file</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Example, Marta" data-claim="1000004" data-charges="30695.01" data-aged="127" data-status="0" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Example, Marta</div><div class="sub mono">PID 100006</div></td>
+          <td><div class="mono">1000004</div><div class="sub mono">06/18/2025</div></td>
+          <td><span class="tag bt-pt">PRO + TECH</span></td>
+          <td>Mercy Care AZ<div class="sub">Medicaid HMO · in-network</div></td>
+          <td class="mono">$30,695.01</td>
+          <td><span class="aged riskc">127d</span></td>
+          <td><span class="idrstate na">N/A (Gov)</span></td>
+          <td><span class="pill ready">&#10003; Ready to file</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Specimen, Tom" data-claim="1000005" data-charges="34290.00" data-aged="129" data-status="1" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Specimen, Tom</div><div class="sub mono">PID 100007</div></td>
+          <td><div class="mono">1000005</div><div class="sub mono">06/18/2025</div></td>
+          <td><span class="tag bt-tech">TECH ONLY</span></td>
+          <td>Medicare<div class="sub">Government</div></td>
+          <td class="mono">$34,290.00</td>
+          <td><span class="aged riskc">129d</span></td>
+          <td><span class="idrstate na">N/A (Gov)</span></td>
+          <td><span class="pill review">&#9650; Needs review</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+
+        <tr class="rowlink" data-pat="Sample, Nora" data-claim="1000008" data-charges="29140.00" data-aged="135" data-status="0" onclick="demoNote()">
+          <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+          <td><div class="pat">Sample, Nora</div><div class="sub mono">PID 100008</div></td>
+          <td><div class="mono">1000008</div><div class="sub mono">06/12/2025</div></td>
+          <td><span class="tag bt-tech">TECH ONLY</span></td>
+          <td>Medicare<div class="sub">Government</div></td>
+          <td class="mono">$29,140.00</td>
+          <td><span class="aged riskc">135d</span></td>
+          <td><span class="idrstate na">N/A (Gov)</span></td>
+          <td><span class="pill ready">&#10003; Ready to file</span></td>
+          <td><span class="openbtn">Open &#8594;</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================= -->
+<!-- SCREEN 2 · SINGLE-SCROLL CLAIM PAGE (Testcase, Alice)          -->
+<!-- ============================================================= -->
+<main class="wrap screen" id="claim">
+  <div class="crumb"><button onclick="backToWorklist()">&#8592; New Insurance Billing</button><span>/</span><span>Testcase, Alice</span></div>
+
+  <div class="ws-head">
+    <div class="ws-id"><div class="name">Testcase, Alice</div>
+      <div class="meta"><span>PID <b class="mono">100001</b></span><span>Claim <b class="mono">1000001</b></span>
+        <span>DOS <b class="mono">10/20/2025</b></span><span>Billing <b>Pro + Tech</b></span>
+        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">&#9670; Out-of-network</b></span></div></div>
+    <div class="right">
+      <div class="master work" id="masterStatus"><span id="masterIcon">&#9650;</span> <span id="masterLabel">Review in progress</span></div>
+      <button class="btn" onclick="togglePark(event)">&#9208; Park / waiting on…</button>
+      <button class="btn" onclick="toast('CMS-1500 preview — synthetic Box-by-Box render of claim 1000001','info')">View CMS-1500</button>
+      <button class="btn" onclick="toast('Documents — 3 on file: op report, tech worksheet, VOB capture (synthetic)','info')">Documents</button>
+      <button class="btn" onclick="toggleNotes(event)">Notes <span class="notecount" id="noteCount">2</span></button>
+      <button class="btn" onclick="toast('Claim history — created 10/20, prefilled via MCP 10/21, opened for review today (synthetic)','info')">History</button>
+      <div class="parkpop" id="parkpop">
+        <h4>Park this claim — what are you waiting on?</h4>
+        <button onclick="doPark('Waiting on tech — insurance policy #')">Tech — insurance policy #</button>
+        <button onclick="doPark('Waiting on provider — rendering NPI')">Provider — rendering NPI</button>
+        <button onclick="doPark('Waiting on updated authorization')">Updated authorization on file</button>
+        <button onclick="doPark('Waiting on benefits re-verification')">Benefits re-verification</button>
+      </div>
+      <div class="notespop" id="notespop">
+        <h4>Claim notes — synthetic</h4>
+        <div id="noteList">
+          <div class="note">Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
+          <div class="note">Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
+        </div>
+        <div class="naddrow">
+          <textarea id="noteInput" placeholder="Add a note to this claim…"></textarea>
+          <button class="btn primary sm" onclick="addNote()">Add note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="parkbar" id="parkbar">
+    <span>&#9208;</span><span><b>Parked.</b> <span id="parkReason"></span> · saved at your spot. Open another claim and come back anytime.</span>
+    <button class="btn" onclick="resumeClaim()">Resume claim</button>
+  </div>
+
+  <div class="pullbanner">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+    <span><b>The whole claim on one page.</b> 95% preloaded from case #1000001 — techs entered demographics &amp; insurance, the reading neurologist's report set the coding. No separate tabs or popups to see patient info or the CMS-1500 — just scroll, review each section, and fix the 2 flagged exceptions.</span>
+    <button class="btn" onclick="toast('Re-pulled latest from case #1000001')">Re-pull from case</button>
+  </div>
+
+  <div class="ws-grid">
+    <nav class="ws-nav">
+      <div class="navttl">Claim sections</div>
+      <a href="#sec-pat" class="on"><span class="dotstat" id="navd-pat">1</span>Demographics<span class="bx">2,3,5</span></a>
+      <a href="#sec-ins"><span class="dotstat ai" id="navd-ins">&#10022;</span>Insurance &amp; Benefits<span class="bx">1a,11</span></a>
+      <a href="#sec-fac"><span class="dotstat" id="navd-fac">3</span>Hospital / Facility<span class="bx">17,18,32</span></a>
+      <a href="#sec-proc"><span class="dotstat ai" id="navd-proc">&#10022;</span>Procedure &amp; Dx<span class="bx">21</span></a>
+      <a href="#sec-code"><span class="dotstat ai" id="navd-code">&#10022;</span>Coding &amp; Lines<span class="bx">24</span></a>
+      <a href="#sec-bill"><span class="dotstat" id="navd-bill">6</span>Billing &amp; Provider<span class="bx">25,31,33</span></a>
+    </nav>
+
+    <div class="sections">
+      <!-- 1 · DEMOGRAPHICS -->
+      <section class="sec" id="sec-pat">
+        <div class="sec-head"><h2>Demographics</h2>
+          <div class="boxes"><span class="boxtag">Box 2</span><span class="boxtag">Box 3</span><span class="boxtag">Box 5</span><span class="boxtag">Box 6</span></div>
+          <span class="src">Preloaded by tech</span>
+          <button class="revbtn" id="rev-pat" onclick="review('pat')">Mark reviewed</button></div>
+        <div class="sec-body"><div class="fgrid">
+          <div class="f col2"><label>Patient name <span class="bx">(Box 2)</span></label><div class="val">Testcase, Alice</div></div>
+          <div class="f"><label>Sex <span class="bx">(Box 3)</span></label><div class="val">Female</div></div>
+          <div class="f"><label>DOB <span class="bx">(Box 3)</span></label><div class="val mono">08/29/1971</div></div>
+          <div class="f col3"><label>Address <span class="bx">(Box 5)</span></label><div class="val">1200 Sample Ridge Ln, Springfield, ST 00000</div></div>
+          <div class="f"><label>Phone <span class="bx">(Box 5)</span></label><div class="val mono">555 555 0142</div></div>
+          <div class="f"><label>SSN</label><div class="val mono">&#8226;&#8226;&#8226;-&#8226;&#8226;-4407</div></div>
+          <div class="f"><label>EMR status</label><div class="val">Inpatient</div></div>
+          <div class="f col2"><label>Relationship to insured <span class="bx">(Box 6)</span></label><div class="val">Self</div></div>
+        </div></div>
+      </section>
+
+      <!-- 2 · INSURANCE & BENEFITS -->
+      <section class="sec" id="sec-ins">
+        <div class="sec-head"><h2>Insurance &amp; Benefits</h2>
+          <div class="boxes"><span class="boxtag">Box 1</span><span class="boxtag">Box 1a</span><span class="boxtag">Box 4</span><span class="boxtag">Box 11</span></div>
+          <span class="src">Preloaded by tech · VOB 10/14/2025</span>
+          <button class="revbtn" id="rev-ins" onclick="review('ins')">Mark reviewed</button></div>
+        <div class="sec-body">
+          <div class="fgrid">
+            <div class="f"><label>Insurance type <span class="bx">(Box 1)</span></label><div class="val">Commercial</div></div>
+            <div class="f"><label>Payer</label><div class="val">United Healthcare</div></div>
+            <div class="f"><label>Insured's ID <span class="bx">(Box 1a)</span></label><div class="val mono">2W76y49mp67</div></div>
+            <div class="f"><label>Network</label><div class="val" style="color:var(--idr);font-weight:600">Out-of-network</div></div>
+            <div class="f col2"><label>Insured's name <span class="bx">(Box 4)</span></label><div class="val">Testcase, Alice (Self)</div></div>
+            <div class="f col2"><label>Policy / group <span class="bx">(Box 11)</span></label><div class="val mono">GRP 88041 · UHC Choice Plus</div></div>
+          </div>
+          <div class="fgrid" style="margin-top:13px">
+            <div class="f col4"><label>Verification of benefits (VOB) status</label>
+              <div class="aif" id="aif-vob">
+                <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">flagged by AI · via USMON MCP</span></div>
+                <div class="aival" id="aival-vob">&#9888; Stale — last verified 10/14/2025 (VOB older than payer re-verify window at filing)</div>
+                <div class="aif-why">AI flag: benefits on file exceed United Healthcare's re-verification window for OON claims. Recommend re-checking eligibility &amp; OON benefits before filing so the QPA on record is current.</div>
+                <div class="aif-act" id="aifact-vob">
+                  <button class="btn ai sm" onclick="confirmAI('vob')">&#10003; Confirm — re-verified</button>
+                  <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="benefit-cols">
+            <div class="ben innet"><h3>In-network (not applicable)</h3>
+              <dl><dt>Status</dt><dd>No in-net contract</dd><dt>Reason</dt><dd>OON by design</dd></dl></div>
+            <div class="ben oonet"><h3>&#9670; Out-of-network — NSA applies</h3>
+              <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div></div>
+        </div>
+      </section>
+
+      <!-- 3 · HOSPITAL / FACILITY -->
+      <section class="sec" id="sec-fac">
+        <div class="sec-head"><h2>Hospital / Facility</h2>
+          <div class="boxes"><span class="boxtag">Box 17</span><span class="boxtag">Box 18</span><span class="boxtag">Box 32</span></div>
+          <span class="src">Preloaded by tech</span>
+          <button class="revbtn" id="rev-fac" onclick="review('fac')">Mark reviewed</button></div>
+        <div class="sec-body"><div class="fgrid">
+          <div class="f col2"><label>Service facility <span class="bx">(Box 32)</span></label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
+          <div class="f"><label>Facility NPI <span class="bx">(Box 32a)</span></label><div class="val mono">1000000032</div></div>
+          <div class="f"><label>Place of service</label><div class="val">21 — Inpatient Hospital</div></div>
+          <div class="f col2"><label>Referring provider <span class="bx">(Box 17)</span></label><div class="val">A. Example, M.D.</div></div>
+          <div class="f col2"><label>Referring NPI <span class="bx">(Box 17b)</span></label><div class="val mono">1000000048</div></div>
+          <div class="f"><label>Admission <span class="bx">(Box 18)</span></label><div class="val mono">10/20/2025</div></div>
+          <div class="f"><label>Discharge <span class="bx">(Box 18)</span></label><div class="val mono">10/21/2025</div></div>
+          <div class="f col2"><label>Authorization on file</label><div class="val">Prior auth #A-559120 · verified</div></div>
+        </div></div>
+      </section>
+
+      <!-- 4 · PROCEDURE & DX (exception: principal ICD-10) -->
+      <section class="sec" id="sec-proc">
+        <div class="sec-head"><h2>Procedure &amp; Diagnosis</h2>
+          <div class="boxes"><span class="boxtag">Box 21</span><span class="boxtag">Box 24B</span></div>
+          <span class="src">From reading neurologist's report</span>
+          <button class="revbtn" id="rev-proc" onclick="review('proc')">Mark reviewed</button></div>
+        <div class="sec-body"><div class="fgrid">
+          <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5&#8211;C7</div></div>
+          <div class="f col2"><label>Place of service <span class="bx">(Box 24B)</span></label><div class="val">21 — Inpatient Hospital</div></div>
+          <div class="f col4"><label>Principal diagnosis — ICD-10 <span class="bx">(Box 21)</span></label>
+            <div class="aif" id="aif-icd">
+              <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">AI-suggested principal code · via USMON MCP</span></div>
+              <div class="aival mono" id="aival-icd">M50.121 — Cervical disc disorder with radiculopathy, C6&#8211;C7</div>
+              <div class="aif-why">Extracted from the reading neurologist's report: "…moderate radiculopathy at the C6&#8211;C7 level with corresponding SSEP/MEP changes." Confidence 0.94. Placed first (pointer A) so the service-line Dx pointers resolve correctly.</div>
+              <div class="aif-act" id="aifact-icd">
+                <button class="btn ai sm" onclick="confirmAI('icd')">&#10003; Confirm</button>
+                <button class="btn sm" onclick="overrideAI('icd')">Edit / Override</button>
+              </div>
+            </div>
+          </div>
+          <div class="f col4"><label>Supporting diagnoses (prefilled)</label><div class="val mono">M50.120 · M54.12 · G89.18</div></div>
+        </div>
+        </div>
+      </section>
+
+      <!-- 5 · CODING & SERVICE LINES (exception: rendering provider, Box 24J) -->
+      <section class="sec" id="sec-code">
+        <div class="sec-head"><h2>Coding &amp; Service Lines</h2>
+          <div class="boxes"><span class="boxtag">Box 24A&#8211;J</span></div>
+          <span class="src">From reading neurologist's report</span>
+          <button class="revbtn" id="rev-code" onclick="review('code')">Mark reviewed</button></div>
+        <div class="sec-body">
+          <table class="lines"><thead><tr><th>#</th><th>CPT (24D)</th><th>Mods</th><th>Units (24G)</th><th>Dx ptr (24E)</th><th>Charge (24F)</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>95887</td><td>26</td><td>1</td><td>A</td><td>$361.25</td>
+                <td id="cell-prov">Demo, Eric MD</td><td class="desc">Needle EMG, non-extremity</td></tr>
+              <tr><td>2</td><td>95909</td><td>26</td><td>1</td><td>A</td><td>$849.15</td><td class="set">Demo, Eric MD</td><td class="desc">Nerve conduction, 7&#8211;8 studies</td></tr>
+              <tr><td>3</td><td>95937</td><td>26</td><td>4</td><td>A B</td><td>$6,332.50</td><td class="set">Demo, Eric MD</td><td class="desc">Neuromuscular junction test</td></tr>
+              <tr><td>4</td><td>95938</td><td>26</td><td id="cell-units">6</td><td>A B</td><td>$11,900.01</td><td class="set">Demo, Eric MD</td><td class="desc">SSEP upper &amp; lower</td></tr>
+              <tr><td>5</td><td>95939</td><td>26</td><td>3</td><td>A</td><td>$17,850.01</td><td class="set">Demo, Eric MD</td><td class="desc">MEP upper &amp; lower</td></tr>
+              <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Demo, Eric MD</td><td class="desc">EEG during surgery</td></tr>
+            </tbody></table>
+          <div class="fgrid" style="margin-top:14px">
+            <div class="f col2"><label>Units — line 4 (95938, SSEP) <span class="bx">(Box 24G)</span></label>
+              <div class="aif" id="aif-units">
+                <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">AI-derived from monitoring minutes · via USMON MCP</span></div>
+                <div class="aival mono" id="aival-units">6 units</div>
+                <div class="aif-why">Derived from 268 minutes of intraoperative SSEP monitoring on the tech report (&#8776;45 min/unit). AI proposed the unit count; confirm it matches the documented time.</div>
+                <div class="aif-act" id="aifact-units">
+                  <button class="btn ai sm" onclick="confirmAI('units')">&#10003; Confirm</button>
+                  <button class="btn sm" onclick="overrideAI('units')">Edit / Override</button>
+                </div>
+              </div>
+            </div>
+            <div class="f col2"><label>Rendering provider — line 1 (95887) <span class="bx">(Box 24J)</span></label>
+              <div class="aif" id="aif-prov">
+                <div class="aif-top"><span class="aichip">&#10022; AI</span><span class="aif-src">AI-matched from report signature · via USMON MCP</span></div>
+                <div class="aival" id="aival-prov">Demo, Eric MD — NPI 1000000048</div>
+                <div class="aif-why">Line 1 had no rendering provider. AI matched the signing neurologist from the reading report against the NPI registry. Confidence 0.97.</div>
+                <div class="aif-act" id="aifact-prov">
+                  <button class="btn ai sm" onclick="confirmAI('prov')">&#10003; Confirm</button>
+                  <button class="btn sm" onclick="overrideAI('prov')">Edit / Override</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="smartnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            <span><b>OON pricing applied:</b> charges set at the client's OON fee schedule (&#8776;6&#215; QPA). Charged <span class="mono">$48,087.92</span> total.</span></div>
+        </div>
+      </section>
+
+      <!-- 6 · BILLING & PROVIDER -->
+      <section class="sec" id="sec-bill">
+        <div class="sec-head"><h2>Billing &amp; Provider</h2>
+          <div class="boxes"><span class="boxtag">Box 25</span><span class="boxtag">Box 31</span><span class="boxtag">Box 33</span></div>
+          <span class="src">Preloaded</span>
+          <button class="revbtn" id="rev-bill" onclick="review('bill')">Mark reviewed</button></div>
+        <div class="sec-body"><div class="fgrid">
+          <div class="f col2"><label>Billing provider <span class="bx">(Box 33)</span></label><div class="val">Demo Neurophysiology LLC</div></div>
+          <div class="f"><label>Billing NPI <span class="bx">(Box 33a)</span></label><div class="val mono">1000000017</div></div>
+          <div class="f"><label>Tax ID <span class="bx">(Box 25)</span></label><div class="val mono">12-3456789</div></div>
+          <div class="f col2"><label>Signature <span class="bx">(Box 31)</span></label><div class="val">On file — Demo, Eric MD</div></div>
+          <div class="f col2"><label>Rendering taxonomy <span class="bx">(Box 24J)</span></label><div class="val mono">2084N0400X</div></div>
+          <div class="f col4"><label>Accept assignment <span class="bx">(Box 27)</span></label><div class="val">Yes — assignment accepted</div></div>
+        </div></div>
+      </section>
+    </div>
+
+    <!-- ALWAYS-ON VALIDATION PANEL -->
+    <aside class="rail">
+      <div class="rail-card">
+        <!-- persistent AI-fields counter -->
+        <div class="aicount" id="aiCountCard">
+          <h3>&#10022; AI fields to confirm</h3>
+          <div class="big" id="aiCount">4</div>
+          <div class="cap" id="aiCap">AI proposes, you decide — nothing files unconfirmed.</div>
+        </div>
+        <div class="rail-top">
+          <h2>Claim validation <span class="live"><span class="blip"></span>Live</span></h2>
+          <p>Replaces the old end-of-process "Information Required" popup. Updates as you work — no surprises at export.</p>
+          <div class="verdict block" id="verdict">
+            <span class="vic" id="verdictIc">!</span>
+            <div><span id="verdictTitle">Information required</span><small id="verdictSub">4 AI fields to confirm before this claim can file.</small></div>
+          </div>
+          <div class="meter"><div class="track"><div class="fill" id="meterFill"></div></div>
+            <div class="lbl"><span><b id="revCount">0</b> of 6 sections reviewed</span><span id="revPct">0%</span></div></div>
+          <button class="btn approveall" id="approveAll" onclick="approveAll()">Approve all reviewed sections</button>
+        </div>
+
+        <div class="rgroup ai" id="grpAI"><h3>&#10022; Highlighted AI fields <span class="ct" id="ctAI">4</span></h3>
+          <div class="ritem ai click" id="ai-item-vob" onclick="jumpAI('vob')"><span class="ic ai" id="aiic-vob">&#10022;</span>
+            <div class="txt"><b>Stale VOB flag</b><span>Insurance &amp; Benefits</span></div><span class="go">&#8594;</span></div>
+          <div class="ritem ai click" id="ai-item-icd" onclick="jumpAI('icd')"><span class="ic ai" id="aiic-icd">&#10022;</span>
+            <div class="txt"><b>Principal ICD-10 (M50.121)</b><span>Box 21 · Procedure &amp; Dx</span></div><span class="go">&#8594;</span></div>
+          <div class="ritem ai click" id="ai-item-units" onclick="jumpAI('units')"><span class="ic ai" id="aiic-units">&#10022;</span>
+            <div class="txt"><b>Derived units — 95938</b><span>Box 24G · Coding &amp; Lines</span></div><span class="go">&#8594;</span></div>
+          <div class="ritem ai click" id="ai-item-prov" onclick="jumpAI('prov')"><span class="ic ai" id="aiic-prov">&#10022;</span>
+            <div class="txt"><b>Matched rendering provider</b><span>Box 24J · Coding &amp; Lines</span></div><span class="go">&#8594;</span></div>
+        </div>
+
+        <div class="rgroup r"><h3>Review &amp; approve <span class="ct"><span id="revCount2">0</span>/6</span></h3>
+          <div class="ritem click" id="rl-pat" onclick="review('pat')"><span class="ic o" id="ic-pat">&#9675;</span><div class="txt"><b>Demographics</b><span>Boxes 2, 3, 5, 6</span></div></div>
+          <div class="ritem click" id="rl-ins" onclick="review('ins')"><span class="ic o" id="ic-ins">&#9675;</span><div class="txt"><b>Insurance &amp; Benefits</b><span>Confirm AI field first</span></div></div>
+          <div class="ritem click" id="rl-fac" onclick="review('fac')"><span class="ic o" id="ic-fac">&#9675;</span><div class="txt"><b>Hospital / Facility</b><span>Boxes 17, 18, 32</span></div></div>
+          <div class="ritem click" id="rl-proc" onclick="review('proc')"><span class="ic o" id="ic-proc">&#9675;</span><div class="txt"><b>Procedure &amp; Dx</b><span>Confirm AI field first</span></div></div>
+          <div class="ritem click" id="rl-code" onclick="review('code')"><span class="ic o" id="ic-code">&#9675;</span><div class="txt"><b>Coding &amp; Lines</b><span>Confirm 2 AI fields first</span></div></div>
+          <div class="ritem click" id="rl-bill" onclick="review('bill')"><span class="ic o" id="ic-bill">&#9675;</span><div class="txt"><b>Billing &amp; Provider</b><span>Boxes 25, 31, 33</span></div></div>
+        </div>
+
+        <div class="rgroup v"><h3>Automatic checks <span class="ct">&#10003; 5</span></h3>
+          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Timely filing OK</b><span>UHC · 90-day window · 5d used</span></div></div>
+          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Billing NPI valid (Box 33a)</b><span>Luhn &amp; NPPES check passed</span></div></div>
+          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Charges balance</b><span>6 lines total $48,087.92</span></div></div>
+          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Dx pointers &amp; POS valid</b><span>Pointers A&#8211;C · POS 21</span></div></div>
+          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Signature on file (Box 31)</b><span>Demo, Eric MD</span></div></div>
+        </div>
+
+        <div class="rail-foot"><button class="btn primary" id="fileBtn" disabled>Resolve required info to file</button>
+          <div class="hint">Validated continuously — <span id="auditCt">7</span> events logged to audit trail.</div></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- placeholder screens so nav never dead-ends -->
+<main class="wrap screen" id="ongoing"><div class="placeholder"><h2>Ongoing — Claim Follow-Up</h2><p>Filed claims being worked: payments posting, out-of-network underpayment appeals, and IDR follow-up — the same follow-up worklist billers use today. Out of scope for this demo build.</p></div></main>
+<main class="wrap screen" id="folders"><div class="placeholder"><h2>Folders</h2><p>Client &amp; entity folders, saved batches, and archived claims. Out of scope for this demo build.</p></div></main>
+<main class="wrap screen" id="reports"><div class="placeholder"><h2>Reports</h2><p>Aged-A/R, clean-claim rate, denial trends, and collections by payer. Out of scope for this demo build.</p></div></main>
+<main class="wrap screen" id="manage"><div class="placeholder"><h2>Manage</h2><p>Payer rules, fee schedules, providers, and user permissions. Out of scope for this demo build.</p></div></main>
+
+<!-- filing success overlay -->
+<div class="overlay" id="successOverlay">
+  <div class="successcard">
+    <div class="big">&#10003;</div>
+    <h2>Claim filed</h2>
+    <p>Claim <b>1000001</b> for Testcase, Alice was validated and submitted.</p>
+    <div class="rcpt">
+      <span class="k">Claim #</span><span class="v">1000001</span>
+      <span class="k">Format</span><span class="v">837P batch</span>
+      <span class="k">Charged</span><span class="v">$48,087.92</span>
+      <span class="k">Blocking errors</span><span class="v" style="color:var(--ok)">0</span>
+      <span class="k">Audit events</span><span class="v" id="successAudit">15</span>
+    </div>
+    <div class="sactions">
+      <button class="btn" onclick="toast('Opens the Ongoing follow-up worklist','info');closeSuccess();navTo('ongoing')">View in Ongoing</button>
+      <button class="btn primary" onclick="closeSuccess();backToWorklist()">Back to worklist</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ic">&#10003;</span><span id="toastMsg"></span></div>
+
+<script>
+  /* ---------- shared nav ---------- */
+  function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+  function toast(m,kind){const t=document.getElementById('toast');t.className='toast'+(kind?' '+kind:'');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);}
+  function setNav(id){['worklist','ongoing','folders','reports','manage'].forEach(n=>{const a=document.getElementById('nav-'+n);if(a)a.classList.toggle('on',n===id);});}
+
+  function navTo(which){
+    document.getElementById('tabstrip').classList.remove('show');
+    show(which); setNav(which);
+    return false;
+  }
+  function backToWorklist(){show('worklist');setNav('worklist');document.getElementById('tabstrip').classList.remove('show');}
+  function openClaim(){show('claim');setNav('worklist');document.getElementById('tabstrip').classList.add('show');}
+  function switchTab(who){if(who==='alice')return;toast(({ray:'Mockdata, Ray',charles:'Demo, Charles'}[who])+' opened — Testcase, Alice stays right where you left it','info');}
+  function demoNote(){toast('This demo wires the Testcase, Alice claim end-to-end — open that row to see the full review.','info');}
+
+  /* ---------- role toggle: Biller <-> Supervisor (demo persona) ---------- */
+  function setRole(role){
+    const sup=role==='supervisor';
+    document.body.classList.toggle('role-super',sup);
+    document.getElementById('rt-biller').classList.toggle('on',!sup);
+    document.getElementById('rt-super').classList.toggle('on',sup);
+    const sp=document.getElementById('supPanel'); if(sp)sp.setAttribute('aria-hidden',sup?'false':'true');
+    document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Billing Supervisor':'Sample, Dana · Biller';
+    document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
+    toast(sup?'Supervisor view — queue counts & team efficiency now visible':'Biller view — stats hidden; just the clean worklist a biller sees','info');
+  }
+
+  /* ---------- claim notes popover (activate Notes / Add note) ---------- */
+  function toggleNotes(e){e.stopPropagation();const p=document.getElementById('parkpop');if(p)p.classList.remove('show');document.getElementById('notespop').classList.toggle('show');}
+  let noteN=2;
+  function addNote(){
+    const inp=document.getElementById('noteInput');const v=(inp.value||'').trim();
+    if(!v){inp.focus();return;}
+    const div=document.createElement('div');div.className='note';div.textContent=v;
+    const who=document.createElement('span');who.className='who';who.textContent=document.getElementById('whoLabel').textContent+' · today';
+    div.appendChild(who);
+    document.getElementById('noteList').appendChild(div);
+    inp.value='';noteN++;document.getElementById('noteCount').textContent=noteN;
+    bumpAudit();
+    toast('Note added — logged to audit trail','info');
+  }
+
+  /* ---------- worklist sort ---------- */
+  function sortTable(key,th){
+    const tbody=document.getElementById('wlBody');
+    const rows=[...tbody.querySelectorAll('tr')];
+    const dir=(th.dataset.dir==='asc')?'desc':'asc';
+    document.querySelectorAll('#worklist-table th.sortable').forEach(h=>{
+      h.classList.remove('sorted'); h.dataset.dir=''; const cw=h.querySelector('.cw'); if(cw)cw.innerHTML='&#8597;';
+    });
+    th.classList.add('sorted'); th.dataset.dir=dir;
+    const cw=th.querySelector('.cw'); if(cw)cw.innerHTML=(dir==='asc')?'&#8593;':'&#8595;';
+    rows.sort((a,b)=>{
+      const av=a.dataset[key], bv=b.dataset[key];
+      const an=parseFloat(av), bn=parseFloat(bv);
+      let cmp;
+      if(!isNaN(an)&&!isNaN(bn)&&av!==''&&bv!=='') cmp=an-bn; else cmp=String(av).localeCompare(String(bv));
+      return dir==='asc'?cmp:-cmp;
+    });
+    rows.forEach(r=>tbody.appendChild(r));
+  }
+
+  /* ---------- single-scroll claim page ---------- */
+  const SECTIONS=['pat','ins','fac','proc','code','bill'];
+  let reviewed={pat:false,ins:false,fac:false,proc:false,code:false,bill:false};
+  let parked=false, filed=false, audit=7;
+
+  function bumpAudit(){audit++;const el=document.getElementById('auditCt');if(el)el.textContent=audit;}
+
+  /* single clean scroll-spy */
+  (function(){
+    const navLinks=[...document.querySelectorAll('#claim .ws-nav a')];
+    const secs=navLinks.map(a=>document.querySelector(a.getAttribute('href')));
+    const spy=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);navLinks.forEach(l=>l.classList.remove('on'));if(navLinks[i])navLinks[i].classList.add('on');}});},{rootMargin:'-118px 0px -60% 0px'});
+    secs.forEach(s=>s&&spy.observe(s));
+  })();
+
+  /* ---------- AI-field confirm loop (ported from Biller Review) ---------- */
+  const AI_ORDER=['vob','icd','units','prov'];
+  const SEC_AI={pat:[],ins:['vob'],fac:[],proc:['icd'],code:['units','prov'],bill:[]};
+  const aiState={}; AI_ORDER.forEach(k=>aiState[k]='pending'); // pending | confirmed | overridden
+  function pendingAIinSec(s){return SEC_AI[s].filter(k=>aiState[k]==='pending');}
+
+  function jumpAI(key){
+    const el=document.getElementById('aif-'+key); if(!el)return;
+    el.scrollIntoView({block:'center'});
+    el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),700);
+  }
+  function resolveAI(key,mode){
+    if(aiState[key]!=='pending')return;
+    aiState[key]=mode; bumpAudit();
+    const box=document.getElementById('aif-'+key);
+    box.classList.remove('overridden','confirmed');
+    box.classList.add(mode==='overridden'?'overridden':'confirmed');
+    document.getElementById('aifact-'+key).innerHTML=
+      mode==='overridden'
+        ? '<span class="aif-done ovr">✎ Overridden by you · logged to audit</span>'
+        : '<span class="aif-done">✓ Confirmed by you · logged to audit</span>';
+    const item=document.getElementById('ai-item-'+key);
+    if(item){item.classList.add('done');item.classList.remove('click');item.onclick=null;
+      const ric=document.getElementById('aiic-'+key); if(ric){ric.className='ic '+(mode==='overridden'?'ov':'d'); ric.textContent=(mode==='overridden'?'✎':'✓');}}
+    update();
+  }
+  function confirmAI(key){ resolveAI(key,'confirmed'); toast('AI field confirmed — logged to audit trail','info'); }
+  function overrideAI(key){
+    if(aiState[key]!=='pending')return;
+    const cur=document.getElementById('aival-'+key).textContent.trim();
+    document.getElementById('aifact-'+key).innerHTML=
+      '<input class="aiedit" id="aiedit-'+key+'" value="'+cur.replace(/"/g,'&quot;')+'">'+
+      '<button class="btn ai sm" onclick="saveOverride(\''+key+'\')">Save</button>'+
+      '<button class="btn sm" onclick="cancelOverride(\''+key+'\')">Cancel</button>';
+    const inp=document.getElementById('aiedit-'+key); inp.focus(); inp.select();
+  }
+  function saveOverride(key){
+    const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
+    document.getElementById('aival-'+key).textContent=v;
+    resolveAI(key,'overridden');
+    toast('Override saved — biller value recorded, logged to audit trail','info');
+  }
+  function cancelOverride(key){
+    const label=(key==='vob')?'✓ Confirm — re-verified':'✓ Confirm';
+    document.getElementById('aifact-'+key).innerHTML=
+      '<button class="btn ai sm" onclick="confirmAI(\''+key+'\')">'+label+'</button>'+
+      '<button class="btn sm" onclick="overrideAI(\''+key+'\')">Edit / Override</button>';
+  }
+  function confirmNextAI(){
+    const next=AI_ORDER.find(k=>aiState[k]==='pending');
+    if(!next){toast('All AI fields already confirmed','info');return;}
+    jumpAI(next); confirmAI(next);
+  }
+
+  /* ---------- section review (gated on AI confirmation) ---------- */
+  function canReview(s){return pendingAIinSec(s).length===0;}
+  function review(s){
+    if(reviewed[s])return;
+    const pend=pendingAIinSec(s);
+    if(pend.length){toast('Confirm the AI field'+(pend.length>1?'s':'')+' in this section first','info'); jumpAI(pend[0]); return;}
+    reviewed[s]=true; bumpAudit();
+    const rb=document.getElementById('rev-'+s); if(rb){rb.className='revbtn done';rb.textContent='Reviewed ✓';}
+    const ic=document.getElementById('ic-'+s); if(ic){ic.className='ic d';ic.textContent='✓';}
+    const rl=document.getElementById('rl-'+s); if(rl)rl.classList.remove('click');
+    const nd=document.getElementById('navd-'+s); if(nd){nd.className='dotstat rv';nd.textContent='✓';}
+    update();
+  }
+  function approveAll(){
+    let skipped=0;
+    SECTIONS.forEach(s=>{if(!reviewed[s]){if(pendingAIinSec(s).length)skipped++; else review(s);}});
+    if(skipped)toast('Approved the clear sections — '+skipped+' still need their AI field'+(skipped>1?'s':'')+' confirmed','info');
+  }
+
+  function update(){
+    // AI counter card
+    const aiPending=AI_ORDER.filter(k=>aiState[k]==='pending').length;
+    document.getElementById('aiCount').textContent=aiPending;
+    const ctAI=document.getElementById('ctAI'); if(ctAI)ctAI.textContent=aiPending;
+    const card=document.getElementById('aiCountCard');
+    if(aiPending===0){card.classList.add('done');document.getElementById('aiCap').textContent='All AI fields confirmed ✓ — every choice logged to audit.';}
+    else{card.classList.remove('done');document.getElementById('aiCap').textContent='AI proposes, you decide — nothing files unconfirmed.';}
+
+    // AI sections that are now clear but not yet reviewed → prompt to approve
+    ['ins','proc','code'].forEach(s=>{
+      if(reviewed[s])return;
+      const span=document.querySelector('#rl-'+s+' .txt span'); if(!span)return;
+      if(pendingAIinSec(s).length===0)span.textContent='Ready to approve';
+    });
+
+    const n=SECTIONS.filter(s=>reviewed[s]).length;
+    document.getElementById('revCount').textContent=n;
+    document.getElementById('revCount2').textContent=n;
+    document.getElementById('meterFill').style.width=(n/6*100)+'%';
+    document.getElementById('revPct').textContent=Math.round(n/6*100)+'%';
+    if(n===6){document.getElementById('meterFill').style.background='var(--ok)';}
+    else{document.getElementById('meterFill').style.background='var(--warn)';}
+
+    const infoDone=aiPending===0;
+    const allDone=n===6 && infoDone && !parked;
+    const fb=document.getElementById('fileBtn');
+    const m=document.getElementById('masterStatus');
+    const v=document.getElementById('verdict');
+    const vt=document.getElementById('verdictTitle');
+    const vs=document.getElementById('verdictSub');
+    const vic=document.getElementById('verdictIc');
+
+    if(parked){
+      m.className='master park';document.getElementById('masterIcon').textContent='⏸';document.getElementById('masterLabel').textContent='Parked';
+      v.className='verdict block';vic.textContent='⏸';vt.textContent='Parked';vs.textContent='Resume the claim to continue validation.';
+      fb.disabled=true;fb.textContent='Resume to file';return;
+    }
+    if(filed){
+      m.className='master filed';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Filed';
+      v.className='verdict ready';vic.textContent='✓';vt.textContent='Filed';vs.textContent='Claim 1000001 submitted — 837P batch queued.';
+      fb.disabled=true;fb.textContent='Filed ✓';return;
+    }
+    if(allDone){
+      m.className='master ready';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Ready to file';
+      v.className='verdict ready';vic.textContent='✓';vt.textContent='Ready to file';vs.textContent='All AI fields confirmed · all sections reviewed.';
+      fb.disabled=false;fb.textContent='File claim';fb.onclick=fileClaim;
+    } else {
+      m.className='master work';document.getElementById('masterIcon').textContent='▲';document.getElementById('masterLabel').textContent='Review in progress';
+      v.className='verdict block';vic.textContent='!';
+      if(!infoDone){
+        vt.textContent='Information required';
+        vs.textContent=aiPending+' AI field'+(aiPending>1?'s':'')+' to confirm before this claim can file.';
+        fb.disabled=true;fb.textContent='Confirm '+aiPending+' AI field'+(aiPending>1?'s':'')+' to file';
+      } else {
+        vt.textContent='Review in progress';vs.textContent='AI fields confirmed — approve the remaining sections to file.';
+        fb.disabled=true;fb.textContent='Finish review to file';
+      }
+    }
+  }
+
+  function fileClaim(){
+    if(filed)return; filed=true; bumpAudit();
+    // update worklist row for Alice
+    const st=document.getElementById('alice-status'); if(st)st.innerHTML='<span class="pill filed">✓ Filed today</span>';
+    const row=document.getElementById('row-alice'); if(row)row.dataset.status='3';
+    document.getElementById('successAudit').textContent=audit;
+    update();
+    document.getElementById('successOverlay').classList.add('show');
+  }
+  function closeSuccess(){document.getElementById('successOverlay').classList.remove('show');}
+
+  /* park / waiting-on */
+  function togglePark(e){e.stopPropagation();document.getElementById('parkpop').classList.toggle('show');}
+  function doPark(reason){
+    parked=true; document.getElementById('parkpop').classList.remove('show');
+    document.getElementById('parkReason').textContent=reason;
+    document.getElementById('parkbar').classList.add('show');
+    const tt=document.getElementById('tab-alice'); tt.classList.add('parked'); tt.innerHTML='<span class="pk">⏸</span> Testcase, Alice <span style="font-weight:500;opacity:.8">· '+reason.replace('Waiting on ','')+'</span>';
+    update(); toast('Parked — open another claim and come back anytime');
+  }
+  function resumeClaim(){
+    parked=false; document.getElementById('parkbar').classList.remove('show');
+    const tt=document.getElementById('tab-alice'); tt.classList.remove('parked'); tt.innerHTML='Testcase, Alice <span class="x" onclick="event.stopPropagation();backToWorklist()">✕</span>';
+    update(); toast('Resumed');
+  }
+  document.addEventListener('click',(e)=>{const p=document.getElementById('parkpop');if(p&&p.classList.contains('show')&&!p.contains(e.target)&&!e.target.closest('button')) p.classList.remove('show');});
+  document.addEventListener('click',(e)=>{const n=document.getElementById('notespop');if(n&&n.classList.contains('show')&&!n.contains(e.target)&&!e.target.closest('button')) n.classList.remove('show');});
+
+  /* keyboard fast path: C = confirm next AI field (claim screen only) */
+  document.addEventListener('keydown',(e)=>{
+    if(e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
+    if(!document.getElementById('claim').classList.contains('active'))return;
+    if(e.key==='c'||e.key==='C')confirmNextAI();
+  });
+
+  update();
+</script>
+</body>
+</html>
