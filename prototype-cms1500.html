@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — CMS-1500 Claim Form (prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;   /* Commercial OON -> IDR feeder */
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;                          /* Government in-network */
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;  /* Hospital tech-fee invoice */
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  /* ===== appbar (shared) ===== */
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+  #whoLabel{white-space:nowrap}
+  /* role toggle (Biller <-> Supervisor) */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+  @media(max-width:720px){.appnav{display:none}.roletoggle .rt-lbl{display:none}}
+
+  .wrap{max-width:1320px;margin:0 auto;padding:18px 20px 80px}
+
+  .crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:12px}
+  .crumb button{background:none;border:none;color:var(--primary);font-size:13px;padding:0;cursor:pointer}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark)}
+
+  /* claim identity header (shared) */
+  .ws-head{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px;flex-wrap:wrap}
+  .ws-id .name{font-size:19px;font-weight:700;letter-spacing:-.2px}
+  .ws-id .meta{display:flex;gap:14px;color:var(--muted);font-size:12.5px;flex-wrap:wrap;margin-top:3px}
+  .ws-id .meta b{color:var(--ink);font-weight:600}
+  .ws-head .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .master{display:flex;align-items:center;gap:9px;padding:8px 13px;border-radius:9px;font-weight:700;font-size:13px}
+  .master.work{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .master.ready{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+
+  .pullbanner{display:flex;align-items:flex-start;gap:12px;background:var(--primary-tint);border:1px solid var(--primary-line);border-radius:var(--radius);padding:11px 15px;margin-bottom:14px;font-size:13px;color:var(--primary-dark)}
+  .pullbanner .pb-ico{flex:none;display:grid;place-items:center;margin-top:1px}
+  .pullbanner b{font-weight:700}
+
+  /* ===== toolbar (mirrors the real form action bar) ===== */
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:11px 14px;margin-bottom:14px}
+  .toolbar .tb-sep{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+  .toolbar .tb-note{margin-left:auto;font-size:11.5px;color:var(--faint);font-weight:600}
+
+  /* ===== supervisor-only oversight panel (shared) ===== */
+  body:not(.role-super) .stats-gated{display:none}
+  .sup-panel{display:none;margin-bottom:14px}
+  body.role-super .sup-panel{display:block}
+  .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .sp-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--gov-tint)}
+  .sp-head h2{font-size:14px;margin:0;font-weight:700;color:var(--gov)}
+  .sp-head .tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line);border-radius:5px;padding:2px 7px}
+  .sp-head .hid{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  @media(max-width:680px){.sp-stats{grid-template-columns:repeat(2,1fr)}}
+  .sp-stat{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+  .sp-stat .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sp-stat .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+  .sp-stat.flag .num{color:var(--block)}
+  .eff{width:100%;border-collapse:collapse;font-size:12.5px}
+  .eff th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:right;padding:9px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+  .eff th:first-child{text-align:left}
+  .eff td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono)}
+  .eff td:first-child{text-align:left;font-family:var(--sans);font-weight:600}
+  .eff tr:last-child td{border-bottom:none}
+  .eff tr.you{background:var(--primary-tint)}
+  .eff tr.flagged{background:var(--block-tint)}
+  .eff .bar{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+  .eff .track{width:52px;height:6px;border-radius:4px;background:#eef2f7;overflow:hidden}
+  .eff .fill{height:100%;border-radius:4px;background:var(--ok)}
+  .eff .fill.mid{background:var(--warn)} .eff .fill.low{background:var(--block)}
+  .eff-scroll{overflow-x:auto}
+  .deadflag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;font-family:var(--sans)}
+  .deadflag.low{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .deadflag.mid{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .deadflag.high{background:var(--block-tint);color:var(--block);border:1px solid var(--block-line)}
+
+  /* ===== tech-report countdown strip ===== */
+  .trbar{display:flex;align-items:center;gap:13px;background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border:1px solid var(--ai-line);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;color:#3c2b8a;box-shadow:var(--shadow);transition:.3s}
+  .trbar .trbar-ic{flex:none;width:30px;height:30px;border-radius:8px;background:var(--ai);color:#fff;display:grid;place-items:center;font-size:15px}
+  .trbar .trbar-txt{min-width:0}
+  .trbar .trbar-txt b{display:block;color:var(--ai-dark);font-size:13.5px}
+  .trbar .trbar-txt span{font-size:12px;color:#3c2b8a}
+  .trbar .btn{margin-left:auto;flex:none}
+  .trbar.done{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok)}
+  .trbar.done .trbar-ic{background:var(--ok)}
+  .trbar.done .trbar-txt b{color:var(--ok)} .trbar.done .trbar-txt span{color:var(--ok)}
+
+  /* ===== the CMS-1500 form sheet ===== */
+  .formsheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .fs-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(180deg,var(--surface-2),#fff);border-bottom:1px solid var(--line)}
+  .fs-head h2{margin:0;font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .fs-head .sub{font-size:11.5px;color:var(--faint);font-weight:600}
+  .fs-head .carrier{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:var(--faint);text-transform:uppercase;border:1px dashed var(--line-strong);border-radius:6px;padding:6px 11px;white-space:nowrap}
+  @media(max-width:720px){.fs-head .carrier{display:none}}
+
+  .band{border-top:1px solid var(--line)}
+  .band-head{display:flex;align-items:center;gap:8px;padding:9px 18px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .band-head h3{margin:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+  .band-head .bsrc{font-size:11px;color:var(--faint);font-weight:600;margin-left:auto}
+  .band-head .aichip{margin-left:0}
+  .band-body{padding:14px 18px}
+
+  .boxrow{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px}
+  .boxrow + .boxrow{margin-top:10px}
+  .c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}
+  .c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
+  @media(max-width:1100px){.boxrow{grid-template-columns:repeat(2,minmax(0,1fr))}.boxrow>*{grid-column:auto!important}}
+  @media(max-width:560px){.boxrow{grid-template-columns:1fr}}
+
+  .box{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:9px 10px 9px;display:flex;flex-direction:column;gap:5px;min-width:0}
+  .box .bxn{position:absolute;top:7px;right:9px;font-size:9px;font-weight:800;color:var(--faint);letter-spacing:.3px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .box>label{font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--faint);font-weight:700;padding-right:30px;line-height:1.3}
+  .box input,.box select{border:1px solid var(--line-strong);border-radius:6px;padding:7px 8px;font:inherit;font-size:13px;color:var(--ink);background:#fff;width:100%;min-width:0}
+  .box input:focus,.box select:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .box input.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .box .subrow{display:flex;gap:7px}
+  .box .subrow>*{flex:1;min-width:0}
+  .box .chk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;padding-top:2px}
+  .box .chk label{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--ink)}
+  .box .hint{font-size:10.5px;color:var(--faint);font-weight:600}
+
+  /* box 21 diagnosis grid */
+  .dxgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:1100px){.dxgrid{grid-template-columns:repeat(2,1fr)}}
+  .dxslot{display:flex;align-items:center;gap:6px;border:1px solid var(--line-strong);border-radius:6px;background:#fff;padding:4px 4px 4px 8px}
+  .dxslot .lt{font-size:10px;font-weight:800;color:var(--faint);width:12px;flex:none}
+  .dxslot input{border:none;padding:5px 2px;font-family:var(--mono);font-size:12.5px;width:100%;min-width:0}
+  .dxslot input:focus{outline:none}
+
+  /* tech-report auto-filled fields — highlight-to-confirm */
+  .trhi{border-color:var(--ai)!important;background:var(--ai-tint)!important;box-shadow:0 0 0 2px var(--ai-tint)}
+  .dxslot.trhi{border-color:var(--ai)!important}
+  .trok{border-color:var(--ok-line)!important;background:var(--ok-tint)!important;box-shadow:none!important;transition:.3s}
+  .trflag{position:absolute;top:-7px;left:8px;font-size:9px;font-weight:800;color:#fff;background:var(--ai);border-radius:4px;padding:1px 5px;letter-spacing:.3px}
+
+  /* box 24 service lines */
+  .svc-wrap{overflow-x:auto}
+  .svc{width:100%;border-collapse:collapse;font-size:12.5px;min-width:860px}
+  .svc th{font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);text-align:left;padding:8px 7px;border-bottom:1px solid var(--line);font-weight:800;white-space:nowrap}
+  .svc td{padding:6px 7px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .svc tr:last-child td{border-bottom:none}
+  .svc .ln{font-family:var(--mono);color:var(--faint);font-weight:700}
+  .svc .desc{font-family:var(--sans);color:var(--muted);font-size:11.5px;white-space:nowrap}
+  .svc input{border:1px solid var(--line-strong);border-radius:6px;padding:6px 7px;font:inherit;font-size:12.5px;background:#fff;width:100%;min-width:0}
+  .svc input:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .svc input.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .svc .w-dos{width:112px}.svc .w-sm{width:56px}.svc .w-cpt{width:78px}.svc .w-mod{width:64px}
+  .svc .w-dx{width:64px}.svc .w-chg{width:104px}.svc .w-u{width:52px}.svc .w-npi{width:126px}
+  .svc tfoot td{padding:10px 7px;font-weight:800;font-family:var(--mono);border-top:2px solid var(--line-strong)}
+  .svc tfoot .lbl{font-family:var(--sans);text-align:right}
+
+  /* AI field confirm card (canonical treatment, shared) */
+  .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px;vertical-align:middle}
+  .trconfirm{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:1100px){.trconfirm{grid-template-columns:1fr}}
+  .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:11px 13px;transition:.25s}
+  .aif.col2{grid-column:1/-1}
+  .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .aif .aif-src{font-size:11px;color:var(--ai-dark);font-weight:600}
+  .aif .aival{font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--ai-line);border-radius:7px;padding:8px 10px;min-height:33px;display:flex;align-items:center}
+  .aif .aival.mono{font-family:var(--mono)}
+  .aif .aif-why{font-size:11.5px;color:#3c2b8a;margin-top:7px;line-height:1.4;font-style:italic}
+  .aif .aif-why .code{font-family:var(--mono);font-style:normal;font-weight:700;color:var(--ai-dark)}
+  .aif .aif-act{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+  .aif .aif-act .btn{padding:5px 12px;font-size:12px}
+  .aif .aiedit{flex:1;min-width:160px;font-family:var(--sans);font-size:13px;padding:7px 9px;border:1px solid var(--ai);border-radius:7px;box-shadow:0 0 0 3px var(--ai-tint)}
+  .aif.flash{box-shadow:0 0 0 4px var(--ai-tint)}
+  .aif.confirmed{border-color:var(--ok-line);border-left-color:var(--ok);background:var(--ok-tint)}
+  .aif.confirmed .aival{border-color:var(--ok-line)}
+  .aif.confirmed .aif-src,.aif.confirmed .aif-why{color:var(--ok)}
+  .aif.overridden{border-color:var(--warn-line);border-left-color:var(--warn);background:var(--warn-tint)}
+  .aif.overridden .aival{border-color:var(--warn-line)}
+  .aif .aif-done{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok)}
+  .aif .aif-done.ovr{color:var(--warn)}
+
+  .smartnote{font-size:12px;color:var(--muted);margin-top:12px;display:flex;align-items:center;gap:7px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:8px 11px}
+  .smartnote b{color:var(--ink)}
+
+  /* ===== modal (shared, wide variant) ===== */
+  .modal-back{position:fixed;inset:0;background:rgba(16,32,46,.45);display:none;align-items:flex-start;justify-content:center;z-index:70;padding:40px 20px;overflow:auto}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 60px rgba(16,32,46,.3);max-width:600px;width:100%}
+  .modal.wide{max-width:800px}
+  .modal-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);border-radius:12px 12px 0 0;position:sticky;top:0}
+  .modal-head h2{margin:0;font-size:15px;font-weight:700}
+  .modal-head .tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:5px;padding:2px 7px}
+  .modal-head .mx{margin-left:auto;background:none;border:none;color:var(--faint);font-size:18px;font-weight:700;line-height:1;padding:2px 6px;border-radius:6px}
+  .modal-head .mx:hover{background:var(--line);color:var(--ink)}
+  .modal-body{padding:16px 18px}
+  .modal-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+  /* tech report document styling */
+  .tr-note{font-size:12px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:8px;padding:9px 12px;margin:0 0 14px;display:flex;gap:9px;align-items:flex-start}
+  .tr-note .sp{flex:none}
+  .tr-doc{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .tr-doc-head{background:var(--ink);color:#fff;padding:12px 15px}
+  .tr-doc-head h3{margin:0;font-size:14px;font-weight:800}
+  .tr-doc-head p{margin:2px 0 0;font-size:11.5px;color:#9fb0c0}
+  .tr-sec{padding:12px 15px;border-top:1px solid var(--line)}
+  .tr-sec:first-child{border-top:none}
+  .tr-sec h4{margin:0 0 8px;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+  .tr-kv{display:grid;grid-template-columns:repeat(2,1fr);gap:5px 18px;font-size:12.5px}
+  @media(max-width:560px){.tr-kv{grid-template-columns:1fr}}
+  .tr-kv .k{color:var(--muted)}.tr-kv .k b{color:var(--ink);font-weight:600}
+  .tr-mod{display:flex;align-items:baseline;gap:9px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .tr-mod:last-child{border-bottom:none}
+  .tr-mod .nm{font-weight:600;flex:1}
+  .tr-mod .mins{color:var(--faint);font-size:11.5px;font-family:var(--mono)}
+  .cptmatch{font-family:var(--mono);font-weight:700;background:var(--ai-tint);border:1px solid var(--ai-line);color:var(--ai-dark);border-radius:5px;padding:1px 7px;font-size:12px;white-space:nowrap}
+  .cptmatch .arrow{font-size:9.5px;font-weight:800;opacity:.8;margin-left:4px}
+  .tr-supply{width:100%;border-collapse:collapse;font-size:12px}
+  .tr-supply th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);font-weight:800;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .tr-supply td{padding:7px 8px;border-bottom:1px solid var(--line)}
+  .tr-supply tr:last-child td{border-bottom:none}
+  .tr-supply .qty{font-family:var(--mono);text-align:right}
+
+  /* ===== Coding Assist panel (second-opinion coding scan) ===== */
+  .ca-scan{font-size:12px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:8px;padding:9px 12px;margin:0 0 14px;display:flex;gap:9px;align-items:flex-start}
+  .ca-scan .sp{flex:none}
+  .ca-sub{font-size:13px;color:var(--muted);margin:0 0 14px}
+  .ca-sub b{color:var(--ink);font-weight:700}
+  .ca-list{display:flex;flex-direction:column;gap:11px}
+  .ca-item{border:1px solid var(--line);border-left:3px solid var(--faint);border-radius:9px;background:var(--surface-2);padding:12px 14px;transition:.25s}
+  .ca-item.miss{border-left-color:var(--idr);background:linear-gradient(180deg,var(--idr-tint),#f7f8fe)}
+  .ca-item.differ{border-left-color:var(--warn);background:var(--warn-tint)}
+  .ca-item.have{border-left-color:var(--ok);background:var(--ok-tint)}
+  .ca-item.done{opacity:.62}
+  .ca-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .ca-code{font-family:var(--mono);font-weight:800;font-size:15px;color:var(--ink);letter-spacing:-.2px}
+  .ca-dsc{font-size:12.5px;color:var(--muted);font-weight:600}
+  .ca-meta{font-family:var(--mono);font-size:11.5px;color:var(--faint);font-weight:700}
+  .ca-pill{margin-left:auto;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-radius:999px;padding:3px 10px;white-space:nowrap}
+  .ca-pill.miss{background:#fff;color:var(--idr);border:1px solid var(--idr-line)}
+  .ca-pill.differ{background:#fff;color:var(--warn);border:1px solid var(--warn-line)}
+  .ca-pill.have{background:#fff;color:var(--ok);border:1px solid var(--ok-line)}
+  .ca-why{font-size:11.5px;color:var(--ink);margin-top:8px;line-height:1.45;font-style:italic}
+  .ca-why .code{font-family:var(--mono);font-style:normal;font-weight:700;color:var(--ai-dark)}
+  .ca-why .q{color:var(--muted)}
+  .ca-act{display:flex;gap:8px;margin-top:11px;align-items:center;flex-wrap:wrap}
+  .ca-act .btn{padding:5px 12px;font-size:12px}
+  .ca-done{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700}
+  .ca-done.added{color:var(--idr)} .ca-done.adj{color:var(--warn)} .ca-done.dis{color:var(--muted)}
+  .btn.idr{background:var(--idr);border-color:var(--idr);color:#fff}.btn.idr:hover{background:var(--idr-dark);border-color:var(--idr-dark)}
+  .ca-foot-note{margin-right:auto;font-size:11px;color:var(--faint);font-weight:600}
+  .svc tr.ca-new td{background:var(--idr-tint);transition:background 1.2s}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:80;max-width:460px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.ai .ic{background:var(--ai)} .toast.warn .ic{background:var(--warn)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro — CMS-1500 CLAIM FORM (client demo, synthetic data only)
+  The billers' main working screen: a modernized, editable CMS-1500 (HCFA) form,
+  mostly PREFILLED from the case + reading physician's Technical Report via USMON MCP.
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. OPEN on Testcase, Alice (claim 1000001, United Healthcare OON, $48,087.92).
+       Note the banner: the whole CMS-1500 is PREFILLED — the biller reviews, not types.
+    2. Point at the purple ✦ fields: Box 24 CPT/HCPCS codes, service units, and the
+       Box 21 principal diagnosis were AUTO-DERIVED from the reading physician's report.
+       Strip up top: "Tech-report fields to confirm: 3".
+    3. Click "View Tech Report" — show the synthetic report. Each modality names a CPT
+       code, highlighted "→ Box 24"; the codes on the claim AUTO-FILLED from this report.
+    4. Close the modal, Confirm the three tech-report fields (Dx / CPT set / units).
+       Purple cells in the form turn green; the counter ticks 3 → 0.
+    5. Click Save ("Claim saved — synthetic"). (Flip View → Supervisor to reveal the
+       oversight panel; billers never see it.)
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" onclick="toast('Worklist — 52,140 claims across all clients');return false">Worklist</a>
+    <a href="#" class="on" onclick="return false">CMS-1500</a>
+    <a href="#" onclick="toast('Ongoing follow-up is a separate view in this build');return false">Ongoing</a>
+    <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
+  </nav>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="Demo view role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="whoLabel">Dr. Michael Scholin · Supervisor</span>
+    <span class="avatar" id="whoAvatar">MS</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="crumb"><button onclick="toast('Back to your review worklist')">← Worklist</button><span>/</span><span>Testcase, Alice</span><span>/</span><span>CMS-1500</span></div>
+
+  <!-- claim identity -->
+  <div class="ws-head">
+    <div class="ws-id"><div class="name">Testcase, Alice</div>
+      <div class="meta"><span>PID <b class="mono">100001</b></span><span>Claim <b class="mono">1000001</b></span>
+        <span>DOS <b class="mono">10/20/2025</b></span><span>Component <b>Pro + Tech</b></span>
+        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">◆ Out-of-network</b></span>
+        <span>Charges <b class="mono" id="hdrCharges">$48,087.92</b></span></div></div>
+    <div class="right">
+      <div class="master work" id="masterStatus"><span id="masterIcon">▲</span> <span id="masterLabel">Review in progress</span></div>
+    </div>
+  </div>
+
+  <!-- prefilled banner -->
+  <div class="pullbanner">
+    <span class="pb-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>
+    <span><b>Most boxes are prefilled via USMON MCP</b> — from the case (scheduler, techs) and the reading physician's <b>Technical Report</b>. Every field below is editable, but your job is to <b>review and confirm</b>, not re-key. The purple ✦ fields were auto-derived from the Technical Report.</span>
+  </div>
+
+  <!-- toolbar (mirrors the real form's action bar) -->
+  <div class="toolbar" role="toolbar" aria-label="Claim form actions">
+    <button class="btn ai" onclick="openTechReport()">📄 View Tech Report</button>
+    <button class="btn primary" onclick="toast('Claim saved — synthetic')">💾 Save</button>
+    <span class="tb-sep"></span>
+    <button class="btn sm" onclick="toast('837P (5010) generated — synthetic download')">Download 837</button>
+    <button class="btn sm" onclick="toast('Documents: 4 items attached to this claim')">Documents</button>
+    <button class="btn sm" onclick="toast('Rendering data-only onto a blank CMS-1500 — print preview')">Print on Blank</button>
+    <button class="btn sm" onclick="toast('Full CMS-1500 sent to print preview')">Print</button>
+    <button class="btn sm" onclick="toast('Add Form to Uploads — queued to document store')">Add Form to Uploads</button>
+    <span class="tb-sep"></span>
+    <button class="btn sm" onclick="toast('Payer lookup: United Healthcare — OON, NSA-eligible')">Lookup Payer</button>
+    <button class="btn sm" onclick="toast('Client Rules: Demo Neurophysiology LLC — OON fee schedule ~6× QPA')">Client Rules</button>
+    <button class="btn sm" onclick="openCodingAssist()">✦ Coding Assist</button>
+    <span class="tb-note">Auto-saved to draft · synthetic</span>
+  </div>
+
+  <!-- ===== supervisor-only oversight panel (hidden from billers) ===== -->
+  <div class="sup-panel stats-gated" id="supPanel" aria-hidden="false">
+    <div class="sp-card">
+      <div class="sp-head"><h2>Supervisor oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-stats">
+        <div class="sp-stat"><div class="num">96</div><div class="lbl">Claims worked today (team)</div></div>
+        <div class="sp-stat"><div class="num mono">4:21</div><div class="lbl">Avg time / claim</div></div>
+        <div class="sp-stat"><div class="num">78%</div><div class="lbl">Team active time</div></div>
+        <div class="sp-stat flag"><div class="num">1</div><div class="lbl">Dead-time flag</div></div>
+      </div>
+      <div class="eff-scroll">
+      <table class="eff">
+        <thead><tr><th>Biller</th><th>Claims today</th><th>Avg time/claim</th><th>Active %</th><th>Claims/hr</th><th>Dead time</th></tr></thead>
+        <tbody>
+          <tr class="you"><td>Sample, Dana <span style="color:var(--muted);font-weight:600">· top today</span></td><td>34</td><td>3:12</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:91%"></span></span>91%</span></td><td>8.4</td>
+            <td><span class="deadflag low">Low</span></td></tr>
+          <tr><td>Demo, Alex</td><td>29</td><td>3:48</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:88%"></span></span>88%</span></td><td>7.1</td>
+            <td><span class="deadflag low">Low</span></td></tr>
+          <tr><td>Mockdata, Sam</td><td>21</td><td>4:40</td>
+            <td><span class="bar"><span class="track"><span class="fill mid" style="width:79%"></span></span>79%</span></td><td>5.6</td>
+            <td><span class="deadflag mid">Moderate</span></td></tr>
+          <tr class="flagged"><td>Example, Priya</td><td>12</td><td>9:26</td>
+            <td><span class="bar"><span class="track"><span class="fill low" style="width:54%"></span></span>54%</span></td><td>2.9</td>
+            <td><span class="deadflag high">⚑ High</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- tech-report countdown strip -->
+  <div class="trbar" id="trbar">
+    <span class="trbar-ic" id="trbarIc">✦</span>
+    <div class="trbar-txt">
+      <b>Tech-report fields to confirm: <span id="trCount">3</span></b>
+      <span id="trCap">Box 24 CPT/HCPCS codes, service units, and the Box 21 principal diagnosis were auto-derived from the reading physician's Technical Report. Confirm each.</span>
+    </div>
+    <button class="btn ai" onclick="openTechReport()">📄 View Tech Report</button>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- THE CMS-1500 FORM SHEET                                        -->
+  <!-- ============================================================= -->
+  <div class="formsheet">
+    <div class="fs-head">
+      <div><h2>CMS-1500 · Health Insurance Claim Form</h2><span class="sub">HCFA 08/05 · Professional (837P) · all fields editable, prefilled for review</span></div>
+      <span class="carrier">Carrier &nbsp;→</span>
+    </div>
+
+    <!-- ===== carrier / payer block ===== -->
+    <div class="band">
+      <div class="band-head"><h3>Payer / Carrier</h3><span class="bsrc">Prefilled — Tech · via USMON MCP</span></div>
+      <div class="band-body">
+        <div class="boxrow">
+          <div class="box c5"><span class="bxn">Carrier</span><label>Payer name</label><input value="United Healthcare"></div>
+          <div class="box c5"><span class="bxn">Address</span><label>Payer claims address</label><input value="PO Box 30555, Salt Lake City, UT 84130"></div>
+          <div class="box c2"><span class="bxn">Payer ID</span><label>Payer ID</label><input class="mono" value="87726"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== boxes 1–13 ===== -->
+    <div class="band">
+      <div class="band-head"><h3>Patient &amp; Insured · Boxes 1–13</h3><span class="bsrc">Prefilled — Scheduler · via USMON MCP</span></div>
+      <div class="band-body">
+        <div class="boxrow">
+          <div class="box c4"><span class="bxn">1</span><label>Insurance type</label>
+            <select><option>Medicare</option><option>Medicaid</option><option>Tricare</option><option>ChampVA</option><option>Group Health Plan</option><option>FECA</option><option selected>Other (Commercial)</option></select></div>
+          <div class="box c4"><span class="bxn">1a</span><label>Insured's ID number</label><input class="mono" value="2W76y49mp67"></div>
+          <div class="box c4"><span class="bxn">11</span><label>Insured's policy / group #</label><input class="mono" value="GRP-778120"></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c4"><span class="bxn">2</span><label>Patient's name (Last, First MI)</label><input value="Testcase, Alice"></div>
+          <div class="box c3"><span class="bxn">3</span><label>Patient birth date / sex</label>
+            <div class="subrow"><input class="mono" value="08/29/1971"><select><option selected>F</option><option>M</option></select></div></div>
+          <div class="box c5"><span class="bxn">4</span><label>Insured's name (Last, First MI)</label><input value="Testcase, Alice (Self)"></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c5"><span class="bxn">5</span><label>Patient's address</label><input value="1200 Sample Ridge Ln, Springfield, ST 00000"></div>
+          <div class="box c3"><span class="bxn">5</span><label>Patient phone</label><input class="mono" value="(555) 555-0142"></div>
+          <div class="box c2"><span class="bxn">6</span><label>Relationship to insured</label>
+            <select><option selected>Self</option><option>Spouse</option><option>Child</option><option>Other</option></select></div>
+          <div class="box c2"><span class="bxn">8</span><label>Patient status</label>
+            <select><option selected>Inpatient</option><option>Outpatient</option></select></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c5"><span class="bxn">7</span><label>Insured's address</label><input value="Same as patient"></div>
+          <div class="box c4"><span class="bxn">9</span><label>Other insured's name</label><input placeholder="None on file" value=""></div>
+          <div class="box c3"><span class="bxn">10a–c</span><label>Condition related to</label>
+            <div class="chk"><label><input type="checkbox"> Employment</label><label><input type="checkbox"> Auto</label><label><input type="checkbox"> Other</label></div>
+            <span class="hint">All "No" — not accident-related</span></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c4"><span class="bxn">12</span><label>Patient's signature</label><input value="Signature on file"></div>
+          <div class="box c4"><span class="bxn">12</span><label>Signature date</label><input class="mono" value="10/20/2025"></div>
+          <div class="box c4"><span class="bxn">13</span><label>Insured's signature (assignment)</label><input value="Signature on file"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== boxes 14–23 ===== -->
+    <div class="band">
+      <div class="band-head"><h3>Dates, Providers &amp; Diagnoses · Boxes 14–23</h3>
+        <span class="aichip">✦ AI</span><span class="bsrc">From reading physician's Technical Report · via USMON MCP</span></div>
+      <div class="band-body">
+        <div class="boxrow">
+          <div class="box c3"><span class="bxn">14</span><label>Date of current illness / injury</label><input class="mono" value="10/20/2025"></div>
+          <div class="box c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="—" value=""></div>
+          <div class="box c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="—" value=""></div>
+          <div class="box c3"><span class="bxn">18</span><label>Hospitalization dates</label><input class="mono" value="10/20/2025 – 10/22/2025"></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c5"><span class="bxn">17</span><label>Referring / ordering provider</label><input value="Sample, Alan MD"></div>
+          <div class="box c2"><span class="bxn">17a</span><label>Other ID</label><input class="mono" value="G2 · 0824"></div>
+          <div class="box c2"><span class="bxn">17b</span><label>NPI</label><input class="mono" value="1000000048"></div>
+          <div class="box c3"><span class="bxn">20</span><label>Outside lab / charges</label>
+            <div class="chk"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+          <div class="box c3"><span class="bxn">21</span><label>ICD indicator</label>
+            <select><option selected>0 — ICD-10-CM</option><option>9 — ICD-9-CM</option></select></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) — A is principal</label>
+            <div class="dxgrid">
+              <div class="dxslot trhi" id="bx21a"><span class="trflag">✦ AI</span><span class="lt">A</span><input class="mono" value="M50.121"></div>
+              <div class="dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
+              <div class="dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
+              <div class="dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
+              <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="—" value=""></div>
+              <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="—" value=""></div>
+              <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="—" value=""></div>
+              <div class="dxslot"><span class="lt">H</span><input class="mono" placeholder="—" value=""></div>
+            </div>
+          </div>
+        </div>
+        <div class="boxrow">
+          <div class="box c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="—" value=""></div>
+          <div class="box c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="—" value=""></div>
+          <div class="box c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A — OON, no auth"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== box 24 service lines ===== -->
+    <div class="band">
+      <div class="band-head"><h3>Service lines · Box 24</h3>
+        <span class="aichip">✦ AI</span>
+        <button class="btn ai sm" style="margin-left:auto" onclick="openCodingAssist()">✦ Coding Assist</button>
+        <span class="bsrc" style="margin-left:0">CPT/HCPCS &amp; units from Technical Report · via USMON MCP</span></div>
+      <div class="band-body">
+        <div class="svc-wrap">
+          <table class="svc">
+            <thead><tr>
+              <th style="width:22px"></th><th>24A · DOS</th><th>24B · POS</th><th>24C · EMG</th>
+              <th>24D · CPT/HCPCS</th><th>Mod</th><th>24E · Dx ptr</th><th>24F · Charges</th>
+              <th>24G · Units</th><th>24H · EPSDT</th><th>24I · Qual</th><th>24J · Rendering NPI</th><th>Description</th>
+            </tr></thead>
+            <tbody id="svcBody">
+              <tr><td class="ln">1</td>
+                <td><input class="mono w-dos" value="10/20/2025"></td>
+                <td><input class="mono w-sm" value="21"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-cpt trhi trcpt" id="cpt1" value="95887"></td>
+                <td><input class="mono w-mod" value="26"></td>
+                <td><input class="mono w-dx" value="A"></td>
+                <td><input class="mono w-chg" value="361.25"></td>
+                <td><input class="mono w-u trhi trunit" id="un1" value="1"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-sm" value="NPI"></td>
+                <td><input class="mono w-npi" value="1000000048"></td>
+                <td class="desc">Needle EMG, non-extremity</td></tr>
+              <tr><td class="ln">2</td>
+                <td><input class="mono w-dos" value="10/20/2025"></td>
+                <td><input class="mono w-sm" value="21"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-cpt trhi trcpt" id="cpt2" value="95909"></td>
+                <td><input class="mono w-mod" value="26"></td>
+                <td><input class="mono w-dx" value="A"></td>
+                <td><input class="mono w-chg" value="849.15"></td>
+                <td><input class="mono w-u trhi trunit" id="un2" value="1"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-sm" value="NPI"></td>
+                <td><input class="mono w-npi" value="1000000048"></td>
+                <td class="desc">Nerve conduction, 7–8 studies</td></tr>
+              <tr><td class="ln">3</td>
+                <td><input class="mono w-dos" value="10/20/2025"></td>
+                <td><input class="mono w-sm" value="21"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-cpt trhi trcpt" id="cpt3" value="95937"></td>
+                <td><input class="mono w-mod" value="26"></td>
+                <td><input class="mono w-dx" value="A B"></td>
+                <td><input class="mono w-chg" value="6,332.50"></td>
+                <td><input class="mono w-u trhi trunit" id="un3" value="4"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-sm" value="NPI"></td>
+                <td><input class="mono w-npi" value="1000000048"></td>
+                <td class="desc">Neuromuscular junction test</td></tr>
+              <tr><td class="ln">4</td>
+                <td><input class="mono w-dos" value="10/20/2025"></td>
+                <td><input class="mono w-sm" value="21"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-cpt trhi trcpt" id="cpt4" value="95938"></td>
+                <td><input class="mono w-mod" value="26"></td>
+                <td><input class="mono w-dx" value="A B"></td>
+                <td><input class="mono w-chg" value="11,900.01"></td>
+                <td><input class="mono w-u trhi trunit" id="un4" value="6"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-sm" value="NPI"></td>
+                <td><input class="mono w-npi" value="1000000048"></td>
+                <td class="desc">SSEP, upper &amp; lower</td></tr>
+              <tr><td class="ln">5</td>
+                <td><input class="mono w-dos" value="10/20/2025"></td>
+                <td><input class="mono w-sm" value="21"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-cpt trhi trcpt" id="cpt5" value="95939"></td>
+                <td><input class="mono w-mod" value="26"></td>
+                <td><input class="mono w-dx" value="A"></td>
+                <td><input class="mono w-chg" value="17,850.01"></td>
+                <td><input class="mono w-u trhi trunit" id="un5" value="3"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-sm" value="NPI"></td>
+                <td><input class="mono w-npi" value="1000000048"></td>
+                <td class="desc">MEP, upper &amp; lower</td></tr>
+              <tr><td class="ln">6</td>
+                <td><input class="mono w-dos" value="10/20/2025"></td>
+                <td><input class="mono w-sm" value="21"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-cpt trhi trcpt" id="cpt6" value="95955"></td>
+                <td><input class="mono w-mod" value="26"></td>
+                <td><input class="mono w-dx" value="A"></td>
+                <td><input class="mono w-chg" value="10,795.00"></td>
+                <td><input class="mono w-u trhi trunit" id="un6" value="1"></td>
+                <td><input class="w-sm" value=""></td>
+                <td><input class="mono w-sm" value="NPI"></td>
+                <td><input class="mono w-npi" value="1000000048"></td>
+                <td class="desc">EEG monitoring during surgery</td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono" id="svcTotal">$48,087.92</td><td colspan="5"></td></tr></tfoot>
+          </table>
+        </div>
+        <div class="smartnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          <span><b>OON pricing applied:</b> line charges set at the client's OON fee schedule (≈6× QPA). All rendering under NPI <span class="mono">1000000048</span> — Sample, Alan MD.</span></div>
+      </div>
+    </div>
+
+    <!-- ===== tech-report confirm panel ===== -->
+    <div class="band">
+      <div class="band-head"><span class="aichip">✦ AI</span><h3 style="color:var(--ai-dark)">Tech-report coding — confirm</h3>
+        <span class="bsrc">Auto-derived from the reading physician's Technical Report</span></div>
+      <div class="band-body">
+        <div class="trconfirm">
+          <div class="aif col2" id="aif-dx">
+            <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">principal diagnosis · Box 21.A · via USMON MCP</span></div>
+            <div class="aival mono" id="aival-dx">M50.121 — Cervical disc disorder with radiculopathy, C6–C7</div>
+            <div class="aif-why">From Tech Report Diagnosis: "cervical disc disorder with radiculopathy, C6–C7." Placed as Box 21.A (principal) so the service-line Dx pointers resolve. Confidence 0.94.</div>
+            <div class="aif-act" id="aifact-dx">
+              <button class="btn ai sm" onclick="confirmTR('dx')">✓ Confirm</button>
+              <button class="btn sm" onclick="overrideTR('dx')">Edit / Override</button>
+            </div>
+          </div>
+          <div class="aif" id="aif-cpt">
+            <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">Box 24D CPT/HCPCS codes · via USMON MCP</span></div>
+            <div class="aival mono" id="aival-cpt">95887 · 95909 · 95937 · 95938 · 95939 · 95955</div>
+            <div class="aif-why">Matched from the Tech Report modality sections: Needle EMG <span class="code">95887</span>, nerve conduction <span class="code">95909</span>, rep. stim <span class="code">95937</span>, SSEP <span class="code">95938</span>, MEP <span class="code">95939</span>, EEG <span class="code">95955</span>. These auto-filled Box 24.</div>
+            <div class="aif-act" id="aifact-cpt">
+              <button class="btn ai sm" onclick="confirmTR('cpt')">✓ Confirm codes</button>
+              <button class="btn sm" onclick="overrideTR('cpt')">Edit / Override</button>
+            </div>
+          </div>
+          <div class="aif" id="aif-units">
+            <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">Box 24G service units · via USMON MCP</span></div>
+            <div class="aival mono" id="aival-units">1 · 1 · 4 · 6 · 3 · 1 units</div>
+            <div class="aif-why">Derived from documented monitoring time — e.g. line 4 SSEP <span class="code">95938</span> = 6 units from 268 min intraoperative monitoring (≈45 min/unit). Confirm units match the report.</div>
+            <div class="aif-act" id="aifact-units">
+              <button class="btn ai sm" onclick="confirmTR('units')">✓ Confirm units</button>
+              <button class="btn sm" onclick="overrideTR('units')">Edit / Override</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== boxes 25–33 ===== -->
+    <div class="band">
+      <div class="band-head"><h3>Billing, Assignment &amp; Providers · Boxes 25–33</h3><span class="bsrc">Prefilled · via USMON MCP</span></div>
+      <div class="band-body">
+        <div class="boxrow">
+          <div class="box c4"><span class="bxn">25</span><label>Federal tax ID (EIN)</label><input class="mono" value="12-3456789"></div>
+          <div class="box c3"><span class="bxn">26</span><label>Patient account no.</label><input class="mono" value="100001"></div>
+          <div class="box c2"><span class="bxn">27</span><label>Accept assignment</label>
+            <select><option selected>Yes</option><option>No</option></select></div>
+          <div class="box c3"><span class="bxn">28</span><label>Total charge</label><input class="mono" id="box28" value="$48,087.92"></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
+          <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" id="box30" value="$48,087.92"></div>
+          <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
+          <div class="box c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
+          <div class="box c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="—" value=""></div>
+        </div>
+        <div class="boxrow">
+          <div class="box c6"><span class="bxn">33</span><label>Billing provider &amp; phone</label><input value="Demo Neurophysiology LLC · (555) 555-0190"></div>
+          <div class="box c3"><span class="bxn">33a</span><label>Billing NPI</label><input class="mono" value="1000000017"></div>
+          <div class="box c3"><span class="bxn">33b</span><label>Taxonomy (24J qual)</label><input class="mono" value="2084N0400X"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+    <button class="btn" onclick="toast('837P (5010) generated — synthetic download')">Download 837</button>
+    <button class="btn" onclick="toast('Full CMS-1500 sent to print preview')">Print</button>
+    <button class="btn primary" onclick="toast('Claim saved — synthetic')">💾 Save claim</button>
+  </div>
+</main>
+
+<!-- ============================================================= -->
+<!-- TECH REPORT MODAL                                              -->
+<!-- ============================================================= -->
+<div class="modal-back" id="techBack" onclick="if(event.target===this)closeTechReport()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="techTitle">
+    <div class="modal-head">
+      <span class="tag">Source document</span>
+      <h2 id="techTitle">Technical Report</h2>
+      <button class="mx" onclick="closeTechReport()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="tr-note"><span class="sp">✦</span><span>This is the reading physician's report USMON reads. The <b>CPT/HCPCS codes</b> below auto-filled into the claim (Box 24) and the principal diagnosis into Box 21. Matching codes are <span class="cptmatch">highlighted<span class="arrow">→ Box 24</span></span> — that's the code auto-filling from the tech report.</span></p>
+
+      <div class="tr-doc">
+        <div class="tr-doc-head"><h3>Intraoperative Neurophysiologic Monitoring — Technical Report</h3>
+          <p>Sample Specialists Hospital, Springfield ST · Report #TR-100001 · Synthetic</p></div>
+
+        <div class="tr-sec">
+          <h4>Patient &amp; procedure</h4>
+          <div class="tr-kv">
+            <div class="k">Patient: <b>Testcase, Alice</b></div>
+            <div class="k">PID: <b>100001</b></div>
+            <div class="k">DOB: <b>08/29/1971</b></div>
+            <div class="k">Date of service: <b>10/20/2025</b></div>
+            <div class="k">Procedure: <b>Anterior cervical discectomy &amp; fusion, C5–C7</b></div>
+            <div class="k">Principal diagnosis: <b>M50.121 — cervical disc disorder w/ radiculopathy, C6–C7</b></div>
+          </div>
+        </div>
+
+        <div class="tr-sec">
+          <h4>Personnel</h4>
+          <div class="tr-kv">
+            <div class="k">Interpreting neurologist (reader): <b>Sample, Alan MD</b> · NPI 1000000048</div>
+            <div class="k">Monitoring technologist: <b>Demo, Terry CNIM</b></div>
+            <div class="k">Anesthesiologist: <b>Sample, Pat MD</b></div>
+            <div class="k">Operating surgeon: <b>Example, Jordan MD</b></div>
+          </div>
+        </div>
+
+        <div class="tr-sec">
+          <h4>Timing</h4>
+          <div class="tr-kv">
+            <div class="k">Monitoring start: <b>08:12</b></div>
+            <div class="k">Monitoring stop: <b>13:05</b></div>
+            <div class="k">Total monitored time: <b>293 min</b></div>
+            <div class="k">Continuous coverage: <b>Yes — one-to-one</b></div>
+          </div>
+        </div>
+
+        <div class="tr-sec">
+          <h4>Modalities monitored — each maps to a billed CPT</h4>
+          <div class="tr-mod"><span class="nm">Needle electromyography (EMG), non-extremity</span><span class="mins">baseline + continuous</span><span class="cptmatch">95887<span class="arrow">→ Box 24</span></span></div>
+          <div class="tr-mod"><span class="nm">Nerve conduction studies, 7–8 studies</span><span class="mins">8 studies</span><span class="cptmatch">95909<span class="arrow">→ Box 24</span></span></div>
+          <div class="tr-mod"><span class="nm">Repetitive stimulation / neuromuscular junction</span><span class="mins">4 units</span><span class="cptmatch">95937<span class="arrow">→ Box 24</span></span></div>
+          <div class="tr-mod"><span class="nm">Somatosensory evoked potentials (SSEP), upper &amp; lower</span><span class="mins">268 min → 6 units</span><span class="cptmatch">95938<span class="arrow">→ Box 24</span></span></div>
+          <div class="tr-mod"><span class="nm">Motor evoked potentials (MEP), upper &amp; lower</span><span class="mins">3 units</span><span class="cptmatch">95939<span class="arrow">→ Box 24</span></span></div>
+          <div class="tr-mod"><span class="nm">Electroencephalography (EEG) during surgery</span><span class="mins">continuous</span><span class="cptmatch">95955<span class="arrow">→ Box 24</span></span></div>
+        </div>
+
+        <div class="tr-sec">
+          <h4>Supplies / disposables</h4>
+          <table class="tr-supply">
+            <thead><tr><th>Item</th><th>Code</th><th class="qty">Qty</th></tr></thead>
+            <tbody>
+              <tr><td>Subdermal needle electrode, disposable</td><td><span class="cptmatch">95887<span class="arrow">→ Box 24</span></span></td><td class="qty">12</td></tr>
+              <tr><td>Corkscrew electrode set (MEP)</td><td><span class="cptmatch">95939<span class="arrow">→ Box 24</span></span></td><td class="qty">6</td></tr>
+              <tr><td>Adhesive surface electrode (EEG)</td><td><span class="cptmatch">95955<span class="arrow">→ Box 24</span></span></td><td class="qty">10</td></tr>
+              <tr><td>Stimulating electrode, SSEP</td><td><span class="cptmatch">95938<span class="arrow">→ Box 24</span></span></td><td class="qty">4</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeTechReport()">Close</button>
+      <button class="btn ai" onclick="closeTechReport();document.getElementById('aif-cpt').scrollIntoView({block:'center'});">Codes look right → confirm on claim</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- CODING ASSIST PANEL (second-opinion coding scan)              -->
+<!-- ============================================================= -->
+<div class="modal-back" id="codingBack" onclick="if(event.target===this)closeCodingAssist()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="codingTitle">
+    <div class="modal-head">
+      <span class="tag">Coding Assist</span>
+      <h2 id="codingTitle">Coding Assist <span style="font-weight:600;color:var(--faint);font-size:12px">— powered by USMON AI (Bedrock)</span></h2>
+      <button class="mx" onclick="closeCodingAssist()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="ca-scan"><span class="sp">✦</span><span>This is a <b>second-opinion coding scan</b> — separate from the inline field-confirm on the form. It reads the reading physician's <b>Tech Report</b> and the <b>Cadwell IONM system report</b> to surface CPT codes the biller may have <b>missed</b>. AI proposes, you decide — every action is logged to the audit trail.</span></p>
+      <p class="ca-sub" id="caSub">Analyzed the Tech Report + Cadwell IONM report — found <b>3 coding opportunities</b> (and confirmed <b>1 code</b> already on the claim).</p>
+
+      <div class="ca-list">
+
+        <!-- MISSING #1 -->
+        <div class="ca-item miss" id="ca-95870">
+          <div class="ca-top">
+            <span class="ca-code">95870</span>
+            <span class="ca-dsc">Needle EMG, limited study (axial / paraspinal muscles)</span>
+            <span class="ca-meta">×2 · mod 26</span>
+            <span class="ca-pill miss">Missing</span>
+          </div>
+          <div class="ca-why">Tech Report: <span class="q">"needle EMG on bilateral intercostal (axial) muscles"</span> — a distinct limited study from the non-extremity EMG (<span class="code">95887</span>) already billed → <span class="code">95870 ×2</span>. Not on the claim.</div>
+          <div class="ca-act" id="caact-95870">
+            <button class="btn idr sm" onclick="caAdd('95870','Needle EMG, limited (axial)','2','26','A','722.50','ca-95870')">＋ Add to claim</button>
+            <button class="btn sm" onclick="caDismiss('ca-95870','95870')">Dismiss</button>
+          </div>
+        </div>
+
+        <!-- MISSING #2 -->
+        <div class="ca-item miss" id="ca-95940">
+          <div class="ca-top">
+            <span class="ca-code">95940</span>
+            <span class="ca-dsc">Continuous intraop neuromonitoring in the operating room</span>
+            <span class="ca-meta">×1 · mod 26</span>
+            <span class="ca-pill miss">Missing</span>
+          </div>
+          <div class="ca-why">Cadwell IONM report: one-to-one <span class="q">in-room monitoring 0:13 + baseline &amp; final interpretation</span> documented → <span class="code">95940</span> for OR-based IONM time not yet captured on the claim.</div>
+          <div class="ca-act" id="caact-95940">
+            <button class="btn idr sm" onclick="caAdd('95940','Continuous IONM in OR','1','26','A','2,975.00','ca-95940')">＋ Add to claim</button>
+            <button class="btn sm" onclick="caDismiss('ca-95940','95940')">Dismiss</button>
+          </div>
+        </div>
+
+        <!-- UNITS DIFFER -->
+        <div class="ca-item differ" id="ca-95939">
+          <div class="ca-top">
+            <span class="ca-code">95939</span>
+            <span class="ca-dsc">Motor evoked potentials (MEP), upper &amp; lower</span>
+            <span class="ca-meta">Coding Assist: 4 · claim has 3</span>
+            <span class="ca-pill differ">Units differ</span>
+          </div>
+          <div class="ca-why">Cadwell IONM report logs MEP across <span class="q">all four monitored limbs</span> → <span class="code">95939 ×4</span>. The claim line currently shows <b>3</b> units — adjust to match the report.</div>
+          <div class="ca-act" id="caact-95939">
+            <button class="btn ai sm" onclick="caAdjust('un5','4','ca-95939','95939')">Adjust units → 4</button>
+            <button class="btn sm" onclick="caDismiss('ca-95939','95939')">Dismiss</button>
+          </div>
+        </div>
+
+        <!-- ON CLAIM -->
+        <div class="ca-item have" id="ca-95938">
+          <div class="ca-top">
+            <span class="ca-code">95938</span>
+            <span class="ca-dsc">Somatosensory evoked potentials (SSEP), upper &amp; lower</span>
+            <span class="ca-meta">×6 · mod 26</span>
+            <span class="ca-pill have">On claim</span>
+          </div>
+          <div class="ca-why">Tech Report: <span class="q">SSEP upper &amp; lower, 268 min → 6 units</span> → <span class="code">95938 ×6</span>. Already present on the claim and matches the report — no action needed.</div>
+          <div class="ca-act"><span class="ca-done added" style="color:var(--ok)">✓ Verified on claim</span></div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="ca-foot-note">Coding Assist is a placeholder name · synthetic scan</span>
+      <button class="btn" onclick="closeCodingAssist()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  /* ---------- shared toast ---------- */
+  function toast(m,kind){const t=document.getElementById('toast');t.className='toast'+(kind?' '+kind:'');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+
+  /* ---------- role toggle: Biller <-> Supervisor (default Supervisor) ---------- */
+  function setRole(role){
+    const sup=role==='supervisor';
+    document.body.classList.toggle('role-super',sup);
+    document.getElementById('rt-biller').classList.toggle('on',!sup);
+    document.getElementById('rt-super').classList.toggle('on',sup);
+    document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
+    document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Supervisor':'Sample, Dana · Biller';
+    document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
+    toast(sup?'Supervisor view — team stats & efficiency now visible':'Biller view — calm, no dashboards');
+  }
+
+  /* ---------- Tech Report modal (Esc + backdrop close) ---------- */
+  function openTechReport(){document.getElementById('techBack').classList.add('show');document.body.style.overflow='hidden';}
+  function closeTechReport(){document.getElementById('techBack').classList.remove('show');document.body.style.overflow='';}
+  document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&document.getElementById('techBack').classList.contains('show'))closeTechReport();});
+
+  /* ---------- tech-report fields: highlight-to-confirm (the centerpiece) ---------- */
+  const TR_ORDER=['dx','cpt','units'];
+  const TR_CELLS={dx:['bx21a'],cpt:['cpt1','cpt2','cpt3','cpt4','cpt5','cpt6'],units:['un1','un2','un3','un4','un5','un6']};
+  const trState={dx:'pending',cpt:'pending',units:'pending'};
+
+  function resolveTR(key,mode){
+    if(trState[key]!=='pending')return;
+    trState[key]=mode;
+    const box=document.getElementById('aif-'+key);
+    box.classList.remove('confirmed','overridden');
+    box.classList.add(mode==='overridden'?'overridden':'confirmed');
+    document.getElementById('aifact-'+key).innerHTML=
+      mode==='overridden'
+        ? '<span class="aif-done ovr">✎ Overridden by you · logged to audit</span>'
+        : '<span class="aif-done">✓ Confirmed by you · logged to audit</span>';
+    // clear the purple tint on the matching form cells -> confirmed green
+    (TR_CELLS[key]||[]).forEach(id=>{const c=document.getElementById(id);if(c){c.classList.remove('trhi');c.classList.add('trok');const f=c.querySelector('.trflag');if(f)f.remove();}});
+    updateTR();
+  }
+  function confirmTR(key){resolveTR(key,'confirmed');toast('Tech-report field confirmed — logged to audit trail','ai');}
+  function overrideTR(key){
+    if(trState[key]!=='pending')return;
+    const cur=document.getElementById('aival-'+key).textContent.trim();
+    document.getElementById('aifact-'+key).innerHTML=
+      '<input class="aiedit" id="aiedit-'+key+'" value="'+cur.replace(/"/g,'&quot;')+'">'+
+      '<button class="btn ai sm" onclick="saveOverrideTR(\''+key+'\')">Save</button>'+
+      '<button class="btn sm" onclick="cancelOverrideTR(\''+key+'\')">Cancel</button>';
+    const inp=document.getElementById('aiedit-'+key);inp.focus();inp.select();
+  }
+  function saveOverrideTR(key){
+    const v=document.getElementById('aiedit-'+key).value.trim()||document.getElementById('aival-'+key).textContent;
+    document.getElementById('aival-'+key).textContent=v;
+    resolveTR(key,'overridden');
+    toast('Override saved — biller value recorded, logged to audit trail','warn');
+  }
+  function cancelOverrideTR(key){
+    const cpt=key==='cpt', un=key==='units';
+    const label=cpt?'✓ Confirm codes':(un?'✓ Confirm units':'✓ Confirm');
+    document.getElementById('aifact-'+key).innerHTML=
+      '<button class="btn ai sm" onclick="confirmTR(\''+key+'\')">'+label+'</button>'+
+      '<button class="btn sm" onclick="overrideTR(\''+key+'\')">Edit / Override</button>';
+  }
+
+  function updateTR(){
+    const pending=TR_ORDER.filter(k=>trState[k]==='pending').length;
+    document.getElementById('trCount').textContent=pending;
+    const bar=document.getElementById('trbar');
+    const m=document.getElementById('masterStatus');
+    if(pending===0){
+      bar.classList.add('done');
+      document.getElementById('trbarIc').textContent='✓';
+      document.getElementById('trCap').textContent='All tech-report fields confirmed — the CPT/HCPCS codes, units, and principal diagnosis are verified against the report.';
+      m.className='master ready';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Reviewed — ready to save';
+    }else{
+      bar.classList.remove('done');
+      document.getElementById('trbarIc').textContent='✦';
+      m.className='master work';document.getElementById('masterIcon').textContent='▲';document.getElementById('masterLabel').textContent='Review in progress';
+    }
+  }
+  updateTR();
+
+  /* ---------- Coding Assist panel (second-opinion coding scan) ---------- */
+  function openCodingAssist(){document.getElementById('codingBack').classList.add('show');document.body.style.overflow='hidden';}
+  function closeCodingAssist(){document.getElementById('codingBack').classList.remove('show');document.body.style.overflow='';}
+  document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&document.getElementById('codingBack').classList.contains('show'))closeCodingAssist();});
+
+  function caMoney(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function caParse(s){return parseFloat(String(s).replace(/[^0-9.]/g,''))||0;}
+
+  /* Add a Missing code as a new Box 24 service line + roll up the totals */
+  function caAdd(cpt,desc,units,mod,dxptr,charge,itemId){
+    const item=document.getElementById(itemId);
+    if(!item||item.classList.contains('done'))return;
+    const body=document.getElementById('svcBody');
+    const ln=body.rows.length+1;
+    const chgNum=caParse(charge);
+    const tr=document.createElement('tr');
+    tr.className='ca-new';
+    tr.innerHTML=
+      '<td class="ln">'+ln+'</td>'+
+      '<td><input class="mono w-dos" value="10/20/2025"></td>'+
+      '<td><input class="mono w-sm" value="21"></td>'+
+      '<td><input class="w-sm" value=""></td>'+
+      '<td><input class="mono w-cpt" value="'+cpt+'"></td>'+
+      '<td><input class="mono w-mod" value="'+mod+'"></td>'+
+      '<td><input class="mono w-dx" value="'+dxptr+'"></td>'+
+      '<td><input class="mono w-chg" value="'+charge+'"></td>'+
+      '<td><input class="mono w-u" value="'+units+'"></td>'+
+      '<td><input class="w-sm" value=""></td>'+
+      '<td><input class="mono w-sm" value="NPI"></td>'+
+      '<td><input class="mono w-npi" value="1000000048"></td>'+
+      '<td class="desc">'+desc+' · ✦ Coding Assist</td>';
+    body.appendChild(tr);
+    setTimeout(()=>{tr.querySelectorAll('td').forEach(td=>td.style.background='transparent');},60);
+    // roll up totals: tfoot, Box 28, Box 30 balance, header charges
+    const newTotal=caParse(document.getElementById('svcTotal').textContent)+chgNum;
+    document.getElementById('svcTotal').textContent=caMoney(newTotal);
+    document.getElementById('box28').value=caMoney(newTotal);
+    document.getElementById('box30').value=caMoney(newTotal);
+    document.getElementById('hdrCharges').textContent=caMoney(newTotal);
+    // mark the item resolved
+    item.classList.add('done');
+    document.getElementById('caact-'+cpt).innerHTML='<span class="ca-done added">✓ Added '+cpt+' ×'+units+' to the claim · logged</span>';
+    toast('Added '+cpt+' ×'+units+' to the claim · logged to audit','ai');
+  }
+
+  /* Units differ -> update the existing Box 24 units cell */
+  function caAdjust(unitId,newVal,itemId,cpt){
+    const item=document.getElementById(itemId);
+    if(!item||item.classList.contains('done'))return;
+    const cell=document.getElementById(unitId);
+    if(cell){cell.value=newVal;cell.classList.add('trhi');setTimeout(()=>{cell.classList.remove('trhi');cell.classList.add('trok');},50);}
+    item.classList.add('done');
+    document.getElementById('caact-'+cpt).innerHTML='<span class="ca-done adj">✎ Units adjusted to '+newVal+' · logged</span>';
+    toast('Coding Assist: '+cpt+' units adjusted to '+newVal+' · logged to audit','warn');
+  }
+
+  /* Dismiss a recommendation */
+  function caDismiss(itemId,cpt){
+    const item=document.getElementById(itemId);
+    if(!item||item.classList.contains('done'))return;
+    item.classList.add('done');
+    document.getElementById('caact-'+cpt).innerHTML='<span class="ca-done dis">✕ Dismissed · logged</span>';
+    toast('Coding Assist: '+cpt+' dismissed · logged to audit');
+  }
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>

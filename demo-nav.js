@@ -12,7 +12,9 @@
     { f: 'prototype-biller-review.html', label: 'Biller Review' },
     { f: 'prototype-guided-flow.html', label: 'Guided' },
     { f: 'prototype-familiar-modern.html', label: 'Familiar' },
-    { f: 'prototype-v5-router.html', label: 'Cockpit' }
+    { f: 'prototype-cms1500.html', label: 'CMS-1500' },
+    { f: 'prototype-v5-router.html', label: 'Cockpit' },
+    { f: 'prototype-payments.html', label: 'Payments' }
   ];
   var cur = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (cur === '') cur = 'index.html';

@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — Payments &amp; Collections (prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;   /* Commercial OON -> IDR feeder */
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;                          /* Government in-network */
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;  /* Hospital tech-fee invoice */
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+  #whoLabel{white-space:nowrap}
+  /* role toggle (Biller <-> Supervisor) */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+
+  .wrap{max-width:1320px;margin:0 auto;padding:18px 20px 80px}
+  .crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:12px}
+  .crumb button{background:none;border:none;color:var(--primary);font-size:13px;padding:0;cursor:pointer}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.primary:disabled{background:#cbd5e1;border-color:#cbd5e1;cursor:not-allowed}
+  .btn.idr{background:var(--idr);border-color:var(--idr);color:#fff}.btn.idr:hover{background:var(--idr-dark);border-color:var(--idr-dark)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark)}
+  .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}.btn.warn:hover{filter:brightness(.94)}
+  .btn.danger{border-color:var(--block-line);color:var(--block);background:var(--block-tint)}.btn.danger:hover{border-color:var(--block);background:#fde2e2}
+
+  /* claim identity header */
+  .ws-head{display:flex;align-items:center;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px;flex-wrap:wrap}
+  .ws-id .name{font-size:19px;font-weight:700;letter-spacing:-.2px}
+  .ws-id .meta{display:flex;gap:14px;color:var(--muted);font-size:12.5px;flex-wrap:wrap;margin-top:3px}
+  .ws-id .meta b{color:var(--ink);font-weight:600}
+  .ws-head .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .master{display:flex;align-items:center;gap:9px;padding:8px 13px;border-radius:9px;font-weight:700;font-size:13px}
+  .master.partial{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .master.idr{background:var(--idr-tint);color:var(--idr);border:1px solid var(--idr-line)}
+  .master.closed{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+
+  /* payer context banner */
+  .payerbar{display:flex;align-items:center;gap:12px;background:var(--idr-tint);border:1px solid var(--idr-line);border-radius:var(--radius);padding:11px 15px;margin-bottom:14px;font-size:13px;color:var(--idr-dark)}
+  .payerbar b{font-weight:700}
+  .payerbar .badge{margin-left:auto;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;background:#fff;border:1px solid var(--idr-line);border-radius:5px;padding:2px 8px}
+
+  /* ===== AI underpayment flag (canonical ✦) ===== */
+  .ai-flag{display:flex;align-items:flex-start;gap:11px;background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border:1px solid var(--ai-line);border-radius:9px;padding:13px 15px;margin-bottom:16px;font-size:13px;color:#3c2b8a}
+  .ai-flag.gone{display:none}
+  .ai-flag .spark{flex:none;width:24px;height:24px;border-radius:7px;background:var(--ai);color:#fff;display:grid;place-items:center;font-size:14px}
+  .ai-flag b{color:var(--ai-dark)}
+  .ai-flag .ai-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .ai-flag .ai-note{display:block;margin-top:8px;font-size:11px;color:var(--ai-dark);font-style:italic;opacity:.9}
+  .ai-flag.confirmed{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok)}
+  .ai-flag.confirmed .spark{background:var(--ok)} .ai-flag.confirmed b{color:var(--ok)}
+
+  /* ===== SUPERVISOR-ONLY collections oversight (gated) ===== */
+  body.role-biller .stats-gated{display:none}
+  .sup-panel{display:none;margin-bottom:16px}
+  body.role-super .sup-panel{display:block}
+  .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .sp-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--gov-tint)}
+  .sp-head h2{font-size:14px;margin:0;font-weight:700;color:var(--gov)}
+  .sp-head .tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line);border-radius:5px;padding:2px 7px}
+  .sp-head .hid{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 18px}
+  @media(max-width:680px){.sp-stats{grid-template-columns:repeat(2,1fr)}}
+  .sp-stat{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+  .sp-stat .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sp-stat .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+  .sp-stat.good .num{color:var(--ok)} .sp-stat.flag .num{color:var(--block)} .sp-stat.oon .num{color:var(--idr)}
+
+  /* card + panel */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .panel-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
+  .panel-head h2{font-size:14px;margin:0;font-weight:700}
+  .panel-head .src{font-size:11.5px;color:var(--faint);font-weight:600}
+  .panel-head .act{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+  .aicount-pill{display:none;align-items:center;gap:5px}
+  .aicount-pill.show{display:inline-flex}
+
+  /* ===== dense editable payment-posting table ===== */
+  .ptwrap{overflow-x:auto}
+  .ptbl{border-collapse:separate;border-spacing:0;font-size:12px;min-width:1960px}
+  .ptbl th{font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:3;background:var(--surface-2)}
+  .ptbl th.lft{text-align:left}
+  .ptbl th.ctr,.ptbl td.ctr{text-align:center}
+  .ptbl td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;vertical-align:middle;background:#fff}
+  .ptbl td.lft{text-align:left}
+  /* frozen CPT column */
+  .ptbl th:first-child,.ptbl td:first-child{position:sticky;left:0;z-index:2;text-align:left;min-width:150px;box-shadow:1px 0 0 var(--line-strong)}
+  .ptbl th:first-child{z-index:4}
+  .ptbl tbody tr.grp td{border-top:2px solid var(--line-strong)}
+  .ptbl tbody tr:hover td{background:var(--surface-2)}
+  .ptbl tbody tr.patrow td{background:var(--primary-tint)}
+  .ptbl tbody tr.patrow:hover td{background:#dceff0}
+  .ptbl .cptname{font-weight:700;font-size:12.5px}
+  .ptbl .cptname .rdesc{font-weight:500;color:var(--muted);font-size:11px;margin-top:1px}
+  .ptbl .cont{color:var(--faint);font-weight:600;font-size:11.5px}
+  .ci{width:76px;font-family:var(--mono);font-size:11.5px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:#fff;text-align:right;color:var(--ink)}
+  .ci.sm{width:58px} .ci.wide{width:96px} .ci.date{width:92px;text-align:left}
+  .ci:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  select.ci{text-align:left;width:112px;font-family:var(--sans);font-weight:600}
+  select.ci.tiny{width:62px}
+  .ci.ai-cell{background:var(--ai-tint);border-color:var(--ai);box-shadow:0 0 0 2px var(--ai-tint);color:var(--ai-dark);font-weight:700}
+  .bal{font-family:var(--mono);font-weight:700;color:var(--block)}
+  .paidcell{color:var(--ok);font-weight:700}
+  .dash{color:var(--faint)}
+  .ptbl .chk{width:15px;height:15px;accent-color:var(--primary)}
+  .ptbl tfoot td{padding:10px 8px;font-weight:800;border-top:2px solid var(--line-strong);font-family:var(--mono);text-align:right;background:var(--surface-2);white-space:nowrap}
+  .ptbl tfoot td:first-child{text-align:left;font-family:var(--sans);position:sticky;left:0;z-index:2;box-shadow:1px 0 0 var(--line-strong)}
+  .ptbl tfoot td.foot-paid{color:var(--ok)} .ptbl tfoot td.foot-bal{color:var(--block)}
+  .postnote{font-size:11.5px;color:var(--muted);padding:10px 18px;display:flex;align-items:center;gap:7px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .postnote b{color:var(--ink)}
+
+  /* two-column lower grid */
+  .lower{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+  @media(max-width:1100px){.lower{grid-template-columns:1fr}}
+
+  .sec-body{padding:16px 18px}
+  .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px 16px}
+  .f{display:flex;flex-direction:column;gap:4px}
+  .f.col2{grid-column:span 2}.f.col4{grid-column:span 4}
+  .f label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .f input,.f select,.f textarea{font-family:var(--sans);font-size:13px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:7px;background:#fff;color:var(--ink)}
+  .f input.mono{font-family:var(--mono)}
+  .f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .f textarea{resize:vertical;min-height:60px}
+  .subhd{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--idr-dark);font-weight:800;margin:2px 0 6px}
+
+  /* financial summary card */
+  .sum-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .sum-top{padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .sum-top h2{margin:0;font-size:14px;font-weight:700}
+  .fin{display:grid;grid-template-columns:1fr auto;gap:8px 10px;font-size:13px;padding:14px 16px}
+  .fin .k{color:var(--muted)} .fin .v{font-weight:700;font-family:var(--mono);text-align:right}
+  .fin .v.charged{color:var(--ink)} .fin .v.paid{color:var(--ok)} .fin .v.bal{color:var(--block)}
+  .fin hr{grid-column:1/3;border:none;border-top:1px solid var(--line);margin:2px 0}
+  .fin .woin{width:110px;font-family:var(--mono);font-size:12.5px;padding:5px 7px;border:1px solid var(--line-strong);border-radius:6px;text-align:right}
+  .fin .woin:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .rec-meter{padding:0 16px 14px}
+  .rec-meter .track{height:8px;border-radius:5px;background:#eef2f7;overflow:hidden}
+  .rec-meter .fill{height:100%;border-radius:5px;background:var(--warn);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .rec-meter .lbl{display:flex;justify-content:space-between;margin-top:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .rec-meter .lbl b{color:var(--ink)}
+  .idrclock{display:none;align-items:flex-start;gap:9px;background:var(--idr-tint);border:1px solid var(--idr-line);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--idr-dark);margin:0 16px 14px}
+  .idrclock.show{display:flex}
+
+  /* action bar */
+  .actionbar{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .actionbar .grow{flex:1}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:480px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.idr .ic{background:var(--idr)}.toast.ai .ic{background:var(--ai)}.toast.warn .ic{background:var(--warn)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro — PAYMENTS & COLLECTIONS (client demo, synthetic data only)
+  The screen where filed out-of-network claims get collected: post remittances
+  per CPT, watch the underpayment, and pull the OON recovery levers.
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. Open on Testcase, Alice — claim 1000001, United Healthcare (out-of-network).
+       The purple ✦ AI flag up top: UHC paid $6,158 of $48,088 (~13%, below QPA) —
+       an OON underpayment, IDR-eligible. Recommend Pro/Tech negotiation or Arbitron.
+    2. Look at the dense per-CPT posting grid. Each service line has its own
+       payment postings — note lines 95939 and 95955 each show TWO postings
+       (an initial 11/05 below-QPA payment, then a later 12/01 posting after a
+       refile). Big open balance: ~$41,929.92. Comments AI-coded "BELOW QPA"
+       (purple) wait to be confirmed.
+    3. Click "Add Additional Payment" — a new check posts against a line, the
+       Insurance Paid / Balance and the Totals + summary recompute live.
+    4. Set Pro Claim Negotiation and Tech Claim Negotiation amounts + dates —
+       the professional vs technical OON recovery levers.
+    5. Click "Send to Arbitron" — the IDR packet is handed off, the 30-day
+       negotiation clock starts. (Supervisor toggle adds a collections
+       oversight panel — $ recovered, recovery rate, aged balance.)
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" onclick="toast('Worklist — filed claims awaiting collection');return false">Ongoing</a>
+    <a href="#" class="on" onclick="return false">Payments &amp; Collections</a>
+    <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
+  </nav>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="Demo view role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="whoLabel">Dr. Michael Scholin · Supervisor</span>
+    <span class="avatar" id="whoAvatar">MS</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="crumb"><button onclick="toast('Back to the Ongoing follow-up worklist')">← Ongoing</button><span>/</span><span>Testcase, Alice</span><span>/</span><span>Payments &amp; Collections</span></div>
+
+  <!-- claim identity header -->
+  <div class="ws-head">
+    <div class="ws-id"><div class="name">Testcase, Alice</div>
+      <div class="meta"><span>PID <b class="mono">100001</b></span><span>Claim <b class="mono">1000001</b></span>
+        <span>DOS <b class="mono">10/20/2025</b></span><span>Component <b>Pro + Tech</b></span>
+        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">◆ Out-of-network</b></span>
+        <span>Charged <b class="mono">$48,087.92</b></span></div></div>
+    <div class="right">
+      <div class="master partial" id="masterStatus"><span id="masterIcon">▲</span> <span id="masterLabel">Collecting · underpaid</span></div>
+    </div>
+  </div>
+
+  <!-- payer context banner -->
+  <div class="payerbar">
+    <span>◆</span><span><b>Payments from United Healthcare for Claim# 1000001</b> — out-of-network, No Surprises Act applies. Charges billed above QPA by design; the recovery happens here through refile, negotiation, and IDR.</span>
+    <span class="badge">Commercial OON → IDR</span>
+  </div>
+
+  <!-- AI underpayment flag (canonical ✦) -->
+  <div class="ai-flag" id="aiFlag"><span class="spark" id="aiFlagSpark">✦</span>
+    <div>
+      <b>Out-of-network underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> of <b>$48,088</b> charged (<b>≈13%</b>, below the qualifying payment amount). This claim is <b>IDR-eligible</b> under the No Surprises Act. Recommend Pro/Tech negotiation or routing to Arbitron. AI also pre-coded the remittance <b>Insurance Comments = BELOW QPA</b> on the affected lines (purple) for you to confirm.
+      <div class="ai-actions" id="aiFlagActions">
+        <button class="btn ai" onclick="confirmUnderpay()">✓ Confirm — open IDR track</button>
+        <button class="btn" onclick="dismissUnderpay()">Dismiss</button>
+      </div>
+      <span class="ai-note">AI proposes, biller decides — every choice logged to the audit trail.</span>
+    </div>
+  </div>
+
+  <!-- ===== SUPERVISOR-ONLY collections oversight (gated, hidden from billers) ===== -->
+  <div class="sup-panel" id="supPanel" aria-hidden="false">
+    <div class="sp-card">
+      <div class="sp-head"><h2>Collections oversight</h2><span class="tag">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-stats">
+        <div class="sp-stat good"><div class="num">$1.42M</div><div class="lbl">Recovered this month (team)</div></div>
+        <div class="sp-stat oon"><div class="num" id="spRecovery">12.8%</div><div class="lbl">First-pass recovery rate</div></div>
+        <div class="sp-stat flag"><div class="num">$3.9M</div><div class="lbl">Aged balance &gt; 90 days</div></div>
+        <div class="sp-stat"><div class="num">71%</div><div class="lbl">IDR win rate (OON)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== dense editable per-CPT payment-posting table ===== -->
+  <div class="card">
+    <div class="panel-head">
+      <h2>Payments from United Healthcare — Claim# 1000001</h2>
+      <span class="src">EOB / 835 ERA posted 11/05/2025 · refile posting 12/01/2025</span>
+      <div class="act">
+        <button class="btn ai sm aicount-pill show" id="aiCommentsBtn" onclick="confirmAIComments()">✦ Confirm AI comments (<span id="aiCommentsCt">6</span>)</button>
+        <button class="btn sm" onclick="addPayment()">+ Add Additional Payment</button>
+        <button class="btn sm" onclick="addPatientPayment()">+ Add Additional Patient Payment</button>
+        <button class="btn primary sm" onclick="saveAll()">Save</button>
+      </div>
+    </div>
+    <div class="ptwrap">
+      <table class="ptbl">
+        <thead><tr>
+          <th class="lft">CPT</th>
+          <th>Units</th><th>Charged</th><th>Ins Allowed</th><th>Deductible</th><th>Co-Ins</th><th>Ins Paid</th>
+          <th class="lft">Pay Type</th><th class="lft">Check #</th><th class="lft">EOB Claim #</th><th class="lft">Ins Date Paid</th>
+          <th class="lft">Ins Comments</th><th>Ins Balance</th><th>Refunded</th><th class="ctr">Adjusted</th><th>Adjustment</th>
+          <th class="ctr">Completed</th><th class="ctr">Zero Pay</th><th>Patient Liab.</th><th>Patient Paid</th><th>Patient Bal.</th>
+        </tr></thead>
+        <tbody id="ptBody"><!-- rendered by JS --></tbody>
+        <tfoot><tr>
+          <td>Totals <span class="mono" id="footMeta" style="color:var(--muted);font-weight:600"></span></td>
+          <td></td>
+          <td id="footCharged">$0.00</td><td id="footAllowed">$0.00</td><td id="footDed">$0.00</td><td id="footCoins">$0.00</td>
+          <td class="foot-paid" id="footPaid">$0.00</td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td class="foot-bal" id="footBal">$0.00</td>
+          <td id="footRefund">$0.00</td><td></td><td id="footAdj">$0.00</td>
+          <td id="footCompleted">0/0</td><td></td>
+          <td id="footPliab">$0.00</td><td id="footPpaid">$0.00</td><td id="footPbal">$0.00</td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <div class="postnote"><span>✦</span><span><b>Multiple postings per CPT:</b> lines <b class="mono">95939</b> and <b class="mono">95955</b> each carry a second posting (a later 12/01 payment after the corrected refile). Insurance Balance is the running balance after each posting. Every field is editable — Balance and Totals recompute live.</span></div>
+  </div>
+
+  <!-- lower grid: recovery levers + summary -->
+  <div class="lower">
+    <div class="card" style="margin-bottom:0">
+      <div class="panel-head"><h2>Out-of-network recovery levers</h2><span class="src">Professional vs technical component · denial coding · notes</span></div>
+      <div class="sec-body">
+        <div class="subhd">Claim negotiation (NSA open-negotiation)</div>
+        <div class="fgrid">
+          <div class="f"><label>Pro Claim Negotiation ($)</label><input class="mono" id="proNegAmt" type="number" step="0.01" placeholder="0.00" value="24500.00" oninput="recompute()"></div>
+          <div class="f"><label>Pro Negotiation Date</label><input class="mono" id="proNegDate" type="text" value="12/03/2025"></div>
+          <div class="f"><label>Tech Claim Negotiation ($)</label><input class="mono" id="techNegAmt" type="number" step="0.01" placeholder="0.00" value="11800.00" oninput="recompute()"></div>
+          <div class="f"><label>Tech Negotiation Date</label><input class="mono" id="techNegDate" type="text" value="12/03/2025"></div>
+        </div>
+        <div class="subhd" style="margin-top:16px">Denial coding</div>
+        <div class="fgrid">
+          <div class="f col2"><label>Denial Reason 1</label>
+            <select id="denial1">
+              <option>— none —</option>
+              <option selected>Below QPA (NSA out-of-network)</option>
+              <option>CO-45 · Charge exceeds fee schedule</option>
+              <option>CO-97 · Service bundled / included</option>
+              <option>PR-1 · Deductible amount</option>
+              <option>CO-16 · Missing / incomplete information</option>
+              <option>OA-23 · Prior payer adjustment</option>
+            </select></div>
+          <div class="f col2"><label>Denial Reason 2</label>
+            <select id="denial2">
+              <option selected>— none —</option>
+              <option>Below QPA (NSA out-of-network)</option>
+              <option>CO-45 · Charge exceeds fee schedule</option>
+              <option>CO-97 · Service bundled / included</option>
+              <option>PR-1 · Deductible amount</option>
+              <option>CO-16 · Missing / incomplete information</option>
+              <option>OA-23 · Prior payer adjustment</option>
+            </select></div>
+          <div class="f col4"><label>Notes</label><textarea id="collNotes" placeholder="Collections notes…">11/05 EFT posted — UHC underpaid all lines below QPA. 12/01 refile released a partial adjustment. Opening NSA negotiation on Pro + Tech components; escalate to Arbitron if not resolved in 30 biz days.</textarea></div>
+        </div>
+      </div>
+      <!-- action bar -->
+      <div class="actionbar">
+        <button class="btn" onclick="refile()">↻ Refile / Appeal Claim</button>
+        <button class="btn" onclick="addRecoupment()">± Add Recoupment / Refund</button>
+        <button class="btn" onclick="patientReceipt()">🧾 Patient Receipt</button>
+        <button class="btn" onclick="openDocuments()">📎 Documents</button>
+        <span class="grow"></span>
+        <button class="btn danger" onclick="closeClaim()">Move to Closed Claims Folder</button>
+        <button class="btn idr" onclick="sendArbitron()">Send to Arbitron →</button>
+      </div>
+    </div>
+
+    <!-- financial summary -->
+    <div class="sum-card">
+      <div class="sum-top"><h2>Financial summary</h2></div>
+      <div class="fin">
+        <span class="k">Total Charged</span><span class="v charged" id="sumCharged">$48,087.92</span>
+        <span class="k">Total Allowed</span><span class="v" id="sumAllowed">$7,697.50</span>
+        <span class="k">Total Insurance Paid</span><span class="v paid" id="sumPaid">$6,158.00</span>
+        <span class="k">Patient Balance</span><span class="v" id="sumPatBal">$1,539.50</span>
+        <hr>
+        <span class="k">Total Balance</span><span class="v bal" id="sumBal">$41,929.92</span>
+        <span class="k">Write-off ($)</span><span class="v"><input class="woin" id="writeoff" type="number" step="0.01" value="0.00" oninput="recompute()"></span>
+        <hr>
+        <span class="k"><b>Net Balance</b></span><span class="v bal" id="sumNet">$41,929.92</span>
+      </div>
+      <div class="rec-meter">
+        <div class="track"><div class="fill" id="recFill" style="width:12.8%"></div></div>
+        <div class="lbl"><span>Recovery rate</span><span><b id="recPct">12.8%</b> of charged collected</span></div>
+      </div>
+      <div class="idrclock" id="idrClock"><span>⏱</span><span><b>Sent to Arbitron.</b> Open negotiation started — 30 business days; the IDR initiation window opens after. Arbitron is tracking the clock.</span></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  /* ---------- shared ---------- */
+  function toast(m,kind){const t=document.getElementById('toast');t.className='toast'+(kind?' '+kind:'');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3400);}
+  let audit=14;
+  function bumpAudit(n){audit+=(n||1);}
+
+  /* ---------- role toggle: Biller <-> Supervisor ---------- */
+  function setRole(role){
+    const sup=role==='supervisor';
+    document.body.classList.toggle('role-super',sup);
+    document.body.classList.toggle('role-biller',!sup);
+    document.getElementById('rt-biller').classList.toggle('on',!sup);
+    document.getElementById('rt-super').classList.toggle('on',sup);
+    document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
+    document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Supervisor':'Sample, Dana · Biller';
+    document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
+    toast(sup?'Supervisor view — collections oversight now visible':'Biller view — post payments, no performance stats','');
+  }
+
+  /* ---------- data model: per-CPT service lines, each with >=1 posting ---------- */
+  const COMMENTS=['UCR','DEDUCTIBLE','BELOW QPA','DENIED','ADJUSTED'];
+  const lines=[
+    {cpt:'95887',desc:'Needle EMG, non-extremity',units:1,charged:361.25,postings:[
+      {allowed:92.40,ded:0,coins:18.48,paid:73.92,ptype:'EFT',check:'',eob:'UHC-4471001',date:'11/05/2025',comment:'BELOW QPA',ai:true,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:18.48,ppaid:0}]},
+    {cpt:'95909',desc:'Nerve conduction, 7–8 studies',units:1,charged:849.15,postings:[
+      {allowed:210.10,ded:0,coins:42.02,paid:168.08,ptype:'EFT',check:'',eob:'UHC-4471001',date:'11/05/2025',comment:'BELOW QPA',ai:true,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:42.02,ppaid:0}]},
+    {cpt:'95937',desc:'Neuromuscular junction test',units:4,charged:6332.50,postings:[
+      {allowed:1040.00,ded:0,coins:208.00,paid:832.00,ptype:'EFT',check:'',eob:'UHC-4471001',date:'11/05/2025',comment:'BELOW QPA',ai:true,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:208.00,ppaid:0}]},
+    {cpt:'95938',desc:'SSEP upper & lower',units:6,charged:11900.01,postings:[
+      {allowed:1985.00,ded:0,coins:397.00,paid:1588.00,ptype:'EFT',check:'',eob:'UHC-4471001',date:'11/05/2025',comment:'BELOW QPA',ai:true,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:397.00,ppaid:0}]},
+    {cpt:'95939',desc:'MEP upper & lower',units:3,charged:17850.01,postings:[
+      {allowed:1750.00,ded:0,coins:350.00,paid:1400.00,ptype:'EFT',check:'',eob:'UHC-4471001',date:'11/05/2025',comment:'BELOW QPA',ai:true,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:350.00,ppaid:0},
+      {allowed:1060.00,ded:0,coins:212.00,paid:848.00,ptype:'CK',check:'55120',eob:'UHC-4488213',date:'12/01/2025',comment:'ADJUSTED',ai:false,refunded:0,adjusted:true,adjustment:0,completed:false,zero:false,pliab:212.00,ppaid:0}]},
+    {cpt:'95955',desc:'EEG during surgery',units:1,charged:10795.00,postings:[
+      {allowed:1000.00,ded:0,coins:200.00,paid:800.00,ptype:'EFT',check:'',eob:'UHC-4471001',date:'11/05/2025',comment:'BELOW QPA',ai:true,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:200.00,ppaid:0},
+      {allowed:560.00,ded:0,coins:112.00,paid:448.00,ptype:'CK',check:'55120',eob:'UHC-4488213',date:'12/01/2025',comment:'ADJUSTED',ai:false,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:112.00,ppaid:0}]}
+  ];
+
+  /* ---------- helpers ---------- */
+  function money(n){const neg=n<-0.005;n=Math.abs(n);return (neg?'-$':'$')+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function num(v){const n=parseFloat(v);return isNaN(n)?0:n;}
+
+  /* ---------- edit sync ---------- */
+  function onSync(li,pi,field,el,kind){
+    const ps=lines[li].postings[pi];
+    if(kind==='num')ps[field]=num(el.value);
+    else if(kind==='chk')ps[field]=el.checked;
+    else ps[field]=el.value; /* txt + sel */
+    recompute();
+  }
+  function onSyncLine(li,field,el){lines[li][field]=num(el.value);recompute();}
+
+  /* ---------- render the posting grid ---------- */
+  function selOpts(list,cur){return list.map(o=>'<option'+(o===cur?' selected':'')+'>'+esc(o)+'</option>').join('');}
+
+  function renderTable(){
+    let html='';
+    lines.forEach((ln,li)=>{
+      ln.postings.forEach((ps,pi)=>{
+        const first=pi===0;
+        const patrow=ps.isPatient;
+        const trcls=(first?'grp':'')+(patrow?' patrow':'');
+        html+='<tr class="'+trcls+'">';
+        /* CPT (frozen) */
+        if(first){
+          html+='<td><div class="cptname">'+ln.cpt+'<div class="rdesc">'+esc(ln.desc)+'</div></div></td>';
+        }else if(patrow){
+          html+='<td><span class="cont">↳ patient payment</span></td>';
+        }else{
+          html+='<td><span class="cont">↳ '+ln.cpt+' · posting '+(pi+1)+'</span></td>';
+        }
+        /* Units / Charged — line-level, first row only */
+        if(first){
+          html+='<td><input class="ci sm" type="number" step="1" value="'+ln.units+'" oninput="onSyncLine('+li+',\'units\',this)"></td>';
+          html+='<td><input class="ci wide" type="number" step="0.01" value="'+ln.charged.toFixed(2)+'" oninput="onSyncLine('+li+',\'charged\',this)"></td>';
+        }else{
+          html+='<td><span class="dash">—</span></td><td><span class="dash">—</span></td>';
+        }
+        if(patrow){
+          /* insurance columns not applicable to a patient payment */
+          html+='<td><span class="dash">—</span></td>';/* allowed */
+          html+='<td><span class="dash">—</span></td>';/* ded */
+          html+='<td><span class="dash">—</span></td>';/* coins */
+          html+='<td><span class="dash">—</span></td>';/* ins paid */
+          html+='<td><select class="ci tiny" onchange="onSync('+li+','+pi+',\'ptype\',this,\'sel\')">'+selOpts(['CK','EFT'],ps.ptype)+'</select></td>';
+          html+='<td class="lft"><input class="ci" type="text" value="'+esc(ps.check)+'" oninput="onSync('+li+','+pi+',\'check\',this,\'txt\')"></td>';
+          html+='<td><span class="dash">—</span></td>';/* eob */
+          html+='<td class="lft"><input class="ci date" type="text" value="'+esc(ps.date)+'" oninput="onSync('+li+','+pi+',\'date\',this,\'txt\')"></td>';
+          html+='<td><span class="dash">—</span></td>';/* comment */
+          html+='<td><span class="dash">—</span></td>';/* ins balance */
+          html+='<td><span class="dash">—</span></td>';/* refunded */
+          html+='<td class="ctr"><span class="dash">—</span></td>';/* adjusted */
+          html+='<td><span class="dash">—</span></td>';/* adjustment */
+          html+='<td class="ctr"><input class="chk" type="checkbox"'+(ps.completed?' checked':'')+' onchange="onSync('+li+','+pi+',\'completed\',this,\'chk\')"></td>';
+          html+='<td class="ctr"><span class="dash">—</span></td>';/* zero */
+        }else{
+          html+='<td><input class="ci" type="number" step="0.01" value="'+ps.allowed.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'allowed\',this,\'num\')"></td>';
+          html+='<td><input class="ci" type="number" step="0.01" value="'+ps.ded.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'ded\',this,\'num\')"></td>';
+          html+='<td><input class="ci" type="number" step="0.01" value="'+ps.coins.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'coins\',this,\'num\')"></td>';
+          html+='<td><input class="ci" type="number" step="0.01" value="'+ps.paid.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'paid\',this,\'num\')"></td>';
+          html+='<td><select class="ci tiny" onchange="onSync('+li+','+pi+',\'ptype\',this,\'sel\')">'+selOpts(['CK','EFT'],ps.ptype)+'</select></td>';
+          html+='<td class="lft"><input class="ci" type="text" value="'+esc(ps.check)+'" oninput="onSync('+li+','+pi+',\'check\',this,\'txt\')"></td>';
+          html+='<td class="lft"><input class="ci wide" type="text" value="'+esc(ps.eob)+'" oninput="onSync('+li+','+pi+',\'eob\',this,\'txt\')"></td>';
+          html+='<td class="lft"><input class="ci date" type="text" value="'+esc(ps.date)+'" oninput="onSync('+li+','+pi+',\'date\',this,\'txt\')"></td>';
+          const aic=(ps.ai&&!ps.aiOK)?' ai-cell':'';
+          html+='<td><select class="ci'+aic+'" onchange="onSync('+li+','+pi+',\'comment\',this,\'sel\')">'+selOpts(COMMENTS,ps.comment)+'</select></td>';
+          html+='<td><span class="bal" id="bal-'+li+'-'+pi+'">$0.00</span></td>';
+          html+='<td><input class="ci" type="number" step="0.01" value="'+ps.refunded.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'refunded\',this,\'num\')"></td>';
+          html+='<td class="ctr"><input class="chk" type="checkbox"'+(ps.adjusted?' checked':'')+' onchange="onSync('+li+','+pi+',\'adjusted\',this,\'chk\')"></td>';
+          html+='<td><input class="ci" type="number" step="0.01" value="'+ps.adjustment.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'adjustment\',this,\'num\')"></td>';
+          html+='<td class="ctr"><input class="chk" type="checkbox"'+(ps.completed?' checked':'')+' onchange="onSync('+li+','+pi+',\'completed\',this,\'chk\')"></td>';
+          html+='<td class="ctr"><input class="chk" type="checkbox"'+(ps.zero?' checked':'')+' onchange="onSync('+li+','+pi+',\'zero\',this,\'chk\')"></td>';
+        }
+        /* patient columns (all rows) */
+        html+='<td><input class="ci" type="number" step="0.01" value="'+ps.pliab.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'pliab\',this,\'num\')"></td>';
+        html+='<td><input class="ci" type="number" step="0.01" value="'+ps.ppaid.toFixed(2)+'" oninput="onSync('+li+','+pi+',\'ppaid\',this,\'num\')"></td>';
+        html+='<td><span class="bal" id="pbal-'+li+'-'+pi+'" style="color:var(--ink)">$0.00</span></td>';
+        html+='</tr>';
+      });
+    });
+    document.getElementById('ptBody').innerHTML=html;
+    refreshAICommentBtn();
+  }
+
+  /* ---------- recompute derived cells + totals + summary ---------- */
+  function recompute(){
+    const T={charged:0,allowed:0,ded:0,coins:0,paid:0,bal:0,refund:0,adj:0,pliab:0,ppaid:0,pbal:0};
+    let postingCount=0,completedCount=0;
+    lines.forEach((ln,li)=>{
+      T.charged+=num(ln.charged);
+      let runPaid=0,runAdj=0,runLiab=0,runPpaid=0;
+      ln.postings.forEach((ps,pi)=>{
+        postingCount++;
+        if(ps.completed)completedCount++;
+        T.allowed+=num(ps.allowed);T.ded+=num(ps.ded);T.coins+=num(ps.coins);
+        T.paid+=num(ps.paid);T.refund+=num(ps.refunded);T.adj+=num(ps.adjustment);
+        T.pliab+=num(ps.pliab);T.ppaid+=num(ps.ppaid);
+        runPaid+=num(ps.paid);runAdj+=num(ps.adjustment);runLiab+=num(ps.pliab);runPpaid+=num(ps.ppaid);
+        const rowBal=num(ln.charged)-runPaid-runAdj;
+        const rowPbal=runLiab-runPpaid;
+        const bc=document.getElementById('bal-'+li+'-'+pi);if(bc)bc.textContent=money(rowBal);
+        const pc=document.getElementById('pbal-'+li+'-'+pi);if(pc)pc.textContent=money(rowPbal);
+      });
+      T.bal+=num(ln.charged)-runPaid-runAdj;
+      T.pbal+=(runLiab-runPpaid);
+    });
+    /* totals row */
+    document.getElementById('footMeta').textContent='('+lines.length+' lines · '+postingCount+' postings)';
+    document.getElementById('footCharged').textContent=money(T.charged);
+    document.getElementById('footAllowed').textContent=money(T.allowed);
+    document.getElementById('footDed').textContent=money(T.ded);
+    document.getElementById('footCoins').textContent=money(T.coins);
+    document.getElementById('footPaid').textContent=money(T.paid);
+    document.getElementById('footBal').textContent=money(T.bal);
+    document.getElementById('footRefund').textContent=money(T.refund);
+    document.getElementById('footAdj').textContent=money(T.adj);
+    document.getElementById('footCompleted').textContent=completedCount+'/'+postingCount;
+    document.getElementById('footPliab').textContent=money(T.pliab);
+    document.getElementById('footPpaid').textContent=money(T.ppaid);
+    document.getElementById('footPbal').textContent=money(T.pbal);
+    /* summary card */
+    const writeoff=num(document.getElementById('writeoff').value);
+    const net=T.bal-writeoff;
+    document.getElementById('sumCharged').textContent=money(T.charged);
+    document.getElementById('sumAllowed').textContent=money(T.allowed);
+    document.getElementById('sumPaid').textContent=money(T.paid);
+    document.getElementById('sumPatBal').textContent=money(T.pbal);
+    document.getElementById('sumBal').textContent=money(T.bal);
+    document.getElementById('sumNet').textContent=money(net);
+    const rec=T.charged>0?(T.paid/T.charged*100):0;
+    document.getElementById('recPct').textContent=rec.toFixed(1)+'%';
+    document.getElementById('spRecovery').textContent=rec.toFixed(1)+'%';
+    const fill=document.getElementById('recFill');
+    fill.style.width=Math.min(100,rec)+'%';
+    fill.style.background=rec>=50?'var(--ok)':(rec>=20?'var(--warn)':'var(--block)');
+  }
+
+  /* ---------- add postings ---------- */
+  function addPayment(){
+    /* post a new check against the line with the largest open balance */
+    let target=0,maxBal=-1;
+    lines.forEach((ln,li)=>{
+      const paid=ln.postings.reduce((s,p)=>s+num(p.paid),0);
+      const adj=ln.postings.reduce((s,p)=>s+num(p.adjustment),0);
+      const bal=num(ln.charged)-paid-adj;
+      if(bal>maxBal){maxBal=bal;target=li;}
+    });
+    lines[target].postings.push({allowed:1200.00,ded:0,coins:0,paid:1200.00,ptype:'EFT',check:'',eob:'UHC-4499'+(500+Math.floor(Math.random()*400)),date:'12/18/2025',comment:'ADJUSTED',ai:false,refunded:0,adjusted:true,adjustment:0,completed:false,zero:false,pliab:0,ppaid:0});
+    renderTable();recompute();bumpAudit();
+    toast('Payment posted on CPT '+lines[target].cpt+' — balance updated','');
+  }
+  function addPatientPayment(){
+    /* apply a patient payment to the line with the largest patient balance */
+    let target=0,maxP=-1;
+    lines.forEach((ln,li)=>{
+      const liab=ln.postings.reduce((s,p)=>s+num(p.pliab),0);
+      const ppaid=ln.postings.reduce((s,p)=>s+num(p.ppaid),0);
+      const pbal=liab-ppaid;
+      if(pbal>maxP){maxP=pbal;target=li;}
+    });
+    lines[target].postings.push({isPatient:true,allowed:0,ded:0,coins:0,paid:0,ptype:'CK',check:'2041',eob:'',date:'12/18/2025',comment:'',ai:false,refunded:0,adjusted:false,adjustment:0,completed:false,zero:false,pliab:0,ppaid:250.00});
+    renderTable();recompute();bumpAudit();
+    toast('Patient payment posted on CPT '+lines[target].cpt+' — patient balance updated','');
+  }
+
+  /* ---------- AI-coded comment confirm ---------- */
+  function aiCommentCount(){let n=0;lines.forEach(l=>l.postings.forEach(p=>{if(p.ai&&!p.aiOK)n++;}));return n;}
+  function refreshAICommentBtn(){
+    const n=aiCommentCount();
+    document.getElementById('aiCommentsCt').textContent=n;
+    document.getElementById('aiCommentsBtn').classList.toggle('show',n>0);
+  }
+  function confirmAIComments(){
+    const n=aiCommentCount();
+    if(!n){toast('No AI-coded comments pending');return;}
+    lines.forEach(l=>l.postings.forEach(p=>{if(p.ai)p.aiOK=true;}));
+    renderTable();recompute();bumpAudit(n);
+    toast('Confirmed '+n+' AI-coded remittance comment'+(n>1?'s':'')+' (BELOW QPA) — logged to audit','ai');
+  }
+
+  /* ---------- AI underpayment flag ---------- */
+  function confirmUnderpay(){
+    const f=document.getElementById('aiFlag');
+    f.classList.add('confirmed');
+    document.getElementById('aiFlagSpark').textContent='✓';
+    document.getElementById('aiFlagActions').innerHTML='<span style="font-weight:700">✓ OON underpayment confirmed — IDR track opened, logged to audit</span>';
+    bumpAudit();
+    toast('OON underpayment confirmed — IDR track opened · logged','idr');
+  }
+  function dismissUnderpay(){
+    document.getElementById('aiFlag').classList.add('gone');
+    bumpAudit();
+    toast('AI underpayment flag dismissed — logged to audit','warn');
+  }
+
+  /* ---------- action buttons ---------- */
+  function refile(){bumpAudit();toast('Corrected 837P queued for refile','');}
+  function addRecoupment(){bumpAudit();toast('Recoupment / refund line added — logged','warn');}
+  function patientReceipt(){toast('Patient receipt generated (PDF) — synthetic demo','');}
+  function openDocuments(){toast('Documents panel opened — EOB, CMS-1500, reader & tech reports','');}
+  function saveAll(){bumpAudit();toast('Payments saved — '+audit+' events in audit trail','');}
+  function closeClaim(){
+    const m=document.getElementById('masterStatus');
+    m.className='master closed';document.getElementById('masterIcon').textContent='✓';document.getElementById('masterLabel').textContent='Closed';
+    bumpAudit();
+    toast('Claim closed — moved to Closed folder','');
+  }
+  function sendArbitron(){
+    const m=document.getElementById('masterStatus');
+    m.className='master idr';document.getElementById('masterIcon').textContent='◆';document.getElementById('masterLabel').textContent='In IDR · Arbitron';
+    document.getElementById('idrClock').classList.add('show');
+    bumpAudit();
+    toast('IDR packet sent to Arbitron — case opened, 30-day negotiation clock started','idr');
+  }
+
+  /* ---------- init ---------- */
+  renderTable();
+  recompute();
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>
