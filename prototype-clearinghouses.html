@@ -132,7 +132,6 @@
   .grid .sub{color:var(--faint);font-size:10.5px;font-weight:500;margin-top:1px}
   .grid td.mono{font-family:var(--mono)}
   .chpill{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#eef2f7;color:var(--muted);white-space:nowrap}
-  .chpill.stedi{background:var(--ai-tint);color:var(--ai-dark)}
   .dir{font-weight:700;font-size:11px;white-space:nowrap}
   .dir .up{color:var(--hosp)} .dir .dn{color:var(--idr)}
   .rt{display:inline-flex;align-items:center;gap:5px;font-size:10.5px}
@@ -186,7 +185,7 @@
   Modernizes the legacy "Edit FTP Sites" screen ("our poor man's MCD").
   ----------------------------------------------------------------------------
   60-SECOND PRESENTER PATH:
-    1. Lead with the purple "USMON Integrated Clearinghouse — powered by Stedi
+    1. Lead with the purple "USMON Integrated Clearinghouse — 
        (beta)" card at top: ONE programmable API replaces ~30 SFTP configs —
        837 out, 835/277 back as structured data straight into the worklist.
        This is the "become an MCD for real" path.
@@ -240,14 +239,14 @@
     </div>
   </div>
 
-  <!-- Integrated (Stedi) callout -->
+  <!-- Integrated callout -->
   <div class="integrated">
     <div class="ig-main">
       <div class="ig-eyebrow">
         <span class="k">The modern option</span>
         <span class="st">● Available — beta</span>
       </div>
-      <h2>USMON Integrated Clearinghouse — powered by Stedi</h2>
+      <h2>USMON Integrated Clearinghouse</h2>
       <p class="bene">Route this client's submissions and responses through <b>one programmable API</b> instead of managing many SFTP connections. Replace <b>~30 SFTP configs with a single integrated connection</b> — 837 out, 835/277 back as <b>structured data straight into the worklist</b>. No folders, no per-payer hosts, no rotating credentials to babysit.</p>
       <div class="ig-metrics">
         <div class="m"><div class="n">1</div><div class="l">integrated connection</div></div>
@@ -324,7 +323,7 @@
       <div class="fld"><label>Clearinghouse</label>
         <select id="mCh">
           <option>Availity</option><option>Zirmed</option><option>Change Healthcare</option>
-          <option>ClaimMD</option><option>Waystar</option><option>Stedi</option>
+          <option>ClaimMD</option><option>Waystar</option>
         </select>
       </div>
       <div class="fld"><label>Direction</label>
@@ -385,7 +384,6 @@ const CH_HOST={
   'Change Healthcare':'ftps-••••.chc-edi.net',
   'ClaimMD':'sftp.claimmd-••.net',
   'Waystar':'edi••••.waystar-x.net',
-  'Stedi':'api.stedi.com (HTTPS)'
 };
 /* weighted toward Availity + Zirmed to show sprawl */
 const CH_POOL=['Availity','Availity','Availity','Availity','Zirmed','Zirmed','Zirmed','Change Healthcare','Change Healthcare','ClaimMD','Waystar'];
@@ -510,7 +508,7 @@ function render(){
   document.getElementById('body').innerHTML=conns.map(c=>
     '<tr class="'+(c.status==='error'?'err':'')+'">'+
       '<td class="frz"><div class="nick" onclick="openEdit(\''+c.id+'\')">'+c.nick+'</div><div class="sub">'+c.entShort+'</div></td>'+
-      '<td><span class="chpill'+(c.ch==='Stedi'?' stedi':'')+'">'+c.ch+'</span></td>'+
+      '<td><span class="chpill'+''+'">'+c.ch+'</span></td>'+
       '<td class="mono">'+c.host+'</td>'+
       '<td>'+dirHtml(c.dir)+'</td>'+
       '<td class="mono" style="font-size:10.5px">'+c.up+(c.down!=='—'?'<br>'+c.down:'')+'</td>'+
@@ -594,7 +592,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 /* ---------------- integrated cutover ---------------- */
 function switchIntegrated(){
   const c=CLIENTS.find(x=>x.id===activeClient);
-  toast('Cutover queued: '+c.name+' → USMON Integrated Clearinghouse (Stedi). '+DATA[activeClient].length+' SFTP configs collapse into 1 integrated connection.','ai');
+  toast('Cutover queued: '+c.name+' → USMON Integrated Clearinghouse.'+DATA[activeClient].length+' SFTP configs collapse into 1 integrated connection.','ai');
 }
 
 /* ---------------- init ---------------- */
