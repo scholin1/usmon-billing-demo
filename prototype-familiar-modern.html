@@ -362,6 +362,84 @@
   .notespop .naddrow{display:flex;gap:7px;margin-top:10px}
   .notespop textarea{flex:1;font-family:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 8px;resize:vertical;min-height:36px}
   .notespop textarea:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+
+  /* ============================================================= */
+  /* Injected: editable CMS-1500 popup (namespaced c15-* · additive) */
+  /* ============================================================= */
+  .c15-back{position:fixed;inset:0;background:rgba(16,32,46,.45);display:none;align-items:flex-start;justify-content:center;z-index:90;padding:34px 18px;overflow:auto}
+  .c15-back.show{display:flex}
+  .c15-modal{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 60px rgba(16,32,46,.3);max-width:1040px;width:100%}
+  .c15-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);border-radius:12px 12px 0 0;position:sticky;top:0;z-index:3}
+  .c15-head h2{margin:0;font-size:15px;font-weight:700}
+  .c15-head .c15-tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:5px;padding:2px 7px}
+  .c15-head .c15-x{margin-left:auto;background:none;border:none;color:var(--faint);font-size:18px;font-weight:700;line-height:1;padding:2px 6px;border-radius:6px;cursor:pointer}
+  .c15-head .c15-x:hover{background:var(--line);color:var(--ink)}
+  .c15-body{padding:16px 18px}
+  .c15-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;position:sticky;bottom:0;background:var(--surface);border-radius:0 0 12px 12px}
+  .c15-note{font-size:12px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:8px;padding:9px 12px;margin:0 0 14px;display:flex;gap:9px;align-items:flex-start}
+  .c15-note .sp{flex:none;font-weight:800}
+  .c15-sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .c15-fshead{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(180deg,var(--surface-2),#fff);border-bottom:1px solid var(--line)}
+  .c15-fshead h2{margin:0;font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .c15-fshead .sub{font-size:11.5px;color:var(--faint);font-weight:600}
+  .c15-fshead .carrier{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:var(--faint);text-transform:uppercase;border:1px dashed var(--line-strong);border-radius:6px;padding:6px 11px;white-space:nowrap}
+  @media(max-width:720px){.c15-fshead .carrier{display:none}}
+  .c15-band{border-top:1px solid var(--line)}
+  .c15-bandhead{display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .c15-bandhead h3{margin:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+  .c15-bandhead .bsrc{font-size:11px;color:var(--faint);font-weight:600;margin-left:auto}
+  .c15-bandbody{padding:14px 16px}
+  .c15-row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px}
+  .c15-row + .c15-row{margin-top:10px}
+  .c15-c2{grid-column:span 2}.c15-c3{grid-column:span 3}.c15-c4{grid-column:span 4}.c15-c5{grid-column:span 5}
+  .c15-c6{grid-column:span 6}.c15-c7{grid-column:span 7}.c15-c8{grid-column:span 8}.c15-c9{grid-column:span 9}.c15-c12{grid-column:span 12}
+  @media(max-width:1100px){.c15-row{grid-template-columns:repeat(2,minmax(0,1fr))}.c15-row>*{grid-column:auto!important}}
+  @media(max-width:560px){.c15-row{grid-template-columns:1fr}}
+  .c15-box{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:9px 10px;display:flex;flex-direction:column;gap:5px;min-width:0}
+  .c15-box .bxn{position:absolute;top:7px;right:9px;font-size:9px;font-weight:800;color:var(--faint);letter-spacing:.3px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .c15-box>label{font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--faint);font-weight:700;padding-right:30px;line-height:1.3}
+  .c15-box input,.c15-box select{border:1px solid var(--line-strong);border-radius:6px;padding:7px 8px;font:inherit;font-size:13px;color:var(--ink);background:#fff;width:100%;min-width:0}
+  .c15-box input:focus,.c15-box select:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .c15-box input.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .c15-box .subrow{display:flex;gap:7px}
+  .c15-box .subrow>*{flex:1;min-width:0}
+  .c15-box .cbx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;padding-top:2px}
+  .c15-box .cbx label{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--ink)}
+  .c15-box .hint{font-size:10.5px;color:var(--faint);font-weight:600}
+  .c15-dxgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:1100px){.c15-dxgrid{grid-template-columns:repeat(2,1fr)}}
+  .c15-dxslot{display:flex;align-items:center;gap:6px;border:1px solid var(--line-strong);border-radius:6px;background:#fff;padding:4px 4px 4px 8px;position:relative}
+  .c15-dxslot .lt{font-size:10px;font-weight:800;color:var(--faint);width:12px;flex:none}
+  .c15-dxslot input{border:none;padding:5px 2px;font-family:var(--mono);font-size:12.5px;width:100%;min-width:0}
+  .c15-dxslot input:focus{outline:none}
+  .c15-dxslot.trhi{border-color:var(--ai)!important;background:var(--ai-tint)!important;box-shadow:0 0 0 2px var(--ai-tint)}
+  .c15-trflag{position:absolute;top:-7px;left:8px;font-size:9px;font-weight:800;color:#fff;background:var(--ai);border-radius:4px;padding:1px 5px;letter-spacing:.3px}
+  .c15-svcwrap{overflow-x:auto}
+  .c15-svc{width:100%;border-collapse:collapse;font-size:12.5px;min-width:860px}
+  .c15-svc th{font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);text-align:left;padding:8px 7px;border-bottom:1px solid var(--line);font-weight:800;white-space:nowrap}
+  .c15-svc td{padding:6px 7px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .c15-svc tr:last-child td{border-bottom:none}
+  .c15-svc .ln{font-family:var(--mono);color:var(--faint);font-weight:700}
+  .c15-svc .desc{font-family:var(--sans);color:var(--muted);font-size:11.5px;white-space:nowrap}
+  .c15-svc input{border:1px solid var(--line-strong);border-radius:6px;padding:6px 7px;font:inherit;font-size:12.5px;background:#fff;width:100%;min-width:0}
+  .c15-svc input:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .c15-svc input.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .c15-svc .w-dos{width:112px}.c15-svc .w-sm{width:56px}.c15-svc .w-cpt{width:78px}.c15-svc .w-mod{width:64px}
+  .c15-svc .w-dx{width:64px}.c15-svc .w-chg{width:104px}.c15-svc .w-u{width:52px}.c15-svc .w-npi{width:126px}
+  .c15-svc tfoot td{padding:10px 7px;font-weight:800;font-family:var(--mono);border-top:2px solid var(--line-strong)}
+  .c15-svc tfoot .lbl{font-family:var(--sans);text-align:right}
+  .c15-box33{border:2px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);box-shadow:0 0 0 3px var(--ai-tint)}
+  .c15-box33 .b33title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-right:30px}
+  .c15-box33 .b33title>label{padding-right:0;font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--ai-dark);font-weight:800}
+  .c15-box33 .b33crit{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--block);background:var(--block-tint);border:1px solid var(--block-line);border-radius:5px;padding:2px 7px}
+  .c15-box33 .b33note{font-size:11.5px;color:var(--ai-dark);font-weight:600;font-style:italic}
+  .c15-box33 .b33act{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
+  .c15-box33 .b33act .btn{padding:5px 12px;font-size:12px}
+  .c15-box33.confirmed{border-color:var(--ok);background:var(--ok-tint);box-shadow:0 0 0 3px var(--ok-tint)}
+  .c15-box33.confirmed .b33note{color:var(--ok)}
+  .c15-box33 .b33done{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
+  .c15-smartnote{font-size:12px;color:var(--muted);margin-top:14px;display:flex;align-items:flex-start;gap:8px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:9px 12px}
+  .c15-smartnote b{color:var(--ink)}
 </style>
 </head>
 <body class="role-super">
@@ -614,7 +692,7 @@
     <div class="right">
       <div class="master work" id="masterStatus"><span id="masterIcon">&#9650;</span> <span id="masterLabel">Review in progress</span></div>
       <button class="btn" onclick="togglePark(event)">&#9208; Park / waiting on…</button>
-      <button class="btn" onclick="toast('CMS-1500 preview — synthetic Box-by-Box render of claim 1000001','info')">View CMS-1500</button>
+      <button class="btn" onclick="openCms15()">View CMS-1500</button>
       <button class="btn" onclick="toast('Documents — 3 on file: op report, tech worksheet, VOB capture (synthetic)','info')">Documents</button>
       <button class="btn" onclick="toggleNotes(event)">Notes <span class="notecount" id="noteCount">2</span></button>
       <button class="btn" onclick="toast('Claim history — created 10/20, prefilled via MCP 10/21, opened for review today (synthetic)','info')">History</button>
@@ -904,6 +982,230 @@
   </div>
 </div>
 
+<!-- ============================================================= -->
+<!-- Injected: editable CMS-1500 popup — same claim (synthetic)     -->
+<!-- ============================================================= -->
+<div class="c15-back" id="cms15Back" onclick="if(event.target===this)closeCms15()">
+  <div class="c15-modal" role="dialog" aria-modal="true" aria-labelledby="cms15Title">
+    <div class="c15-head">
+      <span class="c15-tag">Same claim</span>
+      <h2 id="cms15Title">CMS-1500 — Testcase, Alice &middot; Claim 1000001</h2>
+      <button class="c15-x" onclick="closeCms15()" aria-label="Close">&times;</button>
+    </div>
+    <div class="c15-body">
+      <p class="c15-note"><span class="sp">&#9638;</span><span><b>The standard CMS-1500 for this claim &mdash; opened right here so you don't lose your place.</b> Every box is editable and prefilled with this claim's data. Close (or Esc) returns you exactly where you were.</span></p>
+
+      <div class="c15-sheet">
+        <div class="c15-fshead">
+          <div><h2>CMS-1500 &middot; Health Insurance Claim Form</h2><span class="sub">HCFA 08/05 &middot; Professional (837P) &middot; all fields editable</span></div>
+          <span class="carrier">Carrier &nbsp;&rarr;</span>
+        </div>
+
+        <!-- payer / carrier -->
+        <div class="c15-band">
+          <div class="c15-bandhead"><h3>Payer / Carrier</h3><span class="bsrc">Prefilled &middot; via USMON MCP</span></div>
+          <div class="c15-bandbody">
+            <div class="c15-row">
+              <div class="c15-box c15-c5"><span class="bxn">Carrier</span><label>Payer name</label><input value="United Healthcare"></div>
+              <div class="c15-box c15-c5"><span class="bxn">Address</span><label>Payer claims address</label><input value="PO Box 30555, Salt Lake City, UT 84130"></div>
+              <div class="c15-box c15-c2"><span class="bxn">Payer ID</span><label>Payer ID</label><input class="mono" value="87726"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- boxes 1-13 -->
+        <div class="c15-band">
+          <div class="c15-bandhead"><h3>Patient &amp; Insured &middot; Boxes 1&ndash;13</h3><span class="bsrc">Prefilled &mdash; Scheduler &middot; via USMON MCP</span></div>
+          <div class="c15-bandbody">
+            <div class="c15-row">
+              <div class="c15-box c15-c4"><span class="bxn">1</span><label>Insurance type</label>
+                <select><option>Medicare</option><option>Medicaid</option><option>Tricare</option><option>ChampVA</option><option>Group Health Plan</option><option>FECA</option><option selected>Other (Commercial)</option></select></div>
+              <div class="c15-box c15-c4"><span class="bxn">1a</span><label>Insured's ID number</label><input class="mono" value="2W76y49mp67"></div>
+              <div class="c15-box c15-c4"><span class="bxn">11</span><label>Insured's policy / group #</label><input class="mono" value="GRP-778120"></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c4"><span class="bxn">2</span><label>Patient's name (Last, First MI)</label><input value="Testcase, Alice"></div>
+              <div class="c15-box c15-c3"><span class="bxn">3</span><label>Patient birth date / sex</label>
+                <div class="subrow"><input class="mono" value="08/29/1971"><select><option selected>F</option><option>M</option></select></div></div>
+              <div class="c15-box c15-c5"><span class="bxn">4</span><label>Insured's name (Last, First MI)</label><input value="Testcase, Alice (Self)"></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c5"><span class="bxn">5</span><label>Patient's address</label><input value="1200 Sample Ridge Ln, Springfield, ST 00000"></div>
+              <div class="c15-box c15-c3"><span class="bxn">5</span><label>Patient phone</label><input class="mono" value="(555) 555-0142"></div>
+              <div class="c15-box c15-c2"><span class="bxn">6</span><label>Relationship to insured</label>
+                <select><option selected>Self</option><option>Spouse</option><option>Child</option><option>Other</option></select></div>
+              <div class="c15-box c15-c2"><span class="bxn">8</span><label>Patient status</label>
+                <select><option selected>Inpatient</option><option>Outpatient</option></select></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c5"><span class="bxn">7</span><label>Insured's address</label><input value="Same as patient"></div>
+              <div class="c15-box c15-c4"><span class="bxn">9</span><label>Other insured's name</label><input placeholder="None on file" value=""></div>
+              <div class="c15-box c15-c3"><span class="bxn">10a&ndash;c</span><label>Condition related to</label>
+                <div class="cbx"><label><input type="checkbox"> Employment</label><label><input type="checkbox"> Auto</label><label><input type="checkbox"> Other</label></div>
+                <span class="hint">All "No" &mdash; not accident-related</span></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c4"><span class="bxn">12</span><label>Patient's signature</label><input value="Signature on file"></div>
+              <div class="c15-box c15-c4"><span class="bxn">12</span><label>Signature date</label><input class="mono" value="10/20/2025"></div>
+              <div class="c15-box c15-c4"><span class="bxn">13</span><label>Insured's signature (assignment)</label><input value="Signature on file"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- boxes 14-23 -->
+        <div class="c15-band">
+          <div class="c15-bandhead"><h3>Dates, Providers &amp; Diagnoses &middot; Boxes 14&ndash;23</h3>
+            <span class="aichip">&#10022; AI</span><span class="bsrc">From reading physician's report &middot; via USMON MCP</span></div>
+          <div class="c15-bandbody">
+            <div class="c15-row">
+              <div class="c15-box c15-c3"><span class="bxn">14</span><label>Date of current illness / injury</label><input class="mono" value="10/20/2025"></div>
+              <div class="c15-box c15-c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="&mdash;" value=""></div>
+              <div class="c15-box c15-c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="&mdash;" value=""></div>
+              <div class="c15-box c15-c3"><span class="bxn">18</span><label>Hospitalization dates</label><input class="mono" value="10/20/2025 &ndash; 10/22/2025"></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c5"><span class="bxn">17</span><label>Referring / ordering provider</label><input value="Sample, Alan MD"></div>
+              <div class="c15-box c15-c2"><span class="bxn">17a</span><label>Other ID</label><input class="mono" value="G2 &middot; 0824"></div>
+              <div class="c15-box c15-c2"><span class="bxn">17b</span><label>NPI</label><input class="mono" value="1000000048"></div>
+              <div class="c15-box c15-c3"><span class="bxn">20</span><label>Outside lab / charges</label>
+                <div class="cbx"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+              <div class="c15-box c15-c3"><span class="bxn">21</span><label>ICD indicator</label>
+                <select><option selected>0 &mdash; ICD-10-CM</option><option>9 &mdash; ICD-9-CM</option></select></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) &mdash; A is principal</label>
+                <div class="c15-dxgrid">
+                  <div class="c15-dxslot trhi"><span class="c15-trflag">&#10022; from Coding</span><span class="lt">A</span><input class="mono" value="M50.121"></div>
+                  <div class="c15-dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
+                  <div class="c15-dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
+                  <div class="c15-dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
+                  <div class="c15-dxslot"><span class="lt">E</span><input class="mono" placeholder="&mdash;" value=""></div>
+                  <div class="c15-dxslot"><span class="lt">F</span><input class="mono" placeholder="&mdash;" value=""></div>
+                  <div class="c15-dxslot"><span class="lt">G</span><input class="mono" placeholder="&mdash;" value=""></div>
+                  <div class="c15-dxslot"><span class="lt">H</span><input class="mono" placeholder="&mdash;" value=""></div>
+                </div>
+              </div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="&mdash;" value=""></div>
+              <div class="c15-box c15-c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="&mdash;" value=""></div>
+              <div class="c15-box c15-c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A &mdash; OON, no auth"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- box 24 service lines -->
+        <div class="c15-band">
+          <div class="c15-bandhead"><h3>Service lines &middot; Box 24</h3><span class="aichip">&#10022; AI</span>
+            <span class="bsrc">CPT/HCPCS &amp; units from reading report &middot; via USMON MCP</span></div>
+          <div class="c15-bandbody">
+            <div class="c15-svcwrap">
+              <table class="c15-svc">
+                <thead><tr>
+                  <th style="width:22px"></th><th>24A &middot; DOS</th><th>24B &middot; POS</th><th>24C &middot; EMG</th>
+                  <th>24D &middot; CPT/HCPCS</th><th>Mod</th><th>24E &middot; Dx ptr</th><th>24F &middot; Charges</th>
+                  <th>24G &middot; Units</th><th>24H &middot; EPSDT</th><th>24I &middot; Qual</th><th>24J &middot; Rendering NPI</th><th>Description</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td class="ln">1</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95887"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="361.25"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">Needle EMG, non-extremity</td></tr>
+                  <tr><td class="ln">2</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95909"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="849.15"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">Nerve conduction, 7&ndash;8 studies</td></tr>
+                  <tr><td class="ln">3</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95937"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A B"></td>
+                    <td><input class="mono w-chg" value="6,332.50"></td><td><input class="mono w-u" value="4"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">Neuromuscular junction test</td></tr>
+                  <tr><td class="ln">4</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95938"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A B"></td>
+                    <td><input class="mono w-chg" value="11,900.01"></td><td><input class="mono w-u" value="6"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">SSEP, upper &amp; lower</td></tr>
+                  <tr><td class="ln">5</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95939"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="17,850.01"></td><td><input class="mono w-u" value="3"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">MEP, upper &amp; lower</td></tr>
+                  <tr><td class="ln">6</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95955"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="10,795.00"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">EEG monitoring during surgery</td></tr>
+                </tbody>
+                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono">$48,087.92</td><td colspan="5"></td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- boxes 25-33 -->
+        <div class="c15-band">
+          <div class="c15-bandhead"><h3>Billing, Assignment &amp; Providers &middot; Boxes 25&ndash;33</h3><span class="bsrc">Prefilled &middot; via USMON MCP</span></div>
+          <div class="c15-bandbody">
+            <div class="c15-row">
+              <div class="c15-box c15-c4"><span class="bxn">25</span><label>Federal tax ID (EIN)</label><input class="mono" value="12-3456789"></div>
+              <div class="c15-box c15-c3"><span class="bxn">26</span><label>Patient account no.</label><input class="mono" value="100001"></div>
+              <div class="c15-box c15-c2"><span class="bxn">27</span><label>Accept assignment</label>
+                <select><option selected>Yes</option><option>No</option></select></div>
+              <div class="c15-box c15-c3"><span class="bxn">28</span><label>Total charge</label><input class="mono" value="$48,087.92"></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
+              <div class="c15-box c15-c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
+              <div class="c15-box c15-c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+            </div>
+            <div class="c15-row">
+              <div class="c15-box c15-c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
+              <div class="c15-box c15-c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
+              <div class="c15-box c15-c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="&mdash;" value=""></div>
+            </div>
+            <!-- Box 33 — critical, emphasized: where the money goes -->
+            <div class="c15-row">
+              <div class="c15-box c15-box33 c15-c8" id="cms15B33Box">
+                <span class="bxn">33</span>
+                <div class="b33title">
+                  <label>Billing provider &mdash; where payment is sent</label>
+                  <span class="b33crit">Critical</span>
+                  <span class="aichip" id="cms15B33Tag">&#10022; auto-assigned by billing rules &mdash; confirm</span>
+                </div>
+                <select id="cms15B33Select" onchange="cms15B33Changed()">
+                  <option value="Demo Neurophysiology LLC|1000000017|(555) 555-0190" selected>Demo Neurophysiology LLC &middot; (555) 555-0190</option>
+                  <option value="Sample IONM Partners LLC|1000000025|(555) 555-0288">Sample IONM Partners LLC &middot; (555) 555-0288</option>
+                  <option value="Example Monitoring Group LLC|1000000033|(555) 555-0377">Example Monitoring Group LLC &middot; (555) 555-0377</option>
+                </select>
+                <span class="b33note">Box 33 determines where the payment is sent &mdash; confirm the billing entity is correct before filing.</span>
+                <div class="b33act" id="cms15B33Act">
+                  <button class="btn ai sm" onclick="cms15ConfirmB33()">&#10003; Confirm entity</button>
+                  <button class="btn sm" onclick="cms15ChangeB33()">Change entity</button>
+                </div>
+              </div>
+              <div class="c15-box c15-c2"><span class="bxn">33a</span><label>Billing NPI</label><input class="mono" id="cms15B33NPI" value="1000000017"></div>
+              <div class="c15-box c15-c2"><span class="bxn">33b</span><label>Taxonomy (24J qual)</label><input class="mono" value="2084N0400X"></div>
+            </div>
+            <div class="c15-smartnote">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span><b>Box 33 is critical:</b> it is the billing entity the payer pays. If it's wrong, the remittance goes to the wrong entity. Confirm the auto-assigned entity above &mdash; this is where the money goes.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="c15-foot">
+      <button class="btn" onclick="toast('CMS-1500 saved — synthetic; edits kept for this claim')">&#128190; Save form</button>
+      <button class="btn primary" onclick="closeCms15()">Close &mdash; back to the claim</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="ic">&#10003;</span><span id="toastMsg"></span></div>
 
 <script>
@@ -1152,6 +1454,53 @@
     if(!document.getElementById('claim').classList.contains('active'))return;
     if(e.key==='c'||e.key==='C')confirmNextAI();
   });
+
+  /* ============================================================= */
+  /* Injected: editable CMS-1500 popup (same claim) — opens as an    */
+  /* overlay so the biller never loses their place. Close/Esc/back-  */
+  /* drop returns them exactly where they were. Box 33 emphasized.   */
+  /* ============================================================= */
+  function openCms15(){
+    document.getElementById('cms15Back').classList.add('show');
+    document.body.style.overflow='hidden';
+    if(typeof bumpAudit==='function')bumpAudit();
+  }
+  function closeCms15(){
+    document.getElementById('cms15Back').classList.remove('show');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown',function(e){
+    var b=document.getElementById('cms15Back');
+    if(e.key==='Escape'&&b&&b.classList.contains('show'))closeCms15();
+  });
+  function cms15B33Parts(){return document.getElementById('cms15B33Select').value.split('|');}
+  function cms15B33Actions(){
+    return '<button class="btn ai sm" onclick="cms15ConfirmB33()">✓ Confirm entity</button>'+
+           '<button class="btn sm" onclick="cms15ChangeB33()">Change entity</button>';
+  }
+  function cms15B33Changed(){
+    var p=cms15B33Parts();
+    document.getElementById('cms15B33NPI').value=p[1];
+    document.getElementById('cms15B33Box').classList.remove('confirmed');
+    document.getElementById('cms15B33Tag').style.display='';
+    document.getElementById('cms15B33Act').innerHTML=cms15B33Actions();
+    toast('Billing entity changed to '+p[0]+' — confirm to set where payment is sent','info');
+  }
+  function cms15ChangeB33(){
+    document.getElementById('cms15B33Select').focus();
+    toast('Pick a billing entity — Box 33 sets where the payment is sent','info');
+  }
+  function cms15ConfirmB33(){
+    var p=cms15B33Parts();
+    document.getElementById('cms15B33NPI').value=p[1];
+    document.getElementById('cms15B33Box').classList.add('confirmed');
+    document.getElementById('cms15B33Tag').style.display='none';
+    document.getElementById('cms15B33Act').innerHTML=
+      '<span class="b33done">✓ Billing entity confirmed by you · logged to audit</span>'+
+      '<button class="btn sm" onclick="cms15ChangeB33()">Change</button>';
+    if(typeof bumpAudit==='function')bumpAudit();
+    toast('Box 33 confirmed — payment routes to '+p[0]+' · logged to audit','info');
+  }
 
   update();
 </script>
