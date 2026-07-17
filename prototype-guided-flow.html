@@ -320,10 +320,100 @@
   .ph-head h1{font-size:22px;margin:0;font-weight:700}
 
   /* toast (from v5) */
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:460px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:80;max-width:460px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
-  .toast.idr .ic{background:var(--idr)}.toast.ai .ic{background:var(--ai)}
+  .toast.idr .ic{background:var(--idr)}.toast.ai .ic{background:var(--ai)}.toast.warn .ic{background:var(--warn)}
+
+  /* ============================================================= */
+  /* FORM 1500 VIEW — per-stage button + modal (adapted from cms1500) */
+  /* ============================================================= */
+  .card{position:relative}
+  .formview-btn{position:absolute;top:14px;right:16px;z-index:2;padding:6px 11px;font-size:12px;border:1px solid var(--primary-line);background:var(--primary-tint);color:var(--primary-dark);border-radius:8px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+  .formview-btn:hover{background:#d9eef0;border-color:var(--primary)}
+  .flow-entity{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
+  .flow-entity b{color:var(--ink)}
+
+  /* modal shell */
+  .modal-back{position:fixed;inset:0;background:rgba(16,32,46,.45);display:none;align-items:flex-start;justify-content:center;z-index:70;padding:34px 18px;overflow:auto}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 60px rgba(16,32,46,.3);max-width:600px;width:100%}
+  .modal.form1500{max-width:1040px}
+  .modal-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);border-radius:12px 12px 0 0;position:sticky;top:0;z-index:3}
+  .modal-head h2{margin:0;font-size:15px;font-weight:700}
+  .modal-head .m-tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:5px;padding:2px 7px}
+  .modal-head .mx{margin-left:auto;background:none;border:none;color:var(--faint);font-size:18px;font-weight:700;line-height:1;padding:2px 6px;border-radius:6px}
+  .modal-head .mx:hover{background:var(--line);color:var(--ink)}
+  .modal-body{padding:16px 18px}
+  .modal-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;position:sticky;bottom:0;background:var(--surface);border-radius:0 0 12px 12px}
+  .modal-note{font-size:12px;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:8px;padding:9px 12px;margin:0 0 14px;display:flex;gap:9px;align-items:flex-start}
+  .modal-note .sp{flex:none;font-weight:800}
+
+  /* CMS-1500 form sheet */
+  .formsheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .fs-head{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(180deg,var(--surface-2),#fff);border-bottom:1px solid var(--line)}
+  .fs-head h2{margin:0;font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .fs-head .sub{font-size:11.5px;color:var(--faint);font-weight:600}
+  .fs-head .carrier{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:var(--faint);text-transform:uppercase;border:1px dashed var(--line-strong);border-radius:6px;padding:6px 11px;white-space:nowrap}
+  @media(max-width:720px){.fs-head .carrier{display:none}}
+  .band{border-top:1px solid var(--line)}
+  .band-head{display:flex;align-items:center;gap:8px;padding:9px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .band-head h3{margin:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+  .band-head .bsrc{font-size:11px;color:var(--faint);font-weight:600;margin-left:auto}
+  .band-body{padding:14px 16px}
+  .boxrow{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px}
+  .boxrow + .boxrow{margin-top:10px}
+  .c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}
+  .c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
+  @media(max-width:1100px){.boxrow{grid-template-columns:repeat(2,minmax(0,1fr))}.boxrow>*{grid-column:auto!important}}
+  @media(max-width:560px){.boxrow{grid-template-columns:1fr}}
+  .box{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:9px 10px;display:flex;flex-direction:column;gap:5px;min-width:0}
+  .box .bxn{position:absolute;top:7px;right:9px;font-size:9px;font-weight:800;color:var(--faint);letter-spacing:.3px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .box>label{font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--faint);font-weight:700;padding-right:30px;line-height:1.3}
+  .box input,.box select{border:1px solid var(--line-strong);border-radius:6px;padding:7px 8px;font:inherit;font-size:13px;color:var(--ink);background:#fff;width:100%;min-width:0}
+  .box input:focus,.box select:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .box input.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .box .subrow{display:flex;gap:7px}
+  .box .subrow>*{flex:1;min-width:0}
+  .box .chk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;padding-top:2px}
+  .box .chk label{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--ink)}
+  .box .hint{font-size:10.5px;color:var(--faint);font-weight:600}
+  .dxgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:1100px){.dxgrid{grid-template-columns:repeat(2,1fr)}}
+  .dxslot{display:flex;align-items:center;gap:6px;border:1px solid var(--line-strong);border-radius:6px;background:#fff;padding:4px 4px 4px 8px}
+  .dxslot .lt{font-size:10px;font-weight:800;color:var(--faint);width:12px;flex:none}
+  .dxslot input{border:none;padding:5px 2px;font-family:var(--mono);font-size:12.5px;width:100%;min-width:0}
+  .dxslot input:focus{outline:none}
+  .trhi{border-color:var(--ai)!important;background:var(--ai-tint)!important;box-shadow:0 0 0 2px var(--ai-tint)}
+  .dxslot.trhi{border-color:var(--ai)!important}
+  .trok{border-color:var(--ok-line)!important;background:var(--ok-tint)!important;box-shadow:none!important;transition:.3s}
+  .trflag{position:absolute;top:-7px;left:8px;font-size:9px;font-weight:800;color:#fff;background:var(--ai);border-radius:4px;padding:1px 5px;letter-spacing:.3px}
+  .svc-wrap{overflow-x:auto}
+  .svc{width:100%;border-collapse:collapse;font-size:12.5px;min-width:860px}
+  .svc th{font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);text-align:left;padding:8px 7px;border-bottom:1px solid var(--line);font-weight:800;white-space:nowrap}
+  .svc td{padding:6px 7px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .svc tr:last-child td{border-bottom:none}
+  .svc .ln{font-family:var(--mono);color:var(--faint);font-weight:700}
+  .svc .desc{font-family:var(--sans);color:var(--muted);font-size:11.5px;white-space:nowrap}
+  .svc input{border:1px solid var(--line-strong);border-radius:6px;padding:6px 7px;font:inherit;font-size:12.5px;background:#fff;width:100%;min-width:0}
+  .svc input:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .svc input.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .svc .w-dos{width:112px}.svc .w-sm{width:56px}.svc .w-cpt{width:78px}.svc .w-mod{width:64px}
+  .svc .w-dx{width:64px}.svc .w-chg{width:104px}.svc .w-u{width:52px}.svc .w-npi{width:126px}
+  .svc tfoot td{padding:10px 7px;font-weight:800;font-family:var(--mono);border-top:2px solid var(--line-strong)}
+  .svc tfoot .lbl{font-family:var(--sans);text-align:right}
+
+  /* Box 33 — critical billing-provider emphasis */
+  .box33{border:2px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);box-shadow:0 0 0 3px var(--ai-tint)}
+  .box33 .b33-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-right:30px}
+  .box33 .b33-title>label{padding-right:0;font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:var(--ai-dark);font-weight:800}
+  .box33 .b33-crit{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--block);background:var(--block-tint);border:1px solid var(--block-line);border-radius:5px;padding:2px 7px}
+  .box33 .b33-note{font-size:11.5px;color:var(--ai-dark);font-weight:600;font-style:italic}
+  .box33 .b33-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
+  .box33 .b33-act .btn{padding:5px 12px;font-size:12px}
+  .box33.confirmed{border-color:var(--ok);background:var(--ok-tint);box-shadow:0 0 0 3px var(--ok-tint)}
+  .box33.confirmed .b33-note{color:var(--ok)}
+  .box33 .b33-done{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
 </style>
 </head>
 <body class="role-super">
@@ -483,6 +573,7 @@
   <div class="flow-top">
     <button class="exit" onclick="exitFlow()">← Back to your claims</button>
     <span class="flow-who">Reviewing <b>Testcase, Alice</b> · Claim <b class="mono">1000001</b> · <b>United Healthcare</b> <span style="color:var(--idr)">◆ OON</span></span>
+    <span class="flow-entity" id="flowEntity">▦ Billing entity: <b>Demo Neurophysiology LLC</b></span>
   </div>
 
   <!-- supervisor-only oversight strip (hidden in Biller view) -->
@@ -507,6 +598,7 @@
   <!-- STAGE 1 · PULL -->
   <section class="stage" id="stage-1">
     <div class="card">
+      <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
         <div class="kick">Step 1 of 5 · Pull</div>
         <h2>Here's the case we pulled</h2>
@@ -545,6 +637,7 @@
   <!-- STAGE 2 · VERIFY PATIENT & INSURANCE -->
   <section class="stage" id="stage-2">
     <div class="card">
+      <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
         <div class="kick">Step 2 of 5 · Verify patient &amp; insurance</div>
         <h2>Confirm the patient and coverage</h2>
@@ -609,6 +702,7 @@
   <!-- STAGE 3 · CODING & DIAGNOSIS (the only stage with work) -->
   <section class="stage" id="stage-3">
     <div class="card">
+      <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
         <div class="kick">Step 3 of 5 · Coding &amp; diagnosis</div>
         <h2>Coding from the reading report</h2>
@@ -693,6 +787,7 @@
   <!-- STAGE 4 · REVIEW -->
   <section class="stage" id="stage-4">
     <div class="card">
+      <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
         <div class="kick">Step 4 of 5 · Review</div>
         <h2>One last look</h2>
@@ -706,7 +801,7 @@
           <div class="f col2"><label>Principal diagnosis</label><div class="val mono" id="reviewDx">—</div></div>
           <div class="f"><label>Service lines</label><div class="val">6 lines</div></div>
           <div class="f"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
-          <div class="f col2"><label>Billing provider (Box 33)</label><div class="val">Demo Neurophysiology LLC · NPI 1000000017</div></div>
+          <div class="f col2"><label>Billing provider (Box 33)</label><div class="val" id="reviewBox33">Demo Neurophysiology LLC · NPI 1000000017</div></div>
           <div class="f col2"><label>Service facility (Box 32)</label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
         </div>
 
@@ -734,6 +829,7 @@
   <!-- STAGE 5 · FILE -->
   <section class="stage" id="stage-5">
     <div class="card" id="fileCard">
+      <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
         <div class="kick">Step 5 of 5 · File</div>
         <h2>Ready to file</h2>
@@ -759,6 +855,7 @@
 
     <!-- filed success (revealed after file) -->
     <div class="card" id="filedCard" style="display:none">
+      <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="filed">
         <div class="seal">✓</div>
         <h2>Filed</h2>
@@ -781,6 +878,230 @@
 <main class="wrap screen" id="folders"><div class="ph-head"><h1>Folders</h1></div><div class="placeholder"><h2>Folders</h2><p>Client &amp; entity folders, saved batches, and archived cases. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="reports"><div class="ph-head"><h1>Reports</h1></div><div class="placeholder"><h2>Reports</h2><p>Recovery by channel, IDR win rate, aged-A/R, and clock-exposure trend. Out of scope for this demo build.</p></div></main>
 <main class="wrap screen" id="manage"><div class="ph-head"><h1>Manage</h1></div><div class="placeholder"><h2>Manage</h2><p>Payer rules, OON fee schedules, client routing rules, and user permissions. Out of scope for this demo build.</p></div></main>
+
+<!-- ============================================================= -->
+<!-- FORM 1500 VIEW MODAL — the same claim as an editable CMS-1500  -->
+<!-- ============================================================= -->
+<div class="modal-back" id="form1500Back" onclick="if(event.target===this)closeForm1500()">
+  <div class="modal form1500" role="dialog" aria-modal="true" aria-labelledby="form1500Title">
+    <div class="modal-head">
+      <span class="m-tag">Same claim</span>
+      <h2 id="form1500Title">Form 1500 View — Testcase, Alice · Claim 1000001</h2>
+      <button class="mx" onclick="closeForm1500()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-note"><span class="sp">▦</span><span><b>Same claim — the standard form view of what you're confirming in the steps.</b> Edits here and in the steps stay in sync. Every box is editable and prefilled with this claim's data.</span></p>
+
+      <div class="formsheet">
+        <div class="fs-head">
+          <div><h2>CMS-1500 · Health Insurance Claim Form</h2><span class="sub">HCFA 08/05 · Professional (837P) · all fields editable</span></div>
+          <span class="carrier">Carrier &nbsp;→</span>
+        </div>
+
+        <!-- carrier / payer -->
+        <div class="band">
+          <div class="band-head"><h3>Payer / Carrier</h3><span class="bsrc">Prefilled · via USMON MCP</span></div>
+          <div class="band-body">
+            <div class="boxrow">
+              <div class="box c5"><span class="bxn">Carrier</span><label>Payer name</label><input value="United Healthcare"></div>
+              <div class="box c5"><span class="bxn">Address</span><label>Payer claims address</label><input value="PO Box 30555, Salt Lake City, UT 84130"></div>
+              <div class="box c2"><span class="bxn">Payer ID</span><label>Payer ID</label><input class="mono" value="87726"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- boxes 1-13 -->
+        <div class="band">
+          <div class="band-head"><h3>Patient &amp; Insured · Boxes 1–13</h3><span class="bsrc">Prefilled — Scheduler · via USMON MCP</span></div>
+          <div class="band-body">
+            <div class="boxrow">
+              <div class="box c4"><span class="bxn">1</span><label>Insurance type</label>
+                <select><option>Medicare</option><option>Medicaid</option><option>Tricare</option><option>ChampVA</option><option>Group Health Plan</option><option>FECA</option><option selected>Other (Commercial)</option></select></div>
+              <div class="box c4"><span class="bxn">1a</span><label>Insured's ID number</label><input class="mono" value="2W76y49mp67"></div>
+              <div class="box c4"><span class="bxn">11</span><label>Insured's policy / group #</label><input class="mono" value="GRP-778120"></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c4"><span class="bxn">2</span><label>Patient's name (Last, First MI)</label><input value="Testcase, Alice"></div>
+              <div class="box c3"><span class="bxn">3</span><label>Patient birth date / sex</label>
+                <div class="subrow"><input class="mono" value="08/29/1971"><select><option selected>F</option><option>M</option></select></div></div>
+              <div class="box c5"><span class="bxn">4</span><label>Insured's name (Last, First MI)</label><input value="Testcase, Alice (Self)"></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c5"><span class="bxn">5</span><label>Patient's address</label><input value="1200 Sample Ridge Ln, Springfield, ST 00000"></div>
+              <div class="box c3"><span class="bxn">5</span><label>Patient phone</label><input class="mono" value="(555) 555-0142"></div>
+              <div class="box c2"><span class="bxn">6</span><label>Relationship to insured</label>
+                <select><option selected>Self</option><option>Spouse</option><option>Child</option><option>Other</option></select></div>
+              <div class="box c2"><span class="bxn">8</span><label>Patient status</label>
+                <select><option selected>Inpatient</option><option>Outpatient</option></select></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c5"><span class="bxn">7</span><label>Insured's address</label><input value="Same as patient"></div>
+              <div class="box c4"><span class="bxn">9</span><label>Other insured's name</label><input placeholder="None on file" value=""></div>
+              <div class="box c3"><span class="bxn">10a–c</span><label>Condition related to</label>
+                <div class="chk"><label><input type="checkbox"> Employment</label><label><input type="checkbox"> Auto</label><label><input type="checkbox"> Other</label></div>
+                <span class="hint">All "No" — not accident-related</span></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c4"><span class="bxn">12</span><label>Patient's signature</label><input value="Signature on file"></div>
+              <div class="box c4"><span class="bxn">12</span><label>Signature date</label><input class="mono" value="10/20/2025"></div>
+              <div class="box c4"><span class="bxn">13</span><label>Insured's signature (assignment)</label><input value="Signature on file"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- boxes 14-23 -->
+        <div class="band">
+          <div class="band-head"><h3>Dates, Providers &amp; Diagnoses · Boxes 14–23</h3>
+            <span class="aichip">✦ AI</span><span class="bsrc">From reading physician's report · via USMON MCP</span></div>
+          <div class="band-body">
+            <div class="boxrow">
+              <div class="box c3"><span class="bxn">14</span><label>Date of current illness / injury</label><input class="mono" value="10/20/2025"></div>
+              <div class="box c3"><span class="bxn">15</span><label>Other date</label><input class="mono" placeholder="—" value=""></div>
+              <div class="box c3"><span class="bxn">16</span><label>Dates unable to work</label><input class="mono" placeholder="—" value=""></div>
+              <div class="box c3"><span class="bxn">18</span><label>Hospitalization dates</label><input class="mono" value="10/20/2025 – 10/22/2025"></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c5"><span class="bxn">17</span><label>Referring / ordering provider</label><input value="Sample, Alan MD"></div>
+              <div class="box c2"><span class="bxn">17a</span><label>Other ID</label><input class="mono" value="G2 · 0824"></div>
+              <div class="box c2"><span class="bxn">17b</span><label>NPI</label><input class="mono" value="1000000048"></div>
+              <div class="box c3"><span class="bxn">20</span><label>Outside lab / charges</label>
+                <div class="chk"><label><input type="checkbox"> Yes</label><label><input type="checkbox" checked> No</label></div></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c9"><span class="bxn">19</span><label>Additional claim information</label><input value="OON claim — No Surprises Act applies; QPA on file ~$7,697; IDR-eligible."></div>
+              <div class="box c3"><span class="bxn">21</span><label>ICD indicator</label>
+                <select><option selected>0 — ICD-10-CM</option><option>9 — ICD-9-CM</option></select></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) — A is principal</label>
+                <div class="dxgrid">
+                  <div class="dxslot trhi" id="frmBx21slot"><span class="trflag" id="frmBx21flag">✦ from Coding</span><span class="lt">A</span><input class="mono" id="frmBx21a" value="M50.121"></div>
+                  <div class="dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
+                  <div class="dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
+                  <div class="dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
+                  <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="—" value=""></div>
+                  <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="—" value=""></div>
+                  <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="—" value=""></div>
+                  <div class="dxslot"><span class="lt">H</span><input class="mono" placeholder="—" value=""></div>
+                </div>
+              </div>
+            </div>
+            <div class="boxrow">
+              <div class="box c4"><span class="bxn">22</span><label>Resubmission code</label><input class="mono" placeholder="—" value=""></div>
+              <div class="box c4"><span class="bxn">22</span><label>Original ref. no.</label><input class="mono" placeholder="—" value=""></div>
+              <div class="box c4"><span class="bxn">23</span><label>Prior authorization number</label><input class="mono" value="N/A — OON, no auth"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- box 24 service lines -->
+        <div class="band">
+          <div class="band-head"><h3>Service lines · Box 24</h3><span class="aichip">✦ AI</span>
+            <span class="bsrc">CPT/HCPCS &amp; units from reading report · via USMON MCP</span></div>
+          <div class="band-body">
+            <div class="svc-wrap">
+              <table class="svc">
+                <thead><tr>
+                  <th style="width:22px"></th><th>24A · DOS</th><th>24B · POS</th><th>24C · EMG</th>
+                  <th>24D · CPT/HCPCS</th><th>Mod</th><th>24E · Dx ptr</th><th>24F · Charges</th>
+                  <th>24G · Units</th><th>24H · EPSDT</th><th>24I · Qual</th><th>24J · Rendering NPI</th><th>Description</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td class="ln">1</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95887"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="361.25"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">Needle EMG, non-extremity</td></tr>
+                  <tr><td class="ln">2</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95909"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="849.15"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">Nerve conduction, 7–8 studies</td></tr>
+                  <tr><td class="ln">3</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95937"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A B"></td>
+                    <td><input class="mono w-chg" value="6,332.50"></td><td><input class="mono w-u" value="4"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">Neuromuscular junction test</td></tr>
+                  <tr><td class="ln">4</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95938"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A B"></td>
+                    <td><input class="mono w-chg" value="11,900.01"></td><td><input class="mono w-u" value="6"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">SSEP, upper &amp; lower</td></tr>
+                  <tr><td class="ln">5</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95939"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="17,850.01"></td><td><input class="mono w-u" value="3"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">MEP, upper &amp; lower</td></tr>
+                  <tr><td class="ln">6</td>
+                    <td><input class="mono w-dos" value="10/20/2025"></td><td><input class="mono w-sm" value="21"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-cpt" value="95955"></td><td><input class="mono w-mod" value="26"></td><td><input class="mono w-dx" value="A"></td>
+                    <td><input class="mono w-chg" value="10,795.00"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
+                    <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">EEG monitoring during surgery</td></tr>
+                </tbody>
+                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono">$48,087.92</td><td colspan="5"></td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- boxes 25-33 -->
+        <div class="band">
+          <div class="band-head"><h3>Billing, Assignment &amp; Providers · Boxes 25–33</h3><span class="bsrc">Prefilled · via USMON MCP</span></div>
+          <div class="band-body">
+            <div class="boxrow">
+              <div class="box c4"><span class="bxn">25</span><label>Federal tax ID (EIN)</label><input class="mono" value="12-3456789"></div>
+              <div class="box c3"><span class="bxn">26</span><label>Patient account no.</label><input class="mono" value="100001"></div>
+              <div class="box c2"><span class="bxn">27</span><label>Accept assignment</label>
+                <select><option selected>Yes</option><option>No</option></select></div>
+              <div class="box c3"><span class="bxn">28</span><label>Total charge</label><input class="mono" value="$48,087.92"></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
+              <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
+              <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD — signature on file · 10/22/2025"></div>
+            </div>
+            <div class="boxrow">
+              <div class="box c6"><span class="bxn">32</span><label>Service facility location</label><input value="Sample Specialists Hospital, 400 Demo Blvd, Springfield, ST 00000"></div>
+              <div class="box c3"><span class="bxn">32a</span><label>Facility NPI</label><input class="mono" value="1000000032"></div>
+              <div class="box c3"><span class="bxn">32b</span><label>Facility other ID</label><input class="mono" placeholder="—" value=""></div>
+            </div>
+            <!-- Box 33 — critical, emphasized -->
+            <div class="boxrow">
+              <div class="box box33 c8" id="frmBox33">
+                <span class="bxn">33</span>
+                <div class="b33-title">
+                  <label>Billing provider — where payment is sent</label>
+                  <span class="b33-crit">Critical</span>
+                  <span class="aichip" id="frmB33Tag">✦ auto-assigned by billing rules — confirm</span>
+                </div>
+                <select id="frmB33Select" onchange="b33Changed()">
+                  <option value="Demo Neurophysiology LLC|1000000017|(555) 555-0190" selected>Demo Neurophysiology LLC · (555) 555-0190</option>
+                  <option value="Sample IONM Partners LLC|1000000025|(555) 555-0288">Sample IONM Partners LLC · (555) 555-0288</option>
+                  <option value="Example Monitoring Group LLC|1000000033|(555) 555-0377">Example Monitoring Group LLC · (555) 555-0377</option>
+                </select>
+                <span class="b33-note">Box 33 determines where the payment is sent — confirm the billing entity is correct before filing.</span>
+                <div class="b33-act" id="frmB33Act">
+                  <button class="btn ai sm" onclick="confirmB33()">✓ Confirm entity</button>
+                  <button class="btn sm" onclick="changeB33()">Change entity</button>
+                </div>
+              </div>
+              <div class="box c2"><span class="bxn">33a</span><label>Billing NPI</label><input class="mono" id="frmB33NPI" value="1000000017"></div>
+              <div class="box c2"><span class="bxn">33b</span><label>Taxonomy (24J qual)</label><input class="mono" value="2084N0400X"></div>
+            </div>
+            <div class="smartnote">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span><b>Box 33 is critical:</b> it is the billing entity the payer pays. If it's wrong, the remittance goes to the wrong entity. Confirm the auto-assigned entity above.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="toast('CMS-1500 saved — synthetic; edits stay in sync with the steps')">💾 Save form</button>
+      <button class="btn primary" onclick="closeForm1500()">Close — back to the steps</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
 
@@ -997,8 +1318,93 @@
   }
   function nextClaim(){ show('inbox'); setNav('review'); toast('Back to your claims — 5 more waiting'); }
 
+  /* ============================================================= */
+  /* FORM 1500 VIEW — the same claim rendered as an editable CMS-1500 */
+  /* ============================================================= */
+  let billingEntity='Demo Neurophysiology LLC';   // Box 33 selection, shared with the stages
+  let b33State='pending';                          // pending | confirmed
+
+  function openForm1500(){
+    syncFormFromFlow();
+    document.getElementById('form1500Back').classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+  function closeForm1500(){
+    document.getElementById('form1500Back').classList.remove('show');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape'&&document.getElementById('form1500Back').classList.contains('show'))closeForm1500();
+  });
+
+  /* pull shared fields from the guided steps into the form (two views, one claim) */
+  function syncFormFromFlow(){
+    // Box 21.A principal Dx <- Coding stage's confirmed/edited ICD-10
+    let icd='M50.121';
+    const t=document.getElementById('aival-icd');
+    if(t){const lp=leadPart(t.textContent);if(lp)icd=lp;}
+    const a=document.getElementById('frmBx21a');
+    if(a)a.value=icd;
+    // reflect the coding-stage confirm state on the Box 21.A slot
+    const slot=document.getElementById('frmBx21slot');
+    const flag=document.getElementById('frmBx21flag');
+    const confirmedInFlow=(typeof aiState!=='undefined'&&aiState.icd&&aiState.icd!=='pending');
+    if(slot){
+      slot.classList.toggle('trok',confirmedInFlow);
+      slot.classList.toggle('trhi',!confirmedInFlow);
+      if(flag)flag.textContent=confirmedInFlow?'✓ from Coding':'✦ from Coding';
+    }
+  }
+
+  /* Box 33 — critical billing-provider picker (drives the stage indicator too) */
+  function b33Parts(){return document.getElementById('frmB33Select').value.split('|');}
+  function b33ActionsHTML(){
+    return '<button class="btn ai sm" onclick="confirmB33()">✓ Confirm entity</button>'+
+           '<button class="btn sm" onclick="changeB33()">Change entity</button>';
+  }
+  function b33Changed(){
+    const p=b33Parts();
+    document.getElementById('frmB33NPI').value=p[1];
+    billingEntity=p[0];
+    b33State='pending';
+    const box=document.getElementById('frmBox33');
+    box.classList.remove('confirmed');
+    document.getElementById('frmB33Tag').style.display='';
+    document.getElementById('frmB33Act').innerHTML=b33ActionsHTML();
+    updateFlowEntity();
+    toast('Billing entity changed to '+billingEntity+' — confirm to set where payment is sent','ai');
+  }
+  function changeB33(){
+    const s=document.getElementById('frmB33Select');
+    s.focus();
+    toast('Pick a billing entity — Box 33 sets where the payment is sent');
+  }
+  function confirmB33(){
+    const p=b33Parts();
+    billingEntity=p[0];
+    document.getElementById('frmB33NPI').value=p[1];
+    b33State='confirmed';
+    document.getElementById('frmBox33').classList.add('confirmed');
+    document.getElementById('frmB33Tag').style.display='none';
+    document.getElementById('frmB33Act').innerHTML=
+      '<span class="b33-done">✓ Billing entity confirmed by you · logged to audit</span>'+
+      '<button class="btn sm" onclick="changeB33()">Change</button>';
+    updateFlowEntity();
+    bumpAudit();
+    toast('Box 33 confirmed — payment routes to '+billingEntity+' · logged to audit','ai');
+  }
+  /* reflect the chosen billing entity back on the stages (indicator + Review stage) */
+  function updateFlowEntity(){
+    const el=document.getElementById('flowEntity');
+    if(el)el.innerHTML='▦ Billing entity: <b>'+billingEntity+'</b>';
+    const npi=document.getElementById('frmB33NPI');
+    const rev=document.getElementById('reviewBox33');
+    if(rev)rev.textContent=billingEntity+' · NPI '+(npi?npi.value:'1000000017');
+  }
+
   /* init */
   updateAIStage(2); updateAIStage(3);
+  updateFlowEntity();
   renderStage();
 </script>
 <script src="demo-nav.js"></script>
