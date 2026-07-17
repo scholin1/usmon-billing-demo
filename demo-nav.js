@@ -9,12 +9,13 @@
     { f: 'index.html', label: 'Start', home: true },
     { f: 'prototype-home-dashboard.html', label: 'Dashboard' },
     { f: 'prototype-ops-worklist.html', label: 'Worklist' },
-    { f: 'prototype-biller-review.html', label: 'Biller Review' },
-    { f: 'prototype-guided-flow.html', label: 'Guided' },
-    { f: 'prototype-familiar-modern.html', label: 'Familiar' },
-    { f: 'prototype-cms1500.html', label: 'CMS-1500' },
-    { f: 'prototype-v5-router.html', label: 'Cockpit' },
-    { f: 'prototype-payments.html', label: 'Payments' }
+    { f: 'prototype-biller-review.html', label: 'Biller Review', group: 'Work a claim' },
+    { f: 'prototype-guided-flow.html', label: 'Guided', group: 'Work a claim' },
+    { f: 'prototype-familiar-modern.html', label: 'Familiar', group: 'Work a claim' },
+    { f: 'prototype-cms1500.html', label: 'CMS-1500', group: 'Work a claim' },
+    { f: 'prototype-v5-router.html', label: 'Cockpit', group: 'Work a claim' },
+    { f: 'prototype-payments.html', label: 'Payments', group: 'Money' },
+    { f: 'prototype-post-payments.html', label: 'Post 835', group: 'Money' }
   ];
   var cur = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (cur === '') cur = 'index.html';
@@ -26,12 +27,18 @@
     'prototype-biller-review.html': 'the Biller Review view — confirm a mostly prefilled claim, with the AI-filled fields highlighted for a quick check.',
     'prototype-guided-flow.html': 'the Guided Flow — the same claim, one calm step at a time, so a new biller can complete it without training.',
     'prototype-familiar-modern.html': 'the Familiar-Modern view — today’s workflow and CMS-1500 layout, modernized onto one scrolling page.',
-    'prototype-v5-router.html': 'the Smart Cockpit — everything on one page with a workflow rail down the side and AI review assist.'
+    'prototype-v5-router.html': 'the Smart Cockpit — everything on one page with a workflow rail down the side and AI review assist.',
+    'prototype-cms1500.html': 'the CMS-1500 form — the billers’ main working screen: a prefilled, editable claim form where the reading physician’s Tech Report auto-fills the coding, plus “Coding Assist” that catches codes you might have missed.',
+    'prototype-payments.html': 'Payments & Collections — where out-of-network dollars get recovered: post payments per CPT over time, work underpayments and refiles, then close the claim or send it to arbitration to collect more.',
+    'prototype-post-payments.html': 'Post Payments — an incoming 835/ERA is auto-reconciled line-by-line against what the system expects; matched lines auto-post and only the discrepancies need your review.'
   };
 
   var KB = [
     { k: ['view', 'views', 'differ', 'style', 'switch', 'layout'], a: 'There’s no single “right” screen — the same claim and the same fields can be worked in whichever layout suits the biller: the dense Worklist grid, the step-by-step Guided flow, the Familiar layout, or the all-in-one Cockpit. Use the bar at the top to switch between them.' },
     { k: ['ai', 'highlight', 'confirm', 'purple', 'suggest'], a: 'AI does a first pass and fills in the likely answers — like the principal diagnosis from the reading report. Every AI-filled field is highlighted in purple with a “✦ AI” tag so you always know what to double-check. You Confirm or Override each one, and it’s logged. AI proposes; the biller decides.' },
+    { k: ['coding assist', 'missed', 'coding', 'cpt', 'revedy', 'charge capture'], a: 'Coding Assist (on the CMS-1500 form) is a second-opinion AI scan of the Tech Report and the Cadwell IONM report — it flags CPT codes you might have missed, with a justification for each, so you can add them in one click. It’s USMON’s own take on tools like Revedy.' },
+    { k: ['835', 'era', 'reconcile', 'remit', 'post payment'], a: 'On the Post 835 screen, an incoming ERA (835) is auto-reconciled line-by-line against what the system expects. Lines that match auto-post; only discrepancies are flagged for a human to confirm — so posting is accurate, not a manual guess.' },
+    { k: ['collect', 'refile', 'appeal', 'negotiat', 'balance', 'recover', 'payment'], a: 'On Payments & Collections you post payments per CPT over time, work underpayments through refile/appeal and Pro/Tech negotiation, and keep collecting until you close the claim or send it to Arbitron for arbitration.' },
     { k: ['idr', 'clock', 'deadline', 'nsa', 'timely', 'arbitr', 'underpaid'], a: 'Because ~99% of these claims are out-of-network, the real money is recovered through negotiation/IDR after an underpayment. Two clocks matter — the filing deadline and the IDR window — and the system surfaces them so a recoverable claim never slips past a missed deadline.' },
     { k: ['supervisor', 'biller', 'role', 'stats', 'efficiency', 'time', 'idle'], a: 'Billers get a clean, stats-free screen for verifying claim after claim. A Billing Supervisor gets an extra toggle (top of the screen) that reveals team stats and a per-biller time & efficiency view — including a flag when a claim has been sitting idle. Billers never see it.' },
     { k: ['real', 'data', 'hipaa', 'patient', 'phi', 'synthetic', 'fake'], a: 'Everything here is 100% synthetic — made-up patients, claims, and dollar amounts. No real patient data (no PHI) is used anywhere in these concepts.' },
@@ -57,8 +64,9 @@
     '#dmnav a.dm-home{color:#eafcff;font-weight:700}' +
     '#dmnav a.dm-active{background:#0b6e7a;color:#fff}' +
     '#dmnav .dm-sep{width:1px;height:20px;background:rgba(255,255,255,.16);margin:0 6px;flex:none}' +
+    '#dmnav .dm-grp{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:#5f97a0;font-weight:800;padding:0 4px 0 2px;white-space:nowrap}' +
     '#dmnav .dm-tag{margin-left:auto;padding-left:12px;color:#7fb8c0;white-space:nowrap;font-size:11px;font-weight:600}' +
-    '@media(max-width:720px){#dmnav .dm-tag{display:none}}' +
+    '@media(max-width:860px){#dmnav .dm-tag{display:none}}' +
     '#dm-ask-btn{position:fixed;right:20px;bottom:20px;z-index:99998;background:#6d4aff;color:#fff;border:none;border-radius:999px;padding:11px 17px;font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;box-shadow:0 6px 22px rgba(109,74,255,.42);display:flex;align-items:center;gap:8px;cursor:pointer}' +
     '#dm-ask-btn:hover{background:#5a37e0}' +
     '#dm-ask{position:fixed;right:20px;bottom:74px;width:344px;max-width:calc(100vw - 40px);height:452px;max-height:calc(100vh - 130px);z-index:99999;background:#fff;border:1px solid #e2e7ee;border-radius:14px;box-shadow:0 18px 50px rgba(16,32,46,.30);display:none;flex-direction:column;overflow:hidden;font:400 13.5px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#16202e}' +
@@ -92,7 +100,12 @@
   nav.id = 'dmnav';
   nav.setAttribute('aria-label', 'Concept demo navigation');
   var h = '<span class="dm-brand"><span class="dm-dot">U</span>USMON&nbsp;Pro concepts</span>';
+  var lastGroup = null;
   PAGES.forEach(function (p) {
+    if (p.group && p.group !== lastGroup) {
+      h += '<span class="dm-sep"></span><span class="dm-grp">' + esc(p.group) + '</span>';
+      lastGroup = p.group;
+    }
     var cls = (p.f === cur ? 'dm-active' : '') + (p.home ? ' dm-home' : '');
     var text = (p.home ? '🏠 ' : '') + esc(p.label);
     if (p.f === cur) {

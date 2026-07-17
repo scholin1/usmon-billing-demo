@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — Post Payments · 835 auto-post (prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;   /* Commercial OON -> IDR feeder */
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;                          /* Government in-network */
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;  /* Hospital tech-fee invoice */
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  /* ===== appbar (shared) ===== */
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+  #whoLabel{white-space:nowrap}
+  /* role toggle (Biller <-> Supervisor) */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+
+  .wrap{max-width:1320px;margin:0 auto;padding:22px 20px 80px}
+
+  .crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:12px}
+  .crumb button{background:none;border:none;color:var(--primary);font-size:13px;padding:0;cursor:pointer}
+
+  .page-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .page-head h1{font-size:21px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .page-head p{margin:4px 0 0;color:var(--muted);font-size:13px;max-width:680px}
+  .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .tag.ai{color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line)}
+
+  /* ===== buttons (shared) ===== */
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.primary:disabled,.btn.ai:disabled{background:#cbd5e1;border-color:#cbd5e1;color:#fff;cursor:not-allowed}
+  .btn.ghost{background:none;border-color:transparent;color:var(--primary)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark)}
+
+  /* ===== pills (shared) ===== */
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .pill.ready{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .pill.review{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .pill.oon{background:var(--idr-tint);color:var(--idr);border:1px solid var(--idr-line)}
+  .pill.posted{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+
+  /* ===== role gating ===== default = Supervisor (body.role-super) */
+  .sup-panel{display:none;margin-bottom:16px}
+  body.role-super .sup-panel{display:block}
+  .sup-panel .sp-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .sp-head{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--gov-tint)}
+  .sp-head h2{font-size:14px;margin:0;font-weight:700;color:var(--gov)}
+  .sp-head .tag2{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line);border-radius:5px;padding:2px 7px}
+  .sp-head .hid{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  @media(max-width:680px){.sp-stats{grid-template-columns:repeat(2,1fr)}}
+  .sp-stat{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+  .sp-stat .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sp-stat .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+  .sp-stat.good .num{color:var(--ok)} .sp-stat.flag .num{color:var(--block)}
+  .eff{width:100%;border-collapse:collapse;font-size:12.5px}
+  .eff th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:right;padding:9px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+  .eff th:first-child{text-align:left}
+  .eff td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono)}
+  .eff td:first-child{text-align:left;font-family:var(--sans);font-weight:600}
+  .eff tr:last-child td{border-bottom:none}
+  .eff tr.you{background:var(--primary-tint)}
+  .eff .bar{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+  .eff .track{width:52px;height:6px;border-radius:4px;background:#eef2f7;overflow:hidden}
+  .eff .fill{height:100%;border-radius:4px;background:var(--ok)}
+  .eff .fill.mid{background:var(--warn)}
+
+  /* ===== incoming 835 header card ===== */
+  .era835{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+  .era-top{display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--surface-2),#fff)}
+  .era-ico{flex:none;width:42px;height:42px;border-radius:10px;background:var(--primary-tint);color:var(--primary-dark);display:grid;place-items:center;border:1px solid var(--primary-line)}
+  .era-title{display:flex;flex-direction:column;gap:2px}
+  .era-title .t1{font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .era-title .t2{font-size:12.5px;color:var(--muted)}
+  .era-title .t2 b{color:var(--ink);font-family:var(--mono);font-weight:700}
+  .era-amt{margin-left:auto;text-align:right}
+  .era-amt .a{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+  .era-amt .l{font-size:11px;color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  .era-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-bottom:1px solid var(--line)}
+  @media(max-width:820px){.era-grid{grid-template-columns:repeat(2,1fr)}}
+  .era-cell{padding:11px 18px;border-right:1px solid var(--line)}
+  .era-cell:last-child{border-right:none}
+  .era-cell .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .era-cell .v{font-size:13.5px;font-weight:700;margin-top:3px}
+  .era-cell .v.mono{font-family:var(--mono)}
+
+  /* ===== AI reconcile banner ===== */
+  .airecon{display:flex;align-items:flex-start;gap:13px;padding:14px 18px;background:linear-gradient(180deg,var(--ai-tint),#f7f4ff)}
+  .airecon .spark{flex:none;width:30px;height:30px;border-radius:8px;background:var(--ai);color:#fff;display:grid;place-items:center;font-size:16px}
+  .airecon .ar-body{flex:1}
+  .airecon .ar-h{font-size:13.5px;font-weight:800;color:var(--ai-dark);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .airecon .ar-h .conf{font-size:11px;font-weight:800;background:var(--ai);color:#fff;border-radius:5px;padding:1px 7px}
+  .airecon .ar-sum{font-size:12.5px;color:#3c2b8a;margin-top:4px;line-height:1.45}
+  .airecon .ar-sum b{color:var(--ai-dark)}
+  .airecon .ar-chips{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+  .arc{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:#fff;border:1px solid var(--ai-line);color:var(--ai-dark)}
+  .arc.ok{border-color:var(--ok-line);color:var(--ok)} .arc.disc{border-color:var(--warn-line);color:var(--warn)}
+
+  /* ===== action bar ===== */
+  .actbar{position:sticky;top:52px;z-index:30;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 16px;margin:16px 0}
+  .actbar .ab-metrics{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .abm{display:flex;flex-direction:column;line-height:1.15}
+  .abm .n{font-size:16px;font-weight:800;letter-spacing:-.3px}
+  .abm .n.ok{color:var(--ok)} .abm .n.warn{color:var(--warn)} .abm .n.idr{color:var(--idr)}
+  .abm .l{font-size:11px;color:var(--muted);font-weight:600}
+  .ab-prog{flex:1;min-width:160px;max-width:260px}
+  .ab-prog .track{height:8px;border-radius:5px;background:#eef2f7;overflow:hidden}
+  .ab-prog .fill{height:100%;border-radius:5px;background:var(--ok);width:0;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .ab-prog .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:5px;display:flex;justify-content:space-between}
+  .ab-acts{margin-left:auto;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+
+  /* ===== claims accordion ===== */
+  .claims{display:flex;flex-direction:column;gap:12px}
+  .claim{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .claim.disc{border-color:var(--warn-line)}
+  .claim.done{border-color:var(--ok-line)}
+  .claim-head{display:grid;grid-template-columns:26px 1.7fr 1.1fr 1fr 1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:pointer}
+  .claim-head:hover{background:var(--surface-2)}
+  @media(max-width:900px){.claim-head{grid-template-columns:26px 1fr auto;row-gap:8px}.claim-head .ch-hide{display:none}}
+  .chev{width:22px;height:22px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;font-size:11px;color:var(--muted);transition:transform .2s}
+  .claim.open .chev{transform:rotate(90deg);background:var(--primary-tint);border-color:var(--primary-line);color:var(--primary-dark)}
+  .claim-pat .nm{font-weight:700;font-size:14px}
+  .claim-pat .mt{font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-top:1px}
+  .claim-k{display:flex;flex-direction:column;line-height:1.2}
+  .claim-k .kk{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .claim-k .vv{font-size:13px;font-weight:700;font-family:var(--mono);margin-top:2px}
+  .claim-k .vv.charged{color:var(--ink)} .claim-k .vv.posted{color:var(--ok)}
+  .claim-body{display:none;border-top:1px solid var(--line);padding:0}
+  .claim.open .claim-body{display:block}
+
+  .cb-strip{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 16px;background:var(--surface-2);border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .cb-strip b{color:var(--ink)}
+  .cb-strip .oonflag{color:var(--idr);font-weight:700}
+
+  /* reconciliation table (side-by-side) */
+  .recon-scroll{overflow-x:auto}
+  .recon{width:100%;min-width:880px;border-collapse:collapse;font-size:12px}
+  .recon thead .grp th{font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;color:var(--faint)}
+  .recon thead .grp .g-sys{color:var(--ink);background:var(--surface-2)}
+  .recon thead .grp .g-era{color:var(--ai-dark);background:var(--ai-tint);border-left:2px solid var(--ai-line)}
+  .recon thead .grp .g-rc{color:var(--muted)}
+  .recon thead .sub th{font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);font-weight:700;padding:6px 10px;border-bottom:1px solid var(--line-strong);text-align:right;white-space:nowrap}
+  .recon thead .sub th.l{text-align:left}
+  .recon td{padding:9px 10px;border-bottom:1px solid var(--line);font-family:var(--mono);text-align:right;white-space:nowrap}
+  .recon td.l{text-align:left;font-family:var(--sans)}
+  .recon tbody tr:last-child td{border-bottom:none}
+  .recon .era-c{background:var(--ai-tint);border-left:2px solid var(--ai-line)}
+  .recon .era-c.first{border-left:2px solid var(--ai-line)}
+  .recon .cpt{font-weight:700;color:var(--ink)}
+  .recon .desc{font-family:var(--sans);color:var(--muted);font-size:11px}
+  .recon .paid{color:var(--ok);font-weight:700} .recon .adj{color:var(--muted)}
+  .recon .carc{font-family:var(--sans);font-size:10.5px;font-weight:700;color:var(--warn)}
+  .recon tr.discrow .era-c{background:var(--warn-tint);border-left:2px solid var(--warn-line)}
+  .recon tr.discrow{background:var(--warn-tint)}
+  .recon tr.postedrow{background:var(--ok-tint)}
+  .recon tfoot td{padding:10px;font-weight:800;font-family:var(--mono);text-align:right;border-top:2px solid var(--line-strong)}
+  .recon tfoot td.l{text-align:left;font-family:var(--sans)}
+  .rcpill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;font-family:var(--sans);white-space:nowrap}
+  .rcpill.ok{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .rcpill.disc{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .rcpill.posted{background:var(--ok);color:#fff;border:1px solid var(--ok)}
+  .rc-reason{display:block;font-family:var(--sans);font-size:10.5px;color:var(--muted);font-weight:500;margin-top:3px;text-align:right;white-space:normal;max-width:210px;margin-left:auto}
+
+  /* underpayment / IDR summary inside claim */
+  .under{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--idr-tint))}
+  .under .u-k{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .under .u-v{font-size:15px;font-weight:800;letter-spacing:-.3px}
+  .under .u-v.idr{color:var(--idr)}
+  .under .u-sep{width:1px;height:30px;background:var(--line)}
+  .under .u-note{font-size:11.5px;color:var(--idr-dark);font-weight:600;max-width:280px}
+  .under .u-act{margin-left:auto;display:flex;gap:8px}
+
+  /* AI-confirm discrepancy card (shared aif treatment) */
+  .aif{border:1px solid var(--ai-line);border-left:3px solid var(--ai);background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border-radius:8px;padding:12px 14px;margin:14px 16px;transition:.25s}
+  .aif .aif-top{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+  .aif .aif-src{font-size:11px;color:var(--ai-dark);font-weight:600}
+  .aichip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.3px;color:#fff;background:var(--ai);border-radius:5px;padding:2px 7px}
+  .aif .aival{font-size:13px;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--ai-line);border-radius:7px;padding:9px 11px;line-height:1.4}
+  .aif .aif-why{font-size:11.5px;color:#3c2b8a;margin-top:8px;line-height:1.45;font-style:italic}
+  .aif .aif-act{display:flex;gap:8px;margin-top:11px;align-items:center;flex-wrap:wrap}
+  .aif .aif-act .btn{padding:6px 12px;font-size:12px}
+  .aif .aiedit{flex:1;min-width:180px;font-family:var(--sans);font-size:13px;padding:7px 9px;border:1px solid var(--ai);border-radius:7px;box-shadow:0 0 0 3px var(--ai-tint)}
+  .aif.flash{box-shadow:0 0 0 4px var(--ai-tint)}
+  .aif.confirmed{border-color:var(--ok-line);border-left-color:var(--ok);background:var(--ok-tint)}
+  .aif.confirmed .aival{border-color:var(--ok-line)}
+  .aif.confirmed .aif-src,.aif.confirmed .aif-why{color:var(--ok)}
+  .aif.overridden{border-color:var(--warn-line);border-left-color:var(--warn);background:var(--warn-tint)}
+  .aif.overridden .aival{border-color:var(--warn-line)}
+  .aif .aif-done{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok)}
+  .aif .aif-done.ovr{color:var(--warn)}
+
+  /* hand-off note */
+  .handoff{display:flex;align-items:center;gap:11px;background:var(--primary-tint);border:1px solid var(--primary-line);border-radius:var(--radius);padding:12px 15px;margin-top:16px;font-size:13px;color:var(--primary-dark)}
+  .handoff b{font-weight:700}
+  .handoff .btn{margin-left:auto;padding:6px 12px;font-size:12px}
+
+  /* toast (shared) */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:480px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.ai .ic{background:var(--ai)} .toast.warn .ic{background:var(--warn)} .toast.idr .ic{background:var(--idr)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro — POST PAYMENTS · 835 AUTO-POST with AI RECONCILIATION
+  (client demo, 100% synthetic data — no PHI, no real patients/entities)
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. An 835/ERA has arrived from United Healthcare (EFT #UHC-8830271, $7,877.50,
+       3 claim payments, 12 line items). Read the purple "AI reconciled this 835"
+       banner: Matched 11 of 12 lines across 3 claims · 1 discrepancy needs review.
+       Same extraction/reconciliation engine as USMON's Remit (paper-EOB) tool.
+    2. Open the Testcase, Alice claim (1000001, $48,087.92 charged). Show the
+       side-by-side table: for every service line, "835 says" (allowed / paid /
+       adjustment / CARC) sits next to "System expected" (CPT / charge / prior bal),
+       with a Match column. Five lines reconcile as an EXPECTED out-of-network
+       underpayment (CARC 45, below QPA) — posts ~$6,158 of $48,088 -> IDR-eligible.
+    3. One line is a GENUINE discrepancy: the 835 paid CPT 95940, not billed on this
+       claim (system has 95939). AI does NOT auto-post it — Confirm/Override in the
+       purple ✦ AI-confirm card (AI proposes, biller decides, logged).
+    4. Click "Auto-post reconciled lines" -> the 11 matched lines post in one click
+       ("Posted 11 reconciled lines · $7,265.50 applied"). Confirm the discrepancy,
+       then "Post all confirmed" finalizes the held $612.00.
+    5. Posted results hand off to each claim's Payments & Collections screen
+       (link/toast — that screen is not rebuilt here).
+    6. Role toggle (top right): Supervisor adds a posting-accuracy / throughput
+       panel (auto-post rate, $ posted today, exceptions worked). Flip to Biller —
+       billers post & reconcile, no stats.
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" onclick="toast('Worklist — 52,140 claims across all clients');return false">Worklist</a>
+    <a href="#" onclick="toast('Payments &amp; Collections opens per claim');return false">Payments</a>
+    <a href="#" class="on" onclick="return false">Post Payments</a>
+    <a href="#" onclick="toast('Reports are supervisor-only in this build');return false">Reports</a>
+  </nav>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="Demo view role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="whoLabel">Example, Priya · Supervisor</span>
+    <span class="avatar" id="whoAvatar">EP</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="crumb"><button onclick="toast('Back to remittance inbox — 4 unposted 835s')">← Remittance inbox</button><span>/</span><span>EFT #UHC-8830271</span></div>
+
+  <div class="page-head">
+    <div><h1>Post Payments <span class="tag ai" style="vertical-align:middle">835 auto-post · AI-reconciled</span></h1>
+      <p>An electronic remittance (835/ERA) arrives, the AI reconciles it line-by-line against what the system expects — charges, CPTs, prior balances — then auto-posts everything that matches and flags only true discrepancies for a human. Same extraction engine as USMON's <b>Remit</b> paper-EOB tool.</p></div>
+  </div>
+
+  <!-- ===== SUPERVISOR-ONLY posting oversight (hidden from billers) ===== -->
+  <div class="sup-panel" id="supPanel" aria-hidden="false">
+    <div class="sp-card">
+      <div class="sp-head"><h2>Posting oversight</h2><span class="tag2">Supervisor view</span><span class="hid">Supervisor view — billers don't see this.</span></div>
+      <div class="sp-stats">
+        <div class="sp-stat good"><div class="num">94.2%</div><div class="lbl">Auto-post rate (lines, 30d)</div></div>
+        <div class="sp-stat"><div class="num mono">$412,880</div><div class="lbl">$ posted today (team)</div></div>
+        <div class="sp-stat"><div class="num">37</div><div class="lbl">835s reconciled today</div></div>
+        <div class="sp-stat flag"><div class="num">6</div><div class="lbl">Exceptions worked today</div></div>
+      </div>
+      <table class="eff">
+        <thead><tr><th>Poster</th><th>835s today</th><th>Lines posted</th><th>Auto-post %</th><th>Exceptions</th><th>$ posted</th></tr></thead>
+        <tbody>
+          <tr class="you"><td>Example, Priya <span style="color:var(--muted);font-weight:600">· you</span></td><td>14</td><td>182</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:96%"></span></span>96%</span></td><td>2</td><td>$168,204</td></tr>
+          <tr><td>Sample, Dana</td><td>11</td><td>146</td>
+            <td><span class="bar"><span class="track"><span class="fill" style="width:93%"></span></span>93%</span></td><td>3</td><td>$121,660</td></tr>
+          <tr><td>Demo, Alex</td><td>8</td><td>97</td>
+            <td><span class="bar"><span class="track"><span class="fill mid" style="width:88%"></span></span>88%</span></td><td>1</td><td>$78,510</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== INCOMING 835 HEADER ===== -->
+  <div class="era835">
+    <div class="era-top">
+      <div class="era-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M8 13h8M8 16h5"/></svg></div>
+      <div class="era-title">
+        <span class="t1">835 / ERA received — United Healthcare</span>
+        <span class="t2">EFT trace <b>#UHC-8830271</b> · deposited <b>07/14/2026</b> · <b>3</b> claim payments · <b>12</b> line items</span>
+      </div>
+      <div class="era-amt"><div class="a mono">$7,877.50</div><div class="l">Remittance total</div></div>
+    </div>
+    <div class="era-grid">
+      <div class="era-cell"><div class="k">Payer</div><div class="v">United Healthcare</div></div>
+      <div class="era-cell"><div class="k">Payment method</div><div class="v">EFT / ACH</div></div>
+      <div class="era-cell"><div class="k">Production date</div><div class="v mono">07/14/2026</div></div>
+      <div class="era-cell"><div class="k">Payer claim control</div><div class="v mono">2026194ERA</div></div>
+      <div class="era-cell"><div class="k">Network</div><div class="v" style="color:var(--idr)">Out-of-network</div></div>
+    </div>
+    <!-- AI reconcile banner -->
+    <div class="airecon">
+      <div class="spark">✦</div>
+      <div class="ar-body">
+        <div class="ar-h">AI reconciled this 835 <span class="conf">confidence 0.97</span></div>
+        <div class="ar-sum"><b>Matched 11 of 12 lines across 3 claims.</b> Every matched line was compared to the billed CPT, charge, and prior balance on file; all 11 reconcile as expected out-of-network underpayments (CARC 45, below QPA) and post automatically. <b>1 discrepancy needs review</b> — a paid line whose CPT is not on the claim. Reconciled by the USMON <b>Remit</b> engine, the same extractor used for paper EOBs.</div>
+        <div class="ar-chips">
+          <span class="arc ok">✓ 11 reconciled · auto-post ready</span>
+          <span class="arc disc">⚠ 1 discrepancy · needs confirm</span>
+          <span class="arc">$7,265.50 posts on match · $612.00 held</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ACTION BAR ===== -->
+  <div class="actbar">
+    <div class="ab-metrics">
+      <div class="abm"><span class="n ok" id="mReconciled">11</span><span class="l">Reconciled lines</span></div>
+      <div class="abm"><span class="n warn" id="mDisc">1</span><span class="l">Discrepancies</span></div>
+      <div class="abm"><span class="n idr" id="mPosted">$0.00</span><span class="l">Posted this run</span></div>
+    </div>
+    <div class="ab-prog">
+      <div class="track"><div class="fill" id="postFill"></div></div>
+      <div class="lbl"><span><b id="postedLines">0</b> of 12 lines posted</span><span id="postedPct">0%</span></div>
+    </div>
+    <div class="ab-acts">
+      <button class="btn ai" id="btnAutoPost" onclick="autoPostReconciled()">Auto-post 11 reconciled lines · $7,265.50</button>
+      <button class="btn primary" id="btnPostConfirmed" disabled onclick="postAllConfirmed()">Post all confirmed</button>
+    </div>
+  </div>
+
+  <!-- ===== CLAIMS ACCORDION ===== -->
+  <div class="claims">
+
+    <!-- CLAIM 1 · TESTCASE, ALICE (the centerpiece — underpayment + 1 discrepancy) -->
+    <div class="claim disc" id="claim-alice">
+      <div class="claim-head" onclick="toggleClaim('alice')">
+        <span class="chev">▶</span>
+        <div class="claim-pat"><div class="nm">Testcase, Alice</div><div class="mt">PID 100001 · Claim 1000001 · DOS 10/20/2025</div></div>
+        <div class="claim-k ch-hide"><span class="kk">Payer</span><span class="vv" style="font-family:var(--sans)">United Healthcare</span></div>
+        <div class="claim-k ch-hide"><span class="kk">Charged</span><span class="vv charged">$48,087.92</span></div>
+        <div class="claim-k"><span class="kk">Posted</span><span class="vv posted" id="post-alice">$0.00</span></div>
+        <div><span class="pill review" id="status-alice">⚠ 1 discrepancy</span></div>
+      </div>
+      <div class="claim-body">
+        <div class="cb-strip"><span>6 service lines · <b>5 reconciled</b>, <b>1 discrepancy</b></span><span>·</span><span class="oonflag">◆ Out-of-network — NSA / IDR-eligible</span><span>·</span><span>QPA on file <b>~$7,697</b></span></div>
+        <div class="recon-scroll">
+          <table class="recon">
+            <thead>
+              <tr class="grp"><th class="g-sys" colspan="4">System expected</th><th class="g-era" colspan="4">835 says (United Healthcare)</th><th class="g-rc">Reconcile</th></tr>
+              <tr class="sub"><th class="l">CPT · desc</th><th>Units</th><th>Charge</th><th>Prior bal</th><th class="l">Allowed</th><th>Paid</th><th>Adjustment</th><th>CARC · RARC</th><th class="l">Match</th></tr>
+            </thead>
+            <tbody>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95887</span> <span class="desc">Needle EMG, non-extremity</span></td><td>1</td><td>$361.25</td><td>$0.00</td>
+                <td class="era-c first" style="text-align:right">$92.50</td><td class="era-c paid">$92.50</td><td class="era-c adj">$268.75</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95909</span> <span class="desc">Nerve conduction, 7–8 studies</span></td><td>1</td><td>$849.15</td><td>$0.00</td>
+                <td class="era-c first">$210.00</td><td class="era-c paid">$210.00</td><td class="era-c adj">$639.15</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95937</span> <span class="desc">Neuromuscular junction test</span></td><td>4</td><td>$6,332.50</td><td>$0.00</td>
+                <td class="era-c first">$1,180.00</td><td class="era-c paid">$1,180.00</td><td class="era-c adj">$5,152.50</td><td class="era-c carc">OA-45 · N130</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">Matches expected OON allowance</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95938</span> <span class="desc">SSEP upper &amp; lower</span></td><td>6</td><td>$11,900.01</td><td>$0.00</td>
+                <td class="era-c first">$2,540.00</td><td class="era-c paid">$2,540.00</td><td class="era-c adj">$9,360.01</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+              </tr>
+              <tr class="discrow" id="disc-row-alice">
+                <td class="l"><span class="cpt">95939</span> <span class="desc">MEP upper &amp; lower <b>(billed)</b></span></td><td>3</td><td>$17,850.01</td><td>$0.00</td>
+                <td class="era-c first"><span class="cpt" style="color:var(--warn)">95940</span> $612.00</td><td class="era-c paid" style="color:var(--warn)">$612.00</td><td class="era-c adj">—</td><td class="era-c carc">—</td>
+                <td class="l"><span class="rcpill disc" id="rc-disc-alice">⚠ Discrepancy</span><span class="rc-reason">835 paid CPT 95940 — not billed on this claim (system line is 95939)</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95955</span> <span class="desc">EEG during surgery</span></td><td>1</td><td>$10,795.00</td><td>$0.00</td>
+                <td class="era-c first">$2,135.50</td><td class="era-c paid">$2,135.50</td><td class="era-c adj">$8,659.50</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span><span class="rc-reason">OON allowed &lt; charge — expected underpayment</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr><td class="l">Totals</td><td></td><td>$48,087.92</td><td>$0.00</td><td class="era-c first"></td><td class="era-c">$6,770.00</td><td class="era-c">$24,079.91</td><td class="era-c"></td><td class="l"><span style="font-size:11px;color:var(--muted);font-weight:600">5 auto · 1 held</span></td></tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- AI-confirm discrepancy card -->
+        <div class="aif" id="aif-alice">
+          <div class="aif-top"><span class="aichip">✦ AI</span><span class="aif-src">flagged discrepancy · will NOT auto-post · via USMON Remit engine</span></div>
+          <div class="aival" id="aival-alice">835 paid line <b>CPT 95940</b> (2 units · $612.00) — no matching line on claim 1000001. The billed line 5 is <b>CPT 95939</b> (MEP), 3 units. Likely a payer recode of 95939 → 95940.</div>
+          <div class="aif-why">The remittance paid a code that was not billed. AI does not auto-post code mismatches. <b>Confirm</b> to accept the payer's recode and post $612.00 against line 95939, or <b>Override</b> to hold the line and open a corrected-claim / appeal task. Either way the choice is logged to the audit trail.</div>
+          <div class="aif-act" id="aifact-alice">
+            <button class="btn ai sm" onclick="confirmDisc()">✓ Confirm — accept recode, post $612.00</button>
+            <button class="btn sm" onclick="overrideDisc()">Edit / Override — hold &amp; appeal</button>
+          </div>
+        </div>
+
+        <!-- underpayment / IDR summary -->
+        <div class="under">
+          <div><div class="u-k">Charged</div><div class="u-v mono">$48,087.92</div></div>
+          <div class="u-sep"></div>
+          <div><div class="u-k">Posted so far</div><div class="u-v mono" id="under-posted-alice">$0.00</div></div>
+          <div class="u-sep"></div>
+          <div><div class="u-k">Underpayment</div><div class="u-v idr mono" id="under-bal-alice">$48,087.92</div></div>
+          <div class="u-note">◆ Clear out-of-network underpayment (~86% below charge). IDR-eligible under the No Surprises Act.</div>
+          <div class="u-act"><button class="btn idr sm" style="background:var(--idr);border-color:var(--idr);color:#fff" onclick="toast('IDR packet drafted from posted underpayment — 30-day negotiation clock ready to start','idr')">Send to IDR →</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLAIM 2 · SAMPLE, DAVID (clean auto-post) -->
+    <div class="claim" id="claim-david">
+      <div class="claim-head" onclick="toggleClaim('david')">
+        <span class="chev">▶</span>
+        <div class="claim-pat"><div class="nm">Sample, David</div><div class="mt">PID 100004 · Claim 1000002 · DOS 10/20/2025</div></div>
+        <div class="claim-k ch-hide"><span class="kk">Payer</span><span class="vv" style="font-family:var(--sans)">United Healthcare</span></div>
+        <div class="claim-k ch-hide"><span class="kk">Charged</span><span class="vv charged">$2,260.00</span></div>
+        <div class="claim-k"><span class="kk">Posted</span><span class="vv posted" id="post-david">$0.00</span></div>
+        <div><span class="pill ready" id="status-david">✓ Reconciled</span></div>
+      </div>
+      <div class="claim-body">
+        <div class="cb-strip"><span>3 service lines · <b>3 reconciled</b>, 0 discrepancies</span><span>·</span><span class="oonflag">◆ Out-of-network</span></div>
+        <div class="recon-scroll">
+          <table class="recon">
+            <thead>
+              <tr class="grp"><th class="g-sys" colspan="4">System expected</th><th class="g-era" colspan="4">835 says (United Healthcare)</th><th class="g-rc">Reconcile</th></tr>
+              <tr class="sub"><th class="l">CPT · desc</th><th>Units</th><th>Charge</th><th>Prior bal</th><th class="l">Allowed</th><th>Paid</th><th>Adjustment</th><th>CARC · RARC</th><th class="l">Match</th></tr>
+            </thead>
+            <tbody>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95886</span> <span class="desc">Needle EMG, complete</span></td><td>1</td><td>$760.00</td><td>$0.00</td>
+                <td class="era-c first">$190.00</td><td class="era-c paid">$190.00</td><td class="era-c adj">$570.00</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95907</span> <span class="desc">Nerve conduction, 1–2 studies</span></td><td>1</td><td>$520.00</td><td>$0.00</td>
+                <td class="era-c first">$130.00</td><td class="era-c paid">$130.00</td><td class="era-c adj">$390.00</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95822</span> <span class="desc">EEG, recording awake &amp; asleep</span></td><td>1</td><td>$980.00</td><td>$0.00</td>
+                <td class="era-c first">$245.00</td><td class="era-c paid">$245.00</td><td class="era-c adj">$735.00</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr><td class="l">Totals</td><td></td><td>$2,260.00</td><td>$0.00</td><td class="era-c first"></td><td class="era-c">$565.00</td><td class="era-c">$1,695.00</td><td class="era-c"></td><td class="l"><span style="font-size:11px;color:var(--muted);font-weight:600">3 auto-post</span></td></tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLAIM 3 · MOCKDATA, RAY (clean auto-post) -->
+    <div class="claim" id="claim-ray">
+      <div class="claim-head" onclick="toggleClaim('ray')">
+        <span class="chev">▶</span>
+        <div class="claim-pat"><div class="nm">Mockdata, Ray</div><div class="mt">PID 100002 · Claim 1000007 · DOS 10/18/2025</div></div>
+        <div class="claim-k ch-hide"><span class="kk">Payer</span><span class="vv" style="font-family:var(--sans)">United Healthcare</span></div>
+        <div class="claim-k ch-hide"><span class="kk">Charged</span><span class="vv charged">$2,170.00</span></div>
+        <div class="claim-k"><span class="kk">Posted</span><span class="vv posted" id="post-ray">$0.00</span></div>
+        <div><span class="pill ready" id="status-ray">✓ Reconciled</span></div>
+      </div>
+      <div class="claim-body">
+        <div class="cb-strip"><span>3 service lines · <b>3 reconciled</b>, 0 discrepancies</span><span>·</span><span class="oonflag">◆ Out-of-network</span></div>
+        <div class="recon-scroll">
+          <table class="recon">
+            <thead>
+              <tr class="grp"><th class="g-sys" colspan="4">System expected</th><th class="g-era" colspan="4">835 says (United Healthcare)</th><th class="g-rc">Reconcile</th></tr>
+              <tr class="sub"><th class="l">CPT · desc</th><th>Units</th><th>Charge</th><th>Prior bal</th><th class="l">Allowed</th><th>Paid</th><th>Adjustment</th><th>CARC · RARC</th><th class="l">Match</th></tr>
+            </thead>
+            <tbody>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95867</span> <span class="desc">Needle EMG, cranial nerve</span></td><td>1</td><td>$610.00</td><td>$0.00</td>
+                <td class="era-c first">$152.50</td><td class="era-c paid">$152.50</td><td class="era-c adj">$457.50</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95870</span> <span class="desc">Needle EMG, limited</span></td><td>2</td><td>$840.00</td><td>$0.00</td>
+                <td class="era-c first">$210.00</td><td class="era-c paid">$210.00</td><td class="era-c adj">$630.00</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span></td>
+              </tr>
+              <tr class="autop-line">
+                <td class="l"><span class="cpt">95816</span> <span class="desc">EEG, awake &amp; drowsy</span></td><td>1</td><td>$720.00</td><td>$0.00</td>
+                <td class="era-c first">$180.00</td><td class="era-c paid">$180.00</td><td class="era-c adj">$540.00</td><td class="era-c carc">CO/OA-45</td>
+                <td class="l"><span class="rcpill ok">✓ Reconciled</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr><td class="l">Totals</td><td></td><td>$2,170.00</td><td>$0.00</td><td class="era-c first"></td><td class="era-c">$542.50</td><td class="era-c">$1,627.50</td><td class="era-c"></td><td class="l"><span style="font-size:11px;color:var(--muted);font-weight:600">3 auto-post</span></td></tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- hand-off to Payments & Collections -->
+  <div class="handoff">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <span><b>Posted payments flow to each claim's Payments &amp; Collections screen</b> — the ledger, remaining balance, and IDR/appeal steps live there. This screen only reconciles &amp; posts the 835.</span>
+    <button class="btn" onclick="toast('Opening Payments &amp; Collections for claim 1000001 — posted lines now on the ledger')">Open Payments &amp; Collections →</button>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  /* ---------- shared: toast ---------- */
+  function toast(m,kind){const t=document.getElementById('toast');t.className='toast'+(kind?' '+kind:'');document.getElementById('toastMsg').innerHTML=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3400);}
+
+  /* ---------- role toggle: Biller <-> Supervisor (default Supervisor) ---------- */
+  function setRole(role){
+    const sup=role==='supervisor';
+    document.body.classList.toggle('role-super',sup);
+    document.getElementById('rt-biller').classList.toggle('on',!sup);
+    document.getElementById('rt-super').classList.toggle('on',sup);
+    document.getElementById('supPanel').setAttribute('aria-hidden',sup?'false':'true');
+    document.getElementById('whoLabel').textContent=sup?'Example, Priya · Supervisor':'Sample, Dana · Biller';
+    document.getElementById('whoAvatar').textContent=sup?'EP':'SD';
+    toast(sup?'Supervisor view — posting accuracy &amp; throughput now visible':'Biller view — post &amp; reconcile, no stats');
+  }
+
+  /* ---------- claim expand / collapse ---------- */
+  function toggleClaim(id){
+    const c=document.getElementById('claim-'+id);
+    c.classList.toggle('open');
+  }
+
+  /* ---------- posting state machine ---------- */
+  const RECONCILED_LINES=11, RECONCILED_AMT=7265.50, DISC_AMT=612.00, TOTAL_LINES=12;
+  let autoPosted=false;               // 11 reconciled lines posted
+  let discState='pending';            // pending | confirmed | overridden
+  let discPosted=false;               // the held $612 line posted
+  function money(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  function postedLineCount(){return (autoPosted?RECONCILED_LINES:0)+(discPosted?1:0);}
+  function postedAmount(){return (autoPosted?RECONCILED_AMT:0)+(discPosted?DISC_AMT:0);}
+
+  function updateSummary(){
+    const lines=postedLineCount();
+    document.getElementById('postedLines').textContent=lines;
+    const pct=Math.round(lines/TOTAL_LINES*100);
+    document.getElementById('postFill').style.width=pct+'%';
+    document.getElementById('postedPct').textContent=pct+'%';
+    document.getElementById('mReconciled').textContent=autoPosted?0:RECONCILED_LINES;
+    document.getElementById('mDisc').textContent=(discState==='pending'?1:0);
+    document.getElementById('mPosted').textContent=money(postedAmount());
+    // Alice out-of-network underpayment panel
+    const alicePosted=(autoPosted?6158.00:0)+(discPosted?612.00:0);
+    document.getElementById('under-posted-alice').textContent=money(alicePosted);
+    document.getElementById('under-bal-alice').textContent=money(48087.92-alicePosted);
+  }
+
+  /* ---------- auto-post the reconciled lines (one click) ---------- */
+  function autoPostReconciled(){
+    if(autoPosted)return;
+    autoPosted=true;
+    // flip every reconciled line's pill to Posted
+    document.querySelectorAll('.autop-line').forEach(row=>{
+      row.classList.add('postedrow');
+      const pill=row.querySelector('.rcpill.ok');
+      if(pill){pill.className='rcpill posted';pill.textContent='✓ Posted';}
+    });
+    // clean claims are now fully posted
+    document.getElementById('post-david').textContent='$565.00';
+    document.getElementById('post-ray').textContent='$542.50';
+    setClaimDone('david');
+    setClaimDone('ray');
+    // Alice depends on the discrepancy state (order-independent)
+    refreshAlice();
+    // action button
+    const b=document.getElementById('btnAutoPost');
+    b.disabled=true;b.textContent='✓ 11 reconciled lines posted';
+    updateSummary();
+    toast('Posted 11 reconciled lines · '+money(RECONCILED_AMT)+' applied to 3 claims','ai');
+  }
+  function setClaimDone(id){
+    const c=document.getElementById('claim-'+id);c.classList.add('done');
+    const s=document.getElementById('status-'+id);s.className='pill posted';s.textContent='✓ Posted';
+  }
+  /* Alice's header (posted total + status pill) derived from state — order-independent */
+  function refreshAlice(){
+    const posted=(autoPosted?6158.00:0)+(discPosted?612.00:0);
+    document.getElementById('post-alice').textContent=money(posted);
+    const s=document.getElementById('status-alice'), c=document.getElementById('claim-alice');
+    if(autoPosted&&discPosted){c.classList.add('done');s.className='pill posted';s.textContent='✓ Posted';}
+    else if(autoPosted&&discState==='overridden'){s.className='pill review';s.textContent='⚠ 5 posted · 1 held';}
+    else if(autoPosted){s.className='pill review';s.textContent='⚠ 1 line held';}
+    else if(discPosted){s.className='pill review';s.textContent='⚠ auto-post pending';}
+    else if(discState==='overridden'){s.className='pill review';s.textContent='⚠ 1 line held';}
+    else{s.className='pill review';s.textContent='⚠ 1 discrepancy';}
+  }
+
+  /* ---------- discrepancy: Confirm / Override (AI proposes, biller decides) ---------- */
+  function confirmDisc(){
+    if(discState!=='pending')return;
+    discState='confirmed';
+    const box=document.getElementById('aif-alice');box.classList.add('confirmed');
+    document.getElementById('aifact-alice').innerHTML='<span class="aif-done">✓ Confirmed by you — recode accepted, $612.00 queued to post · logged to audit</span>';
+    // discrepancy row now reconciled (confirmed), not yet posted
+    const rc=document.getElementById('rc-disc-alice');rc.className='rcpill ok';rc.textContent='✓ Confirmed';
+    // enable finalize
+    const pc=document.getElementById('btnPostConfirmed');pc.disabled=false;pc.textContent='Post 1 confirmed line · $612.00';
+    updateSummary();
+    toast('Discrepancy confirmed — payer recode accepted. Ready to post the held $612.00.','ai');
+  }
+  function overrideDisc(){
+    if(discState!=='pending')return;
+    document.getElementById('aifact-alice').innerHTML=
+      '<input class="aiedit" id="aiedit-alice" value="Hold line 95940 — bill payer for 95939 as documented (open corrected-claim / appeal task)">'+
+      '<button class="btn ai sm" onclick="saveOverrideDisc()">Save hold</button>'+
+      '<button class="btn sm" onclick="cancelOverrideDisc()">Cancel</button>';
+    document.getElementById('aiedit-alice').focus();
+  }
+  function saveOverrideDisc(){
+    discState='overridden';
+    const v=document.getElementById('aiedit-alice').value.trim();
+    const box=document.getElementById('aif-alice');box.classList.add('overridden');
+    document.getElementById('aival-alice').textContent=v||'Line held for corrected-claim / appeal.';
+    document.getElementById('aifact-alice').innerHTML='<span class="aif-done ovr">✎ Overridden by you — line held, appeal task opened · logged to audit</span>';
+    const rc=document.getElementById('rc-disc-alice');rc.className='rcpill disc';rc.textContent='⚠ Held';
+    // nothing to finalize-post; keep Post-all-confirmed disabled but relabel
+    const pc=document.getElementById('btnPostConfirmed');pc.disabled=true;pc.textContent='No confirmed lines to post';
+    refreshAlice();
+    updateSummary();
+    toast('Override saved — line held for appeal, biller decision logged to audit trail','warn');
+  }
+  function cancelOverrideDisc(){
+    document.getElementById('aifact-alice').innerHTML=
+      '<button class="btn ai sm" onclick="confirmDisc()">✓ Confirm — accept recode, post $612.00</button>'+
+      '<button class="btn sm" onclick="overrideDisc()">Edit / Override — hold &amp; appeal</button>';
+  }
+
+  /* ---------- finalize: post all confirmed lines ---------- */
+  function postAllConfirmed(){
+    if(discState!=='confirmed'||discPosted)return;
+    discPosted=true;
+    // post the held row
+    const row=document.getElementById('disc-row-alice');
+    row.classList.remove('discrow');row.classList.add('postedrow');
+    const rc=document.getElementById('rc-disc-alice');rc.className='rcpill posted';rc.textContent='✓ Posted';
+    refreshAlice();
+    const pc=document.getElementById('btnPostConfirmed');pc.disabled=true;pc.textContent='✓ Confirmed lines posted';
+    updateSummary();
+    toast('Posted '+money(DISC_AMT)+' held line · '+money(postedAmount())+' total applied across 3 claims. Ledger updated in Payments &amp; Collections.','ai');
+  }
+
+  updateSummary();
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>
