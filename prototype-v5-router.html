@@ -467,7 +467,7 @@
        biller decides, logged to audit." Click "Approve all" then "File claim".
     4. Filing drops you into "Ongoing" — the SAME case is now filed. Open it.
     5. In follow-up: "Post UHC 835/ERA" -> AI flags the OON UNDERPAYMENT ->
-       "Send to Arbitron" hands the IDR packet over MCP and starts the 30-day clock.
+       "Send to Arbitration" hands the IDR packet over MCP and starts the 30-day clock.
   ============================================================================
 -->
 
@@ -766,7 +766,7 @@
             <div class="ben oonet"><h3>◆ Out-of-network — NSA applies</h3>
               <dl><dt>OON benefits</dt><dd>Active</dd><dt>QPA on file</dt><dd>~$7,697</dd><dt>Timely filing</dt><dd>90 days</dd><dt>NSA protection</dt><dd>Yes · IDR-eligible</dd></dl></div></div>
           <div class="smartnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
-            <span><b>Channel: Commercial OON → IDR feeder.</b> Charges set above QPA by design. Expect a below-QPA remittance — the recovery happens in follow-up via NSA negotiation and IDR (Arbitron). Both clocks tracked in the rail.</span></div>
+            <span><b>Channel: Commercial OON → IDR feeder.</b> Charges set above QPA by design. Expect a below-QPA remittance — the recovery happens in follow-up via NSA negotiation and IDR (Arbitration). Both clocks tracked in the rail.</span></div>
         </div>
       </section>
 
@@ -908,7 +908,7 @@
 <!-- ============================================================= -->
 <main class="wrap screen" id="ongoing">
   <div class="page-head">
-    <div><h1>Ongoing — Claim Follow-Up</h1><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitron.</p></div>
+    <div><h1>Ongoing — Claim Follow-Up</h1><p>Filed claims being worked: payments, out-of-network underpayments, and arbitration handed off to Arbitration.</p></div>
     <div class="searchbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search patient, claim, payer, IDR case…"></div>
     <div class="head-actions"><button class="btn" onclick="toast('835 / ERA import opened')">Import 835 / ERA</button></div>
   </div>
@@ -916,12 +916,12 @@
   <div class="stats stats-gated">
     <div class="stat book"><div class="num">$1.41M</div><div class="lbl">Outstanding A/R</div><div class="sub">214 open claims</div></div>
     <div class="stat oon"><div class="num" style="color:var(--ok)">$386k</div><div class="lbl">Collected this month</div><div class="sub">▲ 18%</div></div>
-    <div class="stat oon"><div class="num">$612k</div><div class="lbl">In arbitration → Arbitron</div><div class="sub">38 OON claims</div></div>
+    <div class="stat oon"><div class="num">$612k</div><div class="lbl">In arbitration → Arbitration</div><div class="sub">38 OON claims</div></div>
     <!-- IDR two-clock exposure carries over into follow-up -->
     <div class="clocktile">
       <div class="ct-h"><span>⏱</span> IDR-clock exposure</div>
       <div class="ct-big">$248,000 aged &gt; 90 days</div>
-      <div class="ct-sub">11 OON claims at an IDR deadline — route to Arbitron before the window closes.</div>
+      <div class="ct-sub">11 OON claims at an IDR deadline — route to Arbitration before the window closes.</div>
       <div class="ct-rows">
         <div class="ct-row idr"><span class="pipdot"></span>IDR initiation · <b>4 claims ≤ 4 biz days</b></div>
         <div class="ct-row filing"><span class="pipdot"></span>Negotiation · <b>7 claims open</b></div>
@@ -949,7 +949,7 @@
           <td><span class="cpill oon" style="font-size:11px">◆ OON → IDR</span></td>
           <td class="mono">$61,240.00</td><td class="mono">$9,210.00</td><td class="mono" style="color:var(--block);font-weight:700">$52,030.00</td>
           <td class="mono">38d</td><td><span class="pill idr">◆ In IDR · negotiating</span></td>
-          <td><span class="pill idr">Sent to Arbitron</span></td><td><span class="openbtn">Open →</span></td></tr>
+          <td><span class="pill idr">Sent to Arbitration</span></td><td><span class="openbtn">Open →</span></td></tr>
         <tr class="rowlink" onclick="toast('Government in-network claim — paid at contracted rate, no IDR path')">
           <td><div class="pat">Example, Marta</div><div class="sub mono">PID 100006</div></td>
           <td><div class="mono">1000004</div><div class="sub mono">06/18/2025</div></td>
@@ -972,7 +972,7 @@
 </main>
 
 <!-- ============================================================= -->
-<!-- SCREEN 4 · FOLLOW-UP WORKSPACE (ERA → underpayment → Arbitron) -->
+<!-- SCREEN 4 · FOLLOW-UP WORKSPACE (ERA → underpayment → Arbitration) -->
 <!-- ============================================================= -->
 <main class="wrap screen" id="followup">
   <div class="crumb"><button onclick="navTo('ongoing')">← Ongoing</button><span>/</span><span id="fuName">Testcase, Alice</span></div>
@@ -989,7 +989,7 @@
       <a href="#sec-act" class="on">Activity</a>
       <a href="#sec-pay">Payments &amp; Posting</a>
       <a href="#sec-doc">Documents</a>
-      <a href="#sec-idr">IDR &amp; Arbitron</a>
+      <a href="#sec-idr">IDR &amp; Arbitration</a>
     </nav>
 
     <div class="sections">
@@ -1024,7 +1024,7 @@
             <tfoot><tr><td>Totals</td><td></td><td>$48,087.92</td><td>$7,697.50</td><td class="paid">$6,158.00</td><td></td><td class="bal">$41,929.92</td></tr></tfoot>
           </table>
           <div class="ai-flag" id="aiFlag"><span class="spark">✦</span>
-            <div><b>Underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> on $48,088 charged (≈13% of billed), below the qualifying payment amount on an out-of-network claim. This is <b>IDR-eligible</b> under the No Surprises Act. Neurology/neuromuscular IDR awards have averaged <b>12–17× the QPA</b>. Recommend opening the negotiation window and routing to Arbitron.
+            <div><b>Underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> on $48,088 charged (≈13% of billed), below the qualifying payment amount on an out-of-network claim. This is <b>IDR-eligible</b> under the No Surprises Act. Neurology/neuromuscular IDR awards have averaged <b>12–17× the QPA</b>. Recommend opening the negotiation window and routing to Arbitration.
               <div class="ai-actions"><button class="btn ai" onclick="confirmUnderpay()">✓ Confirm — open IDR</button><button class="btn" onclick="toast('Marked for manual review — logged')">Not now</button></div>
               <span style="display:block;margin-top:7px;font-size:11px;color:var(--ai-dark);font-style:italic">AI proposes, you decide — logged to audit trail.</span></div></div>
         </div>
@@ -1046,7 +1046,7 @@
       </section>
 
       <section class="sec" id="sec-idr">
-        <div class="sec-head"><h2>IDR &amp; Arbitron</h2></div>
+        <div class="sec-head"><h2>IDR &amp; Arbitration</h2></div>
         <div class="sec-body">
           <div class="idrbox">
             <div class="ih" id="idrHead">◆ No Surprises Act — eligibility &amp; arbitration</div>
@@ -1057,9 +1057,9 @@
                 <div><div class="k">QPA (as received)</div><div class="v mono" id="idrQpa">—</div></div>
                 <div><div class="k">Est. IDR potential</div><div class="v mono" id="idrPot">—</div></div>
               </div>
-              <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Routing to Arbitron hands off a complete IDR case packet — claim, service lines, QPA, CARC/RARC, and the selected proof documents — over the USMON↔Arbitron MCP. Arbitron runs the negotiation and arbitration; USMON stays the system of record.</p>
-              <button class="btn idr" id="arbBtn" onclick="sendArbitron()" disabled>Send to Arbitron →</button>
-              <div class="clock" id="idrClock"><span>⏱</span><span><b>Open negotiation started.</b> 30 business days to negotiate · IDR initiation window (4 biz days) opens after. Arbitron is tracking the clock.</span></div>
+              <p style="font-size:12.5px;color:var(--muted);margin:0 0 12px">Routing to Arbitration hands off a complete IDR case packet — claim, service lines, QPA, CARC/RARC, and the selected proof documents — over the USMON↔Arbitration MCP. Arbitration runs the negotiation and arbitration; USMON stays the system of record.</p>
+              <button class="btn idr" id="arbBtn" onclick="sendArbitration()" disabled>Send to Arbitration →</button>
+              <div class="clock" id="idrClock"><span>⏱</span><span><b>Open negotiation started.</b> 30 business days to negotiate · IDR initiation window (4 biz days) opens after. Arbitration is tracking the clock.</span></div>
             </div>
           </div>
         </div>
@@ -1079,8 +1079,8 @@
         <div class="rgroup"><h3>✦ Next best actions</h3>
           <div class="next active" id="na-1" onclick="postERA()"><span class="n">1</span><div class="txt"><b>Post the UHC ERA</b><span>835 waiting in clearinghouse inbox</span></div></div>
           <div class="next" id="na-2" onclick="if(eraPosted)document.getElementById('arbBtn').scrollIntoView({block:'center'})"><span class="n">2</span><div class="txt"><b>Review AI underpayment flag</b><span>Confirm OON underpayment</span></div></div>
-          <div class="next" id="na-3" onclick="if(eraPosted)buildBundle()"><span class="n">3</span><div class="txt"><b>Assemble proof bundle</b><span>Same packet Arbitron needs</span></div></div>
-          <div class="next" id="na-4" onclick="if(eraPosted)sendArbitron()"><span class="n">4</span><div class="txt"><b>Send to Arbitron</b><span>Route IDR case via MCP</span></div></div>
+          <div class="next" id="na-3" onclick="if(eraPosted)buildBundle()"><span class="n">3</span><div class="txt"><b>Assemble proof bundle</b><span>Same packet Arbitration needs</span></div></div>
+          <div class="next" id="na-4" onclick="if(eraPosted)sendArbitration()"><span class="n">4</span><div class="txt"><b>Send to Arbitration</b><span>Route IDR case via MCP</span></div></div>
         </div>
         <div class="rgroup"><h3>⏱ Clocks</h3>
           <div class="fin" style="font-size:12.5px">
@@ -1349,7 +1349,7 @@
   document.addEventListener('click',(e)=>{const p=document.getElementById('parkpop');if(p&&p.classList.contains('show')&&!p.contains(e.target)&&!e.target.closest('button')) p.classList.remove('show');});
 
   /* ---------- follow-up ---------- */
-  let eraPosted=false, sentToArbitron=false, bundled=false;
+  let eraPosted=false, sentToArbitration=false, bundled=false;
   function addTl(cls,actor,badgeCls,badge,time,msg){
     const item=document.createElement('div');item.className='tl-item';
     item.innerHTML='<div class="tl-dot '+cls+'">'+(cls==='pay'?'$':cls==='idr'?'◆':cls==='ai'?'✦':'•')+'</div><div class="tl-top"><span class="tl-actor">'+actor+'</span><span class="tl-badge '+badgeCls+'">'+badge+'</span><span class="tl-time">'+time+'</span></div><div class="tl-msg">'+msg+'</div>';
@@ -1370,7 +1370,7 @@
     document.getElementById('fuNeg').textContent='30 biz days'; document.getElementById('fuNeg').style.color='var(--idr)';
     document.getElementById('arbBtn').disabled=false;
     addTl('pay','United Healthcare','sys','835 ERA','12/02 08:10 AM','EFT remittance posted — paid <span class="mono">$6,158.00</span> of $48,088. 4 lines coded <span class="mono">IDR</span>.');
-    addTl('ai','Claude','auto','AI','12/02 08:11 AM','Flagged out-of-network <b>underpayment</b> (≈13% of billed, below QPA) — IDR-eligible. Recommended routing to Arbitron.');
+    addTl('ai','Claude','auto','AI','12/02 08:11 AM','Flagged out-of-network <b>underpayment</b> (≈13% of billed, below QPA) — IDR-eligible. Recommended routing to Arbitration.');
     document.getElementById('na-1').classList.add('done');
     document.getElementById('na-2').classList.add('active');
     document.getElementById('na-3').classList.add('active');
@@ -1389,20 +1389,20 @@
     bundled=true;
     document.getElementById('bundleBtn').textContent='Proof PDF ready ✓';
     document.getElementById('na-3').classList.add('done');
-    addTl('bot','Document Service','sys','Bundle','12/02 08:14 AM','Combined proof PDF assembled — VOB, reader &amp; tech reports, face sheet, CMS-1500, EOB. Ready for Arbitron.');
-    toast('Combined proof PDF created — the same packet Arbitron will use');
+    addTl('bot','Document Service','sys','Bundle','12/02 08:14 AM','Combined proof PDF assembled — VOB, reader &amp; tech reports, face sheet, CMS-1500, EOB. Ready for Arbitration.');
+    toast('Combined proof PDF created — the same packet Arbitration will use');
   }
-  function sendArbitron(){
+  function sendArbitration(){
     if(!eraPosted){toast('Post the ERA first');return;}
-    if(sentToArbitron)return; sentToArbitron=true;
+    if(sentToArbitration)return; sentToArbitration=true;
     if(!bundled)buildBundle();
-    document.getElementById('arbBtn').textContent='Sent to Arbitron ✓'; document.getElementById('arbBtn').disabled=true;
-    document.getElementById('idrHead').textContent='◆ In IDR — routed to Arbitron · case ARB-26-4471';
+    document.getElementById('arbBtn').textContent='Sent to Arbitration ✓'; document.getElementById('arbBtn').disabled=true;
+    document.getElementById('idrHead').textContent='◆ In IDR — routed to Arbitration · case ARB-26-4471';
     document.getElementById('idrClock').classList.add('show');
-    document.getElementById('fuMasterLabel').textContent='In IDR · Arbitron ARB-26-4471';
+    document.getElementById('fuMasterLabel').textContent='In IDR · Arbitration ARB-26-4471';
     document.getElementById('na-4').classList.add('done');
-    addTl('idr','Arbitron','sys','MCP','12/02 08:15 AM','IDR case packet received over USMON↔Arbitron MCP — case <span class="mono">ARB-26-4471</span>. Open negotiation clock started (30 business days).');
-    toast('IDR case packet sent to Arbitron over MCP — case ARB-26-4471','idr');
+    addTl('idr','Arbitration','sys','MCP','12/02 08:15 AM','IDR case packet received over USMON↔Arbitration MCP — case <span class="mono">ARB-26-4471</span>. Open negotiation clock started (30 business days).');
+    toast('IDR case packet sent to Arbitration over MCP — case ARB-26-4471','idr');
   }
 
   /* keyboard fast path: C = confirm next AI field (cockpit only) */

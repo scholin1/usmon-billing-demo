@@ -204,7 +204,7 @@
   60-SECOND PRESENTER PATH:
     1. Open on Testcase, Alice — claim 1000001, United Healthcare (out-of-network).
        The purple ✦ AI flag up top: UHC paid $6,158 of $48,088 (~13%, below QPA) —
-       an OON underpayment, IDR-eligible. Recommend Pro/Tech negotiation or Arbitron.
+       an OON underpayment, IDR-eligible. Recommend Pro/Tech negotiation or Arbitration.
     2. Look at the dense per-CPT posting grid. Each service line has its own
        payment postings — note lines 95939 and 95955 each show TWO postings
        (an initial 11/05 below-QPA payment, then a later 12/01 posting after a
@@ -214,7 +214,7 @@
        Insurance Paid / Balance and the Totals + summary recompute live.
     4. Set Pro Claim Negotiation and Tech Claim Negotiation amounts + dates —
        the professional vs technical OON recovery levers.
-    5. Click "Send to Arbitron" — the IDR packet is handed off, the 30-day
+    5. Click "Send to Arbitration" — the IDR packet is handed off, the 30-day
        negotiation clock starts. (Supervisor toggle adds a collections
        oversight panel — $ recovered, recovery rate, aged balance.)
   ============================================================================
@@ -262,7 +262,7 @@
   <!-- AI underpayment flag (canonical ✦) -->
   <div class="ai-flag" id="aiFlag"><span class="spark" id="aiFlagSpark">✦</span>
     <div>
-      <b>Out-of-network underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> of <b>$48,088</b> charged (<b>≈13%</b>, below the qualifying payment amount). This claim is <b>IDR-eligible</b> under the No Surprises Act. Recommend Pro/Tech negotiation or routing to Arbitron. AI also pre-coded the remittance <b>Insurance Comments = BELOW QPA</b> on the affected lines (purple) for you to confirm.
+      <b>Out-of-network underpayment detected — not a denial.</b> UHC paid <b>$6,158</b> of <b>$48,088</b> charged (<b>≈13%</b>, below the qualifying payment amount). This claim is <b>IDR-eligible</b> under the No Surprises Act. Recommend Pro/Tech negotiation or routing to Arbitration. AI also pre-coded the remittance <b>Insurance Comments = BELOW QPA</b> on the affected lines (purple) for you to confirm.
       <div class="ai-actions" id="aiFlagActions">
         <button class="btn ai" onclick="confirmUnderpay()">✓ Confirm — open IDR track</button>
         <button class="btn" onclick="dismissUnderpay()">Dismiss</button>
@@ -356,7 +356,7 @@
               <option>CO-16 · Missing / incomplete information</option>
               <option>OA-23 · Prior payer adjustment</option>
             </select></div>
-          <div class="f col4"><label>Notes</label><textarea id="collNotes" placeholder="Collections notes…">11/05 EFT posted — UHC underpaid all lines below QPA. 12/01 refile released a partial adjustment. Opening NSA negotiation on Pro + Tech components; escalate to Arbitron if not resolved in 30 biz days.</textarea></div>
+          <div class="f col4"><label>Notes</label><textarea id="collNotes" placeholder="Collections notes…">11/05 EFT posted — UHC underpaid all lines below QPA. 12/01 refile released a partial adjustment. Opening NSA negotiation on Pro + Tech components; escalate to Arbitration if not resolved in 30 biz days.</textarea></div>
         </div>
       </div>
       <!-- action bar -->
@@ -367,7 +367,7 @@
         <button class="btn" onclick="openDocuments()">📎 Documents</button>
         <span class="grow"></span>
         <button class="btn danger" onclick="closeClaim()">Move to Closed Claims Folder</button>
-        <button class="btn idr" onclick="sendArbitron()">Send to Arbitron →</button>
+        <button class="btn idr" onclick="sendArbitration()">Send to Arbitration →</button>
       </div>
     </div>
 
@@ -389,7 +389,7 @@
         <div class="track"><div class="fill" id="recFill" style="width:12.8%"></div></div>
         <div class="lbl"><span>Recovery rate</span><span><b id="recPct">12.8%</b> of charged collected</span></div>
       </div>
-      <div class="idrclock" id="idrClock"><span>⏱</span><span><b>Sent to Arbitron.</b> Open negotiation started — 30 business days; the IDR initiation window opens after. Arbitron is tracking the clock.</span></div>
+      <div class="idrclock" id="idrClock"><span>⏱</span><span><b>Sent to Arbitration.</b> Open negotiation started — 30 business days; the IDR initiation window opens after. Arbitration is tracking the clock.</span></div>
     </div>
   </div>
 </main>
@@ -644,12 +644,12 @@
     bumpAudit();
     toast('Claim closed — moved to Closed folder','');
   }
-  function sendArbitron(){
+  function sendArbitration(){
     const m=document.getElementById('masterStatus');
-    m.className='master idr';document.getElementById('masterIcon').textContent='◆';document.getElementById('masterLabel').textContent='In IDR · Arbitron';
+    m.className='master idr';document.getElementById('masterIcon').textContent='◆';document.getElementById('masterLabel').textContent='In IDR · Arbitration';
     document.getElementById('idrClock').classList.add('show');
     bumpAudit();
-    toast('IDR packet sent to Arbitron — case opened, 30-day negotiation clock started','idr');
+    toast('IDR packet sent to Arbitration — case opened, 30-day negotiation clock started','idr');
   }
 
   /* ---------- init ---------- */
