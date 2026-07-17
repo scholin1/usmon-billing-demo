@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro — Reports & AI Custom Reports (prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    /* revenue channels */
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;   /* Commercial OON -> IDR feeder */
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;                          /* Government in-network */
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;  /* Hospital tech-fee invoice */
+    --park:#9a3412; --park-tint:#fff4ed; --park-line:#fed7aa;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  .tnum{font-variant-numeric:tabular-nums}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+  #whoLabel{white-space:nowrap}
+  /* role toggle (Biller <-> Supervisor) — from Biller Review */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:22px 20px 80px}
+
+  .page-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .page-head h1{font-size:21px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .page-head p{margin:3px 0 0;color:var(--muted);font-size:13px;max-width:640px}
+  .head-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.ghost{background:none;border-color:transparent;color:var(--primary)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}.btn.ai:hover{background:var(--ai-dark);border-color:var(--ai-dark)}
+  .btn.ai:disabled{background:#cbd5e1;border-color:#cbd5e1;cursor:not-allowed}
+
+  /* ===== ROLE GATING — default persona = Supervisor ===== */
+  body.role-biller .sup-only{display:none}
+
+  /* supervisor context strip */
+  .sup-note{display:none;align-items:center;gap:9px;background:var(--gov-tint);border:1px solid var(--gov-line);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:var(--gov);font-weight:600}
+  body.role-super .sup-note{display:flex}
+  .sup-note .badge{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line);border-radius:5px;padding:2px 7px}
+
+  /* AI custom-report banner (the centerpiece call-to-action) */
+  .aicta{display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,var(--ai-tint),#f7f4ff 60%,#fff);border:1px solid var(--ai-line);border-radius:12px;padding:16px 18px;margin-bottom:20px;box-shadow:var(--shadow)}
+  .aicta .spark{flex:none;width:40px;height:40px;border-radius:10px;background:var(--ai);color:#fff;display:grid;place-items:center;font-size:20px}
+  .aicta .txt{flex:1;min-width:180px}
+  .aicta .txt b{font-size:14.5px;color:var(--ai-dark);display:block}
+  .aicta .txt span{font-size:12.5px;color:#3c2b8a}
+  .aicta .btn{flex:none}
+
+  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:800;margin:0 0 10px}
+
+  /* standard report cards */
+  .rcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+  @media(max-width:900px){.rcards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.rcards{grid-template-columns:1fr}}
+  .rcard{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 15px;display:flex;gap:12px;align-items:flex-start;transition:.14s;cursor:pointer}
+  .rcard:hover{border-color:var(--primary-line);transform:translateY(-1px)}
+  .rcard.on{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-tint),var(--shadow)}
+  .rcard .rico{flex:none;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:16px;background:var(--primary-tint);color:var(--primary-dark)}
+  .rcard .rico.oon{background:var(--idr-tint);color:var(--idr-dark)}
+  .rcard .rico.hosp{background:var(--hosp-tint);color:var(--hosp-dark)}
+  .rcard .rico.warn{background:var(--warn-tint);color:var(--warn)}
+  .rcard .rico.ok{background:var(--ok-tint);color:var(--ok)}
+  .rcard .rname{font-weight:700;font-size:13.5px;line-height:1.25}
+  .rcard .rdesc{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+
+  /* report output panel */
+  .rpt-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:70px}
+  .rpt-panel.ai{border-color:var(--ai-line);box-shadow:0 0 0 3px var(--ai-tint),var(--shadow)}
+  .rpt-head{display:flex;align-items:flex-start;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap}
+  .rpt-panel.ai .rpt-head{background:linear-gradient(180deg,var(--ai-tint),#faf9ff)}
+  .rpt-head h2{margin:0;font-size:16px;font-weight:700;letter-spacing:-.2px}
+  .rpt-head .asof{font-size:11.5px;color:var(--faint);font-weight:600;margin-top:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .rpt-head .stamp{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:var(--ai-dark);background:#fff;border:1px solid var(--ai-line);border-radius:6px;padding:2px 8px}
+  .rpt-head .r-act{margin-left:auto;display:flex;gap:7px;align-items:center}
+  .rpt-body{padding:18px}
+
+  /* KPI tiles */
+  .kpirow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  @media(max-width:820px){.kpirow{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--faint)}
+  .kpi.oon::before{background:var(--idr)} .kpi.hosp::before{background:var(--hosp)} .kpi.gov::before{background:var(--gov)}
+  .kpi.ok::before{background:var(--ok)} .kpi.warn::before{background:var(--warn)} .kpi.block::before{background:var(--block)} .kpi.pri::before{background:var(--primary)}
+  .kpi .knum{font-size:22px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+  .kpi.oon .knum{color:var(--idr)} .kpi.hosp .knum{color:var(--hosp)} .kpi.ok .knum{color:var(--ok)} .kpi.block .knum{color:var(--block)} .kpi.warn .knum{color:var(--warn)}
+  .kpi .klbl{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.25}
+
+  /* chart block */
+  .chartwrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+  .chartwrap svg{max-width:100%;height:auto}
+  .chart-legend{display:flex;flex-direction:column;gap:8px;font-size:12.5px}
+  .chart-legend .lg{display:flex;align-items:center;gap:8px}
+  .chart-legend .sw{width:11px;height:11px;border-radius:3px;flex:none}
+  .chart-legend .lv{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums;padding-left:14px}
+  .chart-legend .ln{color:var(--muted)}
+  .cx-val{font:700 11px var(--sans);fill:var(--ink)}
+  .cx-lbl{font:600 11px var(--sans);fill:var(--muted)}
+  .cx-axis{font:600 10px var(--sans);fill:var(--faint)}
+  .cx-big{font:800 19px var(--sans);fill:var(--ink)}
+  .cx-sub{font:600 10.5px var(--sans);fill:var(--muted)}
+
+  /* report tables */
+  .tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+  table.rpt{width:100%;border-collapse:collapse;font-size:12.5px;min-width:440px}
+  table.rpt thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap;background:var(--surface-2)}
+  table.rpt thead th.num{text-align:right}
+  table.rpt tbody td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle}
+  table.rpt tbody td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  table.rpt tbody tr:last-child td{border-bottom:none}
+  table.rpt tbody tr.hi{background:var(--primary-tint)}
+  table.rpt tfoot td{padding:11px 13px;font-weight:800;border-top:2px solid var(--line-strong);font-variant-numeric:tabular-nums}
+  table.rpt tfoot td.num{text-align:right;font-family:var(--mono)}
+  .cellname{font-weight:600}
+  .barcell{display:inline-flex;align-items:center;gap:8px;justify-content:flex-end;width:100%}
+  .barcell .track{width:60px;height:6px;border-radius:4px;background:#eef2f7;overflow:hidden;flex:none}
+  .barcell .fill{height:100%;border-radius:4px;background:var(--ok)}
+  .barcell .fill.mid{background:var(--warn)} .barcell .fill.low{background:var(--block)}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .pill.ok{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .pill.warn{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .pill.block{background:var(--block-tint);color:var(--block);border:1px solid var(--block-line)}
+  .pill.oon{background:var(--idr-tint);color:var(--idr-dark);border:1px solid var(--idr-line)}
+  .rpt-foot-note{font-size:11px;color:var(--faint);margin-top:12px;font-style:italic}
+
+  /* ===== AI custom-report modal (Ask-Me look) ===== */
+  .modal-back{position:fixed;inset:0;background:rgba(16,32,46,.5);display:none;align-items:flex-start;justify-content:center;z-index:70;padding:44px 20px;overflow:auto}
+  .modal-back.show{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 70px rgba(16,32,46,.34);max-width:600px;width:100%;overflow:hidden}
+  .modal-head{display:flex;align-items:center;gap:11px;padding:15px 18px;background:linear-gradient(135deg,var(--ai),#8b6bff);color:#fff}
+  .modal-head .sp{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:16px}
+  .modal-head b{font-size:15px;display:block;line-height:1.15}
+  .modal-head em{font-size:11.5px;opacity:.92;font-style:normal}
+  .modal-head .mx{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;font-weight:700;line-height:1;padding:2px 6px;border-radius:6px;opacity:.9}
+  .modal-head .mx:hover{opacity:1;background:rgba(255,255,255,.15)}
+  .modal-body{padding:16px 18px}
+  .ask-note{font-size:11.5px;color:var(--faint);margin:0 0 12px;display:flex;align-items:center;gap:6px}
+  .ask-label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;margin-bottom:6px}
+  #askText{width:100%;border:1px solid var(--ai-line);border-radius:9px;padding:11px 13px;font:400 13.5px var(--sans);resize:vertical;min-height:70px;color:var(--ink);background:#fff}
+  #askText:focus{outline:none;border-color:var(--ai);box-shadow:0 0 0 3px var(--ai-tint)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px}
+  .chip{background:var(--ai-tint);border:1px solid var(--ai-line);color:var(--ai-dark);border-radius:999px;padding:6px 12px;font:600 12px var(--sans);cursor:pointer;transition:.12s;text-align:left}
+  .chip:hover{background:#e5dfff;border-color:var(--ai)}
+  .chip .cq{opacity:.65;margin-right:5px;font-weight:800}
+  .modal-foot{padding:13px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+  .modal-foot .demo-tag{font-size:11px;color:var(--faint);font-style:italic;display:flex;align-items:center;gap:5px}
+  .modal-foot .grow{flex:1}
+
+  /* generating animation */
+  .gen{padding:8px 2px}
+  .gen h3{margin:0 0 4px;font-size:14px;font-weight:700;color:var(--ai-dark)}
+  .gen .gq{font-size:12.5px;color:var(--muted);margin:0 0 16px;font-style:italic}
+  .gsteps{display:flex;flex-direction:column;gap:11px}
+  .gstep{display:flex;align-items:center;gap:11px;font-size:13px;color:var(--faint);transition:.2s}
+  .gstep .gic{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center;font-size:11px;color:transparent}
+  .gstep.run{color:var(--ink)}
+  .gstep.run .gic{border-color:var(--ai);border-top-color:transparent;animation:spin .7s linear infinite}
+  .gstep.done{color:var(--ink);font-weight:600}
+  .gstep.done .gic{border-color:var(--ok);background:var(--ok);color:#fff}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.gstep.run .gic{animation:none;border-top-color:var(--ai)}}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:80;max-width:460px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.ai .ic{background:var(--ai)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro — prototype · REPORTS + AI CUSTOM REPORTS (client demo, synthetic data only)
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. Land on Reports (Supervisor view). Point at the six STANDARD report cards
+       and the "as of" date on the open report. "These are the canned reports
+       every billing shop expects — A/R aging, recovery, IDR pipeline, denials,
+       productivity, collections."
+    2. Click a different standard card, e.g. "Recovery by Channel" — it renders
+       instantly: a data table + a tasteful inline chart. "One click, real layout."
+    3. Now the pivot: "But reports are NOT fixed." Click the purple
+       "✦ Ask for a custom report" button — an AI report builder opens, styled
+       like our Ask-Me assistant (USMON AI · Bedrock).
+    4. Click a suggested prompt chip (e.g. "OON claims aged over 90 days, by payer")
+       — or type your own. Watch it GENERATE: Reading claims -> aggregating ->
+       building chart (~1.2s), then a brand-new report drops onto the page,
+       stamped "✦ Generated by USMON AI (Bedrock) · just now".
+    5. Emphasize: any question produces a sensible report on the spot — the point
+       is the client is not limited to a fixed menu. (All figures synthetic.)
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="prototype-v5-router.html">New Insurance Billing</a>
+    <a href="prototype-post-payments.html">Ongoing</a>
+    <a href="#" onclick="toast('Folders isn’t part of this Reports prototype');return false">Folders</a>
+    <a href="#" id="nav-reports" class="on" onclick="return false">Reports</a>
+    <a href="#" onclick="toast('Manage isn’t part of this Reports prototype');return false">Manage</a>
+  </nav>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="Demo view role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="whoLabel">Dr. Michael Scholin · Supervisor</span>
+    <span class="avatar" id="whoAvatar">MS</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div>
+      <h1>Reports <span class="tag" style="vertical-align:middle;background:var(--ai-tint);color:var(--ai-dark)">Standard + AI custom</span></h1>
+      <p>Run the standard reports every billing operation expects — or ask USMON AI to build a custom report on the spot. Reports aren't a fixed menu.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn" onclick="toast('Export queued — this report would download as CSV / PDF')">Export</button>
+      <button class="btn primary" onclick="toast('Schedule set — this report would email weekly')">Schedule</button>
+    </div>
+  </div>
+
+  <div class="sup-note">
+    <span class="badge">Supervisor view</span>
+    <span>Analytics &amp; oversight reports. Billers can still open reports, but productivity &amp; team reports are supervisor-focused.</span>
+  </div>
+
+  <!-- AI custom-report call to action (centerpiece) -->
+  <div class="aicta">
+    <div class="spark">✦</div>
+    <div class="txt">
+      <b>Reports aren't fixed — ask for what you need</b>
+      <span>Describe any report in plain English and USMON AI builds it live: a table and a chart, in seconds.</span>
+    </div>
+    <button class="btn ai" onclick="openAsk()" style="font-size:14px;padding:11px 18px">✦ Ask for a custom report</button>
+  </div>
+
+  <p class="section-label">Standard reports</p>
+  <div class="rcards" id="rcards">
+    <button class="rcard on" id="card-ar" onclick="renderStandard('ar')">
+      <span class="rico warn">📊</span>
+      <span><span class="rname">A/R Aging</span><span class="rdesc">Outstanding balance by 0–30 / 31–60 / 61–90 / &gt;90 day buckets.</span></span>
+    </button>
+    <button class="rcard" id="card-channel" onclick="renderStandard('channel')">
+      <span class="rico oon">◆</span>
+      <span><span class="rname">Recovery by Channel</span><span class="rdesc">Dollars recovered across OON→IDR, government, and hospital tech-fee.</span></span>
+    </button>
+    <button class="rcard" id="card-idr" onclick="renderStandard('idr')">
+      <span class="rico oon">⚖</span>
+      <span><span class="rname">IDR Pipeline &amp; Win Rate</span><span class="rdesc">Claims in negotiation, at IDR, and settled — plus win rate.</span></span>
+    </button>
+    <button class="rcard" id="card-denial" onclick="renderStandard('denial')">
+      <span class="rico warn">⚠</span>
+      <span><span class="rname">Denial Rate &amp; Top Reasons</span><span class="rdesc">Denial-rate trend and the leading CARC denial reasons.</span></span>
+    </button>
+    <button class="rcard sup-only" id="card-prod" onclick="renderStandard('prod')">
+      <span class="rico">👥</span>
+      <span><span class="rname">Biller Productivity</span><span class="rdesc">Claims/day, avg time per claim, and active % by biller.</span></span>
+    </button>
+    <button class="rcard" id="card-collections" onclick="renderStandard('collections')">
+      <span class="rico ok">$</span>
+      <span><span class="rname">Collections Summary</span><span class="rdesc">Charged vs allowed vs collected vs balance, this month.</span></span>
+    </button>
+  </div>
+
+  <div class="rpt-panel" id="reportOutput" aria-live="polite"></div>
+</main>
+
+<!-- ===== AI custom-report modal ===== -->
+<div class="modal-back" id="askModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Ask for a custom report">
+    <div class="modal-head">
+      <span class="sp">✦</span>
+      <div><b>Ask for a custom report</b><em>USMON AI · Bedrock</em></div>
+      <button class="mx" onclick="closeAsk()" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="askBody">
+      <p class="ask-note">✦ Describe the report you want — USMON AI turns it into a table and a chart.</p>
+      <div class="ask-label">Your request</div>
+      <textarea id="askText" placeholder="e.g. Show underpaid out-of-network claims eligible for IDR, ranked by dollar amount…"></textarea>
+      <div class="ask-label" style="margin-top:14px">Suggested prompts</div>
+      <div class="chips" id="askChips"></div>
+    </div>
+    <div class="modal-foot" id="askFoot">
+      <span class="demo-tag">✦ Synthetic demo — results are illustrative</span>
+      <span class="grow"></span>
+      <button class="btn ai" id="askGo" onclick="generateFromText()">Generate report →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+  /* ---------- shared helpers ---------- */
+  function toast(m,kind){const t=document.getElementById('toast');t.className='toast'+(kind?' '+kind:'');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},3200);}
+
+  function setRole(role){
+    const sup=role==='supervisor';
+    document.body.classList.toggle('role-super',sup);
+    document.body.classList.toggle('role-biller',!sup);
+    document.getElementById('rt-super').classList.toggle('on',sup);
+    document.getElementById('rt-biller').classList.toggle('on',!sup);
+    document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Supervisor':'Sample, Dana · Biller';
+    document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
+    /* if a supervisor-only report is open in biller mode, fall back to A/R Aging */
+    if(!sup && curReport==='prod'){renderStandard('ar');}
+    toast(sup?'Supervisor view — team & productivity reports visible':'Biller view — team stats hidden; reports still available','');
+  }
+
+  /* ---------- chart builders (inline SVG, self-contained) ---------- */
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+
+  // vertical bar chart. items: [{label,value,disp,color}]
+  function svgBarsV(items,opts){
+    opts=opts||{};
+    var w=opts.w||540,h=opts.h||210,padX=18,padTop=22,padBot=30;
+    var max=Math.max.apply(null,items.map(function(i){return i.value;}))||1;
+    var n=items.length,gap=opts.gap||20;
+    var bw=(w-padX*2-gap*(n-1))/n;
+    var base=h-padBot, top=padTop, span=base-top;
+    var s='';
+    s+='<line x1="'+padX+'" y1="'+base+'" x2="'+(w-padX)+'" y2="'+base+'" stroke="var(--line-strong)" stroke-width="1"/>';
+    items.forEach(function(it,i){
+      var bh=Math.max(2,span*(it.value/max));
+      var x=padX+i*(bw+gap), y=base-bh;
+      s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="4" fill="'+(it.color||'var(--primary)')+'"/>';
+      s+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" text-anchor="middle" class="cx-val">'+esc(it.disp)+'</text>';
+      s+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" class="cx-lbl">'+esc(it.label)+'</text>';
+    });
+    return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="Bar chart">'+s+'</svg>';
+  }
+
+  // horizontal bar chart. items:[{label,value,disp,color}]
+  function svgBarsH(items,opts){
+    opts=opts||{};
+    var w=opts.w||540,rowH=opts.rowH||34,labelW=opts.labelW||150,padR=70;
+    var h=items.length*rowH+10;
+    var max=Math.max.apply(null,items.map(function(i){return i.value;}))||1;
+    var trackX=labelW, trackW=w-labelW-padR;
+    var s='';
+    items.forEach(function(it,i){
+      var y=i*rowH+6, bw=Math.max(2,trackW*(it.value/max)), cy=y+rowH/2-4;
+      s+='<text x="'+(labelW-10)+'" y="'+(cy+4)+'" text-anchor="end" class="cx-lbl">'+esc(it.label)+'</text>';
+      s+='<rect x="'+trackX+'" y="'+cy+'" width="'+trackW+'" height="13" rx="6" fill="#eef2f7"/>';
+      s+='<rect x="'+trackX+'" y="'+cy+'" width="'+bw.toFixed(1)+'" height="13" rx="6" fill="'+(it.color||'var(--primary)')+'"/>';
+      s+='<text x="'+(trackX+bw+8).toFixed(1)+'" y="'+(cy+11)+'" class="cx-val">'+esc(it.disp)+'</text>';
+    });
+    return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="Bar chart">'+s+'</svg>';
+  }
+
+  // donut. items:[{label,value,color}]
+  function svgDonut(items,opts){
+    opts=opts||{};
+    var size=opts.size||186,r=64,cx=size/2,cy=size/2,sw=27;
+    var total=items.reduce(function(a,i){return a+i.value;},0)||1;
+    var C=2*Math.PI*r,off=0,segs='';
+    items.forEach(function(it){
+      var len=(it.value/total)*C;
+      segs+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+it.color+'" stroke-width="'+sw+'" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+      off+=len;
+    });
+    var center='<text x="'+cx+'" y="'+(cy-1)+'" text-anchor="middle" class="cx-big">'+esc(opts.centerTop||'')+'</text>'+
+               '<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" class="cx-sub">'+esc(opts.centerBot||'')+'</text>';
+    return '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" role="img" aria-label="Donut chart">'+segs+center+'</svg>';
+  }
+
+  // area/line trend. pts:[{label,value,disp}]
+  function svgArea(pts,opts){
+    opts=opts||{};
+    var w=opts.w||560,h=opts.h||200,padX=34,padTop=20,padBot=28;
+    var color=opts.color||'var(--primary)';
+    var vals=pts.map(function(p){return p.value;});
+    var max=(opts.max!=null?opts.max:Math.max.apply(null,vals)*1.12)||1;
+    var min=(opts.min!=null?opts.min:0);
+    var base=h-padBot,top=padTop,span=base-top,innerW=w-padX*2,n=pts.length;
+    function X(i){return padX+(n===1?innerW/2:innerW*(i/(n-1)));}
+    function Y(v){return base-span*((v-min)/(max-min||1));}
+    var line='',area='M '+X(0)+' '+base;
+    pts.forEach(function(p,i){var x=X(i),y=Y(p.value);line+=(i?' L ':'M ')+x.toFixed(1)+' '+y.toFixed(1);area+=' L '+x.toFixed(1)+' '+y.toFixed(1);});
+    area+=' L '+X(n-1)+' '+base+' Z';
+    var grid='';
+    for(var g=0;g<=3;g++){var gy=top+span*(g/3);grid+='<line x1="'+padX+'" y1="'+gy.toFixed(1)+'" x2="'+(w-padX)+'" y2="'+gy.toFixed(1)+'" stroke="var(--line)" stroke-width="1"/>';}
+    var dots='',labels='';
+    pts.forEach(function(p,i){var x=X(i),y=Y(p.value);
+      dots+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="'+color+'" stroke="#fff" stroke-width="1.5"/>';
+      if(p.disp)dots+='<text x="'+x.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" text-anchor="middle" class="cx-val">'+esc(p.disp)+'</text>';
+      labels+='<text x="'+x.toFixed(1)+'" y="'+(h-9)+'" text-anchor="middle" class="cx-lbl">'+esc(p.label)+'</text>';
+    });
+    return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="Trend chart">'+
+      grid+
+      '<path d="'+area+'" fill="'+color+'" opacity="0.12"/>'+
+      '<path d="'+line+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'+
+      dots+labels+'</svg>';
+  }
+
+  function legend(items){
+    return '<div class="chart-legend">'+items.map(function(it){
+      return '<div class="lg"><span class="sw" style="background:'+it.color+'"></span><span class="ln">'+esc(it.label)+'</span><span class="lv">'+esc(it.disp)+'</span></div>';
+    }).join('')+'</div>';
+  }
+
+  /* ---------- generic report painter ---------- */
+  // cfg:{title,sub,ai,kpis:[{num,lbl,tone}],chart:html,table:{cols,numFrom,rows,foot},note}
+  function paint(cfg){
+    var panel=document.getElementById('reportOutput');
+    panel.className='rpt-panel'+(cfg.ai?' ai':'');
+    var kpis='';
+    if(cfg.kpis&&cfg.kpis.length){
+      kpis='<div class="kpirow">'+cfg.kpis.map(function(k){
+        return '<div class="kpi '+(k.tone||'')+'"><div class="knum">'+esc(k.num)+'</div><div class="klbl">'+esc(k.lbl)+'</div></div>';
+      }).join('')+'</div>';
+    }
+    var chart=cfg.chart?'<div class="chartwrap">'+cfg.chart+'</div>':'';
+    var table='';
+    if(cfg.table){
+      var nf=cfg.table.numFrom==null?1:cfg.table.numFrom;
+      var thead='<tr>'+cfg.table.cols.map(function(c,i){return '<th'+(i>=nf?' class="num"':'')+'>'+c+'</th>';}).join('')+'</tr>';
+      var tbody=cfg.table.rows.map(function(r){
+        return '<tr'+(r.hi?' class="hi"':'')+'>'+r.cells.map(function(cell,i){return '<td'+(i>=nf?' class="num"':'')+'>'+cell+'</td>';}).join('')+'</tr>';
+      }).join('');
+      var tfoot='';
+      if(cfg.table.foot){
+        tfoot='<tfoot><tr>'+cfg.table.foot.map(function(cell,i){return '<td'+(i>=nf?' class="num"':'')+'>'+cell+'</td>';}).join('')+'</tr></tfoot>';
+      }
+      table='<div class="tbl-scroll"><table class="rpt"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody>'+tfoot+'</table></div>';
+    }
+    var stamp=cfg.ai
+      ? '<span class="stamp">✦ Generated by USMON AI (Bedrock) · just now</span>'
+      : '';
+    panel.innerHTML=
+      '<div class="rpt-head"><div><h2>'+esc(cfg.title)+'</h2>'+
+        '<div class="asof">'+(cfg.sub?esc(cfg.sub):'')+stamp+'</div></div>'+
+        '<div class="r-act">'+
+          (cfg.ai?'<button class="btn sm ai" onclick="openAsk()">✦ Refine</button>':'')+
+          '<button class="btn sm" onclick="toast(\'Export queued — CSV / PDF\')">Export</button>'+
+        '</div></div>'+
+      '<div class="rpt-body">'+kpis+chart+table+
+        (cfg.note?'<p class="rpt-foot-note">'+esc(cfg.note)+'</p>':'')+
+      '</div>';
+    return panel;
+  }
+
+  function inbar(pct,cls){return '<span class="barcell"><span class="track"><span class="fill'+(cls?' '+cls:'')+'" style="width:'+pct+'%"></span></span>'+pct+'%</span>';}
+
+  /* ---------- STANDARD reports ---------- */
+  var curReport='ar';
+  var AS_OF='as of Jul 17, 2026';
+
+  var STANDARD={
+    ar:function(){
+      var b=[
+        {label:'0–30',value:842300,disp:'$842.3K',color:'var(--ok)'},
+        {label:'31–60',value:611900,disp:'$611.9K',color:'var(--primary)'},
+        {label:'61–90',value:427500,disp:'$427.5K',color:'var(--warn)'},
+        {label:'>90',value:906200,disp:'$906.2K',color:'var(--block)'}
+      ];
+      return {title:'A/R Aging',sub:AS_OF+' · all channels',
+        kpis:[
+          {num:'$2.79M',lbl:'Total outstanding A/R',tone:'pri'},
+          {num:'1,496',lbl:'Open claims',tone:''},
+          {num:'$906.2K',lbl:'Aged >90 days',tone:'block'},
+          {num:'32.5%',lbl:'A/R over 90 days',tone:'warn'}
+        ],
+        chart:svgBarsV(b,{w:520,h:210}),
+        table:{cols:['Aging bucket','Balance','Claims','Avg / claim','% of A/R'],numFrom:1,rows:[
+          {cells:['<span class="cellname">0–30 days</span>','$842,300','512','$1,645','30.2%']},
+          {cells:['<span class="cellname">31–60 days</span>','$611,900','388','$1,577','21.9%']},
+          {cells:['<span class="cellname">61–90 days</span>','$427,500','241','$1,774','15.3%']},
+          {cells:['<span class="cellname">Over 90 days</span>','$906,200','355','$2,553','32.5%'],hi:true}
+        ],foot:['Total','$2,787,900','1,496','$1,864','100%']},
+        note:'Out-of-network claims naturally carry a heavier >90-day tail while negotiation / IDR plays out.'};
+    },
+    channel:function(){
+      var d=[
+        {label:'Commercial OON → IDR',value:2940000,color:'var(--idr)',disp:'$2.94M'},
+        {label:'Government in-network',value:318000,color:'var(--gov)',disp:'$318K'},
+        {label:'Hospital tech-fee',value:611000,color:'var(--hosp)',disp:'$611K'}
+      ];
+      return {title:'Recovery by Channel',sub:AS_OF+' · quarter to date',
+        kpis:[
+          {num:'$3.87M',lbl:'Total recovered QTD',tone:'ok'},
+          {num:'$2.94M',lbl:'Commercial OON → IDR',tone:'oon'},
+          {num:'$318K',lbl:'Government in-network',tone:'gov'},
+          {num:'$611K',lbl:'Hospital tech-fee',tone:'hosp'}
+        ],
+        chart:svgDonut(d,{centerTop:'$3.87M',centerBot:'recovered'})+legend(d),
+        table:{cols:['Channel','Recovered','Claims','Avg / claim','Share'],numFrom:1,rows:[
+          {cells:['<span class="pill oon">◆ Commercial OON → IDR</span>','$2,940,000','1,182','$2,488','76.0%'],hi:true},
+          {cells:['<span class="pill" style="background:var(--gov-tint);color:var(--gov);border:1px solid var(--gov-line)">Government in-network</span>','$318,000','206','$1,544','8.2%']},
+          {cells:['<span class="pill" style="background:var(--hosp-tint);color:var(--hosp-dark);border:1px solid var(--hosp-line)">Hospital tech-fee</span>','$611,000','412','$1,483','15.8%']}
+        ],foot:['Total','$3,869,000','1,800','$2,149','100%']},
+        note:'~99% of the book is out-of-network, so the commercial OON → IDR channel drives most recovered dollars.'};
+    },
+    idr:function(){
+      var b=[
+        {label:'In negotiation',value:148,disp:'148',color:'var(--warn)'},
+        {label:'At IDR',value:63,disp:'63',color:'var(--idr)'},
+        {label:'Settled (QTD)',value:214,disp:'214',color:'var(--ok)'}
+      ];
+      return {title:'IDR Pipeline & Win Rate',sub:AS_OF+' · open pipeline + quarter to date',
+        kpis:[
+          {num:'82%',lbl:'IDR win rate (QTD)',tone:'ok'},
+          {num:'211',lbl:'Active in pipeline',tone:'oon'},
+          {num:'+$4,120',lbl:'Avg uplift / won claim',tone:'ok'},
+          {num:'$1.31M',lbl:'Additional $ recovered via IDR',tone:'oon'}
+        ],
+        chart:svgBarsV(b,{w:440,h:200,gap:34}),
+        table:{cols:['Stage','Claims','Amount in dispute','Avg days in stage','Notes'],numFrom:1,rows:[
+          {cells:['<span class="pill warn">Open negotiation</span>','148','$1,940,000','12','30-day open negotiation window']},
+          {cells:['<span class="pill oon">At IDR / arbitration</span>','63','$1,204,000','24','Awaiting IDR entity decision']},
+          {cells:['<span class="pill ok">Settled — won</span>','176','$2,010,000','—','82% of decided cases']},
+          {cells:['<span class="pill block">Settled — lost</span>','38','$402,000','—','18% of decided cases']}
+        ],foot:['Decided (QTD)','214','$2,412,000','—','82% win rate']},
+        note:'Win rate = claims resolved in USMON’s favor ÷ decided cases. IDR is where underpaid OON dollars get recovered.'};
+    },
+    denial:function(){
+      var t=[
+        {label:'Feb',value:9.8,disp:'9.8%'},{label:'Mar',value:9.1,disp:'9.1%'},
+        {label:'Apr',value:8.4,disp:'8.4%'},{label:'May',value:7.9,disp:'7.9%'},
+        {label:'Jun',value:7.2,disp:'7.2%'},{label:'Jul',value:6.8,disp:'6.8%'}
+      ];
+      return {title:'Denial Rate & Top Reasons',sub:AS_OF+' · trailing 6 months',
+        kpis:[
+          {num:'6.8%',lbl:'Denial rate (Jul)',tone:'warn'},
+          {num:'▼ 3.0 pts',lbl:'vs. 6 months ago',tone:'ok'},
+          {num:'1,204',lbl:'Denied lines (30d)',tone:'block'},
+          {num:'71%',lbl:'Overturned on appeal',tone:'ok'}
+        ],
+        chart:svgArea(t,{w:560,h:200,color:'var(--warn)',min:0,max:12}),
+        table:{cols:['CARC','Reason','Denied lines','$ impact','Share'],numFrom:2,rows:[
+          {cells:['<span class="mono">CO-45</span>','Charge exceeds fee schedule / allowed','381','$742,000','31.6%'],hi:true},
+          {cells:['<span class="mono">CO-97</span>','Service bundled / included in another','264','$318,500','21.9%']},
+          {cells:['<span class="mono">CO-16</span>','Claim lacks information / missing data','198','$204,300','16.4%']},
+          {cells:['<span class="mono">PR-204</span>','Not covered under current benefit plan','171','$266,900','14.2%']},
+          {cells:['<span class="mono">CO-50</span>','Not deemed medically necessary','120','$188,400','10.0%']},
+          {cells:['<span class="mono">—</span>','Other','70','$61,200','5.9%']}
+        ],foot:['Total','','1,204','$1,781,300','100%']},
+        note:'CO-45 (below allowed) dominates for OON claims — most are recoverable through negotiation / IDR rather than a true loss.'};
+    },
+    prod:function(){
+      return {title:'Biller Productivity',sub:AS_OF+' · today, team of 5',
+        kpis:[
+          {num:'118',lbl:'Claims worked today',tone:'pri'},
+          {num:'4:06',lbl:'Avg time / claim',tone:''},
+          {num:'82%',lbl:'Team active time',tone:'ok'},
+          {num:'1',lbl:'Dead-time flag',tone:'block'}
+        ],
+        chart:svgBarsH([
+          {label:'Sample, Dana',value:34,disp:'34',color:'var(--ok)'},
+          {label:'Demo, Alex',value:29,disp:'29',color:'var(--primary)'},
+          {label:'Mockdata, Sam',value:23,disp:'23',color:'var(--primary)'},
+          {label:'Testcase, Jordan',value:20,disp:'20',color:'var(--primary)'},
+          {label:'Example, Priya',value:12,disp:'12',color:'var(--block)'}
+        ],{w:540,labelW:140}),
+        table:{cols:['Biller','Claims today','Avg time/claim','Claims/hr','Active %','Dead time'],numFrom:1,rows:[
+          {cells:['<span class="cellname">Sample, Dana</span>','34','3:12','8.4',inbar(91),'<span class="pill ok">Low</span>'],hi:true},
+          {cells:['<span class="cellname">Demo, Alex</span>','29','3:48','7.1',inbar(88),'<span class="pill ok">Low</span>']},
+          {cells:['<span class="cellname">Mockdata, Sam</span>','23','4:28','5.9',inbar(79,'mid'),'<span class="pill warn">Moderate</span>']},
+          {cells:['<span class="cellname">Testcase, Jordan</span>','20','4:52','5.4',inbar(76,'mid'),'<span class="pill ok">Low</span>']},
+          {cells:['<span class="cellname">Example, Priya</span>','12','9:26','2.9',inbar(54,'low'),'<span class="pill block">⚑ High</span>']}
+        ],foot:['Team','118','4:06','5.9','82%','1 flag']},
+        note:'Supervisor-only report. Active % measures time actively working claims vs. idle. High dead-time is flagged for coaching.'};
+    },
+    collections:function(){
+      var t=[
+        {label:'Wk 1',value:512000,disp:'$512K'},{label:'Wk 2',value:588000,disp:'$588K'},
+        {label:'Wk 3',value:634000,disp:'$634K'},{label:'Wk 4',value:736000,disp:'$736K'}
+      ];
+      return {title:'Collections Summary',sub:AS_OF+' · month to date (July)',
+        kpis:[
+          {num:'$6.82M',lbl:'Charged',tone:'pri'},
+          {num:'$3.11M',lbl:'Allowed / expected',tone:''},
+          {num:'$2.47M',lbl:'Collected',tone:'ok'},
+          {num:'$640K',lbl:'Open balance',tone:'block'}
+        ],
+        chart:svgArea(t,{w:560,h:200,color:'var(--ok)'}),
+        table:{cols:['Metric','This month','Last month','Δ','Net collection %'],numFrom:1,rows:[
+          {cells:['<span class="cellname">Charged</span>','$6,820,000','$6,410,000','+6.4%','—']},
+          {cells:['<span class="cellname">Allowed / expected</span>','$3,110,000','$2,980,000','+4.4%','—']},
+          {cells:['<span class="cellname">Collected</span>','$2,470,000','$2,240,000','+10.3%','79.4%'],hi:true},
+          {cells:['<span class="cellname">Open balance</span>','$640,000','$740,000','−13.5%','—']}
+        ],foot:['Net collection rate','79.4%','75.2%','+4.2 pts','vs. allowed']},
+        note:'Net collection % = collected ÷ allowed. Charged is billed amount; OON charges run well above allowed by design.'};
+    }
+  };
+
+  function renderStandard(id){
+    curReport=id;
+    document.querySelectorAll('.rcard').forEach(function(c){c.classList.remove('on');});
+    var card=document.getElementById('card-'+id); if(card)card.classList.add('on');
+    paint(STANDARD[id]());
+  }
+
+  /* ---------- CUSTOM (AI) reports ---------- */
+  var CHIPS=[
+    {q:'OON claims aged over 90 days, by payer',key:'aged90'},
+    {q:'Recovery $ by client, last quarter',key:'client'},
+    {q:'Which billers cleared the most claims this week',key:'billerweek'},
+    {q:'Underpaid claims eligible for IDR, by dollar amount',key:'idrelig'},
+    {q:'Denials by reason, last 30 days',key:'denials30'}
+  ];
+
+  var CUSTOM={
+    aged90:function(q){
+      return {title:'OON claims aged over 90 days, by payer',sub:q,ai:true,
+        kpis:[
+          {num:'$906.2K',lbl:'OON balance >90 days',tone:'block'},
+          {num:'355',lbl:'Claims >90 days',tone:''},
+          {num:'United Healthcare',lbl:'Largest aged exposure',tone:'oon'},
+          {num:'118 days',lbl:'Avg age of these claims',tone:'warn'}
+        ],
+        chart:svgBarsH([
+          {label:'United Healthcare',value:284000,disp:'$284K',color:'var(--idr)'},
+          {label:'BCBS',value:212000,disp:'$212K',color:'var(--idr)'},
+          {label:'Aetna',value:176500,disp:'$176.5K',color:'var(--idr)'},
+          {label:'Cigna',value:139000,disp:'$139K',color:'var(--idr)'},
+          {label:'Humana',value:94700,disp:'$94.7K',color:'var(--idr)'}
+        ],{w:540,labelW:150}),
+        table:{cols:['Payer','Balance >90d','Claims','Avg age','Oldest','Status'],numFrom:1,rows:[
+          {cells:['<span class="cellname">United Healthcare</span>','$284,000','104','121d','168d','<span class="pill oon">IDR-eligible</span>'],hi:true},
+          {cells:['<span class="cellname">BCBS</span>','$212,000','86','116d','154d','<span class="pill oon">IDR-eligible</span>']},
+          {cells:['<span class="cellname">Aetna</span>','$176,500','71','119d','161d','<span class="pill warn">Negotiating</span>']},
+          {cells:['<span class="cellname">Cigna</span>','$139,000','54','113d','142d','<span class="pill oon">IDR-eligible</span>']},
+          {cells:['<span class="cellname">Humana</span>','$94,700','40','108d','139d','<span class="pill warn">Negotiating</span>']}
+        ],foot:['Total','$906,200','355','118d','168d','—']},
+        note:'Synthetic demo. Filtered to out-of-network claims with A/R age > 90 days, grouped by payer.'};
+    },
+    client:function(q){
+      return {title:'Recovery $ by client, last quarter',sub:q,ai:true,
+        kpis:[
+          {num:'$3.87M',lbl:'Total recovered (last qtr)',tone:'ok'},
+          {num:'6',lbl:'Active clients',tone:''},
+          {num:'Sample Surgical Group',lbl:'Top recovering client',tone:'pri'},
+          {num:'+11.4%',lbl:'QoQ recovery growth',tone:'ok'}
+        ],
+        chart:svgBarsH([
+          {label:'Sample Surgical Group',value:1120000,disp:'$1.12M',color:'var(--primary)'},
+          {label:'Demo Neuromonitoring',value:884000,disp:'$884K',color:'var(--primary)'},
+          {label:'Testcase Spine Ctr',value:701000,disp:'$701K',color:'var(--primary)'},
+          {label:'Mockdata Ortho',value:552000,disp:'$552K',color:'var(--primary)'},
+          {label:'Example Health Ptrs',value:398000,disp:'$398K',color:'var(--primary)'},
+          {label:'Placeholder Clinic',value:215000,disp:'$215K',color:'var(--primary)'}
+        ],{w:560,labelW:170}),
+        table:{cols:['Client','Recovered','Claims','Avg / claim','QoQ Δ'],numFrom:1,rows:[
+          {cells:['<span class="cellname">Sample Surgical Group</span>','$1,120,000','438','$2,557','+14.2%'],hi:true},
+          {cells:['<span class="cellname">Demo Neuromonitoring</span>','$884,000','362','$2,442','+9.8%']},
+          {cells:['<span class="cellname">Testcase Spine Center</span>','$701,000','291','$2,409','+7.1%']},
+          {cells:['<span class="cellname">Mockdata Ortho</span>','$552,000','244','$2,262','+12.6%']},
+          {cells:['<span class="cellname">Example Health Partners</span>','$398,000','188','$2,117','−2.4%']},
+          {cells:['<span class="cellname">Placeholder Clinic</span>','$215,000','97','$2,216','+5.0%']}
+        ],foot:['Total','$3,870,000','1,620','$2,389','+11.4%']},
+        note:'Synthetic demo. Recovered dollars posted in the last full quarter, grouped by client.'};
+    },
+    billerweek:function(q){
+      return {title:'Billers who cleared the most claims this week',sub:q,ai:true,
+        kpis:[
+          {num:'584',lbl:'Claims cleared (team, wk)',tone:'pri'},
+          {num:'Sample, Dana',lbl:'Top biller this week',tone:'ok'},
+          {num:'3:41',lbl:'Team avg time / claim',tone:''},
+          {num:'84%',lbl:'Team active time',tone:'ok'}
+        ],
+        chart:svgBarsH([
+          {label:'Sample, Dana',value:168,disp:'168',color:'var(--ok)'},
+          {label:'Demo, Alex',value:141,disp:'141',color:'var(--primary)'},
+          {label:'Mockdata, Sam',value:118,disp:'118',color:'var(--primary)'},
+          {label:'Testcase, Jordan',value:97,disp:'97',color:'var(--primary)'},
+          {label:'Example, Priya',value:60,disp:'60',color:'var(--warn)'}
+        ],{w:540,labelW:140}),
+        table:{cols:['Biller','Cleared (wk)','Avg/day','Avg time/claim','Active %'],numFrom:1,rows:[
+          {cells:['<span class="cellname">Sample, Dana</span>','168','33.6','3:12',inbar(91)],hi:true},
+          {cells:['<span class="cellname">Demo, Alex</span>','141','28.2','3:34',inbar(87)]},
+          {cells:['<span class="cellname">Mockdata, Sam</span>','118','23.6','4:05',inbar(80,'mid')]},
+          {cells:['<span class="cellname">Testcase, Jordan</span>','97','19.4','4:38',inbar(75,'mid')]},
+          {cells:['<span class="cellname">Example, Priya</span>','60','12.0','6:40',inbar(58,'low')]}
+        ],foot:['Team','584','116.8','3:41','84%']},
+        note:'Synthetic demo. Claims moved to a cleared/filed state in the current week, ranked by volume.'};
+    },
+    idrelig:function(q){
+      return {title:'Underpaid claims eligible for IDR, by dollar amount',sub:q,ai:true,
+        kpis:[
+          {num:'$1.94M',lbl:'Recoverable underpayment',tone:'oon'},
+          {num:'63',lbl:'IDR-eligible claims',tone:''},
+          {num:'$30.8K',lbl:'Avg underpayment / claim',tone:'oon'},
+          {num:'11',lbl:'Inside IDR window (≤5d)',tone:'block'}
+        ],
+        chart:svgBarsH([
+          {label:'PID 100019 · UHC',value:61200,disp:'$61.2K',color:'var(--idr)'},
+          {label:'PID 100042 · Cigna',value:54900,disp:'$54.9K',color:'var(--idr)'},
+          {label:'PID 100007 · Aetna',value:48800,disp:'$48.8K',color:'var(--idr)'},
+          {label:'PID 100031 · BCBS',value:41300,disp:'$41.3K',color:'var(--idr)'},
+          {label:'PID 100055 · Humana',value:37600,disp:'$37.6K',color:'var(--idr)'}
+        ],{w:560,labelW:160}),
+        table:{cols:['Claim','Payer','Billed','Paid','Underpaid','IDR clock'],numFrom:2,rows:[
+          {cells:['<span class="mono">1000019</span>','United Healthcare','$118,400','$57,200','$61,200','<span class="pill block">2d left</span>'],hi:true},
+          {cells:['<span class="mono">1000042</span>','Cigna','$96,700','$41,800','$54,900','<span class="pill warn">4d left</span>']},
+          {cells:['<span class="mono">1000007</span>','Aetna','$102,300','$53,500','$48,800','<span class="pill warn">5d left</span>']},
+          {cells:['<span class="mono">1000031</span>','BCBS','$88,900','$47,600','$41,300','<span class="pill oon">9d left</span>']},
+          {cells:['<span class="mono">1000055</span>','Humana','$79,200','$41,600','$37,600','<span class="pill oon">12d left</span>']}
+        ],foot:['Top 5 shown · 63 total','','$485,500','$241,700','$243,800','—']},
+        note:'Synthetic demo. OON claims paid below expected allowed, still inside the IDR initiation window, ranked by recoverable dollars.'};
+    },
+    denials30:function(q){
+      return {title:'Denials by reason, last 30 days',sub:q,ai:true,
+        kpis:[
+          {num:'1,204',lbl:'Denied lines (30d)',tone:'block'},
+          {num:'6.8%',lbl:'Denial rate',tone:'warn'},
+          {num:'CO-45',lbl:'Top denial reason',tone:'block'},
+          {num:'71%',lbl:'Overturned on appeal',tone:'ok'}
+        ],
+        chart:svgBarsH([
+          {label:'CO-45 exceeds allowed',value:381,disp:'381',color:'var(--block)'},
+          {label:'CO-97 bundled',value:264,disp:'264',color:'var(--warn)'},
+          {label:'CO-16 missing info',value:198,disp:'198',color:'var(--warn)'},
+          {label:'PR-204 not covered',value:171,disp:'171',color:'var(--warn)'},
+          {label:'CO-50 not med. nec.',value:120,disp:'120',color:'var(--warn)'}
+        ],{w:560,labelW:170}),
+        table:{cols:['CARC','Reason','Lines','$ impact','Recoverable?'],numFrom:2,rows:[
+          {cells:['<span class="mono">CO-45</span>','Charge exceeds fee schedule / allowed','381','$742,000','<span class="pill ok">Yes — IDR</span>'],hi:true},
+          {cells:['<span class="mono">CO-97</span>','Service bundled into another','264','$318,500','<span class="pill warn">Sometimes</span>']},
+          {cells:['<span class="mono">CO-16</span>','Claim lacks information','198','$204,300','<span class="pill ok">Yes — refile</span>']},
+          {cells:['<span class="mono">PR-204</span>','Not covered under plan','171','$266,900','<span class="pill block">Rarely</span>']},
+          {cells:['<span class="mono">CO-50</span>','Not medically necessary','120','$188,400','<span class="pill warn">Appeal</span>']},
+          {cells:['<span class="mono">—</span>','Other','70','$61,200','—']}
+        ],foot:['Total','','1,204','$1,781,300','—']},
+        note:'Synthetic demo. Denied claim lines in the trailing 30 days, grouped by CARC reason code.'};
+    },
+    // freeform fallback — a general performance snapshot
+    generic:function(q){
+      var t=[
+        {label:'Wk 1',value:512000,disp:'$512K'},{label:'Wk 2',value:588000,disp:'$588K'},
+        {label:'Wk 3',value:634000,disp:'$634K'},{label:'Wk 4',value:736000,disp:'$736K'}
+      ];
+      return {title:'Custom report: '+q,sub:q,ai:true,
+        kpis:[
+          {num:'$3.87M',lbl:'Recovered (qtr)',tone:'ok'},
+          {num:'82%',lbl:'IDR win rate',tone:'ok'},
+          {num:'6.8%',lbl:'Denial rate',tone:'warn'},
+          {num:'$2.79M',lbl:'Open A/R',tone:'pri'}
+        ],
+        chart:svgArea(t,{w:560,h:200,color:'var(--ai)'}),
+        table:{cols:['Metric','This period','Prior period','Δ'],numFrom:1,rows:[
+          {cells:['<span class="cellname">Dollars recovered</span>','$3,870,000','$3,474,000','+11.4%']},
+          {cells:['<span class="cellname">Claims filed</span>','1,800','1,712','+5.1%']},
+          {cells:['<span class="cellname">IDR win rate</span>','82%','79%','+3 pts']},
+          {cells:['<span class="cellname">Denial rate</span>','6.8%','7.9%','−1.1 pts']},
+          {cells:['<span class="cellname">Net collection %</span>','79.4%','75.2%','+4.2 pts']}
+        ]},
+        note:'Synthetic demo. USMON AI mapped your request to the closest available data and produced a performance snapshot.'};
+    }
+  };
+
+  // keyword mapping for freeform text -> a custom spec key
+  function pickCustom(text){
+    var t=(text||'').toLowerCase();
+    if(/idr|underpaid|underpay|arbitrat|eligible/.test(t))return 'idrelig';
+    if(/deni|denial|carc|reject/.test(t))return 'denials30';
+    if(/biller|productiv|cleared|per day|who .*most|team member/.test(t))return 'billerweek';
+    if(/client|practice|group|customer|by client/.test(t))return 'client';
+    if(/payer|aged|aging|90|over 90|old/.test(t))return 'aged90';
+    if(/recover|channel|collect/.test(t))return 'client';
+    return 'generic';
+  }
+
+  /* ---------- Ask modal + generate flow ---------- */
+  function buildChips(){
+    document.getElementById('askChips').innerHTML=CHIPS.map(function(c,i){
+      return '<button class="chip" onclick="chipRun('+i+')"><span class="cq">✦</span>'+esc(c.q)+'</button>';
+    }).join('');
+  }
+  function openAsk(){
+    resetAsk();
+    document.getElementById('askModal').classList.add('show');
+    setTimeout(function(){var ta=document.getElementById('askText');if(ta)ta.focus();},60);
+  }
+  function closeAsk(){document.getElementById('askModal').classList.remove('show');}
+  function resetAsk(){
+    var body=document.getElementById('askBody');
+    body.innerHTML=
+      '<p class="ask-note">✦ Describe the report you want — USMON AI turns it into a table and a chart.</p>'+
+      '<div class="ask-label">Your request</div>'+
+      '<textarea id="askText" placeholder="e.g. Show underpaid out-of-network claims eligible for IDR, ranked by dollar amount…"></textarea>'+
+      '<div class="ask-label" style="margin-top:14px">Suggested prompts</div>'+
+      '<div class="chips" id="askChips"></div>';
+    document.getElementById('askFoot').style.display='flex';
+    buildChips();
+  }
+
+  function chipRun(i){
+    var c=CHIPS[i];
+    runGenerate(c.q,c.key);
+  }
+  function generateFromText(){
+    var txt=(document.getElementById('askText').value||'').trim();
+    if(!txt){txt='OON claims aged over 90 days, by payer';}
+    runGenerate(txt,pickCustom(txt));
+  }
+
+  var GEN_STEPS=['Reading claims ledger','Aggregating by dimension','Computing figures','Building chart'];
+  function runGenerate(prompt,key){
+    document.getElementById('askFoot').style.display='none';
+    var body=document.getElementById('askBody');
+    body.innerHTML=
+      '<div class="gen"><h3>Generating your report…</h3>'+
+      '<p class="gq">"'+esc(prompt)+'"</p>'+
+      '<div class="gsteps">'+GEN_STEPS.map(function(s,i){
+        return '<div class="gstep" id="gs-'+i+'"><span class="gic">✓</span><span>'+esc(s)+'</span></div>';
+      }).join('')+'</div></div>';
+    var i=0;
+    function step(){
+      if(i>0){var prev=document.getElementById('gs-'+(i-1));if(prev){prev.classList.remove('run');prev.classList.add('done');}}
+      if(i<GEN_STEPS.length){
+        var cur=document.getElementById('gs-'+i);if(cur)cur.classList.add('run');
+        i++;
+        setTimeout(step,300);
+      }else{
+        setTimeout(finish,260);
+      }
+    }
+    function finish(){
+      closeAsk();
+      var fn=CUSTOM[key]||CUSTOM.generic;
+      var panel=paint(fn(prompt));
+      // clear standard-card selection since this is a custom report
+      document.querySelectorAll('.rcard').forEach(function(c){c.classList.remove('on');});
+      curReport='__custom__';
+      panel.scrollIntoView({behavior:'smooth',block:'start'});
+      toast('Custom report generated by USMON AI (Bedrock)','ai');
+    }
+    step();
+  }
+
+  // close modal on backdrop click / Escape
+  document.getElementById('askModal').addEventListener('click',function(e){if(e.target===this)closeAsk();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAsk();});
+
+  /* ---------- init ---------- */
+  buildChips();
+  renderStandard('ar');
+</script>
+
+<script src="demo-nav.js"></script>
+</body>
+</html>
