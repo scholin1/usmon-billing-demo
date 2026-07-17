@@ -290,6 +290,63 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
   .toast.ai .ic{background:var(--ai)} .toast.warn .ic{background:var(--warn)}
+
+  /* ===== 837P EDI viewer ===== */
+  .edi837-note{font-size:12px;color:var(--muted);background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:8px 11px;margin:0 0 12px;display:flex;gap:8px;align-items:flex-start}
+  .edi837-note b{color:var(--ink)}
+  .edi837-pre{margin:0;font-family:var(--mono);font-size:12px;line-height:1.6;white-space:pre;background:#0f1824;color:#d7e3ea;border:1px solid var(--line-strong);border-radius:9px;padding:14px 16px;overflow:auto;max-height:56vh;-webkit-font-smoothing:auto}
+
+  /* ===== printable CMS-1500 (NUCC 02/12) form sheet ===== */
+  .printcms-note{font-size:12px;color:var(--muted);background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:8px 11px;margin:0 0 12px;display:flex;gap:8px;align-items:flex-start}
+  .printcms-note b{color:var(--ink)}
+  .pf-scroll{overflow-x:auto}
+  .pf-sheet{background:#fff;color:#111;border:2px solid var(--pfred);border-radius:2px;font-family:"Arial Narrow",Arial,var(--sans);font-size:10px;line-height:1.15;width:840px;max-width:840px;margin:0 auto}
+  :root{--pfred:#d1121a}
+  .pf-sheet *{box-sizing:border-box}
+  .pf-top{display:flex;align-items:flex-start;justify-content:space-between;padding:6px 8px 4px;border-bottom:2px solid var(--pfred);gap:10px}
+  .pf-title{font-size:9px;font-weight:800;color:var(--pfred);letter-spacing:.3px;line-height:1.25;max-width:230px;text-transform:uppercase}
+  .pf-title small{display:block;font-size:6.5px;font-weight:700;letter-spacing:.2px;margin-top:2px}
+  .pf-carrier{flex:1;min-width:0;border:1px solid var(--pfred);border-radius:2px;padding:4px 6px;min-height:52px}
+  .pf-carrier .cl{font-size:6.5px;color:var(--pfred);font-weight:700;text-transform:uppercase}
+  .pf-carrier .cv{font-size:11px;font-family:var(--mono);color:#111;line-height:1.35;margin-top:2px}
+  .pf-pica{text-align:center;font-size:8px;font-weight:800;color:var(--pfred);letter-spacing:1px;white-space:nowrap}
+  .pf-pica .pk{display:inline-block;width:12px;height:12px;border:1px solid var(--pfred);margin:0 1px;vertical-align:middle}
+  .pf-band{font-size:6.5px;font-weight:800;color:var(--pfred);text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-bottom:1px solid var(--pfred);background:#fff}
+  .pf-row{display:grid;border-bottom:1px solid var(--pfred)}
+  .pf-row:last-child{border-bottom:none}
+  .pf-cell{border-right:1px solid var(--pfred);padding:2px 5px 3px;min-height:32px;position:relative}
+  .pf-cell:last-child{border-right:none}
+  .pf-lbl{font-size:6.5px;text-transform:uppercase;color:var(--pfred);font-weight:700;letter-spacing:.15px;line-height:1.15;display:block}
+  .pf-num{display:inline-block;font-size:7.5px;font-weight:800;color:var(--pfred);margin-right:3px}
+  .pf-val{font-size:11px;color:#111;font-family:var(--mono);padding-top:3px;display:block;word-break:break-word;line-height:1.3}
+  .pf-val.sm{font-size:9.5px}
+  .pf-chk{display:inline-block;width:9px;height:9px;border:1px solid var(--pfred);text-align:center;line-height:8px;font-size:8px;font-weight:800;color:#111;margin:0 2px 0 4px;vertical-align:middle}
+  .pf-chk.x{background:#fff}
+  .pf-inline{display:flex;align-items:center;gap:2px;flex-wrap:wrap;font-size:8px;color:#111;margin-top:2px}
+  /* box 24 service grid */
+  .pf-svc{width:100%;border-collapse:collapse;font-size:9px}
+  .pf-svc th{font-size:6px;text-transform:uppercase;color:var(--pfred);font-weight:700;border:1px solid var(--pfred);padding:2px 3px;line-height:1.1;letter-spacing:.1px}
+  .pf-svc td{border:1px solid var(--pfred);padding:3px 4px;font-family:var(--mono);color:#111;font-size:10px;white-space:nowrap;height:26px}
+  .pf-dx{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .pf-dx .dxc{border-right:1px solid var(--pfred);padding:1px 4px 2px;min-height:16px}
+  .pf-dx .dxc:nth-child(4n){border-right:none}
+  .pf-dx .dxl{font-size:7px;font-weight:800;color:var(--pfred);margin-right:3px}
+  .pf-foot{font-size:6px;color:var(--pfred);text-align:center;padding:3px 8px;letter-spacing:.3px}
+
+  /* ===== @media print — only the CMS-1500 sheet prints ===== */
+  @media print{
+    html,body{background:#fff!important;overflow:visible!important;padding-top:0!important}
+    body>*:not(#printcmsBack){display:none!important}
+    #dmnav,#dm-ask,#dm-ask-btn{display:none!important}
+    #printcmsBack{position:static!important;display:block!important;background:#fff!important;padding:0!important;margin:0!important;overflow:visible!important;inset:auto!important}
+    #printcmsBack:not(.show){display:none!important}
+    #printcmsBack .modal{box-shadow:none!important;border:none!important;border-radius:0!important;max-width:none!important;width:auto!important}
+    #printcmsBack .modal-head,#printcmsBack .modal-foot,#printcmsBack .printcms-note{display:none!important}
+    #printcmsBack .modal-body{padding:0!important;overflow:visible!important}
+    #printcmsBack .pf-scroll{overflow:visible!important}
+    .pf-sheet{width:100%!important;max-width:100%!important;border-width:2px!important}
+    @page{size:portrait;margin:12mm}
+  }
 </style>
 </head>
 <body class="role-super">
@@ -360,10 +417,10 @@
     <button class="btn ai" onclick="openTechReport()">📄 View Tech Report</button>
     <button class="btn primary" onclick="toast('Claim saved — synthetic')">💾 Save</button>
     <span class="tb-sep"></span>
-    <button class="btn sm" onclick="toast('837P (5010) generated — synthetic download')">Download 837</button>
+    <button class="btn sm" onclick="openEdi837()">Download 837</button>
     <button class="btn sm" onclick="toast('Documents: 4 items attached to this claim')">Documents</button>
-    <button class="btn sm" onclick="toast('Rendering data-only onto a blank CMS-1500 — print preview')">Print on Blank</button>
-    <button class="btn sm" onclick="toast('Full CMS-1500 sent to print preview')">Print</button>
+    <button class="btn sm" onclick="openPrintCms(true)">Print on Blank</button>
+    <button class="btn sm" onclick="openPrintCms(false)">Print</button>
     <button class="btn sm" onclick="toast('Add Form to Uploads — queued to document store')">Add Form to Uploads</button>
     <span class="tb-sep"></span>
     <button class="btn sm" onclick="toast('Payer lookup: United Healthcare — OON, NSA-eligible')">Lookup Payer</button>
@@ -689,8 +746,8 @@
   </div>
 
   <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
-    <button class="btn" onclick="toast('837P (5010) generated — synthetic download')">Download 837</button>
-    <button class="btn" onclick="toast('Full CMS-1500 sent to print preview')">Print</button>
+    <button class="btn" onclick="openEdi837()">Download 837</button>
+    <button class="btn" onclick="openPrintCms(false)">Print</button>
     <button class="btn primary" onclick="toast('Claim saved — synthetic')">💾 Save claim</button>
   </div>
 </main>
@@ -857,6 +914,219 @@
   </div>
 </div>
 
+<!-- ============================================================= -->
+<!-- 837P ELECTRONIC CLAIM FILE (EDI viewer)                       -->
+<!-- ============================================================= -->
+<div class="modal-back" id="edi837Back" onclick="if(event.target===this)closeEdi837()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="edi837Title">
+    <div class="modal-head">
+      <span class="tag" style="color:var(--idr);background:var(--idr-tint);border-color:var(--idr-line)">Electronic</span>
+      <h2 id="edi837Title">837P — electronic claim file</h2>
+      <button class="mx" onclick="closeEdi837()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="edi837-note"><span>⇄</span><span><b>This is what's transmitted electronically to the clearinghouse (e.g., Stedi).</b> X12 837P (005010X222A1) for claim 1000001 — Testcase, Alice · United Healthcare (OON) · 6 service lines · $48,087.92. Synthetic.</span></p>
+<pre class="edi837-pre mono" id="edi837Pre">ISA*00*          *00*          *ZZ*USMONBILLING   *ZZ*STEDI          *251020*1215*^*00501*000001001*0*P*:~
+GS*HC*USMONBILLING*STEDI*20251020*1215*1001*X*005010X222A1~
+ST*837*0001*005010X222A1~
+BHT*0019*00*1000001*20251020*1215*CH~
+NM1*41*2*DEMO NEUROPHYSIOLOGY LLC*****46*USMONBILLING~
+PER*IC*USMON BILLING DEPT*TE*5555550190~
+NM1*40*2*UNITED HEALTHCARE*****46*87726~
+HL*1**20*1~
+PRV*BI*PXC*2084N0400X~
+NM1*85*2*DEMO NEUROPHYSIOLOGY LLC*****XX*1000000017~
+N3*100 DEMO PARKWAY~
+N4*SPRINGFIELD*ST*00000~
+REF*EI*123456789~
+PER*IC*BILLING OFFICE*TE*5555550190~
+HL*2*1*22*0~
+SBR*P*18*GRP-778120******CI~
+NM1*IL*1*TESTCASE*ALICE****MI*2W76Y49MP67~
+N3*1200 SAMPLE RIDGE LN~
+N4*SPRINGFIELD*ST*00000~
+DMG*D8*19710829*F~
+NM1*PR*2*UNITED HEALTHCARE*****PI*87726~
+N3*PO BOX 30555~
+N4*SALT LAKE CITY*UT*84130~
+CLM*1000001*48087.92***21:B:1*Y*A*Y*Y~
+DTP*435*DT*202510200812~
+DTP*096*TM*1305~
+HI*ABK:M50121*ABF:M50120*ABF:M5412*ABF:G8918~
+NM1*DN*1*SAMPLE*ALAN****XX*1000000048~
+LX*1~
+SV1*HC:95887:26*361.25*UN*1***1~
+DTP*472*D8*20251020~
+LX*2~
+SV1*HC:95909:26*849.15*UN*1***1~
+DTP*472*D8*20251020~
+LX*3~
+SV1*HC:95937:26*6332.50*UN*4***1:2~
+DTP*472*D8*20251020~
+LX*4~
+SV1*HC:95938:26*11900.01*UN*6***1:2~
+DTP*472*D8*20251020~
+LX*5~
+SV1*HC:95939:26*17850.01*UN*3***1~
+DTP*472*D8*20251020~
+LX*6~
+SV1*HC:95955:26*10795.00*UN*1***1~
+DTP*472*D8*20251020~
+SE*45*0001~
+GE*1*1001~
+IEA*1*000001001~</pre>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeEdi837()">Close</button>
+      <button class="btn primary" onclick="downloadEdi837()">⬇ Download .txt</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PRINT PREVIEW — official CMS-1500 (NUCC 02/12), filled         -->
+<!-- ============================================================= -->
+<div class="modal-back" id="printcmsBack" onclick="if(event.target===this)closePrintCms()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="printcmsTitle">
+    <div class="modal-head">
+      <span class="tag" style="color:var(--muted);background:var(--surface-2);border-color:var(--line-strong)">Print preview</span>
+      <h2 id="printcmsTitle">CMS-1500 — print preview</h2>
+      <button class="mx" onclick="closePrintCms()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="printcms-note" id="printcmsNote"><span>🖨</span><span><b>For carriers that don't accept electronic 837 — prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span></p>
+      <div class="pf-scroll">
+        <div class="pf-sheet" id="pfSheet">
+          <!-- top strip: title / carrier block / PICA -->
+          <div class="pf-top">
+            <div class="pf-title">Health Insurance Claim Form<small>Approved by National Uniform Claim Committee (NUCC) 02/12</small></div>
+            <div class="pf-carrier"><span class="cl">Carrier</span><span class="cv">United Healthcare<br>PO Box 30555<br>Salt Lake City, UT 84130</span></div>
+            <div class="pf-pica"><span class="pk"></span><span class="pk"></span> PICA</div>
+          </div>
+
+          <div class="pf-band">Patient &amp; Insured</div>
+          <!-- Box 1 / 1a -->
+          <div class="pf-row" style="grid-template-columns:6fr 3fr 3fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">1</span>Medicare / Medicaid / Tricare / ChampVA / Group / FECA / Other</span>
+              <div class="pf-inline"><span class="pf-chk x">X</span>Other (Commercial)</div></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">1a</span>Insured's ID number</span><span class="pf-val">2W76y49mp67</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">11</span>Insured's policy / group #</span><span class="pf-val">GRP-778120</span></div>
+          </div>
+          <!-- Box 2 / 3 / 4 -->
+          <div class="pf-row" style="grid-template-columns:5fr 4fr 3fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">2</span>Patient's name (Last, First, MI)</span><span class="pf-val">TESTCASE, ALICE</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">3</span>Patient birth date / sex</span><span class="pf-val">08 29 1971 &nbsp; F <span class="pf-chk x">X</span></span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">4</span>Insured's name</span><span class="pf-val">TESTCASE, ALICE</span></div>
+          </div>
+          <!-- Box 5 / 6 / 7 -->
+          <div class="pf-row" style="grid-template-columns:5fr 3fr 4fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">5</span>Patient's address · phone</span><span class="pf-val sm">1200 SAMPLE RIDGE LN, SPRINGFIELD, ST 00000 · (555) 555-0142</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">6</span>Relationship to insured</span><div class="pf-inline"><span class="pf-chk x">X</span>Self</div></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">7</span>Insured's address</span><span class="pf-val sm">SAME AS PATIENT</span></div>
+          </div>
+          <!-- Box 8(reserved) / 9 / 10 -->
+          <div class="pf-row" style="grid-template-columns:3fr 5fr 4fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">8</span>Reserved for NUCC</span><span class="pf-val sm">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">9</span>Other insured's name</span><span class="pf-val sm">NONE</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">10a–c</span>Condition related to</span>
+              <div class="pf-inline">Employment <span class="pf-chk"></span>No &nbsp; Auto <span class="pf-chk"></span>No &nbsp; Other <span class="pf-chk"></span>No</div></div>
+          </div>
+          <!-- Box 11c / 12 / 13 -->
+          <div class="pf-row" style="grid-template-columns:4fr 4fr 4fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">11c</span>Insurance plan name</span><span class="pf-val sm">UNITED HEALTHCARE</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">12</span>Patient's signature · date</span><span class="pf-val sm">SIGNATURE ON FILE · 10/20/2025</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">13</span>Insured's signature</span><span class="pf-val sm">SIGNATURE ON FILE</span></div>
+          </div>
+
+          <div class="pf-band">Physician / Supplier Information · Boxes 14–23</div>
+          <!-- Box 14 / 15 / 16 / 18 -->
+          <div class="pf-row" style="grid-template-columns:3fr 3fr 3fr 3fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">14</span>Date current illness</span><span class="pf-val">10 20 2025</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">15</span>Other date</span><span class="pf-val">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">16</span>Unable to work</span><span class="pf-val">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">18</span>Hospitalization dates</span><span class="pf-val sm">10/20/2025 – 10/22/2025</span></div>
+          </div>
+          <!-- Box 17 / 17a / 17b / 20 -->
+          <div class="pf-row" style="grid-template-columns:5fr 2fr 2fr 3fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">17</span>Referring / ordering provider</span><span class="pf-val sm">SAMPLE, ALAN MD</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">17a</span>Other ID</span><span class="pf-val sm">G2 0824</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">17b</span>NPI</span><span class="pf-val">1000000048</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">20</span>Outside lab</span><div class="pf-inline"><span class="pf-chk x">X</span>No</div></div>
+          </div>
+          <!-- Box 19 / 21 ICD ind -->
+          <div class="pf-row" style="grid-template-columns:9fr 3fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">19</span>Additional claim information</span><span class="pf-val sm">OON — NO SURPRISES ACT APPLIES; QPA ~$7,697; IDR-ELIGIBLE</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">21</span>ICD ind.</span><span class="pf-val">0 (ICD-10)</span></div>
+          </div>
+          <!-- Box 21 diagnosis grid -->
+          <div class="pf-row" style="grid-template-columns:1fr">
+            <div class="pf-cell" style="border-right:none"><span class="pf-lbl"><span class="pf-num">21</span>Diagnosis or nature of illness (A is principal)</span>
+              <div class="pf-dx" style="margin-top:3px">
+                <div class="dxc"><span class="dxl">A</span><span class="pf-val" style="display:inline;padding:0">M50.121</span></div>
+                <div class="dxc"><span class="dxl">B</span><span class="pf-val" style="display:inline;padding:0">M50.120</span></div>
+                <div class="dxc"><span class="dxl">C</span><span class="pf-val" style="display:inline;padding:0">M54.12</span></div>
+                <div class="dxc"><span class="dxl">D</span><span class="pf-val" style="display:inline;padding:0">G89.18</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Box 22 / 23 -->
+          <div class="pf-row" style="grid-template-columns:4fr 4fr 4fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">22</span>Resubmission code</span><span class="pf-val">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">22</span>Original ref. no.</span><span class="pf-val">—</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">23</span>Prior authorization</span><span class="pf-val sm">N/A — OON, NO AUTH</span></div>
+          </div>
+
+          <div class="pf-band">Box 24 · Service lines</div>
+          <div class="pf-row" style="grid-template-columns:1fr">
+            <div class="pf-cell" style="border-right:none;padding:4px">
+              <table class="pf-svc">
+                <thead><tr>
+                  <th>24A · Date(s) of service</th><th>B · POS</th><th>C · EMG</th>
+                  <th>24D · CPT/HCPCS</th><th>Mod</th><th>24E · Dx</th><th>24F · $ Charges</th>
+                  <th>24G · Units</th><th>24J · Rendering NPI</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td>10/20/2025</td><td>21</td><td></td><td>95887</td><td>26</td><td>A</td><td>361.25</td><td>1</td><td>1000000048</td></tr>
+                  <tr><td>10/20/2025</td><td>21</td><td></td><td>95909</td><td>26</td><td>A</td><td>849.15</td><td>1</td><td>1000000048</td></tr>
+                  <tr><td>10/20/2025</td><td>21</td><td></td><td>95937</td><td>26</td><td>AB</td><td>6,332.50</td><td>4</td><td>1000000048</td></tr>
+                  <tr><td>10/20/2025</td><td>21</td><td></td><td>95938</td><td>26</td><td>AB</td><td>11,900.01</td><td>6</td><td>1000000048</td></tr>
+                  <tr><td>10/20/2025</td><td>21</td><td></td><td>95939</td><td>26</td><td>A</td><td>17,850.01</td><td>3</td><td>1000000048</td></tr>
+                  <tr><td>10/20/2025</td><td>21</td><td></td><td>95955</td><td>26</td><td>A</td><td>10,795.00</td><td>1</td><td>1000000048</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="pf-band">Billing · Boxes 25–33</div>
+          <!-- Box 25 / 26 / 27 / 28 -->
+          <div class="pf-row" style="grid-template-columns:4fr 3fr 2fr 3fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">25</span>Federal tax ID (EIN)</span><span class="pf-val">12-3456789 <span class="pf-chk x">X</span>EIN</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">26</span>Patient account no.</span><span class="pf-val">100001</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">27</span>Accept assignment</span><div class="pf-inline"><span class="pf-chk x">X</span>Yes</div></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">28</span>Total charge</span><span class="pf-val">$48,087.92</span></div>
+          </div>
+          <!-- Box 29 / 30 / 31 -->
+          <div class="pf-row" style="grid-template-columns:3fr 3fr 6fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">29</span>Amount paid</span><span class="pf-val">$0.00</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">30</span>Rsvd for NUCC</span><span class="pf-val">$48,087.92</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">31</span>Signature of physician / supplier</span><span class="pf-val sm">SAMPLE, ALAN MD — SIGNATURE ON FILE · 10/22/2025</span></div>
+          </div>
+          <!-- Box 32 / 33 -->
+          <div class="pf-row" style="grid-template-columns:6fr 6fr">
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">32</span>Service facility location · NPI</span><span class="pf-val sm">SAMPLE SPECIALISTS HOSPITAL, 400 DEMO BLVD, SPRINGFIELD, ST 00000<br>32a NPI 1000000032</span></div>
+            <div class="pf-cell"><span class="pf-lbl"><span class="pf-num">33</span>Billing provider · phone · NPI</span><span class="pf-val sm">DEMO NEUROPHYSIOLOGY LLC · (555) 555-0190<br>33a NPI 1000000017 &nbsp; 33b 2084N0400X</span></div>
+          </div>
+          <div class="pf-foot">NUCC Instruction Manual available at www.nucc.org · CMS-1500 (02/12) · SYNTHETIC — DEMO ONLY</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closePrintCms()">Close</button>
+      <button class="btn primary" onclick="printCms()">🖨 Print</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="ic">✓</span><span id="toastMsg"></span></div>
 
 <script>
@@ -1005,6 +1275,40 @@
     document.getElementById('caact-'+cpt).innerHTML='<span class="ca-done dis">✕ Dismissed · logged</span>';
     toast('Coding Assist: '+cpt+' dismissed · logged to audit');
   }
+
+  /* ---------- 837P electronic claim file (EDI viewer + download) ---------- */
+  function openEdi837(){document.getElementById('edi837Back').classList.add('show');document.body.style.overflow='hidden';toast('837P (5010) generated — electronic claim file','ai');}
+  function closeEdi837(){document.getElementById('edi837Back').classList.remove('show');document.body.style.overflow='';}
+  function downloadEdi837(){
+    const txt=document.getElementById('edi837Pre').textContent;
+    const blob=new Blob([txt],{type:'text/plain'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='claim-1000001-837P.txt';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},0);
+    toast('Downloaded claim-1000001-837P.txt — synthetic','ai');
+  }
+
+  /* ---------- Print preview — official CMS-1500 (mail/fax fallback) ---------- */
+  function openPrintCms(dataOnly){
+    const note=document.getElementById('printcmsNote');
+    if(dataOnly){
+      note.innerHTML='<span>🖨</span><span><b>Print on Blank — data-only:</b> prints just the claim values, aligned to drop onto a pre-printed red CMS-1500 form. Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
+    }else{
+      note.innerHTML='<span>🖨</span><span><b>For carriers that don\'t accept electronic 837 — prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
+    }
+    document.getElementById('printcmsBack').classList.add('show');document.body.style.overflow='hidden';
+  }
+  function closePrintCms(){document.getElementById('printcmsBack').classList.remove('show');document.body.style.overflow='';}
+  function printCms(){window.print();}
+
+  /* ---------- Esc closes the output modals ---------- */
+  document.addEventListener('keydown',(e)=>{
+    if(e.key!=='Escape')return;
+    if(document.getElementById('edi837Back').classList.contains('show'))closeEdi837();
+    if(document.getElementById('printcmsBack').classList.contains('show'))closePrintCms();
+  });
 </script>
 <script src="demo-nav.js"></script>
 </body>
