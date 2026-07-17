@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON Pro - New Insurance Billing (intake worklist, prototype)</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;
+    --gov:#475569; --gov-tint:#eef1f5; --gov-line:#d3dae3;
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --hl:#fef9c3; --hl-line:#fde047;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+  select,input[type=text],input[type=date]{font-family:inherit}
+
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+  #whoLabel{white-space:nowrap}
+
+  /* role toggle (Biller <-> Supervisor) */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+
+  .wrap{max-width:1600px;margin:0 auto;padding:16px 18px 60px}
+
+  .page-head{display:flex;align-items:flex-end;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+  .page-head h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .page-head p{margin:2px 0 0;color:var(--muted);font-size:12.5px;max-width:700px}
+  .tag{font-size:11px;font-weight:700;color:var(--muted);background:#eef2f7;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .tag.intake{color:var(--ok);background:var(--ok-tint)}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:4px 9px;font-size:11.5px;border-radius:7px}
+  .btn.xs{padding:2px 8px;font-size:11px;border-radius:6px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn.ok:hover{filter:brightness(.94)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn:disabled:hover{border-color:var(--line-strong);background:var(--surface)}
+
+  /* count strip near toolbar - always visible (scale cue, not a stat) */
+  .scalebar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .scalebar .big{font-size:24px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+  .scalebar .big b{color:var(--primary)}
+  .scalebar .cap{font-size:12px;color:var(--muted);font-weight:600}
+
+  /* SUPERVISOR-ONLY stats strip */
+  .summary{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .sm{flex:1;min-width:170px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .sm::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--faint)}
+  .sm.prep::before{background:var(--ink)} .sm.ready::before{background:var(--ok)} .sm.inc::before{background:var(--block)} .sm.aged::before{background:var(--warn)}
+  .sm .num{font-size:20px;font-weight:800;letter-spacing:-.4px}
+  .sm.ready .num{color:var(--ok)} .sm.inc .num{color:var(--block)} .sm.aged .num{color:var(--warn)}
+  .sm .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+  .sm .sub{font-size:10.5px;color:var(--faint);margin-top:2px}
+  .sup-note{display:flex;align-items:center;gap:8px;margin:-4px 0 12px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sup-note .tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gov);background:#fff;border:1px solid var(--gov-line)}
+  /* Biller mode: no stats strip at all - billers get a clean grid */
+  body:not(.role-super) .summary,body:not(.role-super) .sup-note{display:none}
+
+  /* toolbar */
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:9px 11px;box-shadow:var(--shadow);margin-bottom:10px}
+  .toolbar .sep{width:1px;height:22px;background:var(--line);margin:0 3px}
+  .toolbar .tgl{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--muted);padding:5px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface)}
+  .toolbar .tgl input{margin:0}
+  .toolbar .tgl.on{background:var(--hl);border-color:var(--hl-line);color:#854d0e}
+  .toolbar .grow{margin-left:auto}
+
+  /* filter panel */
+  .filterpanel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+  .fp-head{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--surface-2);border-bottom:1px solid var(--line);cursor:pointer;font-weight:700;font-size:13px}
+  .fp-head .chev{transition:.15s;color:var(--faint)}
+  .filterpanel.collapsed .fp-head{border-bottom:none}
+  .filterpanel.collapsed .fp-body{display:none}
+  .filterpanel.collapsed .chev{transform:rotate(-90deg)}
+  .fp-head .cnt{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--muted)}
+  .fp-body{padding:13px}
+  .fp-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px 12px}
+  @media(max-width:1200px){.fp-grid{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:760px){.fp-grid{grid-template-columns:repeat(2,1fr)}}
+  .fld{display:flex;flex-direction:column;gap:3px}
+  .fld.c2{grid-column:span 2}
+  .fld label{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .fld input,.fld select{padding:6px 8px;border:1px solid var(--line-strong);border-radius:7px;font-size:12px;background:#fff;color:var(--ink);width:100%}
+  .fld input:focus,.fld select:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .instype{margin-top:12px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface-2)}
+  .instype .ih{display:flex;align-items:center;gap:10px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;margin-bottom:8px}
+  .instype .ih a{font-size:11px;font-weight:600;cursor:pointer}
+  .ins-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px 10px}
+  @media(max-width:1200px){.ins-grid{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:760px){.ins-grid{grid-template-columns:repeat(2,1fr)}}
+  .ins-grid label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ins-grid label input{margin:0;flex:none}
+  .fp-more{display:grid;grid-template-columns:repeat(6,1fr);gap:9px 12px;margin-top:12px}
+  @media(max-width:1200px){.fp-more{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:760px){.fp-more{grid-template-columns:repeat(2,1fr)}}
+  .fp-foot{display:flex;gap:8px;margin-top:13px;align-items:center}
+
+  /* saved-view chips */
+  .chips{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:9px}
+  .chip{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+  .chip:hover{border-color:var(--faint);color:var(--ink)}
+  .chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .chip .c{background:rgba(255,255,255,.25);border-radius:999px;padding:0 6px;font-size:10.5px}
+  .chip:not(.on) .c{background:#eef2f7}
+  .chip.ok.on{background:var(--ok);border-color:var(--ok)}
+  .chip.warn.on{background:var(--warn);border-color:var(--warn)}
+  .chip.block.on{background:var(--block);border-color:var(--block)}
+  .activefilter{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+  .activefilter b{color:var(--ink)}
+
+  /* the grid */
+  .gridwrap{overflow:auto;max-height:calc(100vh - 250px);border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+  table.grid{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;min-width:2560px}
+  .grid thead th{position:sticky;top:0;z-index:5;background:#eef2f6;color:var(--muted);font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:700;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line-strong);border-right:1px solid var(--line);user-select:none}
+  .grid thead th.sortable{cursor:pointer}
+  .grid thead th.sortable:hover{color:var(--ink);background:#e3e9ef}
+  .grid thead th .arr{color:var(--primary);font-weight:800}
+  .grid tbody td{padding:3px 8px;border-bottom:1px solid var(--line);border-right:1px solid #eef1f5;vertical-align:middle;height:30px;background:var(--surface)}
+  .grid tbody tr:hover td{background:var(--surface-2)}
+  .grid tbody tr.hl td{background:var(--hl)}
+  /* frozen columns (no select column on intake) */
+  .grid .frz{position:sticky;z-index:3}
+  .grid thead th.frz{z-index:6}
+  .grid .c-save{width:58px;min-width:58px;max-width:58px;left:0}
+  .grid .c-pat{width:150px;min-width:150px;max-width:150px;left:58px}
+  .grid .c-pid{width:70px;min-width:70px;max-width:70px;left:208px;box-shadow:2px 0 0 rgba(16,32,46,.06)}
+  .grid thead th.c-pid{box-shadow:2px 0 0 rgba(16,32,46,.1)}
+  .grid .patcell{font-weight:700;color:var(--primary);cursor:pointer;overflow:hidden;text-overflow:ellipsis;display:block;max-width:140px}
+  .grid .patcell:hover{text-decoration:underline}
+  .grid select{font-size:11px;padding:2px 4px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--ink);max-width:118px}
+  .grid select:hover{border-color:var(--line-strong);background:#fff}
+  .grid select:focus{outline:none;border-color:var(--primary);background:#fff}
+  .grid .savebtn{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;border:1px solid var(--line-strong);background:#f1f5f9;color:var(--faint);cursor:default}
+  .grid .savebtn.dirty{background:var(--primary);border-color:var(--primary);color:#fff;cursor:pointer}
+  .grid .savebtn.saved{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok);cursor:default}
+  .grid .mini{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px;border:1px solid var(--line-strong);background:#fff;color:var(--muted)}
+  .grid .mini:hover{border-color:var(--primary);color:var(--primary)}
+  .grid a.lnk{font-weight:700;font-size:11px;cursor:pointer}
+  .grid td.money{font-family:var(--mono);text-align:right}
+  .grid .aged{font-family:var(--mono);font-weight:700}
+  .grid .ent{overflow:hidden;text-overflow:ellipsis;display:block;max-width:160px;color:var(--muted)}
+
+  /* readiness flag - the intake headline signal */
+  .rflag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap;cursor:default;display:inline-flex;align-items:center;gap:4px}
+  .rflag.ready{background:var(--ok-tint);color:var(--ok);border:1px solid var(--ok-line)}
+  .rflag.inc{background:var(--block-tint);color:var(--block);border:1px solid var(--block-line)}
+
+  /* AI-suggested value convention (purple) - shared with other screens */
+  .aicell{background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:5px;padding:1px 5px;display:inline-flex;align-items:center;gap:4px;color:var(--ai-dark);font-weight:600;cursor:help}
+  .aitag{font-size:8px;font-weight:800;color:#fff;background:var(--ai);border-radius:4px;padding:1px 4px;letter-spacing:.3px;white-space:nowrap}
+
+  /* reader overlap + auth pills */
+  .ov{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;background:#eef2f7;color:var(--muted)}
+  .ov.none{color:var(--faint);background:transparent;font-weight:500}
+  .ov.hi{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line);cursor:help}
+  .authpill{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px}
+  .authpill.on{background:var(--ok-tint);color:var(--ok)}
+  .authpill.pend{background:var(--warn-tint);color:var(--warn)}
+  .authpill.na{color:var(--faint)}
+  .filed{font-family:var(--mono);color:var(--ok);font-weight:700}
+  .notfiled{color:var(--faint)}
+
+  /* footer / pagination */
+  .gridfoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 4px 0;font-size:12px;color:var(--muted)}
+  .gridfoot b{color:var(--ink)}
+  .pager{display:flex;gap:3px;align-items:center}
+  .pager button{border:1px solid var(--line-strong);background:#fff;color:var(--ink);font-size:12px;font-weight:600;padding:4px 9px;border-radius:7px;font-family:var(--mono)}
+  .pager button:hover{border-color:var(--primary);color:var(--primary)}
+  .pager button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .pager .dots{color:var(--faint);padding:0 3px}
+  .gridfoot .virt{margin-left:auto;font-size:11px;color:var(--faint);font-style:italic;display:flex;align-items:center;gap:6px}
+  .gridfoot select{padding:4px 7px;border:1px solid var(--line-strong);border-radius:7px;font-size:12px;background:#fff}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:540px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.idr .ic{background:var(--idr)}.toast.warn .ic{background:var(--warn)}.toast.ai .ic{background:var(--ai)}
+</style>
+</head>
+<body class="role-super">
+
+<!--
+  ============================================================================
+  USMON Pro - NEW INSURANCE BILLING - intake worklist (front of the pipeline)
+  (client demo, SYNTHETIC data only - no PHI, no real entities)
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. "This is the START of billing. Completed monitoring cases land here as
+       claims that still need to be PREPARED and FILED. No collections columns
+       yet - that all lives on the Ongoing screen."
+    2. Point at "8,204 claims to prepare" - the intake backlog at real scale.
+    3. Look at the Incomplete Claim column: green Ready vs red Incomplete.
+       Hover an Incomplete flag to see WHY (missing units, no reader sign-off).
+       Some reasons carry a purple AI tag - the system caught the gap.
+    4. File Claim is a live green button ONLY on Ready rows. On Incomplete rows
+       it is greyed and the tooltip says what to fix first.
+    5. Click a Ready row's File Claim -> toast + "Initial Filing Complete" fills
+       in with today's date, no reload.
+    6. Incomplete row -> click "Email Tech" to chase the missing data.
+    7. Toggle Supervisor <-> Biller (top right): the 4-tile stats strip
+       (to prep / ready / incomplete / aged) is SUPERVISOR-ONLY and vanishes
+       for billers, who get a clean grid.
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" class="on">New Insurance Billing</a>
+    <a href="#" onclick="return t('Ongoing follow-up worklist - see the Ongoing tab in this demo')">Ongoing</a>
+    <a href="#" onclick="return t('Folders')">Folders</a>
+    <a href="#" onclick="return t('Reports')">Reports</a>
+    <a href="#" onclick="return t('Manage')">Manage</a>
+  </nav>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="View role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="whoLabel">Dr. Michael Scholin · Billing Supervisor</span>
+    <span class="avatar" id="whoAvatar">MS</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div><h1>New Insurance Billing <span class="tag intake" style="vertical-align:middle">Intake worklist</span></h1>
+      <p>The front of the pipeline. Completed monitoring cases arrive here as claims to prepare and file. About 95% of each claim is prefilled from the source case (schedulers, techs, reading physician) - the biller reviews readiness, confirms, and files. No payment or collections activity happens here yet.</p></div>
+  </div>
+
+  <!-- scale cue - always visible -->
+  <div class="scalebar">
+    <div class="big"><b>8,204</b> claims to prepare</div>
+    <div class="cap">completed cases waiting to be filed · pulled from USMON as source cases close out</div>
+  </div>
+
+  <!-- SUPERVISOR-ONLY stats strip -->
+  <div class="summary">
+    <div class="sm prep"><div class="num">8,204</div><div class="lbl">Claims to prepare</div><div class="sub">intake backlog across all facilities</div></div>
+    <div class="sm ready"><div class="num">3,116</div><div class="lbl">Ready to file</div><div class="sub">all required data present</div></div>
+    <div class="sm inc"><div class="num">1,489</div><div class="lbl">Incomplete / needs info</div><div class="sub">missing data blocking filing</div></div>
+    <div class="sm aged"><div class="num">372</div><div class="lbl">Aged &gt; 14 days in intake</div><div class="sub">sitting too long before filing</div></div>
+  </div>
+  <div class="sup-note"><span class="tag">Supervisor view</span> These stat tiles are visible to supervisors only. Billers see a clean grid with no stats.</div>
+
+  <!-- top toolbar -->
+  <div class="toolbar">
+    <button class="btn primary" onclick="t('New case intake opens a blank claim prepared from a completed monitoring case')">+ Add New Case</button>
+    <span class="sep"></span>
+    <button class="btn sm" onclick="t('Exporting current filter as an 837P batch…')">Manually Export Batch Now</button>
+    <button class="btn sm" onclick="t('Rendering PDF batch for current filter…')">Print PDF Batch Now</button>
+    <button class="btn sm" onclick="t('Batch download queued')">Download Batch Now</button>
+    <button class="btn sm" onclick="t('Statement CSV export queued')">Download Statement CSV</button>
+    <button class="btn sm" onclick="t('Export started')">Export</button>
+    <span class="grow"></span>
+    <label class="tgl" id="hlToggle"><input type="checkbox" onchange="toggleHl(this)"> Highlight incomplete claims</label>
+    <button class="btn sm" onclick="collapseSearch()" id="collapseBtn">Expand search area</button>
+  </div>
+
+  <!-- collapsible search / filter panel (collapsed by default) -->
+  <div class="filterpanel collapsed" id="filterPanel">
+    <div class="fp-head" onclick="toggleFilter()"><span class="chev">▼</span> Search &amp; Filter <span class="cnt" id="fpCnt">wire-live: Name · Claim Status · Billing Type · Readiness</span></div>
+    <div class="fp-body">
+      <div class="fp-grid">
+        <div class="fld c2"><label>Name</label><input type="text" id="fName" placeholder="Last, First" oninput="applyFilters()"></div>
+        <div class="fld"><label>DOS from</label><input type="date"></div>
+        <div class="fld"><label>DOS to</label><input type="date"></div>
+        <div class="fld"><label>Facility</label><select><option>All facilities</option><option>Sample General Hospital</option><option>Demo Medical Center</option><option>Example Regional Med</option></select></div>
+        <div class="fld"><label>State</label><select><option>All states</option><option>TX</option><option>FL</option><option>GA</option><option>NC</option></select></div>
+        <div class="fld"><label>Surgeon</label><select><option>Any surgeon</option><option>Demo, MD</option><option>Sample, MD</option></select></div>
+        <div class="fld"><label>Technologist</label><select><option>Any tech</option><option>Tech A</option><option>Tech B</option></select></div>
+        <div class="fld"><label>Reading Physician</label><select><option>Any reader</option><option>Reader A</option><option>Reader B</option></select></div>
+        <div class="fld"><label>Order / Referral #</label><input type="text" placeholder="ORD-…"></div>
+      </div>
+
+      <div class="instype">
+        <div class="ih">Insurance Type <a onclick="setAllIns(false)">Hide / clear</a> <a onclick="setAllIns(true)">Select all</a></div>
+        <div class="ins-grid" id="insGrid"></div>
+      </div>
+
+      <div class="fp-more">
+        <div class="fld"><label>PID</label><input type="text" placeholder="100001…"></div>
+        <div class="fld"><label>Claim</label><input type="text" placeholder="Claim #"></div>
+        <div class="fld"><label>Billing Type</label><select id="fBilling" onchange="applyFilters()"><option value="">Any</option><option>Global</option><option>Tech Only</option><option>Pro Only</option></select></div>
+        <div class="fld"><label>Readiness</label><select id="fReady" onchange="applyFilters()"><option value="">Any</option><option value="ready">Ready to file</option><option value="incomplete">Incomplete</option></select></div>
+        <div class="fld"><label>COB</label><select><option>Any</option><option>Primary</option><option>Secondary</option></select></div>
+        <div class="fld"><label>Auth</label><select><option>Any</option><option>On file</option><option>Pending</option><option>Not required</option></select></div>
+        <div class="fld"><label>Biller</label><select><option>Any biller</option><option>Unassigned</option><option>Sample, Dana</option><option>Demo, Alex</option></select></div>
+        <div class="fld"><label>Claim Status</label><select id="fStatus" onchange="applyFilters()"><option value="">Any status</option></select></div>
+      </div>
+
+      <div class="fp-foot">
+        <button class="btn primary sm" onclick="applyFilters(true)">Search</button>
+        <button class="btn sm" onclick="clearSearch()">Clear Search</button>
+        <span class="cnt" id="fpResult" style="margin-left:6px;color:var(--muted);font-size:12px"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- saved-view chips -->
+  <div class="chips" id="chips">
+    <span style="font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;margin-right:2px">Saved views</span>
+    <button class="chip ok" data-chip="ready" onclick="setChip('ready')">Ready to file <span class="c" id="ch-ready">0</span></button>
+    <button class="chip block" data-chip="incomplete" onclick="setChip('incomplete')">Incomplete / needs info <span class="c" id="ch-incomplete">0</span></button>
+    <button class="chip warn" data-chip="missingauth" onclick="setChip('missingauth')">Auth pending <span class="c" id="ch-missingauth">0</span></button>
+    <button class="chip" data-chip="overlap" onclick="setChip('overlap')">Reader overlap flag <span class="c" id="ch-overlap">0</span></button>
+    <button class="chip" data-chip="unassigned" onclick="setChip('unassigned')">Unassigned biller <span class="c" id="ch-unassigned">0</span></button>
+    <span class="activefilter" id="activeFilter"></span>
+  </div>
+
+  <!-- the grid -->
+  <div class="gridwrap">
+    <table class="grid">
+      <thead><tr id="headRow"></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+  </div>
+
+  <!-- footer / pagination -->
+  <div class="gridfoot">
+    <span><b>8,204</b> claims to prepare · Page <b>1</b> of <b>165</b> · <b id="perLbl">50</b> per page · showing <b id="showCount">0</b> after filter</span>
+    <div class="pager" id="pager"></div>
+    <label style="display:flex;align-items:center;gap:6px">Per page
+      <select id="perPage" onchange="t('Per-page is illustrative in this concept view')"><option>25</option><option selected>50</option><option>100</option><option>200</option></select>
+    </label>
+    <span class="virt">⚡ Production build uses row virtualization - all 8,204 rows stay instant.</span>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span class="ic" id="toastIc">✓</span><span id="toastMsg"></span></div>
+
+<script>
+/* ---------------- toast ---------------- */
+function toast(m,kind){var el=document.getElementById('toast');el.className='toast'+(kind?' '+kind:'');document.getElementById('toastIc').textContent=(kind==='idr'?'◆':kind==='warn'?'!':kind==='ai'?'✦':'✓');document.getElementById('toastMsg').textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},3200);}
+function t(m){toast(m);return false;}
+
+/* ---------------- role toggle: Biller <-> Supervisor ---------------- */
+function setRole(role){
+  var sup=role==='supervisor';
+  document.body.classList.toggle('role-super',sup);
+  document.getElementById('rt-biller').classList.toggle('on',!sup);
+  document.getElementById('rt-super').classList.toggle('on',sup);
+  document.getElementById('whoLabel').textContent=sup?'Dr. Michael Scholin · Billing Supervisor':'Sample, Dana · Biller';
+  document.getElementById('whoAvatar').textContent=sup?'MS':'SD';
+  toast(sup?'Supervisor view - intake stats now visible':'Biller view - clean grid, no stats');
+}
+
+/* ---------------- synthetic reference data ---------------- */
+var INS_TYPES=['Aetna','Blue Cross Blue Shield','Bundled','CHAMPVA','Cigna','Contracted-Global','Contracted-Pro','Contracted-Tech','Demographics Pending','Federal Plan','Federal Workers Comp','Lien Case','Letter of Protection','Medicaid','Medicaid Advantage Plan','Medicare','Medicare Replacement Plan','MVA','No Info','Other','Patient Responsibility','Private Insurance','Self Pay','Supplemental','TRICARE','UHC','Uninsured','Workmans Comp'];
+var BILLING=['Global','Tech Only','Pro Only'];
+var STATUSES=['New - Unprepped','In Prep','Coding Review','Info Pending','On Hold','Ready to File'];
+var COB=['Primary','Secondary'];
+var BILLERS=['Unassigned','Sample, Dana','Demo, Alex','Mockdata, Sam','Example, Priya'];
+var TODAY='07/17/2026';
+
+/* ---------------- synthetic intake rows (no PHI, invented entities) ---------------- */
+var ROWS=[
+  {pid:100017,name:'Testcase, Alice',dos:'05/28/2026',billing:'Global',claim:'2041007',status:'Ready to File',facility:'Sample General Hospital',state:'TX',cob:'Primary',ins:'Aetna',insAI:false,overlap:0,auth:'On file',reason:null,reasonAI:false,charges:12480,aged:3,biller:'Sample, Dana',filed:null,ch:0},
+  {pid:100032,name:'Sample, Marcus',dos:'05/21/2026',billing:'Tech Only',claim:'2041012',status:'Info Pending',facility:'Sample General Hospital',state:'TX',cob:'Secondary',ins:'UHC',insAI:true,overlap:2,auth:'Pending',reason:'Missing units on tech report',reasonAI:true,charges:8650,aged:9,biller:'Demo, Alex',filed:null,ch:1},
+  {pid:100048,name:'Demo, Priya',dos:'06/02/2026',billing:'Pro Only',claim:'2041019',status:'Ready to File',facility:'Demo Medical Center',state:'FL',cob:'Primary',ins:'Cigna',insAI:false,overlap:1,auth:'Not required',reason:null,reasonAI:false,charges:5320,aged:2,biller:'Sample, Dana',filed:null,ch:0},
+  {pid:100061,name:'Example, Terrance',dos:'05/14/2026',billing:'Global',claim:'2041026',status:'On Hold',facility:'Demo Medical Center',state:'FL',cob:'Primary',ins:'Blue Cross Blue Shield',insAI:false,overlap:3,auth:'On file',reason:'No reader sign-off',reasonAI:false,charges:21770,aged:14,biller:'Unassigned',filed:null,ch:2},
+  {pid:100079,name:'Specimen, Nadia',dos:'06/06/2026',billing:'Tech Only',claim:'2041033',status:'Ready to File',facility:'Example Regional Med',state:'GA',cob:'Primary',ins:'Humana',insAI:false,overlap:0,auth:'On file',reason:null,reasonAI:false,charges:6940,aged:1,biller:'Mockdata, Sam',filed:null,ch:0},
+  {pid:100093,name:'Mockdata, Cliff',dos:'05/30/2026',billing:'Pro Only',claim:'2041041',status:'Coding Review',facility:'Example Regional Med',state:'GA',cob:'Secondary',ins:'TRICARE',insAI:true,overlap:1,auth:'Pending',reason:'Auth pending from payer',reasonAI:true,charges:4110,aged:6,biller:'Demo, Alex',filed:null,ch:1},
+  {pid:100104,name:'Testcase, Rosa',dos:'06/01/2026',billing:'Global',claim:'2041048',status:'Ready to File',facility:'Sample General Hospital',state:'TX',cob:'Primary',ins:'UHC',insAI:false,overlap:0,auth:'On file',reason:null,reasonAI:false,charges:15980,aged:4,biller:'Sample, Dana',filed:null,ch:0},
+  {pid:100118,name:'Sample, Devon',dos:'05/19/2026',billing:'Tech Only',claim:'2041055',status:'In Prep',facility:'Specimen Surgical Center',state:'NC',cob:'Primary',ins:'WellCare',insAI:false,overlap:2,auth:'Not required',reason:'Facility NPI not confirmed',reasonAI:false,charges:7250,aged:11,biller:'Mockdata, Sam',filed:null,ch:3},
+  {pid:100126,name:'Demo, Lena',dos:'06/07/2026',billing:'Pro Only',claim:'2041062',status:'Ready to File',facility:'Demo Medical Center',state:'FL',cob:'Primary',ins:'Aetna',insAI:false,overlap:1,auth:'On file',reason:null,reasonAI:false,charges:3890,aged:2,biller:'Example, Priya',filed:null,ch:0},
+  {pid:100137,name:'Example, Hugo',dos:'05/24/2026',billing:'Global',claim:'2041069',status:'Info Pending',facility:'Mockdata Neuro Institute',state:'AZ',cob:'Primary',ins:'CHAMPVA',insAI:true,overlap:0,auth:'On file',reason:'Missing DX code',reasonAI:true,charges:18420,aged:8,biller:'Unassigned',filed:null,ch:1},
+  {pid:100145,name:'Specimen, Iris',dos:'06/03/2026',billing:'Tech Only',claim:'2041076',status:'Ready to File',facility:'Example Regional Med',state:'GA',cob:'Secondary',ins:'Blue Cross Blue Shield',insAI:false,overlap:0,auth:'On file',reason:null,reasonAI:false,charges:9630,aged:5,biller:'Demo, Alex',filed:null,ch:0},
+  {pid:100158,name:'Mockdata, Owen',dos:'05/12/2026',billing:'Pro Only',claim:'2041083',status:'On Hold',facility:'Testcase Community Hospital',state:'OH',cob:'Primary',ins:'Cigna',insAI:false,overlap:1,auth:'Pending',reason:'Charges not finalized',reasonAI:false,charges:5470,aged:16,biller:'Sample, Dana',filed:null,ch:2},
+  {pid:100166,name:'Testcase, Bianca',dos:'05/26/2026',billing:'Global',claim:'2041090',status:'Ready to File',facility:'Sample General Hospital',state:'TX',cob:'Primary',ins:'Aetna',insAI:false,overlap:0,auth:'On file',reason:null,reasonAI:false,charges:13260,aged:7,biller:'Sample, Dana',filed:'07/16/2026',ch:0}
+];
+
+var sortKey=null, sortDir=1, activeChip=null, hlOn=false;
+var money=function(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});};
+
+/* ---------------- columns (readiness / prepare-to-file focus) ---------------- */
+var COLS=[
+  {k:'save',       h:'Save',                    frz:'c-save'},
+  {k:'pat',        h:'Patient',                 frz:'c-pat'},
+  {k:'pid',        h:'PID',                     frz:'c-pid'},
+  {k:'dos',        h:'DOS',                     sort:'dos'},
+  {k:'billing',    h:'Billing Type'},
+  {k:'claim',      h:'Claim #'},
+  {k:'status',     h:'Claim Status'},
+  {k:'facility',   h:'Facility'},
+  {k:'state',      h:'State'},
+  {k:'cob',        h:'COB'},
+  {k:'ins',        h:'Insurance'},
+  {k:'overlap',    h:'Reader Overlap'},
+  {k:'auth',       h:'Auth'},
+  {k:'cms',        h:'CMS 02/12'},
+  {k:'patinfo',    h:'Patient Info'},
+  {k:'docs',       h:'Documents'},
+  {k:'notes',      h:'Notes'},
+  {k:'incomplete', h:'Incomplete Claim'},
+  {k:'charges',    h:'Total Charges',           sort:'charges'},
+  {k:'aged',       h:'Days Aged',               sort:'aged'},
+  {k:'biller',     h:'Biller'},
+  {k:'file',       h:'File Claim'},
+  {k:'filed',      h:'Initial Filing Complete'},
+  {k:'emailtech',  h:'Email Tech'},
+  {k:'ch',         h:'CH Messages'}
+];
+
+function buildHead(){
+  var hr=document.getElementById('headRow');
+  hr.innerHTML=COLS.map(function(c){
+    var cls=[c.frz?'frz '+c.frz:'', c.sort?'sortable':''].filter(Boolean).join(' ');
+    var inner=c.h;
+    if(c.sort){var a=sortKey===c.sort?(sortDir>0?' <span class="arr">▲</span>':' <span class="arr">▼</span>'):'';inner=c.h+a;}
+    return '<th class="'+cls+'"'+(c.sort?' onclick="sortBy(\''+c.sort+'\')"':'')+'>'+inner+'</th>';
+  }).join('');
+}
+
+/* ---------------- filtering ---------------- */
+function filtered(){
+  var name=(document.getElementById('fName').value||'').toLowerCase();
+  var status=document.getElementById('fStatus').value;
+  var billing=document.getElementById('fBilling').value;
+  var ready=document.getElementById('fReady').value;
+  return ROWS.filter(function(r){
+    if(name && r.name.toLowerCase().indexOf(name)===-1) return false;
+    if(status && r.status!==status) return false;
+    if(billing && r.billing!==billing) return false;
+    if(ready==='ready' && r.reason!==null) return false;
+    if(ready==='incomplete' && r.reason===null) return false;
+    if(activeChip==='ready' && r.reason!==null) return false;
+    if(activeChip==='incomplete' && r.reason===null) return false;
+    if(activeChip==='missingauth' && r.auth!=='Pending') return false;
+    if(activeChip==='overlap' && !(r.overlap>=2)) return false;
+    if(activeChip==='unassigned' && r.biller!=='Unassigned') return false;
+    return true;
+  });
+}
+
+/* ---------------- render helpers ---------------- */
+function sel(list,val){return list.map(function(o){return '<option'+(o===val?' selected':'')+'>'+o+'</option>';}).join('');}
+function insHtml(r){
+  if(r.insAI) return '<span class="aicell" title="AI-suggested payer from the eligibility check - confirm before filing">'+r.ins+'<span class="aitag">AI</span></span>';
+  return r.ins;
+}
+function overlapHtml(r){
+  if(r.overlap===0) return '<span class="ov none">None</span>';
+  var hi=r.overlap>=2;
+  return '<span class="ov'+(hi?' hi':'')+'"'+(hi?' title="Reader monitored multiple cases concurrently - verify time-based units before filing"':'')+'>'+r.overlap+' concurrent</span>';
+}
+function authHtml(r){
+  if(r.auth==='On file') return '<span class="authpill on">On file</span>';
+  if(r.auth==='Pending') return '<span class="authpill pend">Pending</span>';
+  return '<span class="authpill na">Not required</span>';
+}
+function incHtml(r){
+  if(r.reason===null) return '<span class="rflag ready" title="All required data present - ready to file">Ready</span>';
+  var ai=r.reasonAI?'<span class="aitag">AI</span>':'';
+  var pre=r.reasonAI?'AI-flagged: ':'';
+  return '<span class="rflag inc" title="'+pre+r.reason+'">Incomplete'+ai+'</span>';
+}
+function fileHtml(r){
+  if(r.filed) return '<button class="btn xs" disabled>Filed ✓</button>';
+  if(r.reason===null) return '<button class="btn xs ok" onclick="fileClaim('+r.pid+')">File Claim</button>';
+  return '<button class="btn xs" disabled title="'+r.reason+' - resolve before filing">File Claim</button>';
+}
+function filedHtml(r){
+  if(r.filed) return '<span class="filed">'+r.filed+'</span>';
+  return '<span class="notfiled">Not filed</span>';
+}
+function chHtml(r){
+  if(r.ch>0) return '<button class="mini" onclick="openCh('+r.pid+')">'+r.ch+' msg</button>';
+  return '<span class="notfiled">-</span>';
+}
+
+function sortData(data){
+  if(!sortKey) return data;
+  return data.slice().sort(function(a,b){
+    var x=a[sortKey], y=b[sortKey];
+    if(sortKey==='dos'){x=new Date(x);y=new Date(y);}
+    return (x<y?-1:x>y?1:0)*sortDir;
+  });
+}
+
+function rowHtml(r){
+  var cls=(hlOn && r.reason!==null)?'hl':'';
+  return '<tr class="'+cls+'" data-pid="'+r.pid+'">'+
+    '<td class="frz c-save"><button class="savebtn" data-pid="'+r.pid+'" onclick="saveRow('+r.pid+',this)">Save</button></td>'+
+    '<td class="frz c-pat"><span class="patcell" title="Open patient record" onclick="openPatient('+r.pid+')">'+r.name+'</span></td>'+
+    '<td class="frz c-pid mono">'+r.pid+'</td>'+
+    '<td class="mono">'+r.dos+'</td>'+
+    '<td><select data-f="billing" onchange="dirty('+r.pid+')">'+sel(BILLING,r.billing)+'</select></td>'+
+    '<td class="mono">'+r.claim+'</td>'+
+    '<td><select data-f="status" onchange="dirty('+r.pid+')">'+sel(STATUSES,r.status)+'</select></td>'+
+    '<td><span class="ent" title="'+r.facility+'">'+r.facility+'</span></td>'+
+    '<td class="mono">'+r.state+'</td>'+
+    '<td><select data-f="cob" onchange="dirty('+r.pid+')">'+sel(COB,r.cob)+'</select></td>'+
+    '<td>'+insHtml(r)+'</td>'+
+    '<td>'+overlapHtml(r)+'</td>'+
+    '<td>'+authHtml(r)+'</td>'+
+    '<td><a class="lnk" title="Open the CMS-1500 (02/12) claim form" onclick="openCms('+r.pid+')">CMS 02/12</a></td>'+
+    '<td><button class="mini" title="Open the patient demographics and insurance panel" onclick="openPatient('+r.pid+')">Info</button></td>'+
+    '<td><button class="mini" onclick="t(\'Opening documents for claim \'+'+r.claim+'+\' - synthetic\')">Docs</button></td>'+
+    '<td><button class="mini" onclick="t(\'Opening notes for claim \'+'+r.claim+'+\' - synthetic\')">Notes</button></td>'+
+    '<td>'+incHtml(r)+'</td>'+
+    '<td class="money">'+money(r.charges)+'</td>'+
+    '<td class="aged"'+(r.aged>14?' style="color:var(--block)"':'')+'>'+r.aged+'d</td>'+
+    '<td><select data-f="biller" onchange="dirty('+r.pid+')">'+sel(BILLERS,r.biller)+'</select></td>'+
+    '<td>'+fileHtml(r)+'</td>'+
+    '<td>'+filedHtml(r)+'</td>'+
+    '<td><button class="mini" title="Email the tech to chase missing data" onclick="emailTech('+r.pid+')">Email Tech</button></td>'+
+    '<td>'+chHtml(r)+'</td>'+
+  '</tr>';
+}
+
+function render(){
+  var data=sortData(filtered());
+  document.getElementById('body').innerHTML=data.map(rowHtml).join('');
+  document.getElementById('showCount').textContent=data.length;
+  document.getElementById('fpResult').textContent=data.length+' of '+ROWS.length+' rows on this page match';
+  updateActiveFilter(data.length);
+}
+
+/* ---------------- inline edit / save ---------------- */
+function dirty(pid){
+  var b=document.querySelector('.savebtn[data-pid="'+pid+'"]');
+  if(b){b.classList.remove('saved');b.classList.add('dirty');b.textContent='Save';}
+}
+function saveRow(pid,btn){
+  if(!btn.classList.contains('dirty'))return;
+  var tr=btn.closest('tr');var r=ROWS.filter(function(x){return x.pid===pid;})[0];
+  if(r){tr.querySelectorAll('select[data-f]').forEach(function(s){r[s.dataset.f]=s.value;});}
+  btn.classList.remove('dirty');btn.classList.add('saved');btn.textContent='Saved ✓';
+  toast('Claim '+(r?r.claim:pid)+' saved - no reload');
+  setTimeout(function(){btn.classList.remove('saved');btn.textContent='Save';},1800);
+}
+
+/* ---------------- actions (toasts only - never navigate) ---------------- */
+function fileClaim(pid){
+  var r=ROWS.filter(function(x){return x.pid===pid;})[0];
+  if(!r||r.reason!==null||r.filed)return;
+  r.filed=TODAY;r.status='Ready to File';
+  render();
+  toast('Claim '+r.claim+' filed - initial 837P submitted for '+r.name,'idr');
+}
+function emailTech(pid){
+  var r=ROWS.filter(function(x){return x.pid===pid;})[0];if(!r)return;
+  if(r.reason===null){toast('Claim '+r.claim+' is already Ready - nothing to chase');return;}
+  toast('Request sent to tech: "'+r.reason+'" on claim '+r.claim,'warn');
+}
+function openCms(pid){var r=ROWS.filter(function(x){return x.pid===pid;})[0];toast('Opening CMS-1500 (02/12) for '+(r?r.name:'')+' · claim '+(r?r.claim:'')+' - synthetic','idr');}
+function openPatient(pid){var r=ROWS.filter(function(x){return x.pid===pid;})[0];toast('Opening patient info panel for '+(r?r.name:'')+' - synthetic');}
+function openCh(pid){var r=ROWS.filter(function(x){return x.pid===pid;})[0];toast((r?r.ch:0)+' clearinghouse message(s) on claim '+(r?r.claim:'')+' - synthetic');}
+
+/* ---------------- chips ---------------- */
+function setChip(c){
+  activeChip=(activeChip===c)?null:c;
+  document.querySelectorAll('.chip').forEach(function(b){b.classList.toggle('on',b.dataset.chip===activeChip);});
+  render();
+}
+function chipCounts(){
+  var c={ready:0,incomplete:0,missingauth:0,overlap:0,unassigned:0};
+  ROWS.forEach(function(r){
+    if(r.reason===null)c.ready++; else c.incomplete++;
+    if(r.auth==='Pending')c.missingauth++;
+    if(r.overlap>=2)c.overlap++;
+    if(r.biller==='Unassigned')c.unassigned++;
+  });
+  for(var k in c){var el=document.getElementById('ch-'+k);if(el)el.textContent=c[k];}
+}
+function updateActiveFilter(shown){
+  var names={ready:'Ready to file',incomplete:'Incomplete / needs info',missingauth:'Auth pending',overlap:'Reader overlap flag',unassigned:'Unassigned biller'};
+  var parts=[];
+  if(activeChip)parts.push(names[activeChip]);
+  if(document.getElementById('fName').value)parts.push('name "'+document.getElementById('fName').value+'"');
+  if(document.getElementById('fStatus').value)parts.push(document.getElementById('fStatus').value);
+  if(document.getElementById('fBilling').value)parts.push(document.getElementById('fBilling').value);
+  if(document.getElementById('fReady').value)parts.push(document.getElementById('fReady').value==='ready'?'Ready':'Incomplete');
+  var af=document.getElementById('activeFilter');
+  af.innerHTML=parts.length?('Active: <b>'+parts.join(' · ')+'</b> - '+shown+' shown'):'No filter - <b>all '+ROWS.length+'</b> intake rows on this page';
+}
+
+/* ---------------- filters / search ---------------- */
+function applyFilters(fromSearch){render();if(fromSearch)toast(filtered().length+' matching rows on this page (portfolio search spans all 165 pages in production)');}
+function clearSearch(){
+  document.getElementById('fName').value='';
+  document.getElementById('fStatus').value='';
+  document.getElementById('fBilling').value='';
+  document.getElementById('fReady').value='';
+  setAllIns(true);activeChip=null;
+  document.querySelectorAll('.chip').forEach(function(b){b.classList.remove('on');});
+  render();toast('Search cleared');
+}
+function setAllIns(on){document.querySelectorAll('#insGrid input').forEach(function(x){x.checked=on;});}
+
+/* ---------------- sort ---------------- */
+function sortBy(k){
+  if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=(k==='dos')?1:-1;}
+  buildHead();render();
+  toast('Sorted by '+k+(sortDir>0?' ascending':' descending'));
+}
+
+/* ---------------- toolbar ---------------- */
+function toggleHl(cb){hlOn=cb.checked;document.getElementById('hlToggle').classList.toggle('on',hlOn);render();toast(hlOn?'Highlighting incomplete claims that still need info':'Highlight off');}
+function toggleFilter(){document.getElementById('filterPanel').classList.toggle('collapsed');}
+function collapseSearch(){
+  var p=document.getElementById('filterPanel');p.classList.toggle('collapsed');
+  document.getElementById('collapseBtn').textContent=p.classList.contains('collapsed')?'Expand search area':'Collapse search area';
+}
+
+/* ---------------- pager (illustrative) ---------------- */
+function buildPager(){
+  var el=document.getElementById('pager');
+  var pages=[1,2,3,164,165];var html='<button onclick="pageToast()">‹ Prev</button>';var last=0;
+  pages.forEach(function(x){if(x-last>1)html+='<span class="dots">…</span>';html+='<button class="'+(x===1?'on':'')+'" onclick="'+(x===1?'':'pageToast()')+'">'+x+'</button>';last=x;});
+  html+='<button onclick="pageToast()">Next ›</button><button onclick="pageToast()">Last</button>';
+  el.innerHTML=html;
+}
+function pageToast(){toast('This concept view shows page 1; production paginates all 8,204 intake claims');}
+
+/* ---------------- init ---------------- */
+function initSelects(){
+  document.getElementById('insGrid').innerHTML=INS_TYPES.map(function(x){return '<label><input type="checkbox" value="'+x+'" checked onchange="applyFilters()"> '+x+'</label>';}).join('');
+  document.getElementById('fStatus').innerHTML='<option value="">Any status</option>'+STATUSES.map(function(s){return '<option>'+s+'</option>';}).join('');
+}
+initSelects();
+buildHead();chipCounts();render();buildPager();
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>

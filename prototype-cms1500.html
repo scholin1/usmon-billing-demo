@@ -302,6 +302,11 @@
   .pf-scroll{overflow-x:auto}
   .pf-sheet{background:#fff;color:#111;border:2px solid var(--pfred);border-radius:2px;font-family:"Arial Narrow",Arial,var(--sans);font-size:10px;line-height:1.15;width:840px;max-width:840px;margin:0 auto}
   :root{--pfred:#d1121a}
+  /* Print on Blank (onto pre-printed red form): fade the whole red form grid to a
+     faint gray so the preview reads as just the black DATA text landing in place.
+     Everything red (borders, box numbers, labels, band headers) resolves --pfred,
+     so overriding the variable fades the form while black .pf-val data stays crisp. */
+  .pf-sheet.blank-mode{--pfred:#e8e8e8}
   .pf-sheet *{box-sizing:border-box}
   .pf-top{display:flex;align-items:flex-start;justify-content:space-between;padding:6px 8px 4px;border-bottom:2px solid var(--pfred);gap:10px}
   .pf-title{font-size:9px;font-weight:800;color:var(--pfred);letter-spacing:.3px;line-height:1.25;max-width:230px;text-transform:uppercase}
@@ -1293,8 +1298,10 @@ IEA*1*000001001~</pre>
   /* ---------- Print preview - official CMS-1500 (mail/fax fallback) ---------- */
   function openPrintCms(dataOnly){
     const note=document.getElementById('printcmsNote');
+    // blank-mode fades the pre-printed red form so only the data text shows; full Print keeps the red lines
+    document.getElementById('pfSheet').classList.toggle('blank-mode',!!dataOnly);
     if(dataOnly){
-      note.innerHTML='<span>🖨</span><span><b>Print on Blank - data-only:</b> prints just the claim values, aligned to drop onto a pre-printed red CMS-1500 form. Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
+      note.innerHTML='<span>🖨</span><span><b>Print on Blank - data-only:</b> prints just the claim values, aligned to drop onto a pre-printed red CMS-1500 form. Preview shows text only - the red form is already printed on the paper stock. Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
     }else{
       note.innerHTML='<span>🖨</span><span><b>For carriers that don\'t accept electronic 837 - prints the official CMS-1500 to mail or fax.</b> Filled with claim 1000001 (Testcase, Alice). Synthetic.</span>';
     }

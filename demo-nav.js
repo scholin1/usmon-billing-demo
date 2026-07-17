@@ -8,7 +8,8 @@
   var PAGES = [
     { f: 'index.html', label: 'Start', home: true },
     { f: 'prototype-home-dashboard.html', label: 'Dashboard' },
-    { f: 'prototype-ops-worklist.html', label: 'Worklist' },
+    { f: 'prototype-new-billing.html', label: 'New Billing', group: 'Worklists' },
+    { f: 'prototype-ops-worklist.html', label: 'Ongoing', group: 'Worklists' },
     { f: 'prototype-guided-flow.html', label: 'Guided', group: 'Styles' },
     { f: 'prototype-familiar-modern.html', label: 'Familiar', group: 'Styles' },
     { f: 'prototype-v5-router.html', label: 'Cockpit', group: 'Styles' },
@@ -24,6 +25,7 @@
   var BLURB = {
     'index.html': 'the overview - a one-minute explanation of the approach, with a link into each concept.',
     'prototype-home-dashboard.html': 'the Home dashboard - where the day starts, with configurable count tiles and a switcher for billers who serve more than one client.',
+    'prototype-new-billing.html': 'New Insurance Billing - the start of the process: completed cases arrive as claims to prepare and file, with readiness flags (incomplete claim, initial filing complete) and no collections columns yet.',
     'prototype-ops-worklist.html': 'the Operational Worklist - the dense daily grid built to handle tens of thousands of claims: filter, sort by deadline, edit in place, and act on many at once.',
     'prototype-biller-review.html': 'the Biller Review view - confirm a mostly prefilled claim, with the AI-filled fields highlighted for a quick check.',
     'prototype-guided-flow.html': 'the Guided Flow - the same claim, one calm step at a time, so a new biller can complete it without training.',
@@ -199,4 +201,65 @@
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { var v = input.value.trim(); if (!v) return; input.value = ''; answer(v); }
   });
+
+  /* ---------- hover tooltips on buttons (demo help) ---------- */
+  var TIPS = {
+    'add new case': 'Start a new claim from a completed case.',
+    'manually export batch now': 'Export the selected claims now as an 837 batch.',
+    'print pdf batch now': 'Print the selected claims as a PDF batch.',
+    'download batch now': 'Download the current claim batch.',
+    'download statement csv': 'Download a CSV statement of this list.',
+    'export': 'Export the current view.',
+    'search': 'Run the search using the filters above.',
+    'clear search': 'Clear all search filters.',
+    'save': 'Save your changes to this row.',
+    'view cms 1500': 'Open the CMS-1500 claim form as a popup.',
+    'cms 1500': 'Open the CMS-1500 claim form.',
+    'form 1500 view': 'View the standard CMS-1500 form for this claim.',
+    'download 837': 'Download the electronic 837P claim file.',
+    'print': 'Print the filled CMS-1500 form.',
+    'print on blank': 'Print only the data onto a pre-printed CMS-1500 form (red lines already on the paper).',
+    'view tech report': 'View the reading physician Tech Report the coding came from.',
+    'coding assist': 'AI scan of the reports for CPT codes you may have missed.',
+    'documents': 'View the documents attached to this claim.',
+    'notes': 'View and add notes on this claim.',
+    'history': 'View the activity history for this claim.',
+    're pull from case': 'Re-pull the latest data from the source case.',
+    'post era': 'Post the electronic remittance (835).',
+    'post uhc 835 era': 'Post the UHC electronic remittance (835).',
+    'send to arbitration': 'Send this claim to arbitration to recover more.',
+    'refile appeal': 'Refile or appeal this claim.',
+    'add additional payment': 'Post another payment against this claim.',
+    'retire': 'Retire this connection but keep it read-only for past 835s and refiles.',
+    'delete': 'Permanently delete (high-level admin only).',
+    'test': 'Test this clearinghouse connection.',
+    'add connection': 'Add a new clearinghouse connection.',
+    'ask for a custom report': 'Ask the AI to build a report from a plain-English request.',
+    'file claim': 'File this claim once it is complete.',
+    'mark reviewed': 'Mark this section reviewed.',
+    'confirm': 'Confirm this AI-suggested value.',
+    'biller': 'Biller view: the clean, stats-free verification workspace.',
+    'supervisor': 'Supervisor view: adds team stats and the time / efficiency oversight.',
+    'customize': 'Add or remove the count tiles on your dashboard.'
+  };
+  function dmNorm(s) { return (s || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function applyTips(root) {
+    if (!root || !root.querySelectorAll) return;
+    var els = root.querySelectorAll('button, a.btn, .btn, .go, .routebtn, .revbtn, .savebtn, .mini, .actbtn');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.__dmtip || el.closest('#dm-ribbon') || el.closest('#dm-ask')) continue;
+      var t = dmNorm(el.textContent);
+      if (TIPS[t]) { if (!el.title) el.title = TIPS[t]; el.__dmtip = 1; }
+    }
+  }
+  applyTips(document);
+  try {
+    new MutationObserver(function (ms) {
+      for (var i = 0; i < ms.length; i++) {
+        var a = ms[i].addedNodes;
+        for (var j = 0; j < a.length; j++) { if (a[j].nodeType === 1) applyTips(a[j]); }
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  } catch (e) {}
 })();
