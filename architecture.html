@@ -1,0 +1,264 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"></head><body>
+<title>Insurance Billing: legacy and new platform</title>
+<style>
+  :root{
+    --canvas:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa;
+    --ink:#16202e; --muted:#54626f; --faint:#8493a1;
+    --line:#e0e5ea; --line-strong:#ccd3db;
+    --teal:#0b6e7a; --teal-dark:#095560; --teal-tint:#e3f1f2; --teal-line:#b9e0e3;
+    --legacy:#a8500f; --legacy-tint:#faefe4; --legacy-line:#eccdb0;
+    --ok:#1b7f43; --ok-tint:#e8f6ee; --ok-line:#bfe6cd;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --radius:12px; --shadow:0 1px 2px rgba(16,32,46,.05),0 10px 26px rgba(16,32,46,.07);
+    --maxw:1000px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --canvas:#0e1620; --surface:#152030; --surface-2:#111a26;
+      --ink:#e8eef4; --muted:#9fb0bf; --faint:#6f8091;
+      --line:#233242; --line-strong:#31445a;
+      --teal:#4fc7d4; --teal-dark:#7ed8e2; --teal-tint:#0f2d33; --teal-line:#1c4a52;
+      --legacy:#e39a5e; --legacy-tint:#2c1f13; --legacy-line:#4a3620;
+      --ok:#5fce8b; --ok-tint:#12271a; --ok-line:#245234;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="light"]{
+    --canvas:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa;
+    --ink:#16202e; --muted:#54626f; --faint:#8493a1;
+    --line:#e0e5ea; --line-strong:#ccd3db;
+    --teal:#0b6e7a; --teal-dark:#095560; --teal-tint:#e3f1f2; --teal-line:#b9e0e3;
+    --legacy:#a8500f; --legacy-tint:#faefe4; --legacy-line:#eccdb0;
+    --ok:#1b7f43; --ok-tint:#e8f6ee; --ok-line:#bfe6cd;
+    --shadow:0 1px 2px rgba(16,32,46,.05),0 10px 26px rgba(16,32,46,.07);
+  }
+  :root[data-theme="dark"]{
+    --canvas:#0e1620; --surface:#152030; --surface-2:#111a26;
+    --ink:#e8eef4; --muted:#9fb0bf; --faint:#6f8091;
+    --line:#233242; --line-strong:#31445a;
+    --teal:#4fc7d4; --teal-dark:#7ed8e2; --teal-tint:#0f2d33; --teal-line:#1c4a52;
+    --legacy:#e39a5e; --legacy-tint:#2c1f13; --legacy-line:#4a3620;
+    --ok:#5fce8b; --ok-tint:#12271a; --ok-line:#245234;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--teal);font-weight:600;margin:0 0 10px}
+  h1{font-size:clamp(28px,4.4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:0 0 14px;
+    font-weight:800;text-wrap:balance;max-width:20ch}
+  h2{font-size:clamp(21px,2.6vw,27px);letter-spacing:-.01em;margin:0 0 6px;font-weight:750;text-wrap:balance}
+  p{margin:0 0 14px;color:var(--muted);max-width:66ch}
+  p.lead{font-size:18px;color:var(--ink);max-width:70ch}
+  b,strong{color:var(--ink)}
+  code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 5px;color:var(--ink)}
+
+  header.top{padding:52px 0 34px;border-bottom:1px solid var(--line)}
+  .metarow{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .chip{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.03em;
+    padding:5px 11px;border-radius:999px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--muted)}
+  .chip.tealc{background:var(--teal-tint);border-color:var(--teal-line);color:var(--teal-dark)}
+
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  .sub{color:var(--muted);max-width:70ch;margin-bottom:22px}
+
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 17px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 5px;font-size:15.5px;font-weight:700;letter-spacing:-.01em}
+  .card p{margin:0;font-size:14px;color:var(--muted)}
+  .card .k{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--faint);display:block;margin-bottom:7px;font-weight:600}
+
+  .legacy h3{color:var(--legacy)}
+  .legacy.card{background:var(--legacy-tint);border-color:var(--legacy-line)}
+  .legacy.card p{color:var(--ink);opacity:.82}
+
+  /* contrast table */
+  .contrast{width:100%;border-collapse:separate;border-spacing:0;font-size:14.5px;
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .contrast th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    text-align:left;padding:11px 15px;background:var(--surface-2);color:var(--faint);font-weight:600}
+  .contrast td{padding:12px 15px;border-top:1px solid var(--line);vertical-align:top;color:var(--muted)}
+  .contrast td.old{color:var(--legacy);background:color-mix(in srgb,var(--legacy-tint) 55%,transparent)}
+  .contrast td.new b{color:var(--ok)}
+  .contrast tr td:first-child{border-right:1px solid var(--line)}
+
+  /* diagrams on a light-grounded card so mermaid stays legible in both themes */
+  .diagram{background:#ffffff;border:1px solid var(--line-strong);border-radius:var(--radius);
+    padding:18px;overflow-x:auto;box-shadow:var(--shadow)}
+  .diagram .mermaid{min-width:520px}
+  .diagram .cap{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+    color:#7a8794;margin:0 0 10px;font-weight:600}
+
+  .tablechips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .tablechips .t{font-family:var(--mono);font-size:12px;padding:5px 10px;border-radius:7px;
+    background:var(--surface-2);border:1px solid var(--line);color:var(--ink)}
+  .tablechips .t.core{background:var(--teal-tint);border-color:var(--teal-line);color:var(--teal-dark);font-weight:600}
+
+  .goals{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:760px){.goals{grid-template-columns:repeat(2,1fr)}}
+  .goal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px}
+  .goal .g{font-size:15px;font-weight:750;color:var(--teal-dark);margin:0 0 4px}
+  .goal p{margin:0;font-size:13px}
+
+  footer{padding:26px 0 60px;color:var(--faint);font-size:13px}
+  footer p{color:var(--faint);max-width:none}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">USMON // Insurance Billing // Architecture</p>
+    <h1>The 18-year-old system, and the platform that replaces it</h1>
+    <p class="lead">There was zero documentation for the legacy billing system. We reconstructed its data shape from the source code, read-only, then designed a new one that keeps the meaning and discards the structure. Here is both, side by side.</p>
+    <div class="metarow">
+      <span class="chip tealc">Proposed: ADR-001 + ADR-002</span>
+      <span class="chip">Synthetic, no real data</span>
+      <span class="chip">Legacy read-only, untouched</span>
+      <span class="chip">2026-07-18</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">What exists today, reconstructed from code</p>
+    <h2>The legacy</h2>
+    <p class="sub">A JSP and servlet application on SQL Server, no ORM, no schema documentation. We mined the shape from the SQL buried in the Java. About 28 claim-related tables. The problems are structural, and they are exactly what we do not carry forward.</p>
+    <div class="grid g3">
+      <div class="card legacy"><span class="k">Shape</span><h3>One table does four jobs</h3><p>The wide <code>patient</code> table conflates patient, insured, encounter, and claim header in a single row.</p></div>
+      <div class="card legacy"><span class="k">Duplication</span><h3>Rows cloned per track</h3><p>That whole row is copied for each billing track, Global / Tech / Pro, linked back by <code>upid</code>.</p></div>
+      <div class="card legacy"><span class="k">Logic</span><h3>Hidden in the database</h3><p>Business rules live in stored procedures (<code>addClaim4</code>, <code>getNewPointer</code>, <code>fill_data</code>), invisible to the app.</p></div>
+      <div class="card legacy"><span class="k">The contract</span><h3>A flattening view</h3><p>A <code>patient_ansi</code> view joins ten tables into one row that the 837 exporter reads. Its definition lives only in the DB.</p></div>
+      <div class="card legacy"><span class="k">Coupling</span><h3>Single monolith</h3><p>Multi-tenant but inseparable; a client cannot be pulled out, and the worklist waits on the old database.</p></div>
+      <div class="card legacy"><span class="k">Security</span><h3>Secrets in source</h3><p>Credentials and config were kept in source files rather than a managed secret store. Flagged for the platform team; the new design externalizes all of it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Same meaning, new structure</p>
+    <h2>What changes</h2>
+    <p class="sub">The reconstruction told us what every field means. The new model keeps the meanings and fixes the structure.</p>
+    <table class="contrast">
+      <thead><tr><th>Legacy, as-is</th><th>New platform</th></tr></thead>
+      <tbody>
+        <tr><td class="old">One wide table conflates four concepts</td><td class="new"><b>Separate Patient, Insured, Encounter, Claim</b>, each its own table</td></tr>
+        <tr><td class="old">Row cloned per billing track</td><td class="new"><b>One Encounter, one to three Claims</b>, no demographic duplication</td></tr>
+        <tr><td class="old">Business logic buried in stored procedures</td><td class="new"><b>Data-driven rule sets per tenant</b> (Box 33 assignment, scrub, clocks)</td></tr>
+        <tr><td class="old">Secrets and config kept in source</td><td class="new"><b>AWS Secrets Manager</b>, referenced, never stored in DB or code</td></tr>
+        <tr><td class="old">Worklist waits on the old monolith</td><td class="new"><b>Own indexed Aurora store</b>, synced, so 52K claims feel instant</td></tr>
+        <tr><td class="old">Single inseparable monolith</td><td class="new"><b>Multi-tenant and standalone-capable</b> from day one</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The new data model</p>
+    <h2>A clean, multi-tenant schema</h2>
+    <p class="sub">One Patient and one Encounter, with one to three Claims hanging off it. Normalized, indexed, every table tenant-isolated. Informed by the legacy meanings, deliberately nothing like its structure.</p>
+    <div class="diagram">
+      <p class="cap">Core entities and relationships</p>
+      <pre class="mermaid">
+erDiagram
+  TENANT ||--o{ PATIENT : has
+  TENANT ||--o{ PROVIDER : has
+  TENANT ||--o{ PAYER : has
+  TENANT ||--o{ BILLING_ENTITY : has
+  PATIENT ||--o{ INSURED : "covered by"
+  PATIENT ||--o{ ENCOUNTER : has
+  ENCOUNTER ||--|{ CLAIM : "1..3 billing tracks"
+  CLAIM ||--|{ CHARGE : "Box 24 lines"
+  CLAIM }o--|| PAYER : "billed to"
+  CLAIM }o--|| BILLING_ENTITY : "Box 33 pay-to"
+  ENCOUNTER }o--|| PROVIDER : "referring / rendering / facility"
+  CLAIM ||--o{ REMIT : "835 posts back"
+  CLAIM ||--o{ SCRUB_FINDING : "pre-submission"
+  CLAIM ||--o{ CLAIM_EVENT : "lifecycle events"
+      </pre>
+    </div>
+    <div class="tablechips">
+      <span class="t core">tenant</span><span class="t core">patient</span><span class="t core">insured</span>
+      <span class="t core">encounter</span><span class="t core">claim</span><span class="t core">charge</span>
+      <span class="t">provider</span><span class="t">payer</span><span class="t">billing_entity</span>
+      <span class="t">document</span><span class="t">remit</span><span class="t">eligibility</span>
+      <span class="t">scrub_finding</span><span class="t">claim_event</span><span class="t">rule_set</span>
+      <span class="t">clearinghouse_connection</span><span class="t">audit_log</span><span class="t">app_user</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The platform, managed AWS</p>
+    <h2>The stack</h2>
+    <p class="sub">Scalable, managed, fast, modern. Every layer is a managed service, no servers to patch, no new EC2.</p>
+    <div class="diagram">
+      <p class="cap">How the pieces fit</p>
+      <pre class="mermaid">
+flowchart TB
+  MCP["USMON adapter over mcp-channel / MCP"]
+  OTH["Other adapters: FHIR / HL7 / file"]
+  COG["Amazon Cognito (auth)"]
+  API["API + MCP server on ECS Fargate"]
+  DB[("Aurora PostgreSQL Serverless v2")]
+  AI["Bedrock + Bedrock Data Automation"]
+  BUS{{"EventBridge"}}
+  SPA["React / TypeScript SPA"]
+  CH["Clearinghouses / payers"]
+  SIB["Remit + Arbitron"]
+  MCP --> API
+  OTH --> API
+  SPA --> COG --> API
+  API --- DB
+  API --- AI
+  API --> BUS --> SIB
+  API --> CH
+      </pre>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><span class="k">Database</span><h3>Aurora PostgreSQL Serverless v2</h3><p>Managed and autoscaling; row-level tenant isolation; JSONB for flexible config.</p></div>
+      <div class="card"><span class="k">Compute</span><h3>ECS Fargate</h3><p>Stateless containers, autoscaling, no servers to patch. Honors the no-new-EC2 rule.</p></div>
+      <div class="card"><span class="k">Interface</span><h3>API-first + its own MCP server</h3><p>The API is the product; every screen is a client. Programmable from outside.</p></div>
+      <div class="card"><span class="k">AI</span><h3>Bedrock + Data Automation</h3><p>Scrub, coding assist, prefill, document reading. Server-side, PHI stays in AWS.</p></div>
+      <div class="card"><span class="k">Identity</span><h3>Amazon Cognito</h3><p>One auth plane; federates USMON SSO as an add-on, own user pools standalone.</p></div>
+      <div class="card"><span class="k">Events</span><h3>EventBridge</h3><p>Carries claim lifecycle events to the Remit and Arbitron modules.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Why this shape</p>
+    <h2>What you asked for</h2>
+    <div class="goals" style="margin-top:18px">
+      <div class="goal"><p class="g">Scalable</p><p>Fargate and Aurora autoscale; stateless API. Multi-tenant from day one.</p></div>
+      <div class="goal"><p class="g">Managed</p><p>Every piece is a managed AWS service. Nothing to babysit.</p></div>
+      <div class="goal"><p class="g">Fast</p><p>Own indexed store synced from legacy; the 52K worklist never waits on the old monolith.</p></div>
+      <div class="goal"><p class="g">Modern</p><p>API-first, event-driven, containerized, infra-as-code, AI-native.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Proposed architecture, recorded in ADR-001 (dual-mode) and ADR-002 (platform and stack). The legacy shape was reconstructed by static analysis of the source only; the legacy database was never touched and no real patient data was read or reproduced. All names and tables shown for the new model are design proposals.</p>
+  </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:"neutral",securityLevel:"loose"});</script>
+</body></html>
