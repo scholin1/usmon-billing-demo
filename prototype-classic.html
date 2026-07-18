@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON - Classic View</title>
+<style>
+  /* ==========================================================================
+     USMON - CLASSIC VIEW  (client demo, SYNTHETIC data only)
+     A deliberate "legacy look" comfort skin for change-resistant billers.
+     It MIMICS the ~18-year-old USMON UI (boxy tabs, beveled buttons, a dense
+     enterprise grid) but runs on the new engine: same data, AI help,
+     validation, and deadline clocks underneath. Familiar face, new benefits.
+     ========================================================================== */
+
+  /* period-correct enterprise palette: dialog gray, blue title bars, thin
+     gray gridlines, banded blue-gray grid header. Intentionally plainer than
+     the modern prototypes, but tidy and legible. */
+  :root{
+    --face:#d6d3ce;            /* classic dialog gray */
+    --panel:#ece9e1;
+    --white:#ffffff;
+    --row-alt:#eef1f6;
+    --ink:#1c2a3a;
+    --line:#a9b1bd;            /* gridline */
+    --line-hard:#8a97ab;
+    --titlebar-a:#5b7aa8;      /* blue title bar gradient */
+    --titlebar-b:#38547f;
+    --titlebar-line:#2c4162;
+    --tab-face:#e7ebf2;
+    --tab-line:#90a0b8;
+    --btn-face:#dfe6f0;
+    --btn-hi:#ffffff;
+    --btn-lo:#7f95b4;
+    --link:#0645ad;
+    --ok:#2f8f2f; --ok-bg:#e2f5e2; --ok-line:#7fc27f;
+    --warn:#b06a00; --warn-bg:#fff2d6; --warn-line:#e0be6a;
+    --bad:#c01818; --bad-bg:#fbe4e4; --bad-line:#e39a9a;
+    --ai:#6d4aff; --ai-bg:#ece3ff; --ai-line:#c9b6ff; --ai-chip:#f3eeff;
+    --leg:"Tahoma","Segoe UI",Verdana,Geneva,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{ -webkit-text-size-adjust:100%; }
+  body{margin:0;background:var(--face);color:var(--ink);font-family:var(--leg);font-size:11px;line-height:1.35}
+  a{color:var(--link)}
+  button{font-family:var(--leg);cursor:pointer}
+
+  /* ---- slim "modern engine" banner (subtle, not loud) ---- */
+  .modernbar{
+    display:flex;align-items:center;gap:8px;
+    background:#f4f1ff;border-bottom:1px solid var(--ai-line);
+    color:#3d2b8a;font-size:11px;padding:4px 12px}
+  .modernbar .sp{width:15px;height:15px;border-radius:3px;background:var(--ai);color:#fff;display:inline-grid;place-items:center;font-size:9px;font-weight:bold;flex:none}
+  .modernbar b{color:#2a1d63}
+  .modernbar .newmark{margin-left:auto;font-size:9.5px;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;color:#6d4aff;border:1px solid var(--ai-line);background:var(--ai-chip);border-radius:2px;padding:1px 6px;white-space:nowrap}
+
+  /* ---- legacy tab strip across the very top ---- */
+  .legtabs{display:flex;align-items:flex-end;gap:2px;background:#c9d3e0;border-bottom:2px solid var(--titlebar-line);padding:5px 8px 0}
+  .legtab{font-size:11px;padding:4px 13px;background:var(--tab-face);border:1px solid var(--tab-line);border-bottom:none;color:#33465f;border-radius:3px 3px 0 0;cursor:pointer;position:relative;top:1px;text-decoration:none;white-space:nowrap}
+  .legtab:hover{background:#f1f4fa;color:#12325a}
+  .legtab.active{background:#fff;color:#12325a;font-weight:bold;border-color:var(--titlebar-line);border-width:1px 1px 0;top:2px;padding-bottom:6px}
+  .legtabs .tabsp{flex:1}
+  .legtabs .role{display:flex;align-items:center;gap:6px;padding-bottom:5px;font-size:11px;color:#33465f}
+  .legtabs .role .who{font-weight:bold;color:#12325a;white-space:nowrap}
+  .rolebtn{font-size:10.5px;padding:2px 8px;background:var(--tab-face);border:1px solid var(--tab-line);color:#33465f;border-radius:2px}
+  .rolebtn.on{background:#38547f;border-color:#2c4162;color:#fff;font-weight:bold}
+
+  /* ---- flat row of beveled action buttons ---- */
+  .legbtns{display:flex;flex-wrap:wrap;gap:4px;align-items:center;background:var(--face);padding:6px 8px;border-bottom:1px solid #b7b3ac}
+  .legbtn{font-size:11px;font-weight:bold;color:#12325a;background:var(--btn-face);
+    padding:3px 9px;border:1px solid;border-color:var(--btn-hi) var(--btn-lo) var(--btn-lo) var(--btn-hi);
+    box-shadow:inset -1px -1px 0 #9fb0c8, inset 1px 1px 0 #fff}
+  .legbtn:hover{background:#eaf1fb}
+  .legbtn:active{border-color:var(--btn-lo) var(--btn-hi) var(--btn-hi) var(--btn-lo);box-shadow:inset 1px 1px 0 #9fb0c8}
+  .legbtns .spring{flex:1}
+  .legbtns .hint{font-size:10.5px;color:#5a6474}
+
+  /* ---- supervisor-only stats strip (billers never see it) ---- */
+  .supstats{display:none;align-items:center;gap:14px;background:#eef2f8;border-bottom:1px solid #b8c4d8;padding:5px 10px;font-size:11px;color:#33465f}
+  body.role-super .supstats{display:flex}
+  .supstats .badge{font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;color:#38547f;border:1px solid #9fb4d0;background:#fff;border-radius:2px;padding:1px 5px}
+  .supstats .stat b{color:#12325a;font-size:12px}
+  .supstats .flag{color:var(--bad);font-weight:bold}
+
+  /* ---- collapsible "Collapse Search Area" panel ---- */
+  .searchpanel{margin:7px 8px;border:1px solid var(--titlebar-line);background:var(--panel)}
+  .sp-title{background:linear-gradient(var(--titlebar-a),var(--titlebar-b));color:#fff;font-weight:bold;font-size:11px;padding:4px 9px;cursor:pointer;display:flex;align-items:center;gap:7px;user-select:none}
+  .sp-title .tw{font-size:9px}
+  .searchpanel.collapsed .sp-body{display:none}
+  .sp-body{padding:8px 9px}
+  .sp-fields{display:flex;flex-wrap:wrap;gap:6px 12px}
+  .fld{display:flex;flex-direction:column;gap:1px}
+  .fld label{font-size:9.5px;color:#4a5464;font-weight:bold}
+  .fld input,.fld select{font-family:var(--leg);font-size:11px;border:1px solid #98a2b2;padding:1px 3px;background:#fff;min-width:96px}
+  .fld input.sm{min-width:66px}
+  .instype{margin-top:8px;border:1px solid #b8c0cc;background:#fff;padding:5px 7px}
+  .instype .ih{font-size:9.5px;font-weight:bold;color:#4a5464;margin-bottom:4px}
+  .instype label{font-size:10.5px;color:#22354f;margin-right:12px;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+  .instype input{margin:0}
+  .sp-foot{margin-top:8px;display:flex;gap:5px;align-items:center}
+
+  /* ---- the dense enterprise grid ---- */
+  .gridscroll{margin:0 8px 8px;border:1px solid var(--line-hard);overflow:auto;max-height:calc(100vh - 250px);background:#fff}
+  table.legrid{border-collapse:collapse;white-space:nowrap;font-size:11px}
+  .legrid th{
+    background:linear-gradient(#c5cfdd,#a9b8ce);border:1px solid var(--line-hard);
+    color:#22354f;font-weight:bold;font-size:10px;padding:3px 6px;text-align:left;
+    position:sticky;top:0;z-index:3;user-select:none}
+  .legrid td{border:1px solid var(--line);padding:1px 5px;height:23px;background:#fff;vertical-align:middle}
+  .legrid tbody tr:nth-child(even) td{background:var(--row-alt)}
+  .legrid tbody tr:hover td{background:#fdf8e3}
+  .legrid .pat{font-weight:bold;color:#12325a;cursor:pointer}
+  .legrid .pat:hover{text-decoration:underline}
+  .legrid .mono{font-family:"Consolas","Courier New",monospace}
+  .legrid select.cellsel{font-family:var(--leg);font-size:10.5px;border:1px solid #b0b8c4;background:#fff;padding:0 1px;max-width:118px}
+  .legrid input.cmt{font-family:var(--leg);font-size:10.5px;border:1px solid #b8c0cc;padding:0 2px;width:118px}
+  .legrid input.chk{margin:0}
+  .celllnk{color:var(--link);text-decoration:underline;cursor:pointer;font-size:10.5px}
+  .money{font-family:"Consolas","Courier New",monospace;text-align:right}
+
+  /* small round status lights (like the real screen) */
+  .light{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid #00000035;
+    background:radial-gradient(circle at 32% 30%, #ffffffcc, #8888 60%, #555 100%);vertical-align:middle}
+  .light.g{background:radial-gradient(circle at 32% 30%, #d8ffd8, #4fbf4f 60%, #1f7a1f 100%)}
+  .light.y{background:radial-gradient(circle at 32% 30%, #fff4c2, #e6c200 60%, #a58600 100%)}
+  .light.r{background:radial-gradient(circle at 32% 30%, #ffd6d6, #e04a4a 60%, #a01818 100%)}
+
+  /* per-row Save (legacy "Save" link/button, far left) */
+  .savelnk{font-size:10px;font-weight:bold;color:#5a6474;background:#eef1f6;border:1px solid #aeb6c2;border-radius:2px;padding:1px 6px}
+  .savelnk.dirty{background:#fff3b0;border-color:#d4b000;color:#7a5c00}
+  .savelnk.saved{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+
+  /* AI peeking through (subtle, does not break the legacy feel) */
+  .aival{background:var(--ai-bg);border:1px solid var(--ai-line);border-radius:2px;padding:0 3px}
+  .legrid select.cellsel.aisel{background:var(--ai-bg);border-color:var(--ai-line)}
+  .aimark{font-size:8px;font-weight:bold;color:var(--ai);border:1px solid var(--ai-line);background:var(--ai-chip);border-radius:2px;padding:0 2px;margin-left:3px;vertical-align:top;cursor:help}
+
+  /* validation + clocks stay ON even here */
+  .incomp{color:var(--bad);font-weight:bold;cursor:help;border-bottom:1px dotted var(--bad)}
+  .complete{color:var(--ok);font-weight:bold}
+  .aged.hot{color:var(--bad);font-weight:bold}
+  .aged.warn{color:var(--warn);font-weight:bold}
+  .clock{color:var(--bad);font-weight:bold;cursor:help;margin-left:3px}
+  .clock.warn{color:var(--warn)}
+  .authlbl{font-size:10px;margin-left:3px;color:#4a5464}
+
+  /* status bar (bottom) */
+  .statusbar{margin:0 8px 12px;border:1px solid #b7b3ac;background:linear-gradient(#f3f1ec,#e4e1da);
+    padding:4px 9px;font-size:10.5px;color:#4a5464;display:flex;gap:16px;flex-wrap:wrap}
+  .statusbar b{color:#12325a}
+  .statusbar .sunk{border:1px solid #b0aaa0;border-color:#9a948a #d8d4cc #d8d4cc #9a948a;background:#efece6;padding:0 6px}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);
+    background:#22354f;color:#fff;padding:9px 15px;border:1px solid #0d1b2e;font-size:12px;
+    max-width:560px;opacity:0;pointer-events:none;transition:.22s;z-index:99990;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.ai{background:#4a2f9e}
+  .toast.warn{background:#8a5200}
+  .toast.bad{background:#8f1414}
+</style>
+</head>
+<body class="role-biller">
+
+<!--
+  ============================================================================
+  USMON - CLASSIC VIEW  (client demo, SYNTHETIC data only - no PHI, no real
+  entities, no real patient identity)
+  ----------------------------------------------------------------------------
+  WHAT IT IS: the pressure-release valve for change-resistant billers. It looks
+  and works like the ~18-year-old USMON screen they know (boxy tabs, beveled
+  buttons, a dense follow-up grid), but it is a SKIN over the new engine - NOT
+  a second system. Same data, same AI help, same validation, same deadline
+  clocks running underneath. Can be set as a per-biller default.
+
+  60-SECOND PRESENTER PATH:
+    1. Read the slim banner: "Classic view - the fields you know, on the new USMON."
+    2. Point at the legacy tabs + beveled buttons: "This is the screen they refuse
+       to give up. We kept it."
+    3. Note the light-purple cells with the small "AI" tag - even here, the new
+       engine prefilled likely values for the biller to confirm.
+    4. Point at the red "Incomplete" cell (hover for the blocking reason) and the
+       red Days Aged / clock icons: validation and the IDR clock never turn off.
+    5. Click a "CMS 02/12" link -> opens the familiar CMS-1500 form they already use.
+    6. Edit a Claim Status dropdown -> the row Save button lights up -> Save -> "Saved".
+    7. Flip Biller / Supervisor (top right): the team stats strip appears only for
+       supervisors.
+  ============================================================================
+-->
+
+<!-- slim "modern engine" banner -->
+<div class="modernbar">
+  <span class="sp">U</span>
+  <span><b>Classic view:</b> the workflow and fields you know, running on the new USMON. Same data, AI help, validation, and deadline clocks underneath.</span>
+  <span class="newmark">New engine, familiar screen</span>
+</div>
+
+<!-- legacy tab strip -->
+<div class="legtabs">
+  <a class="legtab" href="#" onclick="return t('Welcome Page (legacy landing) - synthetic demo')">Welcome Page</a>
+  <a class="legtab active" href="#" onclick="return false">New Insurance Billing</a>
+  <a class="legtab" href="#" onclick="return t('Ongoing Insurance Billing (follow-up worklist) - synthetic demo')">Ongoing Insurance Billing</a>
+  <a class="legtab" href="#" onclick="return t('Edit FTP Sites (per-client clearinghouse SFTP endpoints) - synthetic demo')">Edit FTP Sites</a>
+  <span class="tabsp"></span>
+  <span class="role">
+    <button class="rolebtn on" id="rt-biller" onclick="setRole('biller')">Biller</button>
+    <button class="rolebtn" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    <span class="who" id="whoLabel">Sample, Dana</span>
+  </span>
+</div>
+
+<!-- flat row of beveled action buttons (exact text kept for demo-nav tooltips) -->
+<div class="legbtns">
+  <button class="legbtn" onclick="t('New case intake - a completed case arrives as a claim to prepare and file.')">Add New Case</button>
+  <button class="legbtn" onclick="t(selCount()+' checked claim(s) exported now as an 837P batch.','ai')">Manually Export Batch Now</button>
+  <button class="legbtn" onclick="t('Rendering PDF batch for the checked claims...')">Print PDF Batch Now</button>
+  <button class="legbtn" onclick="t('Batch download queued for the checked claims.')">Download Batch Now</button>
+  <button class="legbtn" onclick="t('Statement CSV export queued.')">Download Statement CSV</button>
+  <span class="spring"></span>
+  <span class="hint">Classic layout - same records as the Ongoing worklist.</span>
+</div>
+
+<!-- supervisor-only stats strip -->
+<div class="supstats" id="supStats" aria-hidden="true">
+  <span class="badge">Supervisor</span>
+  <span class="stat">Claims worked today (team): <b>318</b></span>
+  <span class="stat">Avg time / claim: <b>2:47</b></span>
+  <span class="stat">Team active time: <b>81%</b></span>
+  <span class="stat flag">Dead-time flags: 1</span>
+  <span style="margin-left:auto;color:#7a8496">Billers do not see this strip.</span>
+</div>
+
+<!-- collapsible search / filter panel (defaults expanded, as legacy apps showed it) -->
+<div class="searchpanel" id="searchPanel">
+  <div class="sp-title" onclick="toggleSearch()"><span class="tw" id="spTw">&#9660;</span> <span id="spLbl">Collapse Search Area</span></div>
+  <div class="sp-body">
+    <div class="sp-fields">
+      <div class="fld"><label>Name</label><input type="text" placeholder="Last, First"></div>
+      <div class="fld"><label>Date of Surgery from</label><input type="date" class="sm"></div>
+      <div class="fld"><label>Date of Surgery to</label><input type="date" class="sm"></div>
+      <div class="fld"><label>Company / Region</label><select><option>All regions</option><option>Region A</option><option>Region B</option><option>Region C</option></select></div>
+      <div class="fld"><label>Hospital</label><select><option>All hospitals</option><option>Sample General</option><option>Demo Medical Center</option><option>Example Regional</option></select></div>
+      <div class="fld"><label>State</label><select><option>All</option><option>TX</option><option>FL</option><option>GA</option><option>OK</option><option>LA</option><option>TN</option></select></div>
+      <div class="fld"><label>Surgeon</label><select><option>Any surgeon</option><option>Reyes, MD</option><option>Okoro, MD</option></select></div>
+      <div class="fld"><label>Technologist</label><select><option>Any tech</option><option>Tech A</option><option>Tech B</option></select></div>
+      <div class="fld"><label>Reader</label><select><option>Any reader</option><option>Reader A</option><option>Reader B</option></select></div>
+      <div class="fld"><label>DOB</label><input type="date" class="sm"></div>
+      <div class="fld"><label>PID</label><input type="text" class="sm" placeholder="100001"></div>
+      <div class="fld"><label>Claim</label><input type="text" class="sm" placeholder="Claim #"></div>
+      <div class="fld"><label>Billing Type</label><select><option>Any</option><option>Pro Only</option><option>Tech Only</option><option>Pro+Tech</option></select></div>
+      <div class="fld"><label>Payer</label><select><option>Any payer</option><option>Aetna</option><option>BCBS</option><option>Cigna</option><option>UHC</option><option>Humana</option></select></div>
+      <div class="fld"><label>Agent</label><select><option>Any agent</option><option>Agent 1</option><option>Agent 2</option></select></div>
+      <div class="fld"><label>Entity</label><select><option>Any entity</option><option>Sample Neurophysiology LLC</option><option>Demo Assessment Services LLC</option></select></div>
+      <div class="fld"><label>Claim Status</label><select><option>Any status</option><option>Filed - Awaiting ERA</option><option>Ready to File</option><option>Underpaid</option><option>In IDR</option></select></div>
+      <div class="fld"><label>Biller</label><select><option>Any biller</option><option>Sample, Dana</option><option>Demo, Alex</option><option>Mockdata, Sam</option></select></div>
+    </div>
+    <div class="instype">
+      <div class="ih">Insurance Type</div>
+      <label><input type="checkbox" checked> Private Insurance</label>
+      <label><input type="checkbox" checked> Medicare</label>
+      <label><input type="checkbox" checked> Medicaid</label>
+      <label><input type="checkbox" checked> Workmans Comp</label>
+      <label><input type="checkbox" checked> MVA</label>
+      <label><input type="checkbox" checked> TRICARE</label>
+      <label><input type="checkbox" checked> CHAMPVA</label>
+      <label><input type="checkbox" checked> Letter of Protection</label>
+      <label><input type="checkbox" checked> Self Pay</label>
+      <label><input type="checkbox" checked> Contracted-Global</label>
+    </div>
+    <div class="sp-foot">
+      <button class="legbtn" onclick="t('Search running across the follow-up records (synthetic demo).')">Search</button>
+      <button class="legbtn" onclick="t('Search filters cleared.')">Clear Search</button>
+    </div>
+  </div>
+</div>
+
+<!-- the dense legacy grid -->
+<div class="gridscroll">
+  <table class="legrid">
+    <thead>
+      <tr>
+        <th>Save</th>
+        <th>Patient</th>
+        <th>PID</th>
+        <th>DOS</th>
+        <th>Claim/Billing Type</th>
+        <th>Claims</th>
+        <th>Highlight</th>
+        <th>Download</th>
+        <th>Claim Status</th>
+        <th>History</th>
+        <th>Facility</th>
+        <th>State</th>
+        <th>COB</th>
+        <th>Insurance</th>
+        <th>Comment</th>
+        <th>Reader Overlap</th>
+        <th>MC</th>
+        <th>WC</th>
+        <th>Auth</th>
+        <th>CMS 02/12</th>
+        <th>Patient Info</th>
+        <th>Uploaded Documents</th>
+        <th>Notes</th>
+        <th>Incomplete Claim</th>
+        <th>Total Charges</th>
+        <th>Days Aged</th>
+        <th>Print/Export</th>
+        <th>Biller</th>
+        <th>File Claim</th>
+        <th>Initial Filing Complete</th>
+        <th>Email Tech</th>
+        <th>CH Messages</th>
+      </tr>
+    </thead>
+    <tbody id="body"></tbody>
+  </table>
+</div>
+
+<!-- legacy-style status bar -->
+<div class="statusbar">
+  <span class="sunk">Records: <b id="recCount">12</b> shown</span>
+  <span>Client: <b>USMON (synthetic demo)</b></span>
+  <span>Sort: <b>Days Aged (desc)</b></span>
+  <span style="margin-left:auto">Classic view is 1 skin over the new USMON engine - not a separate system.</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- toast ---------------- */
+function toast(m,kind){
+  var el=document.getElementById('toast');
+  el.className='toast'+(kind?' '+kind:'');
+  el.textContent=m;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){el.classList.remove('show');},3200);
+}
+function t(m,kind){toast(m,kind);return false;}
+
+/* ---------------- role toggle (Biller / Supervisor) ---------------- */
+function setRole(role){
+  var sup=role==='supervisor';
+  document.body.classList.toggle('role-super',sup);
+  document.getElementById('rt-biller').classList.toggle('on',!sup);
+  document.getElementById('rt-super').classList.toggle('on',sup);
+  document.getElementById('supStats').setAttribute('aria-hidden',sup?'false':'true');
+  document.getElementById('whoLabel').textContent=sup?'Scholin, Michael':'Sample, Dana';
+  toast(sup?'Supervisor view - team stats strip now visible.':'Biller view - clean grid, no stats.');
+}
+
+/* ---------------- search panel collapse ---------------- */
+function toggleSearch(){
+  var p=document.getElementById('searchPanel');
+  var col=p.classList.toggle('collapsed');
+  document.getElementById('spLbl').textContent=col?'Expand Search Area':'Collapse Search Area';
+  document.getElementById('spTw').innerHTML=col?'&#9654;':'&#9660;';
+}
+
+/* ---------------- lookups (synthetic) ---------------- */
+var BILLING=['Pro Only','Tech Only','Pro+Tech'];
+var STATUSES=['Filed - Awaiting ERA','Ready to File','Info Pending','Underpaid','In IDR','Partial Payment','Denied','Paid in Full'];
+var COB=['Primary','Secondary','Tertiary'];
+
+/* ---------------- synthetic rows (12) ---------------- */
+/* No real patient identity, no real client, all invented. */
+var DATA=[
+  {pid:100118, name:'Aster, R.',    dos:'02/14/2026', billing:'Pro+Tech', claim:'1002181', status:'In IDR',                facility:'Sample General',      state:'TX', cob:'Primary',   ins:'UHC',        comment:'2nd IDR request sent 7/09', ro:'r', roT:'Reader overlap conflict with claim 1002177 - review before filing', mc:'y', mcT:'Medicare crossover pending', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8842'}, incomplete:null, charges:48250, aged:112, agedHot:true, idrDays:3, idrT:'IDR initiation window closes in 3 business days', biller:'Sample, Dana', filed:true, ch:2, ai:[]},
+  {pid:100207, name:'Brolin, M.',   dos:'03/02/2026', billing:'Pro Only',  claim:'1002074', status:'Underpaid',            facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Aetna',      comment:'QPA below expected - refile w/ mod 26', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:null, charges:12980, aged:96, agedHot:true, idrDays:6, idrT:'IDR initiation window closes in 6 business days', biller:'Sample, Dana', filed:true, ch:1, ai:['ins','cob']},
+  {pid:100331, name:'Castel, D.',   dos:'06/28/2026', billing:'Pro+Tech', claim:'1003310', status:'Ready to File',         facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'Cigna',      comment:'', ro:'y', roT:'Minor overlap - same DOS, different levels', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'r',t:'No auth on file - may be required',lbl:'none'}, incomplete:'Missing rendering provider NPI (Box 24J). Cannot file until resolved.', charges:33500, aged:9, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:['status']},
+  {pid:100412, name:'Devar, S.',    dos:'05/19/2026', billing:'Tech Only', claim:'1004120', status:'Filed - Awaiting ERA', facility:'Specimen Surgical',   state:'OK', cob:'Primary',   ins:'Humana',     comment:'Tech-fee invoice routed to hospital', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-9014'}, incomplete:null, charges:8760, aged:41, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:1, ai:['billing']},
+  {pid:100566, name:'Eaves, T.',    dos:'01/30/2026', billing:'Pro Only',  claim:'1005660', status:'Denied',               facility:'Mockdata Hospital',   state:'LA', cob:'Secondary', ins:'BCBS',       comment:'Denial CO-97 - appeal drafted', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'r', wcT:'Workers-comp lien on file - confirm allocation', auth:{l:'g',t:'Prior auth on file',lbl:'A-7731'}, incomplete:null, charges:15400, aged:128, agedHot:true, idrDays:null, idrT:'', biller:'Sample, Dana', filed:true, ch:3, ai:[]},
+  {pid:100674, name:'Frell, A.',    dos:'06/11/2026', billing:'Pro+Tech', claim:'1006740', status:'Info Pending',          facility:'Sample General',      state:'TX', cob:'Primary',   ins:'TRICARE',    comment:'Awaiting signed report from reader', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:'Awaiting signed Tech Report from reader. Coding not finalized.', charges:29900, aged:14, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:[]},
+  {pid:100738, name:'Gunter, L.',   dos:'04/07/2026', billing:'Pro Only',  claim:'1007380', status:'Partial Payment',       facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Aetna',      comment:'Posted 40% - balance to IDR', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8120'}, incomplete:null, charges:21750, aged:73, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:2, ai:['status']},
+  {pid:100845, name:'Harlo, P.',    dos:'02/22/2026', billing:'Pro+Tech', claim:'1008450', status:'Underpaid',            facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'UHC',        comment:'OON allowed low - negotiate', ro:'y', roT:'Minor overlap - verify level codes', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8890'}, incomplete:null, charges:52100, aged:96, agedHot:true, idrDays:2, idrT:'IDR initiation window closes in 2 business days', biller:'Sample, Dana', filed:true, ch:1, ai:[]},
+  {pid:100912, name:'Ives, C.',     dos:'06/30/2026', billing:'Pro Only',  claim:'1009120', status:'Ready to File',         facility:'Testcase Ortho Center',state:'TN', cob:'Primary',   ins:'Cigna',      comment:'', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-9200'}, incomplete:null, charges:9650, aged:5, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:['ins']},
+  {pid:101044, name:'Joss, N.',     dos:'05/03/2026', billing:'Tech Only', claim:'1010440', status:'Filed - Awaiting ERA', facility:'Mockdata Hospital',   state:'LA', cob:'Primary',   ins:'Medicare B', comment:'Government case - hospital tech invoice', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Medicare primary confirmed', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8455'}, incomplete:null, charges:6420, aged:52, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:1, ai:[]},
+  {pid:101187, name:'Krell, B.',    dos:'03/18/2026', billing:'Pro+Tech', claim:'1011870', status:'Info Pending',          facility:'Sample General',      state:'TX', cob:'Primary',   ins:'BCBS',       comment:'Payer ID mismatch on entity', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:'Payer ID unresolved for billing entity (Box 33). Confirm before filing.', charges:37800, aged:88, agedHot:false, idrDays:null, idrT:'', biller:'Sample, Dana', filed:false, ch:0, ai:['cob']},
+  {pid:101250, name:'Lund, G.',     dos:'04/25/2026', billing:'Pro Only',  claim:'1012500', status:'Paid in Full',          facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Humana',     comment:'Closed - paid at expected', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8677'}, incomplete:null, charges:18300, aged:60, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:true, ch:2, ai:[]}
+];
+
+/* ---------------- helpers ---------------- */
+function money(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function light(l,tt){return '<span class="light '+l+'" title="'+esc(tt)+'"></span>';}
+function isAi(r,f){return r.ai.indexOf(f)!==-1;}
+function aimark(){return '<span class="aimark" title="AI-suggested from the source case. Confirm or override - the choice is logged.">AI</span>';}
+
+function sel(list,val,f,pid,ai){
+  var opts=list.map(function(o){return '<option'+(o===val?' selected':'')+'>'+esc(o)+'</option>';}).join('');
+  return '<select class="cellsel'+(ai?' aisel':'')+'" onchange="dirty('+pid+')">'+opts+'</select>'+(ai?aimark():'');
+}
+function insCell(r){
+  if(isAi(r,'ins')) return '<span class="aival">'+esc(r.ins)+'</span>'+aimark();
+  return esc(r.ins);
+}
+
+/* ---------------- render grid ---------------- */
+function rowHtml(r){
+  var agedCls='aged'+(r.agedHot?' hot':(r.aged>=80?' warn':''));
+  var clockHtml='';
+  if(r.idrDays!==null && r.idrDays!==undefined){
+    var ck=r.idrDays<=3?'clock':'clock warn';
+    clockHtml=' <span class="'+ck+'" title="'+esc(r.idrT)+'">&#9200; '+r.idrDays+'d</span>';
+  }
+  var incompHtml = r.incomplete
+    ? '<span class="incomp" title="'+esc(r.incomplete)+'">Incomplete</span>'
+    : '<span class="complete">Complete</span>';
+  var authHtml = light(r.auth.l,r.auth.t)+'<span class="authlbl">'+esc(r.auth.lbl)+'</span>';
+
+  return '<tr data-pid="'+r.pid+'">'+
+    '<td><button class="savelnk" id="save-'+r.pid+'" onclick="saveRow('+r.pid+')">Save</button></td>'+
+    '<td><span class="pat" onclick="openCms('+r.pid+')">'+esc(r.name)+'</span></td>'+
+    '<td class="mono">'+r.pid+'</td>'+
+    '<td class="mono">'+esc(r.dos)+'</td>'+
+    '<td>'+sel(BILLING,r.billing,'billing',r.pid,isAi(r,'billing'))+'</td>'+
+    '<td class="mono">'+esc(r.claim)+'</td>'+
+    '<td style="text-align:center"><input type="checkbox" class="chk" onchange="dirty('+r.pid+')" aria-label="Highlight"></td>'+
+    '<td style="text-align:center"><input type="checkbox" class="chk" checked aria-label="Include in download"></td>'+
+    '<td>'+sel(STATUSES,r.status,'status',r.pid,isAi(r,'status'))+'</td>'+
+    '<td><span class="celllnk" onclick="t(\'Opening history for claim '+r.claim+' - synthetic.\')">History</span></td>'+
+    '<td>'+esc(r.facility)+'</td>'+
+    '<td class="mono">'+esc(r.state)+'</td>'+
+    '<td>'+sel(COB,r.cob,'cob',r.pid,isAi(r,'cob'))+'</td>'+
+    '<td>'+insCell(r)+'</td>'+
+    '<td><input type="text" class="cmt" value="'+esc(r.comment)+'" placeholder="add note..." oninput="dirty('+r.pid+')"></td>'+
+    '<td style="text-align:center">'+light(r.ro,r.roT)+'</td>'+
+    '<td style="text-align:center">'+light(r.mc,r.mcT)+'</td>'+
+    '<td style="text-align:center">'+light(r.wc,r.wcT)+'</td>'+
+    '<td>'+authHtml+'</td>'+
+    '<td><span class="celllnk" onclick="openCms('+r.pid+')" title="Open the CMS-1500 (02/12) claim form">CMS 02/12</span></td>'+
+    '<td><span class="celllnk" onclick="t(\'Opening patient info for claim '+r.claim+' - synthetic.\')">Info</span></td>'+
+    '<td><span class="celllnk" onclick="t(\'Opening uploaded documents for claim '+r.claim+' - synthetic.\')">Docs</span></td>'+
+    '<td><span class="celllnk" onclick="t(\'Opening notes for claim '+r.claim+' - synthetic.\')">Notes</span></td>'+
+    '<td>'+incompHtml+'</td>'+
+    '<td class="money">'+money(r.charges)+'</td>'+
+    '<td class="'+agedCls+'">'+r.aged+'d'+clockHtml+'</td>'+
+    '<td><span class="celllnk" onclick="t(\'Print / export queued for claim '+r.claim+' - synthetic.\')">Print</span></td>'+
+    '<td>'+esc(r.biller)+'</td>'+
+    '<td><button class="savelnk" onclick="fileClaim('+r.pid+')">File</button></td>'+
+    '<td style="text-align:center"><input type="checkbox" class="chk" '+(r.filed?'checked':'')+' onchange="dirty('+r.pid+')" aria-label="Initial filing complete"></td>'+
+    '<td><span class="celllnk" onclick="t(\'Email to reading tech drafted for claim '+r.claim+' - synthetic.\')">Email Tech</span></td>'+
+    '<td><span class="celllnk" onclick="t(\''+r.ch+' clearinghouse message(s) for claim '+r.claim+' - synthetic.\')">Msgs ('+r.ch+')</span></td>'+
+  '</tr>';
+}
+function render(){
+  document.getElementById('body').innerHTML=DATA.map(rowHtml).join('');
+  document.getElementById('recCount').textContent=DATA.length;
+}
+
+/* ---------------- inline edit / save ---------------- */
+function dirty(pid){
+  var b=document.getElementById('save-'+pid);
+  if(b){b.classList.remove('saved');b.classList.add('dirty');b.textContent='Save*';}
+}
+function saveRow(pid){
+  var b=document.getElementById('save-'+pid);
+  if(!b||!b.classList.contains('dirty')){toast('No changes to save on this row.');return;}
+  b.classList.remove('dirty');b.classList.add('saved');b.textContent='Saved';
+  toast('Row saved - no reload. Validation and clocks still running underneath.');
+  setTimeout(function(){b.classList.remove('saved');b.textContent='Save';},1800);
+}
+
+/* ---------------- row -> CMS-1500 handoff ---------------- */
+function openCms(pid){
+  var r=null;
+  for(var i=0;i<DATA.length;i++){if(DATA[i].pid===pid){r=DATA[i];break;}}
+  var w=null;
+  try{w=window.open('prototype-cms1500.html','_blank');}catch(e){w=null;}
+  if(w){
+    toast('Opening the familiar CMS-1500 (02/12) form'+(r?' for claim '+r.claim:'')+' in a new tab.');
+  }else{
+    toast('This opens the familiar CMS-1500 (02/12) form'+(r?' for claim '+r.claim:'')+' - the same form billers use today.');
+  }
+}
+
+/* ---------------- validation stays ON (File Claim) ---------------- */
+function fileClaim(pid){
+  var r=null;
+  for(var i=0;i<DATA.length;i++){if(DATA[i].pid===pid){r=DATA[i];break;}}
+  if(!r)return;
+  if(r.incomplete){
+    toast('Cannot file claim '+r.claim+' - '+r.incomplete,'bad');
+    return;
+  }
+  toast('Claim '+r.claim+' filed. Deadline / IDR clock now tracking.','ai');
+}
+
+/* ---------------- selection count (for batch buttons) ---------------- */
+function selCount(){
+  var boxes=document.querySelectorAll('#body tr td:nth-child(8) input.chk');
+  var n=0;for(var i=0;i<boxes.length;i++){if(boxes[i].checked)n++;}
+  return n;
+}
+
+/* ---------------- init ---------------- */
+render();
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>

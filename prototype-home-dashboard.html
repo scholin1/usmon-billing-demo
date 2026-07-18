@@ -124,9 +124,46 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
   .toast.idr .ic{background:var(--idr)}.toast.hosp .ic{background:var(--hosp)}.toast.warn .ic{background:var(--warn)}
+
+  /* ---- role toggle (reused convention: body.role-super gates supervisor content) ---- */
+  .roletoggle{display:flex;align-items:center;gap:7px;background:#0f1824;border:1px solid #233247;border-radius:9px;padding:3px}
+  .roletoggle .rt-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#7e8ea0;font-weight:700;padding:0 4px 0 6px}
+  .roletoggle .rt-btn{background:none;border:none;color:#c7d2dd;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:7px}
+  .roletoggle .rt-btn:hover{color:#fff}
+  .roletoggle .rt-btn.on{background:var(--primary);color:#fff}
+
+  /* ---- your default working view (biller-facing, visible to everyone) ---- */
+  .viewpref{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:760px){.viewpref{grid-template-columns:1.15fr 1fr}}
+  .viewpref .opts{display:flex;flex-direction:column;gap:8px}
+  .viewpref .opt{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--surface-2);transition:.12s}
+  .viewpref .opt:hover{border-color:var(--line-strong)}
+  .viewpref .opt input{accent-color:var(--primary);width:16px;height:16px;flex:none;margin-top:1px}
+  .viewpref .opt .ol{display:block;font-weight:600;font-size:13px}
+  .viewpref .opt .od{display:block;font-size:11px;color:var(--faint);margin-top:1px}
+  .viewpref .opt:has(input:checked){border-color:var(--primary);background:var(--primary-tint)}
+  .viewpref .side{display:flex;flex-direction:column;gap:12px}
+  .viewpref .confirm{background:var(--primary-tint);border:1px solid var(--primary-line);border-radius:8px;padding:11px 13px;font-size:13px;font-weight:600;color:var(--primary-dark)}
+  .viewpref .side .btn{width:100%;justify-content:center}
+  .viewpref .helper{margin:0;font-size:11.5px;color:var(--muted);line-height:1.5}
+  .viewpref .helper b{color:var(--ink)}
+
+  /* ---- team default views (SUPERVISOR ONLY - same body.role-super gate) ---- */
+  .team-panel{display:none;margin-top:26px}
+  body.role-super .team-panel{display:block}
+  .team-panel .tp-note{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+  .team-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .team-card table{width:100%;border-collapse:collapse;font-size:13px}
+  .team-card th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;padding:10px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .team-card td{padding:10px 16px;border-bottom:1px solid var(--line)}
+  .team-card tr:last-child td{border-bottom:none}
+  .team-card td.tn{color:var(--muted)}
+  .team-card td.nm{font-weight:600}
+  .team-card select.teamsel{padding:6px 9px;border:1px solid var(--line-strong);border-radius:7px;font-size:12.5px;font-weight:600;background:#fff;color:var(--ink)}
+  .team-card select.teamsel:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
 </style>
 </head>
-<body>
+<body class="role-super">
 
 <!--
   ============================================================================
@@ -161,7 +198,14 @@
     <a href="#" onclick="return t('Reports - out of scope for this demo')">Reports</a>
     <a href="#" onclick="return t('Manage - out of scope for this demo')">Manage</a>
   </nav>
-  <div class="appuser"><span id="userName">Dr. Sample Reed · Billing Supervisor</span><span class="avatar">SR</span></div>
+  <div class="appuser">
+    <div class="roletoggle" role="group" aria-label="View role">
+      <span class="rt-lbl">View</span>
+      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+    </div>
+    <span id="userName">Dr. Sample Reed · Billing Supervisor</span><span class="avatar" id="avatarTxt">SR</span>
+  </div>
 </header>
 
 <main class="wrap">
@@ -170,7 +214,7 @@
   <div class="hero">
     <div class="greet">
       <h1 id="greetLine">Good evening, Dr. Sample Reed</h1>
-      <p class="ctx">Signed in as <span class="role">Billing Supervisor</span> · active client <b id="ctxClient">Sample Neuro Billing LLC</b> · <span id="ctxClaims">18,204</span> active claims</p>
+      <p class="ctx">Signed in as <span class="role" id="ctxRole">Billing Supervisor</span> · active client <b id="ctxClient">Sample Neuro Billing LLC</b> · <span id="ctxClaims">18,204</span> active claims</p>
     </div>
     <div class="clientpick">
       <label for="clientSel">Switch client</label>
@@ -198,6 +242,69 @@
     Counts are <b>synthetic demo data</b> and re-scope to the active client. Tiles are <b>user-configurable</b> - each biller pins the filters they live in.
     "Open" hands off to the dense <b>Ongoing worklist</b>; this home page stays deliberately calm.
   </p>
+
+  <!-- ============================================================
+       YOUR DEFAULT WORKING VIEW  (biller-facing - visible to everyone)
+       Land in the layout you prefer every time you open a claim.
+       ============================================================ -->
+  <div class="sec-head" style="margin-top:26px">
+    <div>
+      <h2>Your default working view</h2>
+      <p>Pick the layout you want to land in every time you open a claim - it sticks on this browser.</p>
+    </div>
+  </div>
+
+  <div class="viewpref">
+    <div class="opts" id="viewPrefForm">
+      <label class="opt" for="dv-classic">
+        <input type="radio" name="defview" id="dv-classic" value="classic" onchange="saveDefaultView(this.value)">
+        <span><span class="ol">Classic (legacy layout)</span><span class="od">The legacy USMON grid, tabs and column names - on the new engine</span></span>
+      </label>
+      <label class="opt" for="dv-guided">
+        <input type="radio" name="defview" id="dv-guided" value="guided" onchange="saveDefaultView(this.value)">
+        <span><span class="ol">Guided Flow</span><span class="od">The same claim, one calm step at a time</span></span>
+      </label>
+      <label class="opt" for="dv-familiar">
+        <input type="radio" name="defview" id="dv-familiar" value="familiar" onchange="saveDefaultView(this.value)">
+        <span><span class="ol">Familiar-Modern</span><span class="od">Today's workflow and CMS-1500 layout, modernized on one page</span></span>
+      </label>
+      <label class="opt" for="dv-cockpit">
+        <input type="radio" name="defview" id="dv-cockpit" value="cockpit" onchange="saveDefaultView(this.value)">
+        <span><span class="ol">Smart Cockpit</span><span class="od">Everything on one page with a workflow rail and AI review assist</span></span>
+      </label>
+      <label class="opt" for="dv-dense">
+        <input type="radio" name="defview" id="dv-dense" value="dense" onchange="saveDefaultView(this.value)">
+        <span><span class="ol">Dense Worklist</span><span class="od">The high-volume operational grid, straight to the rows</span></span>
+      </label>
+    </div>
+    <div class="side">
+      <div class="confirm" id="viewPrefConfirm">When you open a claim, you'll land in: Familiar-Modern.</div>
+      <button class="btn primary" onclick="openMyView()">Open a claim in my view</button>
+      <p class="helper">Prefer the old USMON layout? Set <b>Classic</b> and you'll always start there - same data and AI help underneath.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TEAM DEFAULT VIEWS  (SUPERVISOR ONLY - gated by body.role-super)
+       Billers never see this panel.
+       ============================================================ -->
+  <div class="team-panel" id="teamPanel" aria-label="Team default views">
+    <div class="sec-head">
+      <div>
+        <h2>Team default views</h2>
+        <p>Assign each biller the layout they land in - a supervisor override of the personal setting above.</p>
+      </div>
+    </div>
+    <p class="tp-note">Assign a comfortable default so no one is forced to relearn a screen - they still get every new feature.</p>
+    <div class="team-card">
+      <table>
+        <thead>
+          <tr><th>Biller</th><th>On the team</th><th>Default view</th></tr>
+        </thead>
+        <tbody id="teamRows"></tbody>
+      </table>
+    </div>
+  </div>
 </main>
 
 <!-- add-tile popover -->
@@ -248,6 +355,10 @@ let pinned=['review','ready','idr','deadline','underpaid','awaiting','aged'];
 let activeClient=CLIENTS[0].id;
 let editing=false;
 
+/* current signed-in identity (re-rendered by role toggle + client switch) */
+let curName='Dr. Sample Reed';
+let curRole='Billing Supervisor';
+
 function fmt(n){return n.toLocaleString('en-US');}
 function catById(id){return CATALOG.find(c=>c.id===id);}
 
@@ -263,7 +374,7 @@ function greeting(){
 function switchClient(id,silent){
   activeClient=id;
   const c=CLIENTS.find(x=>x.id===id);
-  document.getElementById('greetLine').textContent=greeting()+', Dr. Sample Reed';
+  document.getElementById('greetLine').textContent=greeting()+', '+curName;
   document.getElementById('ctxClient').textContent=c.name;
   document.getElementById('ctxClaims').textContent=c.claims;
   document.getElementById('clientSel').value=id;
@@ -335,9 +446,84 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAddMenu();});
 
+/* ---------------- role toggle: Biller <-> Supervisor ----------------
+   Reuses the shared demo convention: body.role-super gates supervisor-only
+   content (the Team default views panel). Billers never see it. */
+function setRole(role){
+  const sup=role==='supervisor';
+  document.body.classList.toggle('role-super',sup);
+  document.getElementById('rt-biller').classList.toggle('on',!sup);
+  document.getElementById('rt-super').classList.toggle('on',sup);
+  curName=sup?'Dr. Sample Reed':'Dana Sample';
+  curRole=sup?'Billing Supervisor':'Biller';
+  document.getElementById('greetLine').textContent=greeting()+', '+curName;
+  document.getElementById('userName').textContent=curName+' · '+curRole;
+  document.getElementById('ctxRole').textContent=curRole;
+  document.getElementById('avatarTxt').textContent=sup?'SR':'DS';
+  toast(sup?'Supervisor view - Team default views now visible':'Biller view - your personal settings only');
+}
+
+/* ---------------- your default working view (per-biller, localStorage) ---------------- */
+const VIEWS=[
+  {id:'classic',  label:'Classic (legacy layout)', url:'prototype-classic.html'},
+  {id:'guided',   label:'Guided Flow',             url:'prototype-guided-flow.html'},
+  {id:'familiar', label:'Familiar-Modern',         url:'prototype-familiar-modern.html'},
+  {id:'cockpit',  label:'Smart Cockpit',           url:'prototype-v5-router.html'},
+  {id:'dense',    label:'Dense Worklist',          url:'prototype-ops-worklist.html'}
+];
+const VIEW_KEY='usmon_default_view';
+function viewById(id){return VIEWS.find(v=>v.id===id)||VIEWS[2];}
+function selectedView(){const r=document.querySelector('input[name="defview"]:checked');return r?r.value:'familiar';}
+function updateViewConfirm(){
+  document.getElementById('viewPrefConfirm').textContent=
+    "When you open a claim, you'll land in: "+viewById(selectedView()).label+'.';
+}
+function loadDefaultView(){
+  let v='familiar';
+  try{const s=localStorage.getItem(VIEW_KEY);if(s&&VIEWS.some(x=>x.id===s))v=s;}catch(e){}
+  const r=document.querySelector('input[name="defview"][value="'+v+'"]');
+  if(r)r.checked=true;
+  updateViewConfirm();
+}
+function saveDefaultView(id){
+  try{localStorage.setItem(VIEW_KEY,id);}catch(e){}
+  updateViewConfirm();
+  toast('Default view set to '+viewById(id).label);
+}
+function openMyView(){
+  const v=viewById(selectedView());
+  toast('Opening a claim in '+v.label);
+  window.open(v.url,'_blank');
+}
+
+/* ---------------- team default views (supervisor only; synthetic, demo-only) ---------------- */
+const TEAM=[
+  {name:'Sample, Dana',    tenure:'2 yrs',  def:'familiar'},
+  {name:'Rivera, Priya',   tenure:'4 yrs',  def:'guided'},
+  {name:'Okafor, Ben',     tenure:'1 yr',   def:'cockpit'},
+  {name:'Nguyen, Tran',    tenure:'7 yrs',  def:'dense'},
+  {name:'Delgado, Rosa',   tenure:'13 yrs', def:'classic'},
+  {name:'Whitfield, Gene', tenure:'17 yrs', def:'classic'}
+];
+function renderTeam(){
+  document.getElementById('teamRows').innerHTML=TEAM.map(function(m,i){
+    const opts=VIEWS.map(function(v){
+      return '<option value="'+v.id+'"'+(v.id===m.def?' selected':'')+'>'+v.label+'</option>';
+    }).join('');
+    return '<tr><td class="nm">'+m.name+'</td><td class="tn">'+m.tenure+'</td>'+
+      '<td><select class="teamsel" onchange="teamSet('+i+',this.value)">'+opts+'</select></td></tr>';
+  }).join('');
+}
+function teamSet(i,val){
+  TEAM[i].def=val;
+  toast('Saved default view for '+TEAM[i].name);
+}
+
 /* ---------------- init ---------------- */
 initClients();
 switchClient(activeClient,true);
+loadDefaultView();
+renderTeam();
 </script>
 <script src="demo-nav.js"></script>
 </body>
