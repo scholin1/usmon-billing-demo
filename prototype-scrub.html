@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USMON - Pre-Submission Scrub</title>
+<style>
+  :root{
+    --canvas:#f4f6f9; --surface:#ffffff; --surface-2:#fafbfc;
+    --ink:#16202e; --muted:#64748b; --faint:#94a3b8;
+    --line:#e5e9f0; --line-strong:#d4dbe6;
+    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
+    --ok:#15803d; --ok-tint:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-tint:#fffbeb; --warn-line:#fde68a;
+    --block:#b91c1c; --block-tint:#fef2f2; --block-line:#fecaca;
+    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7; --idr-dark:#3f37a6;
+    --hosp:#0369a1; --hosp-tint:#e8f2f9; --hosp-line:#bfe0f0; --hosp-dark:#075985;
+    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
+    --hl:#fef9c3; --hl-line:#fde047;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:9px; --shadow:0 1px 2px rgba(16,32,46,.04),0 6px 20px rgba(16,32,46,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--primary);text-decoration:none}
+
+  /* appbar - matches the rest of the demo */
+  .appbar{display:flex;align-items:center;gap:24px;background:var(--ink);color:#fff;padding:0 20px;height:52px;position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:12px}
+  .brand small{font-weight:500;color:#9fb0c0;font-size:11px;display:block;line-height:1;margin-top:2px}
+  .appnav{display:flex;gap:2px;margin-left:8px}
+  .appnav a{color:#c7d2dd;padding:6px 11px;border-radius:7px;font-size:13px}
+  .appnav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .appnav a.on{background:var(--primary);color:#fff}
+  .appuser{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:#c7d2dd}
+  .appuser .avatar{width:28px;height:28px;border-radius:50%;background:#2a3a4f;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px}
+
+  .wrap{max-width:1160px;margin:0 auto;padding:16px 18px 120px}
+
+  .page-head{margin-bottom:12px}
+  .page-head h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .page-head p{margin:3px 0 0;color:var(--muted);font-size:12.5px;max-width:760px}
+  .tag{font-size:11px;font-weight:700;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:5px;padding:2px 7px;white-space:nowrap;vertical-align:middle}
+
+  .btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+  .btn:hover{border-color:var(--faint);background:var(--surface-2)}
+  .btn.sm{padding:4px 9px;font-size:11.5px;border-radius:7px}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+  .btn.ai{background:var(--ai);border-color:var(--ai);color:#fff}
+  .btn.ai:hover{background:var(--ai-dark);border-color:var(--ai-dark)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* context / claim header */
+  .ctx{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;margin-bottom:12px}
+  .ctx-top{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .ctx-id{min-width:210px}
+  .ctx-id .claimno{font-size:17px;font-weight:800;letter-spacing:-.3px}
+  .ctx-id .pt{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .ctx-meta{display:flex;gap:20px;flex-wrap:wrap;flex:1}
+  .ctx-meta .kv{font-size:12px}
+  .ctx-meta .kv .k{color:var(--faint);text-transform:uppercase;letter-spacing:.4px;font-size:10px;font-weight:700}
+  .ctx-meta .kv .v{font-weight:700;margin-top:1px}
+  .maskpill{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);background:#eef2f7;border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px}
+
+  /* channel selector */
+  .chanrow{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .chanrow .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700}
+  .seg{display:inline-flex;background:#eef2f6;border:1px solid var(--line-strong);border-radius:9px;padding:3px}
+  .seg button{background:none;border:none;font-size:12.5px;font-weight:700;color:var(--muted);padding:6px 13px;border-radius:7px;transition:.12s}
+  .seg button:hover{color:var(--ink)}
+  .seg button.on{background:var(--primary);color:#fff}
+  .chanrow .chandesc{font-size:12px;color:var(--muted)}
+  .chanrow .chandesc b{color:var(--ink)}
+
+  /* readiness meter */
+  .meter{border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);padding:15px 17px;margin-bottom:14px;transition:.2s}
+  .meter.notready{background:var(--block-tint);border-color:var(--block-line)}
+  .meter.ready{background:var(--ok-tint);border-color:var(--ok-line)}
+  .meter-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .meter .stlight{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:17px;font-weight:800;flex:none}
+  .meter.notready .stlight{background:var(--block)}
+  .meter.ready .stlight{background:var(--ok)}
+  .meter .sttext{font-size:16px;font-weight:800;letter-spacing:-.2px}
+  .meter.notready .sttext{color:var(--block)}
+  .meter.ready .sttext{color:var(--ok)}
+  .meter .cnts{margin-left:auto;display:flex;gap:8px}
+  .cntpill{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:999px;border:1px solid}
+  .cntpill.b{background:#fff;color:var(--block);border-color:var(--block-line)}
+  .cntpill.w{background:#fff;color:var(--warn);border-color:var(--warn-line)}
+  .cntpill.p{background:#fff;color:var(--ok);border-color:var(--ok-line)}
+  .progtrack{height:8px;border-radius:5px;background:rgba(16,32,46,.09);overflow:hidden;margin-top:12px}
+  .progfill{height:100%;border-radius:5px;background:var(--block);transition:width .35s cubic-bezier(.2,.7,.2,1),background .2s}
+  .meter.ready .progfill{background:var(--ok)}
+  .meter .progsub{font-size:11.5px;color:var(--muted);margin-top:6px}
+
+  /* advanced panels */
+  .panels{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:820px){.panels{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:13px 15px;position:relative;overflow:hidden}
+  .panel::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+  .panel.pf::before{background:var(--primary)}
+  .panel.risk::before{background:var(--warn)}
+  .panel.idr::before{background:var(--idr)}
+  .panel.batch::before{background:var(--faint)}
+  .panel h3{margin:0 0 3px;font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .panel .ph-tag{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:5px;margin-left:auto}
+  .panel.pf .ph-tag{color:var(--primary);background:var(--primary-tint)}
+  .panel.risk .ph-tag{color:var(--warn);background:var(--warn-tint)}
+  .panel.idr .ph-tag{color:var(--idr-dark);background:var(--idr-tint)}
+  .panel p{margin:5px 0 0;font-size:12px;color:var(--muted)}
+  .panel p b{color:var(--ink)}
+  .panel .pf-hit{margin-top:8px;font-size:12px;background:var(--primary-tint);border:1px solid var(--primary-line);border-radius:7px;padding:8px 10px;color:var(--primary-dark);font-weight:600;display:flex;gap:8px;align-items:flex-start}
+  .panel .riskbar{display:flex;align-items:center;gap:8px;margin-top:9px}
+  .riskbar .rt{flex:1;height:7px;border-radius:5px;background:#eef2f6;overflow:hidden}
+  .riskbar .rf{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--warn),var(--block))}
+  .riskbar .rl{font-size:11px;font-weight:800;color:var(--warn)}
+  .panel.idr .idr-ok{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;font-weight:700;color:var(--ok)}
+  .panel.idr .idr-ok .chk{width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:11px;flex:none}
+  .panel.batch{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:11px 15px}
+  .panel.batch h3{margin:0}
+  .panel.batch .bstat{font-size:12.5px;color:var(--muted);margin-left:auto}
+  .panel.batch .bstat b{color:var(--ink)}
+  .panel.batch .bstat .att{color:var(--warn)}
+  .illus{font-size:10px;color:var(--faint);font-style:italic;margin-top:6px}
+
+  /* findings */
+  .sec{margin-bottom:16px}
+  .sec-head{display:flex;align-items:center;gap:9px;margin:0 0 9px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+  .sec-head .dotc{width:11px;height:11px;border-radius:3px;flex:none}
+  .sec.blockers .dotc{background:var(--block)} .sec.blockers .sec-head{color:var(--block)}
+  .sec.warnings .dotc{background:var(--warn)} .sec.warnings .sec-head{color:var(--warn)}
+  .sec.passed .dotc{background:var(--ok)} .sec.passed .sec-head{color:var(--ok)}
+  .sec-head .n{background:currentColor;color:#fff;border-radius:999px;font-size:10.5px;padding:1px 8px;font-weight:800}
+  .sec-head .caret{margin-left:auto;color:var(--faint);font-size:11px;font-weight:700;cursor:pointer;user-select:none}
+  .empty{font-size:12px;color:var(--faint);font-style:italic;padding:2px 2px 6px}
+
+  .finding{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 14px;margin-bottom:9px;border-left-width:3px;transition:opacity .3s,transform .3s}
+  .finding.block{border-left-color:var(--block)}
+  .finding.warn{border-left-color:var(--warn)}
+  .finding.leaving{opacity:0;transform:translateX(14px)}
+  .f-top{display:flex;gap:12px;align-items:flex-start}
+  .f-main{flex:1;min-width:0}
+  .f-name{font-size:13.5px;font-weight:700}
+  .f-name .box{font-size:10px;font-weight:800;color:var(--muted);background:#eef2f7;border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;font-family:var(--mono)}
+  .f-why{font-size:12px;color:var(--muted);margin-top:2px}
+  .f-fix{margin-top:9px;background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:8px;padding:9px 11px;font-size:12.5px}
+  .f-fix .fixlab{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ai-dark);margin-bottom:4px}
+  .ai-chip{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;color:#fff;background:var(--ai);border-radius:5px;padding:1px 6px}
+  .f-fix .prop{color:var(--ink)}
+  .aival{background:#fff;border:1px solid var(--ai-line);border-radius:5px;padding:1px 6px;font-weight:800;color:var(--ai-dark);font-family:var(--mono)}
+  .f-apply{flex:none}
+  .arrowto{color:var(--ai);font-weight:900;padding:0 3px}
+
+  /* diagnosis pointer detail */
+  .ptr{margin-top:9px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .ptr table{width:100%;border-collapse:collapse;font-size:12px}
+  .ptr th{background:var(--surface-2);text-align:left;padding:6px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:800;border-bottom:1px solid var(--line)}
+  .ptr td{padding:6px 10px;border-bottom:1px solid var(--line)}
+  .ptr tr:last-child td{border-bottom:none}
+  .ptr .cpt{font-family:var(--mono);font-weight:700}
+  .ptr .pointer{font-family:var(--mono);font-weight:800;color:var(--ai-dark);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:5px;padding:1px 8px}
+  .ptr-legend{font-size:11px;color:var(--muted);padding:7px 10px;background:var(--surface-2);border-top:1px solid var(--line)}
+  .ptr-legend .dx{font-family:var(--mono);font-weight:700;color:var(--ink)}
+
+  /* passed rows */
+  .passrow{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:8px;padding:8px 12px;margin-bottom:7px}
+  .passrow .chk{width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:11px;flex:none}
+  .passrow .pn{font-size:12.5px;font-weight:700}
+  .passrow .plog{margin-left:auto;font-size:10.5px;color:var(--faint);text-align:right;white-space:nowrap}
+  .passrow .plog b{color:var(--ai-dark);font-weight:700}
+  .passrow.flash{animation:flashok .9s ease}
+  @keyframes flashok{0%{background:var(--ok-tint)}100%{background:var(--surface)}}
+
+  /* action bar */
+  .actionbar{position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--surface);border-top:1px solid var(--line-strong);box-shadow:0 -6px 20px rgba(16,32,46,.06);padding:11px 18px}
+  .actionbar .inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .actionbar .astat{font-size:12.5px;font-weight:700;color:var(--muted)}
+  .actionbar .astat.ready{color:var(--ok)}
+  .actionbar .aspacer{margin-left:auto}
+
+  .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:9px;z-index:60;max-width:560px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ic{width:20px;height:20px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-size:12px;flex:none}
+  .toast.ai .ic{background:var(--ai)} .toast.idr .ic{background:var(--idr)} .toast.warn .ic{background:var(--warn)}
+</style>
+</head>
+<body>
+
+<!--
+  ============================================================================
+  USMON Pro - PRE-SUBMISSION SCRUB  (client demo, SYNTHETIC data only)
+  The modern replacement for the 18-year-old "Information Required" hard-stop.
+  ----------------------------------------------------------------------------
+  60-SECOND PRESENTER PATH:
+    1. "Old system: click File, get a plain unordered list of what's missing,
+        no help. New system: a ranked, channel-aware scrub that proposes the
+        fix for every issue."  Point at the red readiness meter (5 blockers).
+    2. Click "Apply and confirm" on the Payer ZIP blocker -> it slides into
+        PASSED, the blocker count drops, the meter progress bar advances, and
+        it logs "fixed by AI, confirmed by you".
+    3. Clear the remaining blockers -> meter flips GREEN "Ready to file" and
+        the bottom action bar enables "Submit 837P to Availity".
+    4. Point at the three vision panels: clearinghouse pre-flight (caught an
+        edit locally), predictive denial risk, and OON / IDR readiness.
+    5. Flip the channel to "Paper CMS-1500" -> taxonomy warning and the
+        clearinghouse pre-flight panel disappear, a paper form-alignment check
+        appears in PASSED, and the submit button becomes "Print paper CMS-1500".
+  ============================================================================
+-->
+
+<header class="appbar">
+  <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
+  <nav class="appnav">
+    <a href="#" onclick="return t('New Insurance Billing prepares completed cases to file')">New Billing</a>
+    <a href="#" onclick="return t('Ongoing follow-up worklist')">Ongoing</a>
+    <a href="#" class="on">Claim Scrub</a>
+    <a href="#" onclick="return t('Reports')">Reports</a>
+    <a href="#" onclick="return t('Manage')">Manage</a>
+  </nav>
+  <div class="appuser">
+    <span>Sample, Dana &middot; Biller</span>
+    <span class="avatar">SD</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <h1>Pre-Submission Scrub <span class="tag">Replaces "Information Required"</span></h1>
+    <p>The old system stopped you with a plain, unordered list of what was missing and no way to fix it. This is the intelligent version: every issue is ranked, explained, and comes with an AI-proposed fix you confirm. It pre-flights the clearinghouse, predicts denial risk, and routes the clean claim.</p>
+  </div>
+
+  <!-- claim context -->
+  <div class="ctx">
+    <div class="ctx-top">
+      <div class="ctx-id">
+        <div class="claimno mono">Claim #3190468</div>
+        <div class="pt">B. Rivera <span class="maskpill">masked &middot; Patient #3190468</span></div>
+      </div>
+      <div class="ctx-meta">
+        <div class="kv"><div class="k">Payer</div><div class="v">BCBS TX</div></div>
+        <div class="kv"><div class="k">Date of Service</div><div class="v mono">06/24/2026</div></div>
+        <div class="kv"><div class="k">Billing Type</div><div class="v">Global</div></div>
+        <div class="kv"><div class="k">Facility</div><div class="v">Cedar Ridge Surgical Center</div></div>
+        <div class="kv"><div class="k">Network</div><div class="v" style="color:var(--idr-dark)">Out-of-network</div></div>
+      </div>
+    </div>
+    <div class="chanrow">
+      <span class="lbl">Submission channel</span>
+      <div class="seg" role="group" aria-label="Submission channel">
+        <button id="seg-elec" class="on" onclick="setChannel('electronic')">Electronic 837P</button>
+        <button id="seg-paper" onclick="setChannel('paper')">Paper CMS-1500</button>
+      </div>
+      <span class="chandesc" id="chanDesc">Electronic <b>837P</b> via clearinghouse <b>Availity</b></span>
+    </div>
+  </div>
+
+  <!-- readiness meter -->
+  <div class="meter notready" id="meter">
+    <div class="meter-top">
+      <div class="stlight" id="stLight">!</div>
+      <div class="sttext" id="stText">Not ready to file - 5 blockers, 3 warnings</div>
+      <div class="cnts">
+        <span class="cntpill b" id="pillB">5 blockers</span>
+        <span class="cntpill w" id="pillW">3 warnings</span>
+        <span class="cntpill p" id="pillP">4 passed</span>
+      </div>
+    </div>
+    <div class="progtrack"><div class="progfill" id="progFill" style="width:0%"></div></div>
+    <div class="progsub" id="progSub">Resolve all blockers to file. Warnings will not stop submission but raise denial risk.</div>
+  </div>
+
+  <!-- advanced vision panels -->
+  <div class="panels" id="panels">
+    <div class="panel pf" id="panelPreflight">
+      <h3>Clearinghouse pre-flight <span class="ph-tag">Simulated Availity edits</span></h3>
+      <p>The claim is validated against <b>Availity</b> edits <b>before</b> it leaves USMON, so a rejection is caught here in seconds instead of in a 277CA days later.</p>
+      <div class="pf-hit"><span>&#9873;</span><span>Caught <b>1 edit locally</b>: rendering-provider taxonomy required (Box 24J / 33b). Fix it below now, not after a round-trip rejection.</span></div>
+    </div>
+    <div class="panel risk">
+      <h3>Predictive risk <span class="ph-tag">Illustrative</span></h3>
+      <p><b>Elevated denial history</b> for <b>CPT 95940 + G95.9</b> with <b>BCBS TX</b>. Recommend attaching the medical-necessity note from the Tech Report before filing.</p>
+      <div class="riskbar"><span class="rl">High</span><div class="rt"><div class="rf" style="width:71%"></div></div><span class="rl">71%</span></div>
+      <div class="illus">Synthetic, illustrative model output - not a real payer statistic.</div>
+    </div>
+    <div class="panel idr">
+      <h3>OON / IDR readiness <span class="ph-tag">USMON edge</span></h3>
+      <p>Out-of-network claim. Wired to feed the <b>IDR clock</b> and <b>NSA negotiation</b> automatically if it returns underpaid.</p>
+      <div class="idr-ok"><span class="chk">&#10003;</span><span>QPA captured &middot; IDR window will arm on the ERA</span></div>
+    </div>
+    <div class="panel batch">
+      <h3>Batch context</h3>
+      <span class="bstat">Today's batch: <b>412 ready</b> &middot; <b class="att">18 need attention</b></span>
+    </div>
+  </div>
+
+  <!-- BLOCKERS -->
+  <div class="sec blockers">
+    <div class="sec-head"><span class="dotc"></span>Blockers <span class="n" id="nBlock">0</span> <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">will be rejected</span></div>
+    <div id="listBlock"></div>
+  </div>
+
+  <!-- WARNINGS -->
+  <div class="sec warnings">
+    <div class="sec-head"><span class="dotc"></span>Warnings <span class="n" id="nWarn">0</span> <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">likely denied or underpaid</span></div>
+    <div id="listWarn"></div>
+  </div>
+
+  <!-- PASSED -->
+  <div class="sec passed">
+    <div class="sec-head"><span class="dotc"></span>Passed <span class="n" id="nPass">0</span><span class="caret" id="passCaret" onclick="togglePassed()">show &#9662;</span></div>
+    <div id="listPass" style="display:none"></div>
+  </div>
+</main>
+
+<!-- final action bar -->
+<div class="actionbar">
+  <div class="inner">
+    <span class="astat" id="aStat">Not ready - resolve the blockers first</span>
+    <span class="aspacer"></span>
+    <button class="btn" id="btnBatch" disabled title="Resolve the blockers first" onclick="addToBatch()">Add to today's batch</button>
+    <button class="btn primary" id="btnSubmit" disabled title="Resolve the blockers first" onclick="submitClaim()">Submit 837P to Availity</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ic" id="toastIc">&#10003;</span><span id="toastMsg"></span></div>
+
+<script>
+/* ---------------- toast ---------------- */
+function toast(m,kind){
+  var el=document.getElementById('toast');
+  el.className='toast'+(kind?' '+kind:'');
+  document.getElementById('toastIc').innerHTML=(kind==='ai'?'&#10022;':kind==='idr'?'&#9670;':kind==='warn'?'!':'&#10003;');
+  document.getElementById('toastMsg').textContent=m;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){el.classList.remove('show');},3400);
+}
+function t(m){toast(m);return false;}
+
+/* ---------------- state ---------------- */
+var CLEARINGHOUSE='Availity';
+var channel='electronic';
+var passedOpen=false;
+
+/* diagnosis-pointer detail (blocker b2) */
+var PTR_ROWS=[
+  {cpt:'95940',pointer:'A'},
+  {cpt:'95941',pointer:'A'},
+  {cpt:'95911',pointer:'B'}
+];
+var PTR_DX=[
+  {p:'A',code:'G95.9',desc:'Disorder of the nervous system, unspecified'},
+  {p:'B',code:'M54.5',desc:'Low back pain'}
+];
+function ptrDetail(){
+  var rows=PTR_ROWS.map(function(r){
+    return '<tr><td class="cpt">'+r.cpt+'</td><td><span class="arrowto">&rarr;</span> <span class="pointer">'+r.pointer+'</span></td></tr>';
+  }).join('');
+  var legend=PTR_DX.map(function(x){
+    return '<span class="dx">'+x.p+' = '+x.code+'</span> ('+x.desc+')';
+  }).join(' &nbsp;&middot;&nbsp; ');
+  return '<div class="ptr"><table><thead><tr><th>CPT line</th><th>AI-linked pointer (from reading report)</th></tr></thead><tbody>'+rows+'</tbody></table><div class="ptr-legend">'+legend+'</div></div>';
+}
+
+/* ---------------- findings ---------------- */
+/* sev: block | warn ; channels: undefined = both. status: open | resolved.
+   baseline passed checks live here too (sev: pass, status: resolved). */
+var FINDINGS=[
+  /* --- BLOCKERS --- */
+  {id:'b_zip', sev:'block', name:'Payer ZIP must be 9 digits', box:'Box 33',
+   why:'Electronic and paper claims require ZIP+4 for the payer address. Currently 5 digits, which the payer will reject.',
+   proposed:'<span class="aival">75201</span> <span class="arrowto">&rarr;</span> <span class="aival">75201-2711</span> <span class="prop">from USPS ZIP+4 lookup</span>'},
+  {id:'b_ptr', sev:'block', name:'Diagnosis pointer not set for each CPT', box:'Box 24E',
+   why:'Every CPT line must point to at least one diagnosis. None are linked yet - the claim cannot be adjudicated.',
+   proposed:'<span class="prop">AI pre-linked each CPT to a diagnosis pointer read from the physician Tech Report. Confirm the linkage:</span>',
+   detail:true},
+  {id:'b_icd', sev:'block', name:'Missing ICD-10 diagnosis code', box:'Box 21',
+   why:'No primary diagnosis is entered. A claim with no ICD-10 code is rejected on submission.',
+   proposed:'<span class="prop">Suggested from Tech Report:</span> <span class="aival">G95.9</span> primary, <span class="aival">M54.5</span> secondary'},
+  {id:'b_addr', sev:'block', name:'Missing patient Address / City / State', box:'Box 5',
+   why:'Subscriber address is required for both channels. All three fields are empty.',
+   proposed:'<span class="prop">Filled from source case:</span> <span class="aival">1420 Live Oak St</span>, <span class="aival">Dallas</span>, <span class="aival">TX</span>'},
+  {id:'b_insid', sev:'block', name:'Missing Insured ID', box:'Box 1a',
+   why:'The member / subscriber ID is required to route and adjudicate the claim.',
+   proposed:'<span class="prop">Pulled from the eligibility (270/271) response:</span> <span class="aival">QHB884451203</span>'},
+
+  /* --- WARNINGS --- */
+  {id:'w_payerid', sev:'warn', name:'Payer ID not resolved to clearinghouse list',
+   why:'The carrier is not yet mapped to a payer ID on the clearinghouse payer list, which can misroute the claim.',
+   proposed:'<span class="prop">Mapped:</span> BCBS TX <span class="arrowto">&rarr;</span> <span class="aival">Availity payer ID 84980</span>'},
+  {id:'w_tax', sev:'warn', name:'Rendering provider taxonomy missing', box:'Box 24J / 33b', channels:['electronic'],
+   why:'Electronic 837P submission requires the rendering-provider taxonomy code. Availity flagged this on pre-flight.',
+   proposed:'<span class="prop">Suggested from provider record:</span> <span class="aival">2084N0400X</span> Neurology'},
+  {id:'w_neccnote', sev:'warn', name:'Elevated denial history for this CPT + DX + payer',
+   why:'CPT 95940 with G95.9 on BCBS TX has an elevated denial pattern. Attaching the medical-necessity note reduces the risk.',
+   proposed:'<span class="prop">Attach medical-necessity note extracted from the Tech Report</span>'},
+
+  /* --- baseline PASSED checks (already green) --- */
+  {id:'p_npi', sev:'pass', status:'resolved', baseline:true, name:'Billing provider NPI present and valid', box:'Box 33a'},
+  {id:'p_mod', sev:'pass', status:'resolved', baseline:true, name:'Modifier 26 applied for professional component'},
+  {id:'p_timely', sev:'pass', status:'resolved', baseline:true, name:'Date of service within timely-filing window'},
+  {id:'p_auth', sev:'pass', status:'resolved', baseline:true, name:'Prior authorization on file'},
+  /* paper-only check */
+  {id:'p_form', sev:'pass', status:'resolved', baseline:true, channels:['paper'], name:'Form alignment + version (02/12) confirmed for paper'}
+];
+FINDINGS.forEach(function(f){ if(!f.status) f.status='open'; });
+
+function visible(f){ return !f.channels || f.channels.indexOf(channel)!==-1; }
+
+/* ---------------- render findings ---------------- */
+function findingHtml(f){
+  var det = f.detail ? ptrDetail() : '';
+  return '<div class="finding '+f.sev+'" id="fx-'+f.id+'">'+
+    '<div class="f-top">'+
+      '<div class="f-main">'+
+        '<div class="f-name">'+f.name+(f.box?'<span class="box">'+f.box+'</span>':'')+'</div>'+
+        '<div class="f-why">'+f.why+'</div>'+
+        '<div class="f-fix">'+
+          '<div class="fixlab"><span class="ai-chip">&#10022; AI</span> Proposed fix</div>'+
+          '<div>'+f.proposed+'</div>'+
+          det+
+        '</div>'+
+      '</div>'+
+      '<div class="f-apply"><button class="btn ai sm" onclick="applyFix(\''+f.id+'\')">Apply &amp; confirm</button></div>'+
+    '</div>'+
+  '</div>';
+}
+function passHtml(f){
+  var log = f.baseline
+    ? '<span class="plog">auto-verified</span>'
+    : '<span class="plog">fixed by AI, <b>confirmed by you</b><br>logged '+(f.loggedAt||'')+'</span>';
+  return '<div class="passrow'+(f.flash?' flash':'')+'" id="px-'+f.id+'"><span class="chk">&#10003;</span><span class="pn">'+f.name+'</span>'+log+'</div>';
+}
+function renderFindings(){
+  var blk=FINDINGS.filter(function(f){return f.sev==='block'&&f.status==='open'&&visible(f);});
+  var wrn=FINDINGS.filter(function(f){return f.sev==='warn'&&f.status==='open'&&visible(f);});
+  var pas=FINDINGS.filter(function(f){return f.status==='resolved'&&visible(f);});
+
+  document.getElementById('listBlock').innerHTML = blk.length? blk.map(findingHtml).join('') : '<div class="empty">No blockers - claim will not be rejected on these rules.</div>';
+  document.getElementById('listWarn').innerHTML = wrn.length? wrn.map(findingHtml).join('') : '<div class="empty">No open warnings.</div>';
+  document.getElementById('listPass').innerHTML = pas.map(passHtml).join('');
+
+  document.getElementById('nBlock').textContent=blk.length;
+  document.getElementById('nWarn').textContent=wrn.length;
+  document.getElementById('nPass').textContent=pas.length;
+  document.getElementById('passCaret').innerHTML=(passedOpen?'hide &#9652;':'show &#9662;');
+  document.getElementById('listPass').style.display=passedOpen?'block':'none';
+
+  /* clear one-shot flash flags after paint */
+  FINDINGS.forEach(function(f){f.flash=false;});
+  updateReadiness(blk.length,wrn.length,pas.length);
+}
+
+/* ---------------- readiness meter + action bar ---------------- */
+function updateReadiness(nb,nw,np){
+  var ready = nb===0;
+  var meter=document.getElementById('meter');
+  meter.classList.toggle('ready',ready);
+  meter.classList.toggle('notready',!ready);
+  document.getElementById('stLight').innerHTML=ready?'&#10003;':'!';
+  document.getElementById('stText').textContent = ready
+    ? 'Ready to file'
+    : 'Not ready to file - '+nb+' blocker'+(nb===1?'':'s')+', '+nw+' warning'+(nw===1?'':'s');
+  document.getElementById('pillB').textContent=nb+' blocker'+(nb===1?'':'s');
+  document.getElementById('pillW').textContent=nw+' warning'+(nw===1?'':'s');
+  document.getElementById('pillP').textContent=np+' passed';
+
+  var totalBlock=FINDINGS.filter(function(f){return f.sev==='block'&&visible(f);}).length;
+  var doneBlock=totalBlock-nb;
+  var pct= totalBlock? Math.round(doneBlock/totalBlock*100) : 100;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progSub').textContent = ready
+    ? (nw>0? nw+' warning'+(nw===1?'':'s')+' remain - not blocking, but review to avoid a denial.' : 'All checks clear. Route the claim when ready.')
+    : doneBlock+' of '+totalBlock+' blockers resolved. Resolve all blockers to file.';
+
+  /* action bar */
+  var sub=document.getElementById('btnSubmit');
+  var bat=document.getElementById('btnBatch');
+  var astat=document.getElementById('aStat');
+  sub.textContent = channel==='electronic' ? 'Submit 837P to '+CLEARINGHOUSE : 'Print paper CMS-1500';
+  if(ready){
+    sub.disabled=false; bat.disabled=false;
+    sub.removeAttribute('title'); bat.removeAttribute('title');
+    astat.textContent='Ready to file'; astat.classList.add('ready');
+  }else{
+    sub.disabled=true; bat.disabled=true;
+    sub.title='Resolve the blockers first'; bat.title='Resolve the blockers first';
+    astat.textContent='Not ready - resolve the blockers first'; astat.classList.remove('ready');
+  }
+}
+
+/* ---------------- apply a fix ---------------- */
+function applyFix(id){
+  var f=FINDINGS.find(function(x){return x.id===id;});
+  if(!f||f.status!=='open')return;
+  var el=document.getElementById('fx-'+id);
+  var now=new Date();
+  f.loggedAt=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var finish=function(){
+    f.status='resolved'; f.flash=true;
+    renderFindings();
+    toast((f.sev==='block'?'Blocker':'Warning')+' resolved: '+f.name+' - confirmed and logged','ai');
+  };
+  if(el){
+    el.classList.add('leaving');
+    setTimeout(finish,280);
+  }else{
+    finish();
+  }
+}
+
+/* ---------------- passed section toggle ---------------- */
+function togglePassed(){
+  passedOpen=!passedOpen;
+  document.getElementById('listPass').style.display=passedOpen?'block':'none';
+  document.getElementById('passCaret').innerHTML=(passedOpen?'hide &#9652;':'show &#9662;');
+}
+
+/* ---------------- channel toggle ---------------- */
+function setChannel(c){
+  if(c===channel){renderFindings();return;}
+  channel=c;
+  var elec=c==='electronic';
+  document.getElementById('seg-elec').classList.toggle('on',elec);
+  document.getElementById('seg-paper').classList.toggle('on',!elec);
+  document.getElementById('chanDesc').innerHTML=elec
+    ? 'Electronic <b>837P</b> via clearinghouse <b>'+CLEARINGHOUSE+'</b>'
+    : 'Paper <b>CMS-1500 (02/12)</b> - printed and mailed';
+  /* clearinghouse pre-flight panel is electronic-only */
+  document.getElementById('panelPreflight').style.display=elec?'':'none';
+  renderFindings();
+  toast(elec
+    ? 'Channel: Electronic 837P - clearinghouse pre-flight and taxonomy check enabled'
+    : 'Channel: Paper CMS-1500 - taxonomy warning and pre-flight hidden, form-alignment check added','idr');
+}
+
+/* ---------------- final actions ---------------- */
+function submitClaim(){
+  if(document.getElementById('btnSubmit').disabled)return;
+  toast(channel==='electronic'
+    ? 'Clean claim #3190468 submitted as 837P to '+CLEARINGHOUSE+' - IDR clock armed for OON follow-up'
+    : 'Paper CMS-1500 (02/12) for claim #3190468 sent to the print queue', channel==='electronic'?'idr':null);
+}
+function addToBatch(){
+  if(document.getElementById('btnBatch').disabled)return;
+  toast('Claim #3190468 added to today’s batch - now 413 ready');
+}
+
+/* ---------------- init ---------------- */
+renderFindings();
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>
