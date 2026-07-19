@@ -1,0 +1,285 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"></head><body>
+<title>Insurance Billing: Phase 1 build plan</title>
+<style>
+  :root{
+    --canvas:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa;
+    --ink:#16202e; --muted:#54626f; --faint:#8493a1;
+    --line:#e0e5ea; --line-strong:#ccd3db;
+    --teal:#0b6e7a; --teal-dark:#095560; --teal-tint:#e3f1f2; --teal-line:#b9e0e3;
+    --amber:#a8500f; --amber-tint:#faefe4; --amber-line:#eccdb0;
+    --ok:#1b7f43; --ok-tint:#e8f6ee; --ok-line:#bfe6cd;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --radius:12px; --shadow:0 1px 2px rgba(16,32,46,.05),0 10px 26px rgba(16,32,46,.07);
+    --maxw:1000px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --canvas:#0e1620; --surface:#152030; --surface-2:#111a26;
+      --ink:#e8eef4; --muted:#9fb0bf; --faint:#6f8091;
+      --line:#233242; --line-strong:#31445a;
+      --teal:#4fc7d4; --teal-dark:#7ed8e2; --teal-tint:#0f2d33; --teal-line:#1c4a52;
+      --amber:#e39a5e; --amber-tint:#2c1f13; --amber-line:#4a3620;
+      --ok:#5fce8b; --ok-tint:#12271a; --ok-line:#245234;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="light"]{
+    --canvas:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa;
+    --ink:#16202e; --muted:#54626f; --faint:#8493a1;
+    --line:#e0e5ea; --line-strong:#ccd3db;
+    --teal:#0b6e7a; --teal-dark:#095560; --teal-tint:#e3f1f2; --teal-line:#b9e0e3;
+    --amber:#a8500f; --amber-tint:#faefe4; --amber-line:#eccdb0;
+    --ok:#1b7f43; --ok-tint:#e8f6ee; --ok-line:#bfe6cd;
+    --shadow:0 1px 2px rgba(16,32,46,.05),0 10px 26px rgba(16,32,46,.07);
+  }
+  :root[data-theme="dark"]{
+    --canvas:#0e1620; --surface:#152030; --surface-2:#111a26;
+    --ink:#e8eef4; --muted:#9fb0bf; --faint:#6f8091;
+    --line:#233242; --line-strong:#31445a;
+    --teal:#4fc7d4; --teal-dark:#7ed8e2; --teal-tint:#0f2d33; --teal-line:#1c4a52;
+    --amber:#e39a5e; --amber-tint:#2c1f13; --amber-line:#4a3620;
+    --ok:#5fce8b; --ok-tint:#12271a; --ok-line:#245234;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--teal);font-weight:600;margin:0 0 10px}
+  h1{font-size:clamp(28px,4.4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:0 0 14px;
+    font-weight:800;text-wrap:balance;max-width:22ch}
+  h2{font-size:clamp(20px,2.5vw,26px);letter-spacing:-.01em;margin:0 0 6px;font-weight:750;text-wrap:balance}
+  p{margin:0 0 14px;color:var(--muted);max-width:66ch}
+  p.lead{font-size:18px;color:var(--ink);max-width:70ch}
+  b,strong{color:var(--ink)}
+  code{font-family:var(--mono);font-size:.85em;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 5px;color:var(--ink)}
+
+  header.top{padding:52px 0 30px;border-bottom:1px solid var(--line)}
+  .metarow{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .chip{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.03em;
+    padding:5px 11px;border-radius:999px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--muted)}
+  .chip.tealc{background:var(--teal-tint);border-color:var(--teal-line);color:var(--teal-dark)}
+
+  section{padding:36px 0;border-bottom:1px solid var(--line)}
+  .sub{color:var(--muted);max-width:70ch;margin-bottom:24px}
+
+  /* the rail */
+  .rail{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0 4px}
+  .rail::before{content:"";position:absolute;top:17px;left:10%;right:10%;height:2px;background:var(--line-strong)}
+  .node{position:relative;text-align:center;padding:0 4px}
+  .node .dot{width:36px;height:36px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:13px;background:var(--surface);
+    border:2px solid var(--teal);color:var(--teal-dark);position:relative;z-index:1}
+  .node .nt{font-size:12.5px;font-weight:700;line-height:1.25;letter-spacing:-.01em}
+  .node .ns{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px;letter-spacing:.04em}
+  @media(max-width:720px){
+    .rail{grid-template-columns:1fr;gap:10px}
+    .rail::before{display:none}
+    .node{text-align:left;display:flex;align-items:center;gap:11px}
+    .node .dot{margin:0}
+  }
+
+  .mcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 20px;margin-bottom:14px;display:grid;
+    grid-template-columns:64px 1fr;gap:18px}
+  @media(max-width:640px){.mcard{grid-template-columns:1fr;gap:10px}}
+  .mcard .mno{font-family:var(--mono);font-weight:800;font-size:22px;color:var(--teal);line-height:1}
+  .mcard .mno .sz{display:block;font-size:10px;letter-spacing:.08em;color:var(--faint);margin-top:8px;font-weight:600}
+  .mcard h3{margin:0 0 9px;font-size:18px;font-weight:750;letter-spacing:-.01em}
+  .mcard ul{margin:0 0 12px;padding-left:18px;color:var(--muted);font-size:14.5px}
+  .mcard li{margin-bottom:4px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;border-top:1px dashed var(--line-strong);padding-top:10px}
+  .meta .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-right:6px}
+  .meta .dep{color:var(--muted)}
+  .meta .exit{color:var(--ok)}
+
+  .scope{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.scope{grid-template-columns:1fr}}
+  .col{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .col.in{border-top:3px solid var(--ok)}
+  .col.out{border-top:3px solid var(--amber)}
+  .col h3{margin:0 0 10px;font-size:15px;font-weight:750}
+  .col.in h3{color:var(--ok)} .col.out h3{color:var(--amber)}
+  .col ul{margin:0;padding-left:17px;color:var(--muted);font-size:14px}
+  .col li{margin-bottom:5px}
+
+  .gates{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:680px){.gates{grid-template-columns:1fr}}
+  .gate{background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:var(--radius);padding:15px 16px}
+  .gate .gn{font-family:var(--mono);font-size:11px;color:var(--teal-dark);font-weight:700;letter-spacing:.05em}
+  .gate p{margin:6px 0 0;font-size:14px;color:var(--ink)}
+
+  .after{background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:16px 18px}
+  .after p{margin:0;font-size:14px}
+
+  footer{padding:24px 0 60px;color:var(--faint);font-size:13px}
+  footer p{color:var(--faint);max-width:none}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">USMON // Insurance Billing // Build Plan</p>
+    <h1>Phase 1: prove with USMON</h1>
+    <p class="lead">The intake front end, built on the real new platform, for one pilot client, running beside the legacy system. Not a rewrite of everything at once. Prove it here, then productize.</p>
+    <div class="metarow">
+      <span class="chip tealc">Draft for review</span>
+      <span class="chip">Grounded in ADR-001 + ADR-002</span>
+      <span class="chip">Prove, then productize</span>
+      <span class="chip">Relative sizing, dates depend on team</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The path</p>
+    <h2>Five milestones to a live pilot</h2>
+    <p class="sub">Each milestone has a clear exit before the next begins. The design is already settled by the prototypes, so this is engineering, not discovery.</p>
+    <div class="rail">
+      <div class="node"><div class="dot">M0</div><div class="nt">Foundations</div><div class="ns">infra spine</div></div>
+      <div class="node"><div class="dot">M1</div><div class="nt">Schema + adapter</div><div class="ns">data spine</div></div>
+      <div class="node"><div class="dot">M2</div><div class="nt">Intake cockpit</div><div class="ns">the demo, real</div></div>
+      <div class="node"><div class="dot">M3</div><div class="nt">Scrub + file</div><div class="ns">out the door</div></div>
+      <div class="node"><div class="dot">M4</div><div class="nt">Pilot</div><div class="ns">beside legacy</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="mcard">
+      <div class="mno">M0<span class="sz">SIZE L</span></div>
+      <div>
+        <h3>Foundations: the infrastructure spine</h3>
+        <ul>
+          <li>CDK-provisioned environment: VPC, Aurora PostgreSQL Serverless v2, Cognito, ECS Fargate, CI/CD, Secrets Manager, EventBridge, CloudWatch</li>
+          <li>API skeleton with Cognito auth, tenant context, and Postgres row-level security enforced</li>
+        </ul>
+        <div class="meta"><span><span class="lab">Depends</span><span class="dep">George infra, AWS account, your blessing of the ADRs</span></span><span><span class="lab">Exit</span><span class="exit">a secured, deployable app shell in the cloud</span></span></div>
+      </div>
+    </div>
+
+    <div class="mcard">
+      <div class="mno">M1<span class="sz">SIZE L</span></div>
+      <div>
+        <h3>Canonical schema + the USMON adapter</h3>
+        <ul>
+          <li>The 17 core tables (ADR-002) stood up as migrations</li>
+          <li>The USMON adapter reads <code>patient_ansi</code> over mcp-channel and syncs a pilot client's claims into our own store</li>
+          <li>Collapse the legacy per-track row clones into one Encounter with one to three Claims (the anti-corruption layer at work)</li>
+        </ul>
+        <div class="meta"><span><span class="lab">Depends</span><span class="dep">M0, Eslam (the view, DDL, code sets), George (mcp read)</span></span><span><span class="lab">Exit</span><span class="exit">real pilot claims flowing into the new store</span></span></div>
+      </div>
+    </div>
+
+    <div class="mcard">
+      <div class="mno">M2<span class="sz">SIZE L</span></div>
+      <div>
+        <h3>The intake cockpit (the demo made real)</h3>
+        <ul>
+          <li>New Insurance Billing worklist on real data: dense grid, filters, server-side paging, built for 52K claims</li>
+          <li>One review engine, two views to start (Guided and the Classic legacy-comfort skin); Familiar and Cockpit added as capacity allows</li>
+          <li>Biller and supervisor roles, per-biller default view, supervisor time and efficiency</li>
+          <li>AI prefill-and-confirm on Bedrock (highlighted fields), coding assist, tech-report extraction via Bedrock Data Automation</li>
+        </ul>
+        <div class="meta"><span><span class="lab">Depends</span><span class="dep">M1, Bedrock access</span></span><span><span class="lab">Exit</span><span class="exit">a biller verifies a real prefilled claim in their chosen view</span></span></div>
+      </div>
+    </div>
+
+    <div class="mcard">
+      <div class="mno">M3<span class="sz">SIZE M/L</span></div>
+      <div>
+        <h3>Scrub and file</h3>
+        <ul>
+          <li>The Pre-Submission Scrub: rule-driven, ranked, payer and channel aware, with AI-proposed fixes</li>
+          <li>CMS-1500 form, 837P generation, paper print, and data-driven Box 33 assignment</li>
+          <li>Clearinghouse connection manager (the MCD) with client-owned SFTP; retire vs admin-delete</li>
+          <li>Basic 835/ERA status ingest (full reconciliation is the Remit module, Track 2)</li>
+        </ul>
+        <div class="meta"><span><span class="lab">Depends</span><span class="dep">M2, Eslam (stored-proc logic, status codes), client SFTP credentials</span></span><span><span class="lab">Exit</span><span class="exit">a claim goes from intake to filed on the new system</span></span></div>
+      </div>
+    </div>
+
+    <div class="mcard">
+      <div class="mno">M4<span class="sz">SIZE M</span></div>
+      <div>
+        <h3>Pilot and hardening</h3>
+        <ul>
+          <li>One client's billers work real claims beside legacy (parallel run)</li>
+          <li>Load toward full 52K, audit log, dashboards</li>
+          <li>Emit the claim lifecycle events for future Remit and Arbitron</li>
+          <li>Per-client parallel-run then cutover criteria</li>
+        </ul>
+        <div class="meta"><span><span class="lab">Depends</span><span class="dep">M3, pilot client selected</span></span><span><span class="lab">Exit</span><span class="exit">Phase-1 definition of done met</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Holding the line</p>
+    <h2>What is in, and what waits</h2>
+    <p class="sub">The demo modeled the whole system. Phase 1 ships the front of the pipeline; the rest is Track 2, by addition, not rewrite.</p>
+    <div class="scope">
+      <div class="col in">
+        <h3>In (Phase 1)</h3>
+        <ul>
+          <li>The platform spine (Aurora, Cognito, API on Fargate, USMON adapter)</li>
+          <li>Intake worklist at 52K scale</li>
+          <li>Review engine, roles, per-biller default view</li>
+          <li>AI prefill-and-confirm, coding assist, scrub</li>
+          <li>CMS-1500, 837P and paper, Box 33 assignment</li>
+          <li>Clearinghouse manager, basic 835 status ingest</li>
+          <li>Pilot beside legacy</li>
+        </ul>
+      </div>
+      <div class="col out">
+        <h3>Waits (Track 2)</h3>
+        <ul>
+          <li>Ongoing/collections worklist, payments, reports</li>
+          <li>Full 835 reconciliation (the Remit module)</li>
+          <li>Arbitron (consumes the events Phase 1 emits)</li>
+          <li>Non-USMON adapters, standalone onboarding</li>
+          <li>Public API and MCP-server hardening</li>
+          <li>Hospital technical-fee invoicing (route to the existing portal, do not rebuild)</li>
+          <li>Write-back beyond claim status (pending Eslam feasibility)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">What unblocks the start</p>
+    <h2>Three decisions with you</h2>
+    <div class="gates" style="margin-top:16px">
+      <div class="gate"><div class="gn">GATE 1</div><p><b>Bless ADR-001 and ADR-002</b> so they can be registered upstream.</p></div>
+      <div class="gate"><div class="gn">GATE 2</div><p><b>Pick the pilot client</b> we prove it with.</p></div>
+      <div class="gate"><div class="gn">GATE 3</div><p><b>Is standalone a near-term goal?</b> It decides how much compliance surface we budget now.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:none">
+  <div class="wrap">
+    <p class="eyebrow">After Phase 1</p>
+    <div class="after">
+      <p>Ongoing and payments, full 835 reconciliation (Remit), Arbitron consuming the IDR and underpayment events, then the standalone track: other-system adapters, self-serve onboarding, and the public API and MCP server hardened for outside customers. That is the become-a-Stedi turn, and the Phase-1 build is shaped so we get there by adding, not rewriting.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Draft build plan for the USMON Insurance Billing rebuild, Phase 1. Full detail in docs/BUILD-PLAN.md. Sizing is relative; calendar dates depend on team allocation.</p>
+  </div>
+</footer>
+</body></html>
