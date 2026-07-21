@@ -67,6 +67,7 @@
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow)}
   .card h3{margin:0 0 5px;font-size:15px;font-weight:700;letter-spacing:-.01em}
   .card p{margin:0;font-size:13.5px;color:var(--muted)}
+  .card.feature{border-color:var(--teal-line);box-shadow:0 0 0 2px var(--teal-tint),var(--shadow)}
   .card .i{font-size:19px;line-height:1;margin-bottom:8px}
   .note{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin-top:16px;font-size:13.5px;color:var(--muted)}
   .close{background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:var(--radius);padding:18px 20px;margin-top:8px}
@@ -106,6 +107,7 @@
     <span class="tag next">Coming next</span>
     <h2>New automation and features</h2>
     <div class="cards">
+      <div class="card feature"><div class="i">🔐</div><h3>Prior authorization, handled</h3><p>Automatically check whether a payer requires authorization, request and track it, pull the medical necessity from the report, and land the approved number right on the claim, with the auth expiry tracked so nothing lapses.</p></div>
       <div class="card"><div class="i">✨</div><h3>An AI first pass you just confirm</h3><p>AI fills in the likely answers ahead of the biller and highlights every field it touched, so you confirm instead of hunting. Less typing, fewer misses.</p></div>
       <div class="card"><div class="i">🧬</div><h3>Coding assist</h3><p>Reads the report and flags CPT codes that may have been missed, so billable work is not left off the claim.</p></div>
       <div class="card"><div class="i">🛡️</div><h3>A smarter pre-submission check</h3><p>Ranks what is missing, proposes the fix for each item, and catches the rejections a clearinghouse would bounce, before the claim ever goes out.</p></div>
