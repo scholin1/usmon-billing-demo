@@ -118,7 +118,7 @@
     <p class="eyebrow">Why this is worth backing</p>
     <h2>Three funding-grade reasons</h2>
     <div class="cards c4" style="margin-top:6px">
-      <div class="card fund"><span class="k">Gen-AI</span><h3>Net-new Bedrock workload</h3><p>AI does the billing work: prefill, coding, scrubbing, prior-auth reasoning. Real, sustained inference, not a demo.</p></div>
+      <div class="card fund"><span class="k">Gen-AI</span><h3>Net-new Bedrock workload</h3><p>AI does the billing work: prefill, coding, scrubbing, prior-auth reasoning, and real-time voice (Nova Sonic 2). Real, sustained inference, not a demo.</p></div>
       <div class="card fund"><span class="k">Foundation</span><h3>Aurora modernization underway</h3><p>The move off SQL Server to Aurora PostgreSQL is already funded and in flight via AWS Transform with Loka, landing in about three months. The AI platform builds straight on top.</p></div>
       <div class="card fund"><span class="k">Consumption</span><h3>Compounds per tenant</h3><p>Multi-tenant SaaS: AWS spend grows every time a client onboards, then again as it goes standalone.</p></div>
       <div class="card fund"><span class="k">Marketplace</span><h3>Listable on AWS Marketplace</h3><p>A referenceable healthcare AI win that can list on AWS Marketplace for co-sell and metered consumption.</p></div>
@@ -160,6 +160,7 @@
       <div class="card"><h3>Document understanding</h3><p>Turns faxes, tech reports, and insurance cards into structured claim data automatically.</p><span class="mkt">Market note: a capability clients currently rent from separate AI vendors.</span></div>
       <div class="card"><h3>Programmable and agent-operable</h3><p>API-first with its own MCP server, so AI agents and partners can drive the system, not just a closed screen.</p><span class="mkt">Market note: most billing software is a closed UI with no programmable surface.</span></div>
       <div class="card"><h3>One AI-native platform, full cycle</h3><p>Intake, scrub, file, auto-reconcile the remittance, and arbitrate, event-driven and multi-tenant.</p><span class="mkt">Market note: the cycle is usually stitched from several disconnected tools.</span></div>
+      <div class="card"><h3>Voice, built in</h3><p>A real-time voice layer (Amazon Nova Sonic 2) in the insurance module: work hands-free, and put the payer phone calls billers dread on an AI voice agent that dials, waits through the hold, and captures the answer.</p><span class="mkt">Market note: native voice AI is essentially absent from mainstream billing software.</span></div>
     </div>
   </div>
 </section>
@@ -175,6 +176,7 @@
       <tbody>
         <tr><td class="hot">Amazon Bedrock</td><td>The reasoning for prefill, coding assist, the scrub, prior-auth necessity, and the agentic AI service</td><td>Claims worked, per-claim AI calls</td></tr>
         <tr><td class="hot">Bedrock Data Automation</td><td>Document understanding of tech reports, insurance cards, and faxes</td><td>Documents ingested</td></tr>
+        <tr><td class="hot">Amazon Nova Sonic 2 (Bedrock)</td><td>Real-time voice in the insurance module: hands-free biller work and an AI voice agent for the payer phone calls (status, follow-up)</td><td>Voice minutes</td></tr>
         <tr><td>Amazon Comprehend Medical</td><td>Optional clinical entity and code extraction to support coding assist</td><td>Reports processed</td></tr>
         <tr><td>Aurora PostgreSQL Serverless v2</td><td>The multi-tenant datastore for the whole platform</td><td>Claims stored, tenants, queries</td></tr>
         <tr><td>Amazon ECS Fargate</td><td>The API, workers, and the module's MCP server</td><td>Traffic and background jobs</td></tr>
