@@ -79,11 +79,12 @@
   .svc td{padding:11px 14px;border-top:1px solid var(--line);vertical-align:top;color:var(--muted)}
   .svc td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
   .svc .hot{color:var(--aws-dark);font-weight:700}
-  .ramp{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:end}
-  @media(max-width:640px){.ramp{grid-template-columns:1fr}}
+  .ramp{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end}
+  @media(max-width:820px){.ramp{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.ramp{grid-template-columns:1fr}}
   .stage{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow)}
   .stage .bar{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--aws),#f7b463);margin:8px 0 10px}
-  .stage.s1 .bar{width:28%} .stage.s2 .bar{width:62%} .stage.s3 .bar{width:100%}
+  .stage.s1 .bar{width:22%} .stage.s2 .bar{width:48%} .stage.s3 .bar{width:74%} .stage.s4 .bar{width:100%}
   .stage h3{font-size:15px;margin-bottom:3px} .stage p{margin:0;font-size:13px}
   .stage .lvl{font-family:var(--mono);font-size:11px;color:var(--aws-dark);font-weight:700}
   .ask{background:var(--aws-tint);border:1px solid var(--aws-line);border-radius:var(--radius);padding:18px 20px}
@@ -115,7 +116,27 @@
       <div class="card fund"><span class="k">Gen-AI</span><h3>Net-new Bedrock workload</h3><p>AI does the billing work: prefill, coding, scrubbing, prior-auth reasoning. Real, sustained inference, not a demo.</p></div>
       <div class="card fund"><span class="k">Migration</span><h3>Monolith to AWS</h3><p>An 18-year-old Java and SQL Server system modernizing onto Aurora, Fargate, and Bedrock.</p></div>
       <div class="card fund"><span class="k">Consumption</span><h3>Compounds per tenant</h3><p>Multi-tenant SaaS: AWS spend grows every time a client onboards, then again as it goes standalone.</p></div>
-      <div class="card fund"><span class="k">Reference</span><h3>A vertical AI win</h3><p>A showable healthcare revenue-cycle story in a real, regulated, high-value niche.</p></div>
+      <div class="card fund"><span class="k">Marketplace</span><h3>Listable on AWS Marketplace</h3><p>A referenceable healthcare AI win that can list on AWS Marketplace for co-sell and metered consumption.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The migration</p>
+    <h2>Legacy to AWS, in one glance</h2>
+    <p class="sub">This is a modernization, the pattern AWS funds: an aging stack retiring onto managed, AI-ready AWS services.</p>
+    <div style="overflow-x:auto">
+    <table class="svc">
+      <thead><tr><th>Legacy today</th><th>AWS target</th><th>What it unlocks</th></tr></thead>
+      <tbody>
+        <tr><td>Java / JSP monolith on Tomcat</td><td class="hot">ECS Fargate, API-first services</td><td>Elastic scale, no servers to patch</td></tr>
+        <tr><td>SQL Server, one wide cloned schema</td><td class="hot">Aurora PostgreSQL Serverless v2</td><td>Clean multi-tenant model, autoscaling</td></tr>
+        <tr><td>Business logic in stored procedures</td><td class="hot">Data-driven rules plus Bedrock</td><td>AI reasoning, rules changed without code</td></tr>
+        <tr><td>Manual data entry</td><td class="hot">Bedrock and Data Automation</td><td>AI prefill, coding assist, document understanding</td></tr>
+        <tr><td>Secrets in config files</td><td class="hot">Secrets Manager, KMS, Cognito</td><td>Modern security and identity posture</td></tr>
+      </tbody>
+    </table>
     </div>
   </div>
 </section>
@@ -167,12 +188,13 @@
 <section>
   <div class="wrap">
     <p class="eyebrow">The trajectory</p>
-    <h2>How consumption grows</h2>
-    <p class="sub">Funding now buys the migration and the Gen-AI build. Consumption then compounds through three stages. Shapes are illustrative; George's calculator sets the numbers.</p>
+    <h2>The growth path, and where consumption compounds</h2>
+    <p class="sub">Land with a focused wedge, then expand into the full platform and out to new specialties on AWS Marketplace. Consumption grows at every step. Shapes are illustrative; George's calculator sets the numbers.</p>
     <div class="ramp">
-      <div class="stage s1"><div class="lvl">Foundational spend</div><div class="bar"></div><h3>1. Pilot</h3><p>One client, tens of thousands of claims, steady Bedrock inference plus baseline infrastructure.</p></div>
-      <div class="stage s2"><div class="lvl">Multiplied</div><div class="bar"></div><h3>2. USMON's book</h3><p>Many clients on the platform; Aurora, Fargate, and Bedrock all scale with the combined volume.</p></div>
-      <div class="stage s3"><div class="lvl">Compounding</div><div class="bar"></div><h3>3. Standalone</h3><p>Sold to outside customers on other systems; per-tenant consumption compounds. The become-a-Stedi trajectory.</p></div>
+      <div class="stage s1"><div class="lvl">Entry wedge</div><div class="bar"></div><h3>1. Remit</h3><p>Auto-reconcile the 835 and post payments. A pain every practice has, easy to adopt, and Bedrock-heavy from day one.</p></div>
+      <div class="stage s2"><div class="lvl">Expand</div><div class="bar"></div><h3>2. USMON platform</h3><p>Grow Remit into the full insurance-billing platform for USMON's own clients.</p></div>
+      <div class="stage s3"><div class="lvl">Marketplace</div><div class="bar"></div><h3>3. Multi-specialty SaaS</h3><p>Offer it to other medical specialties, listed on AWS Marketplace for co-sell and metered consumption.</p></div>
+      <div class="stage s4"><div class="lvl">Compounding</div><div class="bar"></div><h3>4. + Arbitration</h3><p>Add the arbitration module for out-of-network and IDR recovery. The become-a-Stedi trajectory.</p></div>
     </div>
   </div>
 </section>
@@ -183,7 +205,7 @@
     <h2>What we are asking AWS to back</h2>
     <div class="ask" style="margin-top:8px">
       <h3>Fund the migration and the Gen-AI build.</h3>
-      <p>In return, AWS gets a net-new, Bedrock-heavy, multi-tenant workload that grows with every client, a real legacy-to-AWS modernization, and a referenceable healthcare revenue-cycle AI story. We prove it on USMON's own volume first, which de-risks the spend, then productize it into a standalone platform that keeps consumption climbing.</p>
+      <p>In return, AWS gets a net-new, Bedrock-heavy, multi-tenant workload that grows with every client, a real legacy-to-AWS modernization, and a referenceable healthcare AI story that can list on <b>AWS Marketplace</b> for co-sell. We prove it on USMON's own volume first, which de-risks the spend, then productize it into a multi-specialty SaaS that keeps consumption climbing.</p>
     </div>
   </div>
 </section>
