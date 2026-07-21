@@ -220,6 +220,10 @@
       <h3 style="color:var(--teal-dark)">Every claim is several AI calls</h3>
       <p>Each claim triggers roughly 3 to 6 Bedrock and Data Automation calls (prefill, coding assist, the scrub, and where needed prior-auth and document understanding). So Year 5's roughly 20M claims is on the order of <b>60 to 120M AI calls a year</b>. That is the compounding Bedrock consumption this funding is buying toward.</p>
     </div>
+    <div class="ask" style="background:var(--surface-2);border-color:var(--line-strong);margin-top:14px">
+      <h3 style="color:var(--ink)">And the document data behind it</h3>
+      <p>George measured each <b>EOB conversion at about 400 MB</b> of processed data. EOB conversions scale with remittance volume, so this is a second, storage-and-processing-heavy consumption vector on top of the AI calls: Amazon S3, Bedrock Data Automation and Textract, and data transfer. For scale, roughly 1.5M conversions at Year 2 is on the order of <b>600 TB</b> of document processing, climbing from there. George's Pricing Calculator holds the authoritative totals.</p>
+    </div>
   </div>
 </section>
 
