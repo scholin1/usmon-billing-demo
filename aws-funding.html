@@ -90,6 +90,11 @@
   .ask{background:var(--aws-tint);border:1px solid var(--aws-line);border-radius:var(--radius);padding:18px 20px}
   .ask h3{color:var(--aws-dark);font-size:17px;margin-bottom:6px} .ask p{margin:0;font-size:15px;color:var(--ink)}
   .note{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin-top:16px;font-size:13px;color:var(--muted)}
+  .cchart{display:flex;align-items:flex-end;gap:14px;height:220px;padding:14px 6px 0;border-bottom:2px solid var(--line-strong);margin-top:6px}
+  .cbar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .cbar .cb{width:100%;max-width:70px;background:linear-gradient(180deg,var(--aws),#f7b463);border-radius:7px 7px 0 0}
+  .cbar .cv{font-weight:750;font-size:13.5px;margin-bottom:6px;font-variant-numeric:tabular-nums}
+  .cbar .cy{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px;text-align:center;line-height:1.35}
   footer{padding:22px 0 56px;color:var(--faint);font-size:12.5px} footer p{color:var(--faint);max-width:none}
 </style>
 </head>
@@ -195,6 +200,25 @@
       <div class="stage s2"><div class="lvl">Expand</div><div class="bar"></div><h3>2. USMON platform</h3><p>Grow Remit into the full insurance-billing platform for USMON's own clients.</p></div>
       <div class="stage s3"><div class="lvl">Marketplace</div><div class="bar"></div><h3>3. Multi-specialty SaaS</h3><p>Offer it to other medical specialties, listed on AWS Marketplace for co-sell and metered consumption.</p></div>
       <div class="stage s4"><div class="lvl">Compounding</div><div class="bar"></div><h3>4. + Arbitration</h3><p>Add the arbitration module for out-of-network and IDR recovery. The become-a-Stedi trajectory.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">What they asked about</p>
+    <h2>Claims processed, the consumption engine</h2>
+    <p class="sub">Anchor: your larger clients each carry about 52,000 working claims in flight. Assuming USMON processes on the order of 0.7 to 1.0M claims a year today, here is illustrative platform-wide annual volume along the growth path. The one input that firms it up is USMON's real annual claim count.</p>
+    <div class="cchart">
+      <div class="cbar"><div class="cv">~350K</div><div class="cb" style="height:8px"></div><div class="cy">Yr 1<br>Remit wedge</div></div>
+      <div class="cbar"><div class="cv">~1M</div><div class="cb" style="height:18px"></div><div class="cy">Yr 2<br>USMON platform</div></div>
+      <div class="cbar"><div class="cv">~3M</div><div class="cb" style="height:40px"></div><div class="cy">Yr 3<br>First specialties</div></div>
+      <div class="cbar"><div class="cv">~8M</div><div class="cb" style="height:88px"></div><div class="cy">Yr 4<br>Marketplace SaaS</div></div>
+      <div class="cbar"><div class="cv">~20M</div><div class="cb" style="height:200px"></div><div class="cy">Yr 5<br>+ Arbitration</div></div>
+    </div>
+    <div class="ask" style="background:var(--teal-tint);border-color:var(--teal-line);margin-top:18px">
+      <h3 style="color:var(--teal-dark)">Every claim is several AI calls</h3>
+      <p>Each claim triggers roughly 3 to 6 Bedrock and Data Automation calls (prefill, coding assist, the scrub, and where needed prior-auth and document understanding). So Year 5's roughly 20M claims is on the order of <b>60 to 120M AI calls a year</b>. That is the compounding Bedrock consumption this funding is buying toward.</p>
     </div>
   </div>
 </section>
