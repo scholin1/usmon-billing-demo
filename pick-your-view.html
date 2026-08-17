@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>USMON Insurance Billing: which layout is fastest for you?</title>
+<title>USMON Insurance Billing: does this layout hold up for you?</title>
 <style>
   :root{
     --canvas:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa;
@@ -27,41 +27,37 @@
   body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
   .wrap{max-width:900px;margin:0 auto;padding:0 22px}
   header{padding:46px 0 6px}
-  h1{font-size:clamp(27px,4.6vw,38px);letter-spacing:-.02em;margin:0 0 14px;font-weight:800;text-wrap:balance;max-width:20ch}
-  .intro{font-size:18px;color:var(--ink);max-width:66ch;margin:0 0 12px}
+  h1{font-size:clamp(27px,4.6vw,38px);letter-spacing:-.02em;margin:0 0 14px;font-weight:800;text-wrap:balance;max-width:22ch}
+  .intro{font-size:18px;color:var(--ink);max-width:68ch;margin:0 0 12px}
   .intro b{color:var(--ink)}
   .oneq{background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:12px;padding:14px 18px;margin:14px 0 2px;font-size:17px;color:var(--ink)}
   .oneq b{color:var(--teal-dark)}
   h2.sec{font-size:13px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:38px 0 4px}
-  p.lead{color:var(--muted);margin:0 0 16px;max-width:66ch}
+  p.lead{color:var(--muted);margin:0 0 16px;max-width:68ch}
   .claims{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0}
   @media(max-width:600px){.claims{grid-template-columns:1fr}}
   .claim{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
   .claim .t{font-weight:750;font-size:15px;margin:0 0 3px}
   .claim.clean .t{color:var(--ok)} .claim.messy .t{color:var(--amber)}
   .claim p{margin:0;font-size:14px;color:var(--muted)}
-  .today{background:var(--surface);border:1px solid var(--line-strong);border-left:4px solid var(--faint);border-radius:12px;padding:18px 20px;margin:8px 0 6px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
-  .today .body{flex:1;min-width:220px}
-  .today .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
-  .today h3{margin:2px 0 4px;font-size:19px;font-weight:800}
-  .today p{margin:0;font-size:14px;color:var(--muted)}
-  .btn{display:inline-block;text-decoration:none;font-weight:700;font-size:14.5px;padding:10px 18px;border-radius:10px;white-space:nowrap}
-  .btn.ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line-strong)}
-  .btn.ghost:hover{border-color:var(--faint)}
+  .pick{background:var(--surface);border:2px solid var(--teal);border-radius:var(--radius);box-shadow:0 0 0 4px var(--teal-tint),var(--shadow);padding:22px 24px;margin:6px 0}
+  .pick .badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--teal);border-radius:999px;padding:4px 12px;font-weight:700;margin-bottom:10px}
+  .pick h3{margin:0 0 6px;font-size:24px;font-weight:800;letter-spacing:-.01em}
+  .pick p{margin:0 0 14px;color:var(--muted);font-size:15.5px;max-width:62ch}
+  .pick .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .steps{font-family:var(--mono);font-size:12.5px;color:var(--teal-dark);background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:8px;padding:6px 11px;font-weight:700}
+  .btn{display:inline-block;text-decoration:none;font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:10px;white-space:nowrap}
   .btn.go{background:var(--teal);color:#fff;border:1px solid var(--teal)}
   .btn.go:hover{background:var(--teal-dark)}
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:6px 0}
-  @media(max-width:760px){.cards{grid-template-columns:1fr}}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:11px}
-  .card:hover{border-color:var(--teal-line);transform:translateY(-2px);box-shadow:0 2px 6px rgba(16,32,46,.06),0 18px 40px rgba(16,32,46,.13);transition:.15s}
-  .card h3{margin:0;font-size:21px;font-weight:800;letter-spacing:-.01em}
-  .card p{margin:0;font-size:14.5px;color:var(--muted);flex:1}
-  .meter{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);font-weight:700}
-  .pips{display:flex;gap:4px}
-  .pip{width:9px;height:9px;border-radius:50%;background:var(--line-strong)}
-  .pip.on{background:var(--teal)}
-  .steps{font-family:var(--mono);font-size:12.5px;color:var(--teal-dark);background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:8px;padding:6px 11px;align-self:flex-start;font-weight:700}
-  .card .btn.go{align-self:flex-start;margin-top:2px}
+  .btn.ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line-strong)}
+  .btn.ghost:hover{border-color:var(--faint)}
+  .alts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:6px 0}
+  @media(max-width:720px){.alts{grid-template-columns:1fr}}
+  .alt{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:17px 18px;display:flex;flex-direction:column;gap:9px}
+  .alt h4{margin:0;font-size:17px;font-weight:750}
+  .alt .k{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .alt p{margin:0;font-size:13.5px;color:var(--muted);flex:1}
+  .alt a{align-self:flex-start;font-size:13.5px;font-weight:700;color:var(--teal-dark);text-decoration:none;border-bottom:1px solid var(--teal-line);padding-bottom:1px}
   .note{font-size:13px;color:var(--faint);margin:12px 0 0}
   .ask{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;margin:10px 0}
   .ask ol{margin:0 0 16px;padding-left:22px;color:var(--ink);font-size:16px}
@@ -75,71 +71,68 @@
 
 <header>
   <div class="wrap">
-    <h1>Which layout gets you from start to finish fastest?</h1>
-    <p class="intro">You already told us what you want, and we are building it into every option here: <b>show and hide the columns you care about</b>, and work a whole claim <b>without hopping between tabs</b>. Those are settled. They are not what we are asking you to judge.</p>
-    <div class="oneq">The one thing we need your read on: <b>how much do you want on screen at once?</b> The same claim is in every view below. Please work it, do not just look at it.</div>
+    <h1>We are leaning toward one layout. Does it hold up for you?</h1>
+    <p class="intro">We compared several ways to work a claim, and we are leaning toward the one below, <b>Familiar</b>. It is closest to how you work today, it puts a whole claim on one page, and it lets you <b>show and hide the columns you care about</b> with <b>no hopping between tabs</b>. Before we commit, we want you to pressure-test it, especially when a claim is a mess.</p>
+    <div class="oneq">The real test: on your <b>busiest day, with a messy claim</b>, does Familiar still work, or would you rather switch to another view? If so, which, and when?</div>
   </div>
 </header>
 
 <main class="wrap">
   <h2 class="sec">First, the exercise</h2>
-  <p class="lead">Take a claim from intake to filed in each view, and do it twice, once with each of these:</p>
+  <p class="lead">Work a claim from intake to filed in Familiar. Do it twice, once with each of these, then glance at the alternatives and see if your answer changes:</p>
   <div class="claims">
     <div class="claim clean"><p class="t">Claim A, clean</p><p>Everything is there and correct. Your job is just to confirm it and file.</p></div>
     <div class="claim messy"><p class="t">Claim B, messy</p><p>Missing units and an unsigned reading report. You have to catch and fix it before it can go out.</p></div>
   </div>
-  <p class="note">Watch whether your answer changes between the clean claim and the messy one. That difference is exactly what we are trying to learn.</p>
 
-  <h2 class="sec">The reference: how you work today</h2>
-  <div class="today">
-    <div class="body">
-      <span class="tag">Today, the baseline</span>
-      <h3>Classic</h3>
-      <p>Today's screen, modernized. Several screens per claim: the grid, then open the form, fill, save, close. This is here as the starting point to beat, not as a choice.</p>
+  <h2 class="sec">Our current pick</h2>
+  <div class="pick">
+    <span class="badge">Where we are leaning</span>
+    <h3>Familiar</h3>
+    <p>One scrolling page, closest to the layout you know today, just faster and all in one place. Show and hide columns, and no tab-hopping, are built in. This is the one we think fits the most billers the most of the time.</p>
+    <div class="row">
+      <a class="btn go" href="prototype-familiar-modern.html?review=1" target="_blank" rel="noopener">Work a claim in Familiar</a>
+      <span class="steps">1 screen to file</span>
     </div>
-    <a class="btn ghost" href="prototype-classic.html?review=1" target="_blank" rel="noopener">Open today's view</a>
   </div>
 
-  <h2 class="sec">Three ways to do it faster</h2>
-  <p class="lead">These differ in one thing: how much sits on screen at once. Which is worth switching to?</p>
-  <div class="cards">
-    <div class="card">
-      <div class="meter">Least on screen <span class="pips"><span class="pip on"></span><span class="pip"></span><span class="pip"></span></span></div>
-      <h3>Guided</h3>
-      <p>One step at a time: Pull, Verify, Code, Review, File. Nothing extra in view. Strong when a claim needs attention.</p>
-      <span class="steps">5 steps to file</span>
-      <a class="btn go" href="prototype-guided-flow.html?review=1" target="_blank" rel="noopener">Work a claim here</a>
+  <h2 class="sec">The alternatives we compared</h2>
+  <p class="lead">Open these if you want to check our thinking. The one to watch is Guided: it may be the better tool when a claim is a mess.</p>
+  <div class="alts">
+    <div class="alt">
+      <span class="k">Step by step</span>
+      <h4>Guided</h4>
+      <p>One step at a time: Pull, Verify, Code, Review, File. Nothing extra in view. Strong when a claim needs untangling. 5 steps to file.</p>
+      <a href="prototype-guided-flow.html?review=1" target="_blank" rel="noopener">Open Guided</a>
     </div>
-    <div class="card">
-      <div class="meter">Some on screen <span class="pips"><span class="pip on"></span><span class="pip on"></span><span class="pip"></span></span></div>
-      <h3>Familiar</h3>
-      <p>One scrolling page, closest to the layout you know today, just faster and all in one place.</p>
-      <span class="steps">1 screen to file</span>
-      <a class="btn go" href="prototype-familiar-modern.html?review=1" target="_blank" rel="noopener">Work a claim here</a>
+    <div class="alt">
+      <span class="k">Everything visible</span>
+      <h4>Smart Cockpit</h4>
+      <p>The whole claim on one page with a status rail down the side. Nothing hidden. 1 screen to file.</p>
+      <a href="prototype-v5-router.html?review=1" target="_blank" rel="noopener">Open Cockpit</a>
     </div>
-    <div class="card">
-      <div class="meter">Most on screen <span class="pips"><span class="pip on"></span><span class="pip on"></span><span class="pip on"></span></span></div>
-      <h3>Smart Cockpit</h3>
-      <p>Everything on one page with a status rail down the side. Nothing hidden, file without moving.</p>
-      <span class="steps">1 screen to file</span>
-      <a class="btn go" href="prototype-v5-router.html?review=1" target="_blank" rel="noopener">Work a claim here</a>
+    <div class="alt">
+      <span class="k">Today, the baseline</span>
+      <h4>Classic</h4>
+      <p>The screen you use now, modernized. Several screens per claim. Here as the starting point we are trying to beat.</p>
+      <a href="prototype-classic.html?review=1" target="_blank" rel="noopener">Open today's view</a>
     </div>
   </div>
-  <p class="note">"Steps to file" means the number of separate screens you move through to take one claim from intake to filed. Today's Classic view takes several; these aim to cut that.</p>
+  <p class="note">"Steps to file" means the separate screens you move through to take one claim from intake to filed. Familiar and Cockpit are one screen; Guided is five short ones; Classic (today) is several.</p>
 
   <h2 class="sec">Then tell us</h2>
   <div class="ask">
     <ol>
-      <li>Did anything you need disappear? <span>Especially in the views that show less at once.</span></li>
-      <li>On your busiest day, which one would you reach for, and why? <span>Answer for the clean claim and for the messy one; it is fine if they are different.</span></li>
+      <li>Working in Familiar, did anything you need disappear? <span>Anything you reach for today that you could not find or do here.</span></li>
+      <li>On your busiest, messiest claim, does Familiar still hold? <span>If not, which view would you switch to, Guided or Cockpit, and for which kind of claim? It is fine if the clean claim and the messy one want different views.</span></li>
     </ol>
-    <a class="btn go" href="mailto:tasks@usmon.com?subject=USMON%20layout%20review&amp;body=1)%20Did%20anything%20you%20need%20disappear%2C%20and%20where%3F%0A%0A2)%20On%20your%20busiest%20day%2C%20which%20view%20would%20you%20reach%20for%2C%20and%20why%3F%0A%20%20%20-%20Clean%20claim%3A%0A%20%20%20-%20Messy%20claim%3A%0A">Send your answers</a>
+    <a class="btn go" href="mailto:tasks@usmon.com?subject=USMON%20layout%20review&amp;body=1)%20Working%20in%20Familiar%2C%20did%20anything%20you%20need%20disappear%3F%0A%0A2)%20On%20your%20busiest%2C%20messiest%20claim%2C%20does%20Familiar%20still%20hold%3F%20If%20not%2C%20which%20view%20would%20you%20switch%20to%2C%20and%20when%3F%0A%20%20%20-%20Clean%20claim%3A%0A%20%20%20-%20Messy%20claim%3A%0A">Send your answers</a>
   </div>
 </main>
 
 <footer>
   <div class="wrap">
-    <p>This round is only about the layout: how much to show at once. The rest of the system (payments, clearinghouses, reports, and the full workflow) comes in a later round, so it is deliberately not here.</p>
+    <p>This round is only about the layout: which single way of working fits best, and when a biller would want to switch. The rest of the system (payments, clearinghouses, reports, and the full workflow) comes in a later round, so it is deliberately not here.</p>
     <p>All patients, claims, and dollar amounts shown are made up. Nothing here is final.</p>
   </div>
 </footer>
