@@ -5,6 +5,11 @@
   if (window.__usmonDemoNav) return;
   window.__usmonDemoNav = true;
 
+  /* Review mode: when a page is opened with ?review=1 (from the "Pick your view"
+     reviewer page), inject nothing at all - no nav ribbon, no Ask Me, no tooltips.
+     Reviewers see only the claim and the page's own chrome. */
+  if (/[?&]review=1(?:&|$)/.test(location.search)) return;
+
   var PAGES = [
     { f: 'index.html', label: 'Start', home: true },
     { f: 'prototype-home-dashboard.html', label: 'Dashboard' },
