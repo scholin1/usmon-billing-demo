@@ -122,6 +122,20 @@
   .toolbar .tgl.on{background:var(--hl);border-color:var(--hl-line);color:#854d0e}
   .toolbar .grow{margin-left:auto}
 
+  /* show / hide columns menu */
+  .colbtn-wrap{position:relative;display:inline-block}
+  .colmenu{position:absolute;top:calc(100% + 6px);right:0;z-index:45;min-width:230px;max-height:360px;overflow:hidden;background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;box-shadow:var(--shadow);display:none}
+  .colmenu.show{display:block}
+  .colmenu .cm-head{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);font-weight:700;padding:9px 12px 6px}
+  .colmenu #colMenuList{max-height:250px;overflow:auto;padding:0 6px 4px}
+  .colmenu .colitem{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink);padding:5px 7px;border-radius:6px;cursor:pointer;white-space:nowrap}
+  .colmenu .colitem:hover{background:var(--surface-2)}
+  .colmenu .colitem input{margin:0}
+  .colmenu .colitem.req{color:var(--muted);cursor:default}
+  .colmenu .reqnote{margin-left:auto;font-size:8.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--faint);font-weight:700;background:#eef2f7;border-radius:4px;padding:1px 5px}
+  .colmenu .cm-foot{display:flex;gap:6px;padding:7px 10px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .colmenu .cm-foot .btn{flex:1;justify-content:center}
+
   /* filter panel */
   .filterpanel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
   .fp-head{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--surface-2);border-bottom:1px solid var(--line);cursor:pointer;font-weight:700;font-size:13px}
@@ -357,6 +371,14 @@
     <button class="btn sm" onclick="t('Export started')">Export</button>
     <span class="grow"></span>
     <label class="tgl" id="hlToggle"><input type="checkbox" onchange="toggleHl(this)"> Highlight records with today's payment posting</label>
+    <span class="colbtn-wrap" id="colBtnWrap">
+      <button class="btn sm" id="colBtn" aria-label="Columns" aria-haspopup="true" aria-expanded="false" onclick="toggleColMenu()">Columns &#9662;</button>
+      <div class="colmenu" id="colMenu" role="group" aria-label="Show or hide columns">
+        <div class="cm-head">Show / hide columns</div>
+        <div id="colMenuList"></div>
+        <div class="cm-foot"><button class="btn xs" onclick="showAllCols()">Show all</button></div>
+      </div>
+    </span>
     <button class="btn sm" onclick="collapseSearch()" id="collapseBtn">Expand search area</button>
   </div>
 
@@ -684,7 +706,45 @@ function render(){
   document.getElementById('fpResult').textContent=data.length+' of '+PER+' rows on this page match';
   updateActiveFilter(data.length);
   syncSelAll();
+  syncCols();
 }
+
+/* ---------------- show / hide columns ---------------- */
+let colHidden={};
+const COL_ALWAYS=[0,1,2,3,8];  /* Select, Save, Patient, PID, Claim Status - anchors, cannot hide */
+function buildColMenu(){
+  document.getElementById('colMenuList').innerHTML=COLS.map((c,i)=>{
+    const lbl=c.h||(i===0?'Select':'Column '+(i+1));
+    if(COL_ALWAYS.includes(i)){
+      return '<label class="colitem req"><input type="checkbox" checked disabled> '+lbl+' <span class="reqnote">required</span></label>';
+    }
+    return '<label class="colitem"><input type="checkbox" data-ci="'+i+'"'+(colHidden[i]?'':' checked')+' onchange="toggleCol('+i+',this.checked)"> '+lbl+'</label>';
+  }).join('');
+}
+function toggleCol(i,show){colHidden[i]=!show;applyCols();}
+function showAllCols(){colHidden={};buildColMenu();applyCols();toast('All columns shown');}
+function applyCols(){
+  for(let i=0;i<COLS.length;i++){
+    const disp=colHidden[i]?'none':'';
+    document.querySelectorAll('.grid [data-col="'+i+'"]').forEach(el=>{el.style.display=disp;});
+  }
+}
+function syncCols(){
+  const head=document.getElementById('headRow');
+  if(head){for(let i=0;i<head.children.length;i++)head.children[i].setAttribute('data-col',i);}
+  document.querySelectorAll('#body tr').forEach(tr=>{const td=tr.children;for(let k=0;k<td.length;k++)td[k].setAttribute('data-col',k);});
+  applyCols();
+}
+function toggleColMenu(){
+  const open=document.getElementById('colMenu').classList.toggle('show');
+  document.getElementById('colBtn').setAttribute('aria-expanded',open?'true':'false');
+}
+document.addEventListener('click',e=>{
+  const w=document.getElementById('colBtnWrap');
+  if(w && !w.contains(e.target)){document.getElementById('colMenu').classList.remove('show');document.getElementById('colBtn').setAttribute('aria-expanded','false');}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('colMenu');if(m){m.classList.remove('show');document.getElementById('colBtn').setAttribute('aria-expanded','false');}}});
+
 function sel(list,val){return list.map(o=>'<option'+(o===val?' selected':'')+'>'+o+'</option>').join('');}
 function rowHtml(r){
   const ch=channel(r);
@@ -917,6 +977,7 @@ function initSelects(){
   document.getElementById('bulkAction').innerHTML='<option value="">Bulk set Claim Action…</option>'+ACTIONS.map(s=>'<option>'+s+'</option>').join('');
 }
 initSelects();
+buildColMenu();
 rows=genRows(1);
 buildHead();chipCounts();render();buildPager();
 document.querySelectorAll('.gridfoot b')[3].textContent=totalPages().toLocaleString();

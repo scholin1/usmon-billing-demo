@@ -76,6 +76,19 @@
   .legbtns .spring{flex:1}
   .legbtns .hint{font-size:10.5px;color:#5a6474}
 
+  /* ---- show / hide columns dropdown (legacy-styled) ---- */
+  .colbtn-wrap{position:relative;display:inline-block}
+  .colmenu{position:absolute;top:calc(100% + 3px);left:0;z-index:50;min-width:210px;background:var(--panel);border:1px solid var(--titlebar-line);box-shadow:0 6px 18px rgba(0,0,0,.28);display:none}
+  .colmenu.show{display:block}
+  .colmenu .cm-head{background:linear-gradient(var(--titlebar-a),var(--titlebar-b));color:#fff;font-weight:bold;font-size:10.5px;padding:3px 8px}
+  .colmenu #colMenuList{padding:5px 6px;max-height:240px;overflow:auto}
+  .colmenu .colitem{display:flex;align-items:center;gap:5px;font-size:10.5px;color:#22354f;padding:2px 4px;white-space:nowrap;cursor:pointer}
+  .colmenu .colitem:hover{background:#e7ebf2}
+  .colmenu .colitem.req{color:#7a8496;cursor:default}
+  .colmenu .colitem input{margin:0}
+  .colmenu .reqnote{margin-left:auto;font-size:8px;font-weight:bold;text-transform:uppercase;letter-spacing:.3px;color:#7a8496;border:1px solid #b8c0cc;background:#eef1f6;border-radius:2px;padding:0 3px}
+  .colmenu .cm-foot{border-top:1px solid #b8c0cc;padding:5px 6px;display:flex;gap:4px}
+
   /* ---- supervisor-only stats strip (billers never see it) ---- */
   .supstats{display:none;align-items:center;gap:14px;background:#eef2f8;border-bottom:1px solid #b8c4d8;padding:5px 10px;font-size:11px;color:#33465f}
   body.role-super .supstats{display:flex}
@@ -217,6 +230,14 @@
   <button class="legbtn" onclick="t('Rendering PDF batch for the checked claims...')">Print PDF Batch Now</button>
   <button class="legbtn" onclick="t('Batch download queued for the checked claims.')">Download Batch Now</button>
   <button class="legbtn" onclick="t('Statement CSV export queued.')">Download Statement CSV</button>
+  <span class="colbtn-wrap" id="colBtnWrap">
+    <button class="legbtn" id="colBtn" aria-label="Columns" aria-haspopup="true" aria-expanded="false" onclick="toggleColMenu()">Columns &#9662;</button>
+    <div class="colmenu" id="colMenu" role="group" aria-label="Show or hide columns">
+      <div class="cm-head">Show / hide columns</div>
+      <div id="colMenuList"></div>
+      <div class="cm-foot"><button class="legbtn" onclick="showAllCols()">Show all</button></div>
+    </div>
+  </span>
   <span class="spring"></span>
   <span class="hint">Classic layout - same records as the Ongoing worklist.</span>
 </div>
@@ -448,7 +469,51 @@ function rowHtml(r){
 function render(){
   document.getElementById('body').innerHTML=DATA.map(rowHtml).join('');
   document.getElementById('recCount').textContent=DATA.length;
+  syncCols();
 }
+
+/* ---------------- show / hide columns ---------------- */
+var colHidden={}, COL_ALWAYS=[0,1,2,8];  /* Save, Patient, PID, Claim Status - anchors, cannot hide */
+function colLabels(){
+  var ths=document.querySelectorAll('.legrid thead th');
+  var out=[];for(var i=0;i<ths.length;i++)out.push(ths[i].textContent.trim()||('Column '+(i+1)));
+  return out;
+}
+function buildColMenu(){
+  var labels=colLabels();
+  document.getElementById('colMenuList').innerHTML=labels.map(function(lbl,i){
+    if(COL_ALWAYS.indexOf(i)!==-1){
+      return '<label class="colitem req"><input type="checkbox" checked disabled> '+lbl+' <span class="reqnote">required</span></label>';
+    }
+    return '<label class="colitem"><input type="checkbox" data-ci="'+i+'"'+(colHidden[i]?'':' checked')+' onchange="toggleCol('+i+',this.checked)"> '+lbl+'</label>';
+  }).join('');
+}
+function toggleCol(i,show){colHidden[i]=!show;applyCols();}
+function showAllCols(){colHidden={};buildColMenu();applyCols();toast('All columns shown.');}
+function applyCols(){
+  var n=document.querySelectorAll('.legrid thead th').length;
+  for(var i=0;i<n;i++){
+    var disp=colHidden[i]?'none':'';
+    var els=document.querySelectorAll('.legrid [data-col="'+i+'"]');
+    for(var j=0;j<els.length;j++)els[j].style.display=disp;
+  }
+}
+function syncCols(){
+  var ths=document.querySelectorAll('.legrid thead th');
+  for(var i=0;i<ths.length;i++)ths[i].setAttribute('data-col',i);
+  var trs=document.querySelectorAll('#body tr');
+  for(var r=0;r<trs.length;r++){var td=trs[r].children;for(var k=0;k<td.length;k++)td[k].setAttribute('data-col',k);}
+  applyCols();
+}
+function toggleColMenu(){
+  var open=document.getElementById('colMenu').classList.toggle('show');
+  document.getElementById('colBtn').setAttribute('aria-expanded',open?'true':'false');
+}
+document.addEventListener('click',function(e){
+  var w=document.getElementById('colBtnWrap');
+  if(w && !w.contains(e.target)){document.getElementById('colMenu').classList.remove('show');document.getElementById('colBtn').setAttribute('aria-expanded','false');}
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var m=document.getElementById('colMenu');if(m){m.classList.remove('show');document.getElementById('colBtn').setAttribute('aria-expanded','false');}}});
 
 /* ---------------- inline edit / save ---------------- */
 function dirty(pid){
@@ -497,6 +562,7 @@ function selCount(){
 
 /* ---------------- init ---------------- */
 render();
+buildColMenu();
 </script>
 <script src="demo-nav.js"></script>
 </body>
