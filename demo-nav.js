@@ -6,9 +6,27 @@
   window.__usmonDemoNav = true;
 
   /* Review mode: when a page is opened with ?review=1 (from the "Pick your view"
-     reviewer page), inject nothing at all - no nav ribbon, no Ask Me, no tooltips.
-     Reviewers see only the claim and the page's own chrome. */
-  if (/[?&]review=1(?:&|$)/.test(location.search)) return;
+     reviewer page), suppress the nav ribbon, Ask Me, and tooltips, but add one small
+     "Back to the views" button so a reviewer can return to the main page. */
+  if (/[?&]review=1(?:&|$)/.test(location.search)) {
+    try {
+      var addBack = function () {
+        if (!document.body || document.getElementById('dm-review-back')) return;
+        var b = document.createElement('a');
+        b.id = 'dm-review-back';
+        b.href = 'index.html';
+        b.textContent = '← Back to the views';
+        b.setAttribute('aria-label', 'Back to the main page');
+        b.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:2147483647;' +
+          'background:#0b6e7a;color:#fff;font:600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;' +
+          'text-decoration:none;padding:11px 16px;border-radius:999px;box-shadow:0 3px 12px rgba(0,0,0,.28)';
+        document.body.appendChild(b);
+      };
+      if (document.body) addBack();
+      else document.addEventListener('DOMContentLoaded', addBack);
+    } catch (e) {}
+    return;
+  }
 
   var PAGES = [
     { f: 'index.html', label: 'Start', home: true },
