@@ -128,9 +128,25 @@
       <li>Did anything you need disappear? <span>Anything you rely on today that you could not find or do in one of these.</span></li>
       <li>On your busiest day, which one would you reach for, and why? <span>It is fine if the clean claim and the messy one make you want different ones.</span></li>
     </ol>
-    <a class="btn go" href="mailto:tasks@usmon.com?subject=USMON%20layout%20review&amp;body=1)%20Did%20anything%20you%20need%20disappear%2C%20and%20where%3F%0A%0A2)%20On%20your%20busiest%20day%2C%20which%20option%20would%20you%20reach%20for%2C%20and%20why%3F%0A%20%20%20-%20Clean%20claim%3A%0A%20%20%20-%20Messy%20claim%3A%0A">Send your answers</a>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <a class="btn go" href="mailto:tasks@usmon.com?subject=USMON%20layout%20review&amp;body=1)%20Did%20anything%20you%20need%20disappear%2C%20and%20where%3F%0A%0A2)%20On%20your%20busiest%20day%2C%20which%20option%20would%20you%20reach%20for%2C%20and%20why%3F%0A%20%20%20-%20Clean%20claim%3A%0A%20%20%20-%20Messy%20claim%3A%0A">Email your answers</a>
+      <button class="btn ghost" type="button" id="copyq" style="cursor:pointer">Copy the questions</button>
+    </div>
+    <p class="note" style="margin-top:12px">If the email button does not open your mail app, just send your two answers to <b>tasks@usmon.com</b>. Tap "Copy the questions" and paste them into whatever email you use.</p>
   </div>
 </main>
+
+<script>
+(function(){
+  var b=document.getElementById('copyq'); if(!b) return;
+  var q="USMON layout review\n\n1) Did anything you need disappear, and where?\n\n2) On your busiest day, which option would you reach for, and why?\n   - Clean claim:\n   - Messy claim:\n\n(please email to tasks@usmon.com)";
+  b.addEventListener('click',function(){
+    var reset=function(){var t='Copy the questions';b.textContent='Copied, now paste into your email';setTimeout(function(){b.textContent=t;},2200);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(q).then(reset,function(){reset();});}
+    else{try{var ta=document.createElement('textarea');ta.value=q;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);}catch(e){}reset();}
+  });
+})();
+</script>
 
 <footer>
   <div class="wrap">
