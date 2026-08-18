@@ -17,7 +17,7 @@
         b.href = 'index.html';
         b.textContent = '← Back to the views';
         b.setAttribute('aria-label', 'Back to the main page');
-        b.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:2147483647;' +
+        b.style.cssText = 'position:fixed;left:14px;top:64px;z-index:2147483647;' +
           'background:#0b6e7a;color:#fff;font:600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;' +
           'text-decoration:none;padding:11px 16px;border-radius:999px;box-shadow:0 3px 12px rgba(0,0,0,.28)';
         document.body.appendChild(b);
