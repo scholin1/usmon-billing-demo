@@ -163,7 +163,7 @@
   .team-card select.teamsel:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
 </style>
 </head>
-<body class="role-super">
+<body>
 
 <!--
   ============================================================================
@@ -201,10 +201,10 @@
   <div class="appuser">
     <div class="roletoggle" role="group" aria-label="View role">
       <span class="rt-lbl">View</span>
-      <button class="rt-btn" id="rt-biller" onclick="setRole('biller')">Biller</button>
-      <button class="rt-btn on" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
+      <button class="rt-btn on" id="rt-biller" onclick="setRole('biller')">Biller</button>
+      <button class="rt-btn" id="rt-super" onclick="setRole('supervisor')">Supervisor</button>
     </div>
-    <span id="userName">Dr. Sample Reed · Billing Supervisor</span><span class="avatar" id="avatarTxt">SR</span>
+    <span id="userName">Dana Sample · Biller</span><span class="avatar" id="avatarTxt">DS</span>
   </div>
 </header>
 
@@ -214,7 +214,7 @@
   <div class="hero">
     <div class="greet">
       <h1 id="greetLine">Good evening, Dr. Sample Reed</h1>
-      <p class="ctx">Signed in as <span class="role" id="ctxRole">Billing Supervisor</span> · active client <b id="ctxClient">Sample Neuro Billing LLC</b> · <span id="ctxClaims">18,204</span> active claims</p>
+      <p class="ctx">Signed in as <span class="role" id="ctxRole">Biller</span> · active client <b id="ctxClient">Sample Neuro Billing LLC</b> · <span id="ctxClaims">18,204</span> active claims</p>
     </div>
     <div class="clientpick">
       <label for="clientSel">Switch client</label>
@@ -356,8 +356,8 @@ let activeClient=CLIENTS[0].id;
 let editing=false;
 
 /* current signed-in identity (re-rendered by role toggle + client switch) */
-let curName='Dr. Sample Reed';
-let curRole='Billing Supervisor';
+let curName='Dana Sample';
+let curRole='Biller';
 
 function fmt(n){return n.toLocaleString('en-US');}
 function catById(id){return CATALOG.find(c=>c.id===id);}

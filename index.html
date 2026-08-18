@@ -2,251 +2,139 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USMON Insurance Billing - Concept Preview</title>
+<meta name="robots" content="noindex,nofollow">
+<title>USMON Insurance Billing: does this layout hold up for you?</title>
 <style>
   :root{
-    --canvas:#eef1f5; --surface:#ffffff; --surface-2:#f7f9fb;
-    --ink:#16202e; --muted:#5a6b7e; --faint:#8b9aac;
-    --line:#e2e7ee; --line-strong:#d2dae4;
-    --primary:#0b6e7a; --primary-dark:#095861; --primary-tint:#e6f3f4; --primary-line:#bfe3e6;
-    --idr:#4f46c4; --idr-tint:#eef0fd; --idr-line:#d6d8f7;
-    --ai:#6d4aff; --ai-tint:#f1ecff; --ai-line:#ddd2ff; --ai-dark:#5a37e0;
-    --ok:#15803d; --ok-tint:#ecfdf3;
-    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --canvas:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa;
+    --ink:#16202e; --muted:#54626f; --faint:#8493a1;
+    --line:#e0e5ea; --line-strong:#ccd3db;
+    --teal:#0b6e7a; --teal-dark:#095560; --teal-tint:#e3f1f2; --teal-line:#b9e0e3;
+    --amber:#a8500f; --amber-tint:#faefe4; --amber-line:#eccdb0;
+    --ok:#1b7f43; --ok-tint:#e8f6ee; --ok-line:#bfe6cd;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --radius:12px; --shadow:0 1px 2px rgba(16,32,46,.04),0 8px 24px rgba(16,32,46,.07);
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --radius:14px; --shadow:0 1px 2px rgba(16,32,46,.05),0 12px 30px rgba(16,32,46,.08);
   }
+  @media (prefers-color-scheme:dark){
+    :root{--canvas:#0e1620;--surface:#152030;--surface-2:#111a26;--ink:#e8eef4;--muted:#9fb0bf;--faint:#6f8091;--line:#233242;--line-strong:#31445a;--teal:#4fc7d4;--teal-dark:#7ed8e2;--teal-tint:#0f2d33;--teal-line:#1c4a52;--amber:#e39a5e;--amber-tint:#2c1f13;--amber-line:#4a3620;--ok:#5fce8b;--ok-tint:#12271a;--ok-line:#245234;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.45)}
+  }
+  :root[data-theme="dark"]{--canvas:#0e1620;--surface:#152030;--surface-2:#111a26;--ink:#e8eef4;--muted:#9fb0bf;--faint:#6f8091;--line:#233242;--line-strong:#31445a;--teal:#4fc7d4;--teal-dark:#7ed8e2;--teal-tint:#0f2d33;--teal-line:#1c4a52;--amber:#e39a5e;--amber-tint:#2c1f13;--amber-line:#4a3620;--ok:#5fce8b;--ok-tint:#12271a;--ok-line:#245234;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.45)}
+  :root[data-theme="light"]{--canvas:#eef1f4;--surface:#ffffff;--surface-2:#f6f8fa;--ink:#16202e;--muted:#54626f;--faint:#8493a1;--line:#e0e5ea;--line-strong:#ccd3db;--teal:#0b6e7a;--teal-dark:#095560;--teal-tint:#e3f1f2;--teal-line:#b9e0e3;--amber:#a8500f;--amber-tint:#faefe4;--amber-line:#eccdb0;--ok:#1b7f43;--ok-tint:#e8f6ee;--ok-line:#bfe6cd;--shadow:0 1px 2px rgba(16,32,46,.05),0 12px 30px rgba(16,32,46,.08)}
   *{box-sizing:border-box}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--canvas);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
-  a{color:var(--primary);text-decoration:none}
-  .mono{font-family:var(--mono)}
-
-  header.top{background:var(--ink);color:#fff;padding:30px 22px 34px}
-  .top .in{max-width:1000px;margin:0 auto}
-  .brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;margin-bottom:18px}
-  .brand .dot{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--primary),#1aa3b2);display:grid;place-items:center;font-size:14px}
-  .brand small{display:block;font-weight:500;color:#9fb0c0;font-size:11px;line-height:1;margin-top:2px}
-  .top h1{font-size:27px;margin:0;font-weight:800;letter-spacing:-.4px;text-wrap:balance;max-width:20ch}
-  .top p{margin:10px 0 0;color:#c7d2dd;font-size:15px;max-width:66ch}
-  .badge{display:inline-block;margin-top:16px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#8fe3ec;background:rgba(26,163,178,.14);border:1px solid rgba(26,163,178,.4);border-radius:999px;padding:4px 12px}
-
-  main{max-width:1000px;margin:0 auto;padding:26px 22px 70px}
-  .lead{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;margin-bottom:22px}
-  .lead h2{margin:0 0 8px;font-size:15px;letter-spacing:.3px;text-transform:uppercase;color:var(--primary-dark)}
-  .lead p{margin:0 0 10px;color:var(--muted)}
-  .lead p:last-child{margin-bottom:0}
-  .lead b{color:var(--ink)}
-
-  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 26px;font-weight:700;font-size:14px}
-  .flow .step{background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:7px 15px;box-shadow:var(--shadow)}
-  .flow .arr{color:var(--faint);font-weight:800}
-
-  h2.group{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);margin:26px 0 12px;font-weight:800}
-  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-  @media(max-width:720px){.cards{grid-template-columns:1fr}}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:17px 18px;display:flex;flex-direction:column;gap:9px;transition:.14s}
-  .card:hover{border-color:var(--primary-line);box-shadow:0 2px 4px rgba(16,32,46,.05),0 12px 30px rgba(16,32,46,.10);transform:translateY(-1px)}
-  .card.wide{grid-column:1/-1}
-  .card .ico{font-size:22px;line-height:1}
-  .card h3{margin:0;font-size:17px;font-weight:700}
-  .card .pitch{color:var(--muted);font-size:14px;margin:0}
-  .card .look{font-size:13px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 11px}
-  .card .look b{color:var(--primary-dark)}
-  .card .go{margin-top:auto;align-self:flex-start;background:var(--primary);color:#fff;font-weight:700;font-size:13.5px;padding:8px 15px;border-radius:9px;border:1px solid var(--primary)}
-  .card .go:hover{background:var(--primary-dark)}
-  .tagrow{display:flex;gap:7px;flex-wrap:wrap}
-  .t{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
-  .t.ai{background:var(--ai-tint);color:var(--ai-dark);border:1px solid var(--ai-line)}
-  .t.idr{background:var(--idr-tint);color:var(--idr);border:1px solid var(--idr-line)}
-  .t.new{background:var(--ok-tint);color:var(--ok);border:1px solid #bbf7d0}
-
-  .feedback{background:linear-gradient(180deg,var(--ai-tint),#f7f4ff);border:1px solid var(--ai-line);border-radius:var(--radius);padding:20px 22px;margin-top:30px}
-  .feedback h2{margin:0 0 12px;font-size:17px;color:var(--ai-dark)}
-  .feedback ol{margin:0;padding-left:20px;color:#3c2b8a}
-  .feedback li{margin-bottom:9px}
-  .feedback li b{color:var(--ai-dark)}
-
-  footer{max-width:1000px;margin:0 auto;padding:0 22px 50px;color:var(--faint);font-size:12.5px}
-  footer hr{border:none;border-top:1px solid var(--line-strong);margin:0 0 14px}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+  header{padding:46px 0 6px}
+  h1{font-size:clamp(27px,4.6vw,38px);letter-spacing:-.02em;margin:0 0 14px;font-weight:800;text-wrap:balance;max-width:22ch}
+  .intro{font-size:18px;color:var(--ink);max-width:68ch;margin:0 0 12px}
+  .intro b{color:var(--ink)}
+  .oneq{background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:12px;padding:14px 18px;margin:14px 0 2px;font-size:17px;color:var(--ink)}
+  .oneq b{color:var(--teal-dark)}
+  h2.sec{font-size:13px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:38px 0 4px}
+  p.lead{color:var(--muted);margin:0 0 16px;max-width:68ch}
+  .claims{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0}
+  @media(max-width:600px){.claims{grid-template-columns:1fr}}
+  .claim{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .claim .t{font-weight:750;font-size:15px;margin:0 0 3px}
+  .claim.clean .t{color:var(--ok)} .claim.messy .t{color:var(--amber)}
+  .claim p{margin:0;font-size:14px;color:var(--muted)}
+  .pick{background:var(--surface);border:2px solid var(--teal);border-radius:var(--radius);box-shadow:0 0 0 4px var(--teal-tint),var(--shadow);padding:22px 24px;margin:6px 0}
+  .pick .badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--teal);border-radius:999px;padding:4px 12px;font-weight:700;margin-bottom:10px}
+  .pick h3{margin:0 0 6px;font-size:24px;font-weight:800;letter-spacing:-.01em}
+  .pick p{margin:0 0 14px;color:var(--muted);font-size:15.5px;max-width:62ch}
+  .pick .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .steps{font-family:var(--mono);font-size:12.5px;color:var(--teal-dark);background:var(--teal-tint);border:1px solid var(--teal-line);border-radius:8px;padding:6px 11px;font-weight:700}
+  .btn{display:inline-block;text-decoration:none;font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:10px;white-space:nowrap}
+  .btn.go{background:var(--teal);color:#fff;border:1px solid var(--teal)}
+  .btn.go:hover{background:var(--teal-dark)}
+  .btn.ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line-strong)}
+  .btn.ghost:hover{border-color:var(--faint)}
+  .alts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:6px 0}
+  @media(max-width:720px){.alts{grid-template-columns:1fr}}
+  .alt{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:17px 18px;display:flex;flex-direction:column;gap:9px}
+  .alt h4{margin:0;font-size:17px;font-weight:750}
+  .alt .k{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .alt p{margin:0;font-size:13.5px;color:var(--muted);flex:1}
+  .alt a{align-self:flex-start;font-size:13.5px;font-weight:700;color:var(--teal-dark);text-decoration:none;border-bottom:1px solid var(--teal-line);padding-bottom:1px}
+  .note{font-size:13px;color:var(--faint);margin:12px 0 0}
+  .ask{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;margin:10px 0}
+  .ask ol{margin:0 0 16px;padding-left:22px;color:var(--ink);font-size:16px}
+  .ask li{margin-bottom:8px}
+  .ask li span{color:var(--muted);font-size:14px}
+  footer{padding:24px 0 60px;color:var(--faint);font-size:13px}
+  footer p{margin:0 0 6px;max-width:none}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="in">
-    <div class="brand"><span class="dot">U</span><div>USMON&nbsp;Pro<small>Insurance Billing</small></div></div>
-    <h1>A modern insurance billing workspace - early concepts</h1>
-    <p>Click into each concept below and tell us what fits how you actually work. Nothing here is final - this is exactly the moment to shape it.</p>
-    <span class="badge">Synthetic demo · early concepts for your feedback</span>
+<header>
+  <div class="wrap">
+    <h1>We are leaning toward one layout. Does it hold up for you?</h1>
+    <p class="intro">We compared several ways to work a claim, and we are leaning toward the one below, <b>Familiar</b>. It is closest to how you work today, it puts a whole claim on one page, and it lets you <b>show and hide the columns you care about</b> with <b>no hopping between tabs</b>. Before we commit, we want you to pressure-test it, especially when a claim is a mess.</p>
+    <div class="oneq">The real test: on your <b>busiest day, with a messy claim</b>, does Familiar still work, or would you rather switch to another view? If so, which, and when?</div>
   </div>
 </header>
 
-<main>
-  <div class="lead">
-    <h2>The idea in one minute</h2>
-    <p>Your claims arrive <b>~95% prefilled</b> - from schedulers, techs, and reading physicians - pulled straight from USMON. So the biller's job isn't data entry; it's <b>confirming what's already there is correct.</b></p>
-    <p><b>AI does a first pass</b> ahead of you and fills in the likely answers (the principal diagnosis from the reading report, the units, and so on). <b>Every AI-filled field is highlighted</b> so you always know what to double-check - you confirm or correct it, and it's logged. AI proposes; you decide.</p>
-    <p>There's <b>no single "right" screen.</b> The same claim and the same fields can be worked in the layout that suits you - a fast dense grid, a calm step-by-step flow, the familiar layout you know today, or an all-on-one-page cockpit. Pick your view.</p>
-    <p><b>Two roles, one system.</b> Billers get a clean, stats-free screen built for verifying claim after claim. A Billing Supervisor gets one extra toggle that reveals team stats and a time-and-efficiency view (including a flag when a claim has been sitting idle). Billers never see it. Look for the <b>Biller / Supervisor</b> control in the top bar.</p>
+<main class="wrap">
+  <h2 class="sec">First, the exercise</h2>
+  <p class="lead">Work a claim from intake to filed in Familiar. Do it twice, once with each of these, then glance at the alternatives and see if your answer changes:</p>
+  <div class="claims">
+    <div class="claim clean"><p class="t">Claim A, clean</p><p>Everything is there and correct. Your job is just to confirm it and file.</p></div>
+    <div class="claim messy"><p class="t">Claim B, messy</p><p>Missing units and an unsigned reading report. You have to catch and fix it before it can go out.</p></div>
   </div>
 
-  <div class="flow">
-    <span class="step">🏠 Home dashboard</span><span class="arr">→</span>
-    <span class="step">📥 New billing (prepare &amp; file)</span><span class="arr">→</span>
-    <span class="step">📋 Ongoing (follow-up)</span><span class="arr">→</span>
-    <span class="step">✅ Work a claim (your view)</span>
-  </div>
-
-  <h2 class="group">Start here</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">🏠</div>
-      <h3>Home dashboard</h3>
-      <p class="pitch">Where your day starts: the counts you care about, set up your way, plus a switcher if you bill for more than one client.</p>
-      <div class="look"><b>Look for:</b> the tiles you can add/remove ("Customize"), the client switcher up top, and <b>your default working view</b> (billers who prefer the old layout can default to Classic).</div>
-      <a class="go" href="prototype-home-dashboard.html" target="_blank" rel="noopener">Open →</a>
+  <h2 class="sec">Our current pick</h2>
+  <div class="pick">
+    <span class="badge">Where we are leaning</span>
+    <h3>Familiar</h3>
+    <p>One scrolling page, closest to the layout you know today, just faster and all in one place. Show and hide columns, and no tab-hopping, are built in. This is the one we think fits the most billers the most of the time.</p>
+    <div class="row">
+      <a class="btn go" href="prototype-familiar-modern.html?review=1" target="_blank" rel="noopener">Work a claim in Familiar</a>
+      <span class="steps">1 screen to file</span>
     </div>
   </div>
 
-  <h2 class="group">The two worklists - where the work lives</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">📥</div>
-      <h3>New Insurance Billing <span class="t new" style="vertical-align:middle">Start here</span></h3>
-      <div class="tagrow"><span class="t idr">The start of the process</span></div>
-      <p class="pitch">Where a completed case becomes a claim: prepare and file. Readiness is front and center - an "Incomplete Claim" flag with the reason to fix, and File Claim lights up only once the claim is complete. No collections columns yet, because nothing has been filed.</p>
-      <div class="look"><b>Look for:</b> the Ready vs Incomplete flags (hover an Incomplete one for the reason), "File Claim" enabling on ready rows, and "Initial Filing Complete".</div>
-      <a class="go" href="prototype-new-billing.html" target="_blank" rel="noopener">Open →</a>
+  <h2 class="sec">The alternatives we compared</h2>
+  <p class="lead">Open these if you want to check our thinking. The one to watch is Guided: it may be the better tool when a claim is a mess.</p>
+  <div class="alts">
+    <div class="alt">
+      <span class="k">Step by step</span>
+      <h4>Guided</h4>
+      <p>One step at a time: Pull, Verify, Code, Review, File. Nothing extra in view. Strong when a claim needs untangling. 5 steps to file.</p>
+      <a href="prototype-guided-flow.html?review=1" target="_blank" rel="noopener">Open Guided</a>
     </div>
-    <div class="card wide">
-      <div class="ico">📋</div>
-      <h3>Ongoing Insurance Billing</h3>
-      <div class="tagrow"><span class="t idr">Handles tens of thousands of claims</span></div>
-      <p class="pitch">After a claim is filed, this is the dense daily grid you live in: filter, sort by deadline, edit in place, and act on many claims at once - now with the follow-up columns (balances, refile/appeal, arbitration).</p>
-      <div class="look"><b>Look for:</b> the filters stay tucked away until you want them, the deadline/clock triage, and selecting rows for a bulk action.</div>
-      <a class="go" href="prototype-ops-worklist.html" target="_blank" rel="noopener">Open →</a>
+    <div class="alt">
+      <span class="k">Everything visible</span>
+      <h4>Smart Cockpit</h4>
+      <p>The whole claim on one page with a status rail down the side. Nothing hidden. 1 screen to file.</p>
+      <a href="prototype-v5-router.html?review=1" target="_blank" rel="noopener">Open Cockpit</a>
     </div>
-  </div>
-
-  <h2 class="group">Work a claim - three styles (same data, pick yours)</h2>
-  <p style="margin:-4px 0 12px;color:var(--muted);font-size:13.5px;max-width:70ch">Three ways to work the same claim. Which one you use is your choice; the <b>Biller ↔ Supervisor</b> toggle is a <i>role lens</i> over any of them (it changes what you see and can do, not the layout), and the <b>CMS-1500 form</b> opens as a popup from inside any style.</p>
-  <div class="cards">
-    <div class="card">
-      <div class="ico">🧭</div>
-      <h3>Guided Flow</h3>
-      <p class="pitch">The same claim, one step at a time - Pull → Verify → Code → Review → File. Nothing extra on screen; anyone can run it without training.</p>
-      <div class="look"><b>Look for:</b> the stage-by-stage path, the top-right "Form 1500 View", and the <b>Biller ↔ Supervisor</b> toggle changing scope &amp; authority.</div>
-      <a class="go" href="prototype-guided-flow.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-    <div class="card">
-      <div class="ico">🗂️</div>
-      <h3>Familiar-Modern</h3>
-      <p class="pitch">Closest to today's screens and the CMS-1500 boxes you know - just faster, all on one scroll, with no surprise errors at the end.</p>
-      <div class="look"><b>Look for:</b> scrolling the sections, the sliding detail panel, and "View CMS-1500" (opens the form as a popup).</div>
-      <a class="go" href="prototype-familiar-modern.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-    <div class="card">
-      <div class="ico">✨</div>
-      <h3>Smart Cockpit</h3>
-      <p class="pitch">Everything on one page with a workflow rail down the side that tracks each stage as you scroll - the fullest, most powerful view.</p>
-      <div class="look"><b>Look for:</b> the stage rail on the left and the AI review assist.</div>
-      <a class="go" href="prototype-v5-router.html" target="_blank" rel="noopener">Open →</a>
+    <div class="alt">
+      <span class="k">Today, the baseline</span>
+      <h4>Classic</h4>
+      <p>The screen you use now, modernized. Several screens per claim. Here as the starting point we are trying to beat.</p>
+      <a href="prototype-classic.html?review=1" target="_blank" rel="noopener">Open today's view</a>
     </div>
   </div>
+  <p class="note">"Steps to file" means the separate screens you move through to take one claim from intake to filed. Familiar and Cockpit are one screen; Guided is five short ones; Classic (today) is several.</p>
 
-  <h2 class="group">Coming from today's system - a Classic comfort view</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">🗄️</div>
-      <h3>Classic view (works like today's USMON) <span class="t new" style="vertical-align:middle">Change-friendly</span></h3>
-      <p class="pitch">For billers who would rather not relearn anything: the legacy look and workflow (the dense grid, the familiar tabs and column names) running on the <b>new engine</b>. Same data, same AI help, same deadline clocks underneath - just the screen they already know. A biller can set it as their <b>personal default</b> (or a supervisor can assign it), so no one is forced onto a new layout and the client still gets every new benefit.</p>
-      <div class="look"><b>Look for:</b> the familiar dense grid and tabs, the "same data underneath" note, the AI-filled fields still highlighted, and setting it as your default view on the Home dashboard.</div>
-      <a class="go" href="prototype-classic.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-  </div>
-
-  <h2 class="group">The claim form (not a style - an output)</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">📄</div>
-      <h3>CMS-1500 form</h3>
-      <p class="pitch"><b>Not a style - it's the form itself.</b> Prefilled and editable, with the Tech Report auto-filling the coding and Coding Assist catching missed codes. It opens as a <b>popup from inside any style</b> ("View CMS-1500") so the biller never loses their place; this standalone view is just the same form on its own.</p>
-      <div class="look"><b>Look for:</b> "View Tech Report" (CPT auto-fills), Coding Assist, and <b>Box 33 - where the payment is sent.</b></div>
-      <a class="go" href="prototype-cms1500.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-  </div>
-
-  <h2 class="group">Before it goes out - the pre-submission scrub</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">🛡️</div>
-      <h3>Pre-Submission Scrub <span class="t ai" style="vertical-align:middle">AI-assisted</span></h3>
-      <p class="pitch">Today, hitting "File" pops a flat list of what is missing. This is the smart version: a <b>continuous, ranked check</b> (blockers, warnings, passed) that <b>proposes the fix for each issue and you confirm it</b>, knows whether the claim is going out as an <b>837P to the clearinghouse or printed on paper</b> and applies that destination's rules, <b>pre-flights the clearinghouse's own edits</b> so rejects get caught here instead of days later, and <b>predicts denial or underpayment risk</b> using OON history. Green claims route straight to submit or print.</p>
-      <div class="look"><b>Look for:</b> the readiness meter flipping to "Ready" as you Apply &amp; confirm each AI fix, the diagnosis-pointer linking, the 837P-vs-paper toggle changing the rules, and the denial-risk and IDR-readiness notes.</div>
-      <a class="go" href="prototype-scrub.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-  </div>
-
-  <h2 class="group">Follow the money - collections</h2>
-  <div class="cards">
-    <div class="card">
-      <div class="ico">💰</div>
-      <h3>Payments &amp; Collections</h3>
-      <p class="pitch">Where the out-of-network dollars get recovered: post payments per CPT over time, work underpayments and refiles, then close the claim - or send it to arbitration to collect more.</p>
-      <div class="look"><b>Look for:</b> the AI underpayment flag, the per-line postings and running balance, and "Send to Arbitration".</div>
-      <a class="go" href="prototype-payments.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-    <div class="card">
-      <div class="ico">🧾</div>
-      <h3>Post 835 - auto-reconcile</h3>
-      <p class="pitch">An incoming 835/ERA is reconciled against the system line-by-line - matched lines auto-post, and only discrepancies need a human. The Remit-style accuracy play.</p>
-      <div class="look"><b>Look for:</b> the AI "matched 11 of 12 lines" banner, the side-by-side 835-vs-system, and the one flagged discrepancy.</div>
-      <a class="go" href="prototype-post-payments.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-  </div>
-
-  <h2 class="group">Insights - reporting</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">📊</div>
-      <h3>Reports</h3>
-      <p class="pitch">Standard reports (A/R aging, recovery by channel, IDR win rate, denials, productivity, collections) - plus "Ask for a custom report," where you type what you want and the AI builds it on the spot. Reports aren't fixed.</p>
-      <div class="look"><b>Look for:</b> run a standard report, then "✦ Ask for a custom report" → pick a prompt → watch it generate.</div>
-      <a class="go" href="prototype-reports.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-  </div>
-
-  <h2 class="group">Behind the scenes - connectivity &amp; admin</h2>
-  <div class="cards">
-    <div class="card wide">
-      <div class="ico">🔌</div>
-      <h3>Clearinghouse Connections</h3>
-      <p class="pitch">The "poor man's MCD" done right: manage a client's many clearinghouse connections (one big client runs ~30) with health monitoring, add/edit/test, and 835/277 responses flowing back into the worklist - plus the option to route everything through <b>USMON's own integrated clearinghouse</b> instead of 30 SFTP configs.</p>
-      <div class="look"><b>Look for:</b> the "USMON Integrated Clearinghouse" callout, the connection sprawl + health strip, the ⚠ error rows, and the client switcher.</div>
-      <a class="go" href="prototype-clearinghouses.html" target="_blank" rel="noopener">Open →</a>
-    </div>
-  </div>
-
-  <div class="feedback">
-    <h2>What we'd love your feedback on</h2>
+  <h2 class="sec">Then tell us</h2>
+  <div class="ask">
     <ol>
-      <li><b>Which view</b> would you actually want to work in, day to day? Would different people on your team pick different ones?</li>
-      <li><b>Highlighting the AI-filled fields</b> and asking you to confirm them - does that help you trust the data, or does it slow you down?</li>
-      <li><b>Supervisors:</b> is the time &amp; efficiency view useful and fair? What would you want it to show?</li>
-      <li><b>Coming from today's system</b> - what do you rely on that you don't see here yet?</li>
-      <li>Anything here that would just <b>get in your way</b>?</li>
+      <li>Working in Familiar, did anything you need disappear? <span>Anything you reach for today that you could not find or do here.</span></li>
+      <li>On your busiest, messiest claim, does Familiar still hold? <span>If not, which view would you switch to, Guided or Cockpit, and for which kind of claim? It is fine if the clean claim and the messy one want different views.</span></li>
     </ol>
+    <a class="btn go" href="mailto:tasks@usmon.com?subject=USMON%20layout%20review&amp;body=1)%20Working%20in%20Familiar%2C%20did%20anything%20you%20need%20disappear%3F%0A%0A2)%20On%20your%20busiest%2C%20messiest%20claim%2C%20does%20Familiar%20still%20hold%3F%20If%20not%2C%20which%20view%20would%20you%20switch%20to%2C%20and%20when%3F%0A%20%20%20-%20Clean%20claim%3A%0A%20%20%20-%20Messy%20claim%3A%0A">Send your answers</a>
   </div>
 </main>
 
 <footer>
-  <hr>
-  All patients, claims, dollar amounts, and names shown are <b>synthetic</b> - no real patient data. These are directional concepts to gather feedback, not final production screens.
+  <div class="wrap">
+    <p>This round is only about the layout: which single way of working fits best, and when a biller would want to switch. The rest of the system (payments, clearinghouses, reports, and the full workflow) comes in a later round, so it is deliberately not here.</p>
+    <p>All patients, claims, and dollar amounts shown are made up. Nothing here is final.</p>
+  </div>
 </footer>
-
-<script src="demo-nav.js"></script>
 </body>
 </html>
