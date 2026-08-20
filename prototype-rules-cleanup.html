@@ -225,7 +225,7 @@
         </div>
         <div class="card-example">
           Dr. A. Sample, Dr. B. Example, Dr. C. Demo, Dr. D. Sample-Two, Dr. E. Test, Dr. F. Placeholder, Dr. G. Synth, Dr. H. Mock
-          each have their own identical rule routing to Monitoring Concepts Billing / All Types
+          each have their own identical rule routing to Meridian Billing Group / All Types
           <span class="arrow">&rarr;</span>
           one rule naming the surgeon group &quot;Panel A (8 surgeons)&quot;
         </div>
@@ -250,7 +250,7 @@
           <p class="card-title">Conflicting defaults: 11 &quot;All Surgeons / All Types&quot; rules that overlap</p>
           <span class="card-count">Needs a decision</span>
         </div>
-        <div class="card-example">Rule #3001: All Surgeons, All Types &rarr; Monitoring Concepts Billing<span class="arrow">&middot;</span>Rule #3002: All Surgeons, All Types &rarr; ANS<span class="arrow">&middot;</span>only one can ever apply to a given claim</div>
+        <div class="card-example">Rule #3001: All Surgeons, All Types &rarr; Meridian Billing Group<span class="arrow">&middot;</span>Rule #3002: All Surgeons, All Types &rarr; ANS<span class="arrow">&middot;</span>only one can ever apply to a given claim</div>
         <div class="card-actions">
           <button class="btn review-btn" id="reviewConflict" type="button" data-key="conflict">Mark for review</button>
         </div>
@@ -289,7 +289,7 @@
         <table class="priority-table">
           <thead><tr><th>Priority</th><th>Rule</th><th>Routes to</th></tr></thead>
           <tbody>
-            <tr><td><span class="pnum">1</span></td><td>Workers Comp + WC/MVA Panel</td><td>Monitoring Concepts Billing</td></tr>
+            <tr><td><span class="pnum">1</span></td><td>Workers Comp + WC/MVA Panel</td><td>Meridian Billing Group</td></tr>
             <tr><td><span class="pnum">2</span></td><td>Any + ASC of Dallas</td><td>ANS</td></tr>
             <tr><td><span class="pnum">3</span></td><td>Medicare + Any</td><td>USN Medicare</td></tr>
           </tbody>
@@ -497,7 +497,7 @@
       insurance: "Workers Comp",
       surgeonGroup: "wc_mva",
       hospital: "ALL",
-      bills: "Monitoring Concepts Billing",
+      bills: "Meridian Billing Group",
       label: "Workers Comp + Neurosurgery WC/MVA Panel"
     },
     {
@@ -521,7 +521,7 @@
       insurance: "ALL",
       surgeonGroup: "ALL",
       hospital: "ALL",
-      bills: "Monitoring Concepts Billing (client default)",
+      bills: "Meridian Billing Group (client default)",
       label: "Client-wide default, everything wildcarded"
     }
   ];
