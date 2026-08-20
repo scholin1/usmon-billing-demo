@@ -285,7 +285,7 @@
 
       <div class="model-card">
         <h3>Explicit priority</h3>
-        <p>Every rule carries a visible order. Ties are broken by that number, not by a hidden stored procedure.</p>
+        <p>Rules rank by specificity in a fixed order (surgeon, then exact insurance, then reader, region, hospital, reader group), and any remaining tie is broken by a visible priority number, not by a hidden stored procedure. Today that final tie-break lives inside <code>dbo.bOptsF</code> and resolves unpredictably.</p>
         <table class="priority-table">
           <thead><tr><th>Priority</th><th>Rule</th><th>Routes to</th></tr></thead>
           <tbody>
@@ -298,7 +298,7 @@
 
       <div class="model-card" style="grid-column:1 / -1">
         <h3>Why did this route here</h3>
-        <p>Pick a synthetic claim and see which rule wins, and why, before anything is saved.</p>
+        <p>Pick a synthetic claim and see which rule wins, and why, before anything is saved. The ranking mirrors the live engine: a surgeon-specific rule outranks an insurance rule, which outranks a hospital rule, even when the hospital rule matches more fields.</p>
         <div class="tester">
           <div class="tester-row">
             <div class="tester-field">
@@ -526,12 +526,25 @@
     }
   ];
 
-  function specificity(rule){
-    var n = 0;
-    if(rule.insurance !== "ALL"){ n += 1; }
-    if(rule.surgeonGroup !== "ALL"){ n += 1; }
-    if(rule.hospital !== "ALL"){ n += 1; }
-    return n;
+  /* Specificity mirrors the live engine (dbo.bOptsF): dimensions are ranked in a
+     FIXED order, not merely counted. Surgeon-specific outranks exact-insurance,
+     which outranks hospital. So a rule specific on surgeon alone beats a rule
+     specific on insurance + hospital, even though the latter matches "more" fields. */
+  function specVector(rule){
+    return [
+      rule.surgeonGroup !== "ALL" ? 1 : 0,   /* 1. surgeon */
+      rule.insurance !== "ALL" ? 1 : 0,       /* 2. exact insurance */
+      rule.hospital !== "ALL" ? 1 : 0         /* 3. hospital */
+    ];
+  }
+
+  /* lexicographic compare, most-specific first (returns >0 when b outranks a) */
+  function cmpSpec(a, b){
+    var va = specVector(a), vb = specVector(b);
+    for(var i = 0; i < va.length; i++){
+      if(vb[i] !== va[i]){ return vb[i] - va[i]; }
+    }
+    return 0;
   }
 
   function matchRules(insurance, surgeonGroup, hospital){
@@ -541,9 +554,8 @@
       var hospOk = rule.hospital === "ALL" || rule.hospital === hospital;
       return insOk && surgOk && hospOk;
     }).sort(function(a, b){
-      var sa = specificity(a);
-      var sb = specificity(b);
-      if(sb !== sa){ return sb - sa; }
+      var c = cmpSpec(a, b);
+      if(c !== 0){ return c; }
       return a.priority - b.priority;
     });
   }
@@ -590,7 +602,7 @@
 
     var winner = matches[0];
     var runnerUp = matches[1];
-    var tie = runnerUp && specificity(runnerUp) === specificity(winner);
+    var tie = runnerUp && cmpSpec(winner, runnerUp) === 0;
 
     testerWinner.textContent = "Winner: " + winner.label + " → " + winner.bills;
     var reason = describeMatch(winner, insurance, surgeonGroup, hospital);
