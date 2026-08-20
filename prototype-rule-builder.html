@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>USMON Rule Builder and Test Bench</title>
+<style>
+  :root{
+    --canvas:#eef1f4;--surface:#ffffff;--surface-2:#f6f8fa;--ink:#16202e;--muted:#54626f;--faint:#8493a1;
+    --line:#e0e5ea;--line-strong:#ccd3db;--teal:#0b6e7a;--teal-dark:#095560;--teal-tint:#e3f1f2;--teal-line:#b9e0e3;
+    --ok:#1b7f43;--ok-tint:#e8f6ee;--ok-line:#bfe6cd;--amber:#a8500f;--amber-tint:#faefe4;--amber-line:#eccdb0;
+    --red:#a3223e;--red-tint:#fbe9ec;--red-line:#eec3cb;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--radius:12px;
+    --shadow:0 1px 2px rgba(16,32,46,.05),0 12px 30px rgba(16,32,46,.08);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --canvas:#0e1620;--surface:#152030;--surface-2:#111a26;--ink:#e8eef4;--muted:#9fb0bf;--faint:#6f8091;
+      --line:#233242;--line-strong:#31445a;--teal:#4fc7d4;--teal-dark:#7ed8e2;--teal-tint:#0f2d33;--teal-line:#1c4a52;
+      --ok:#5fce8b;--ok-tint:#12271a;--ok-line:#245234;--amber:#e39a5e;--amber-tint:#2c1f13;--amber-line:#4a3620;
+      --red:#e2778c;--red-tint:#2c141a;--red-line:#4a2530;
+    }
+  }
+  :root[data-theme="dark"]{
+    --canvas:#0e1620;--surface:#152030;--surface-2:#111a26;--ink:#e8eef4;--muted:#9fb0bf;--faint:#6f8091;
+    --line:#233242;--line-strong:#31445a;--teal:#4fc7d4;--teal-dark:#7ed8e2;--teal-tint:#0f2d33;--teal-line:#1c4a52;
+    --ok:#5fce8b;--ok-tint:#12271a;--ok-line:#245234;--amber:#e39a5e;--amber-tint:#2c1f13;--amber-line:#4a3620;
+    --red:#e2778c;--red-tint:#2c141a;--red-line:#4a2530;
+  }
+  :root[data-theme="light"]{
+    --canvas:#eef1f4;--surface:#ffffff;--surface-2:#f6f8fa;--ink:#16202e;--muted:#54626f;--faint:#8493a1;
+    --line:#e0e5ea;--line-strong:#ccd3db;--teal:#0b6e7a;--teal-dark:#095560;--teal-tint:#e3f1f2;--teal-line:#b9e0e3;
+    --ok:#1b7f43;--ok-tint:#e8f6ee;--ok-line:#bfe6cd;--amber:#a8500f;--amber-tint:#faefe4;--amber-line:#eccdb0;
+    --red:#a3223e;--red-tint:#fbe9ec;--red-line:#eec3cb;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--canvas);color:var(--ink);font-family:var(--sans);
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+  a{color:var(--teal-dark)}
+
+  header.top{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+    margin-bottom:28px;
+  }
+  header.top h1{font-size:26px;margin:0 0 6px}
+  header.top p.sub{margin:0 0 8px;color:var(--muted);font-size:15px}
+  .synthetic-note{
+    display:inline-block;font-size:12px;color:var(--teal-dark);background:var(--teal-tint);
+    border:1px solid var(--teal-line);border-radius:999px;padding:3px 10px;
+  }
+  #themeToggleBtn{
+    flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+    border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:var(--sans);
+  }
+  #themeToggleBtn:hover{border-color:var(--teal)}
+
+  section{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:24px;margin-bottom:22px;
+  }
+  section > h2{margin:0 0 4px;font-size:18px}
+  section > p.section-lede{margin:0 0 18px;color:var(--muted);font-size:14px}
+
+  .inline-note{
+    font-size:12px;color:var(--teal-dark);background:var(--teal-tint);border:1px solid var(--teal-line);
+    border-radius:8px;padding:8px 10px;margin-bottom:16px;display:inline-block;
+  }
+
+  /* reference data */
+  .ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:8px}
+  .ref-card{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:14px 16px}
+  .ref-card h3{margin:0 0 8px;font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em}
+  .ref-card ul{margin:0;padding-left:18px;font-size:13px}
+  .ref-card ul li{margin-bottom:3px}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{
+    font-size:12px;background:var(--teal-tint);color:var(--teal-dark);border:1px solid var(--teal-line);
+    border-radius:999px;padding:3px 9px;
+  }
+  .entity-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  .entity-table th,.entity-table td{text-align:left;padding:5px 7px;border-bottom:1px solid var(--line)}
+  .entity-table th{color:var(--faint);font-weight:600;font-size:10.5px;text-transform:uppercase}
+
+  .group-form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:10px;
+    border-top:1px dashed var(--line-strong);padding-top:14px}
+  .group-form .field{min-width:180px}
+
+  /* form fields */
+  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+  .field label{font-size:12px;color:var(--faint)}
+  .field select, .field input[type="text"], .field input[type="number"]{
+    font-family:var(--sans);font-size:13px;padding:8px 10px;border-radius:8px;
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+  }
+  .field select[multiple]{min-height:96px}
+  .field .hint{font-size:11px;color:var(--faint)}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 18px}
+  .form-grid .field{grid-column:span 1}
+  .mode-row{display:flex;gap:16px;margin-bottom:6px;font-size:13px}
+  .mode-row label{display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--muted)}
+  .outputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-top:6px;
+    border-top:1px solid var(--line);padding-top:14px}
+  .outputs-grid h4{grid-column:1/-1;margin:0 0 4px;font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em}
+
+  button.btn{
+    font-family:var(--sans);font-size:13px;font-weight:600;border-radius:8px;padding:8px 14px;
+    cursor:pointer;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+  }
+  button.btn:hover{border-color:var(--teal)}
+  button.btn.primary{background:var(--teal);border-color:var(--teal-dark);color:#fff}
+  button.btn.primary:hover{background:var(--teal-dark)}
+  button.btn.danger{background:var(--red-tint);border-color:var(--red-line);color:var(--red)}
+  button.btn.small{padding:5px 10px;font-size:12px}
+  button.btn:disabled{cursor:default;opacity:.6}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* rule list */
+  .rule-list-head{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;flex-wrap:wrap;gap:8px}
+  .rule-list-head .sort-row{display:flex;gap:8px}
+  table.rule-table{width:100%;border-collapse:collapse;font-size:13px}
+  table.rule-table th, table.rule-table td{
+    text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top;
+  }
+  table.rule-table th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase}
+  .pnum{
+    display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:6px;
+    background:var(--teal-tint);color:var(--teal-dark);border:1px solid var(--teal-line);font-size:12px;font-weight:700;
+    padding:0 4px;
+  }
+  .rule-cond{color:var(--muted);font-size:12.5px}
+  .track-cell{font-size:12.5px}
+  .track-cell .biller{font-weight:600}
+  .track-cell .entity{color:var(--muted)}
+  .row-actions{display:flex;gap:6px}
+  .empty-row td{color:var(--faint);font-style:italic;text-align:center;padding:20px}
+
+  /* test bench */
+  .tester-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .tester-field{display:flex;flex-direction:column;gap:4px;min-width:160px;flex:1}
+  .tester-field label{font-size:12px;color:var(--faint)}
+  .tester-field select{
+    font-family:var(--sans);font-size:13px;padding:8px 10px;border-radius:8px;
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+  }
+
+  .why-panel{
+    border:1px solid var(--teal-line);background:var(--teal-tint);border-radius:8px;padding:14px 16px;
+    font-size:13px;margin-top:10px;
+  }
+  .why-panel.unassigned{border-color:var(--amber-line);background:var(--amber-tint)}
+  .why-track{margin-bottom:10px}
+  .why-track:last-child{margin-bottom:0}
+  .why-track .winner{font-weight:700;color:var(--teal-dark);margin-bottom:3px}
+  .why-panel.unassigned .winner{color:var(--amber)}
+  .why-track .reason{color:var(--muted);margin-bottom:2px}
+  .why-track ol{margin:4px 0 4px 18px;padding:0;color:var(--muted)}
+  .why-track .runner-up{font-size:12px;color:var(--faint)}
+  .why-track .tie-note{font-size:12px;color:var(--amber);margin-top:2px}
+  .why-draft-tag{
+    display:inline-block;font-size:11px;color:var(--amber);background:var(--amber-tint);
+    border:1px solid var(--amber-line);border-radius:999px;padding:1px 7px;margin-left:6px;
+  }
+
+  /* box 33 mock */
+  .box33-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}
+  .box33{flex:1;min-width:280px;border:2px solid var(--ink);border-radius:4px;background:var(--surface);overflow:hidden}
+  .box33 .box33-label{
+    font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+    background:var(--ink);color:var(--canvas);padding:5px 8px;
+  }
+  .box33 .box33-body{padding:10px 12px}
+  .box33 .box33-track-tag{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+  .box33 .box33-name{font-size:15px;font-weight:700;margin-bottom:2px}
+  .box33 .box33-address{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .box33-sub-row{display:flex;border-top:1px solid var(--line-strong)}
+  .box33-sub{flex:1;padding:6px 8px;border-right:1px solid var(--line-strong)}
+  .box33-sub:last-child{border-right:none}
+  .box33-sub .sub-label{font-size:9.5px;color:var(--faint);text-transform:uppercase;font-weight:700}
+  .box33-sub .sub-val{font-size:13px;font-family:var(--mono)}
+  .box33-split{padding:6px 8px;border-top:1px solid var(--line-strong);font-size:12.5px;color:var(--muted)}
+  .box33.empty .box33-body{color:var(--faint);font-style:italic}
+  .box33.unassigned{border-color:var(--red)}
+  .box33.unassigned .box33-label{background:var(--red)}
+  .box33.no-billing .box33-label{background:var(--faint)}
+
+  .tie-legacy-note{font-size:12px;color:var(--faint);margin-top:10px}
+
+  footer.note{
+    font-size:12px;color:var(--faint);text-align:center;padding:10px 20px 0;
+  }
+
+  #toastContainer{
+    position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:50;
+  }
+  .toast{
+    background:var(--ink);color:var(--canvas);font-size:13px;padding:10px 14px;border-radius:8px;
+    box-shadow:var(--shadow);opacity:0;transform:translateY(6px);transition:opacity .25s ease, transform .25s ease;
+    max-width:320px;
+  }
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  @media (max-width:640px){
+    .box33-row{flex-direction:column}
+    .outputs-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Billing Rule Builder and Test Bench</h1>
+      <p class="sub">Build a Box 33 routing rule, then test it against a synthetic claim before saving it.</p>
+      <span class="synthetic-note">Synthetic demo data, no live rules are read or changed</span>
+    </div>
+    <button id="themeToggleBtn" type="button">Dark mode</button>
+  </header>
+
+  <section id="referenceSection">
+    <h2>Reference data</h2>
+    <p class="section-lede">The lists below populate every dropdown on this page.</p>
+    <span class="inline-note">In production these lists load live from the client's data.</span>
+    <div class="ref-grid" id="refGrid"></div>
+
+    <div class="group-form" id="surgeonGroupForm">
+      <div class="field">
+        <label for="newSurgeonGroupName">New surgeon group name</label>
+        <input type="text" id="newSurgeonGroupName" placeholder="e.g. Neurosurgery Panel B (Synthetic)">
+      </div>
+      <div class="field">
+        <label for="newSurgeonGroupMembers">Members</label>
+        <select id="newSurgeonGroupMembers" multiple></select>
+        <span class="hint">Ctrl or Cmd click to select more than one.</span>
+      </div>
+      <button class="btn primary" id="btnCreateSurgeonGroup" type="button">Create surgeon group</button>
+    </div>
+
+    <div class="group-form" id="readerGroupForm">
+      <div class="field">
+        <label for="newReaderGroupName">New reader group name</label>
+        <input type="text" id="newReaderGroupName" placeholder="e.g. Overnight Read Team (Synthetic)">
+      </div>
+      <div class="field">
+        <label for="newReaderGroupMembers">Members</label>
+        <select id="newReaderGroupMembers" multiple></select>
+        <span class="hint">Ctrl or Cmd click to select more than one.</span>
+      </div>
+      <button class="btn primary" id="btnCreateReaderGroup" type="button">Create reader group</button>
+    </div>
+  </section>
+
+  <section id="builderSection">
+    <h2>Rule builder</h2>
+    <p class="section-lede">Every dimension below is optional. Leave it blank and the rule matches any value for that dimension. Selecting more than one value in a list means the rule matches if any one of them is on the claim.</p>
+
+    <form id="ruleForm">
+      <div class="form-grid">
+        <div class="field">
+          <label for="fPriority">Priority (lower number wins a tie)</label>
+          <input type="number" id="fPriority" value="100" step="1">
+        </div>
+        <div class="field">
+          <label for="fCompany">Company / Payer</label>
+          <select id="fCompany"><option value="">Any company</option></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fInsurance">Insurance type(s)</label>
+        <select id="fInsurance" multiple></select>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <div class="mode-row">
+            <label><input type="radio" name="surgeonMode" value="specific" id="surgeonModeSpecific" checked> Specific surgeon(s)</label>
+            <label><input type="radio" name="surgeonMode" value="group" id="surgeonModeGroup"> Surgeon group</label>
+          </div>
+          <select id="fSurgeonSpecific" multiple></select>
+          <select id="fSurgeonGroup" style="display:none">
+            <option value="">-- choose a group --</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="mode-row">
+            <label><input type="radio" name="readerMode" value="specific" id="readerModeSpecific" checked> Specific reader(s)</label>
+            <label><input type="radio" name="readerMode" value="group" id="readerModeGroup"> Reader group</label>
+          </div>
+          <select id="fReaderSpecific" multiple></select>
+          <select id="fReaderGroup" style="display:none">
+            <option value="">-- choose a group --</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="fHospitals">Hospital(s)</label>
+          <select id="fHospitals" multiple></select>
+        </div>
+        <div class="field">
+          <label for="fRegions">Region(s)</label>
+          <select id="fRegions" multiple></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fExcludedHospitals">Excluded hospital(s)</label>
+        <select id="fExcludedHospitals" multiple></select>
+        <span class="hint">A claim at one of these hospitals never matches this rule, even if the Hospital(s) field above is blank.</span>
+      </div>
+
+      <div class="outputs-grid">
+        <h4>Pro track</h4>
+        <h4 style="display:none"></h4>
+        <div class="field">
+          <label for="fProBiller">Pro biller</label>
+          <select id="fProBiller"></select>
+        </div>
+        <div class="field">
+          <label for="fProEntity">Pro entity (Box 33)</label>
+          <select id="fProEntity"></select>
+        </div>
+        <h4>Tech track</h4>
+        <h4 style="display:none"></h4>
+        <div class="field">
+          <label for="fTechBiller">Tech biller</label>
+          <select id="fTechBiller"></select>
+        </div>
+        <div class="field">
+          <label for="fTechEntity">Tech entity (Box 33)</label>
+          <select id="fTechEntity"></select>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="btnResetDraft" type="button">Reset / start a new rule</button>
+        <span class="hint" id="editingTag" style="align-self:center"></span>
+      </div>
+    </form>
+
+    <div class="rule-list-head">
+      <strong style="font-size:14px">Current rule set (<span id="ruleCount">0</span>)</strong>
+      <div class="sort-row">
+        <button class="btn small" id="btnSortPriority" type="button">Sort by priority</button>
+        <button class="btn small" id="btnSortSpecificity" type="button">Sort by specificity rank</button>
+      </div>
+    </div>
+    <table class="rule-table">
+      <thead>
+        <tr><th>Priority</th><th>Conditions</th><th>Pro</th><th>Tech</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="ruleTableBody"></tbody>
+    </table>
+  </section>
+
+  <section id="testSection">
+    <h2>Test a claim</h2>
+    <p class="section-lede">Pick a synthetic claim. The result below always includes both the saved rule set and whatever rule you are currently drafting above, so you can see the effect before you save it.</p>
+    <div class="tester-row">
+      <div class="tester-field">
+        <label for="testSurgeon">Surgeon</label>
+        <select id="testSurgeon"><option value="">-- none --</option></select>
+      </div>
+      <div class="tester-field">
+        <label for="testInsurance">Insurance type</label>
+        <select id="testInsurance"><option value="">-- none --</option></select>
+      </div>
+      <div class="tester-field">
+        <label for="testHospital">Hospital</label>
+        <select id="testHospital"><option value="">-- none --</option></select>
+      </div>
+      <div class="tester-field">
+        <label for="testReader">Reader</label>
+        <select id="testReader"><option value="">-- none --</option></select>
+      </div>
+      <div class="tester-field">
+        <label for="testRegion">Region</label>
+        <select id="testRegion"><option value="">-- none --</option></select>
+      </div>
+      <div class="tester-field">
+        <label for="testCompany">Company / Payer</label>
+        <select id="testCompany"><option value="">-- none --</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" id="btnRunTest" type="button">Run test</button>
+    </div>
+
+    <div class="why-panel" id="whyPanel">
+      <div class="why-track" id="whyProTrack"></div>
+      <div class="why-track" id="whyTechTrack"></div>
+    </div>
+    <p class="tie-legacy-note">Both tracks are decided by the same winning rule, the same way the legacy engine's single <code>dbo.fillAutobiller</code> lookup picks one rule and reads its Pro and Tech output columns. When two matching rules tie on every specificity dimension, the legacy system (<code>dbo.bOptsF</code>) breaks the tie unpredictably, by columns nobody chose for that purpose. Here the tie is broken by the explicit priority number you set above, lower wins.</p>
+  </section>
+
+  <section id="box33Section">
+    <h2>Box 33 result</h2>
+    <p class="section-lede">A mock of the CMS-1500 Box 33 field, filled in from the winning rule's biller entity for each track.</p>
+    <div class="box33-row">
+      <div class="box33" id="box33Pro">
+        <div class="box33-label">33. Billing Provider Info and Ph # (Pro)</div>
+        <div class="box33-body" id="box33ProBody"></div>
+      </div>
+      <div class="box33" id="box33Tech">
+        <div class="box33-label">33. Billing Provider Info and Ph # (Tech)</div>
+        <div class="box33-body" id="box33TechBody"></div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn primary" id="btnAcceptRule" type="button">Accept and save rule</button>
+    </div>
+  </section>
+
+  <footer class="note">
+    This is a sandbox mockup on synthetic data. Rules live as data in a proper rule set, never hardcoded.
+  </footer>
+
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= theme toggle ================= */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById("themeToggleBtn");
+  function applyThemeLabel(){
+    var current = root.getAttribute("data-theme");
+    themeBtn.textContent = (current === "dark") ? "Light mode" : "Dark mode";
+  }
+  themeBtn.addEventListener("click", function(){
+    var current = root.getAttribute("data-theme");
+    root.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+    applyThemeLabel();
+  });
+  applyThemeLabel();
+
+  /* ================= toasts ================= */
+  var toastContainer = document.getElementById("toastContainer");
+  var toastSeq = 0;
+  function showToast(message){
+    toastSeq += 1;
+    var el = document.createElement("div");
+    el.className = "toast";
+    el.id = "toast-" + toastSeq;
+    el.textContent = message;
+    toastContainer.appendChild(el);
+    window.setTimeout(function(){ el.classList.add("show"); }, 10);
+    window.setTimeout(function(){
+      el.classList.remove("show");
+      window.setTimeout(function(){
+        if(el.parentNode){ el.parentNode.removeChild(el); }
+      }, 300);
+    }, 3200);
+  }
+
+  /* ================= synthetic reference data ================= */
+  var SURGEONS = [
+    {id:"sg1", name:"Dr. A. Sample"},
+    {id:"sg2", name:"Dr. B. Example"},
+    {id:"sg3", name:"Dr. C. Demo"},
+    {id:"sg4", name:"Dr. D. Placeholder"},
+    {id:"sg5", name:"Dr. E. Test"},
+    {id:"sg6", name:"Dr. F. Synth"},
+    {id:"sg7", name:"Dr. Z. Outsider"}
+  ];
+
+  var READERS = [
+    {id:"rd1", name:"R. Neutral, R.EEG.T."},
+    {id:"rd2", name:"S. Fixture, R.EEG.T."},
+    {id:"rd3", name:"T. Mock, R.EEG.T."},
+    {id:"rd4", name:"U. Sample, R.EEG.T."}
+  ];
+
+  var HOSPITALS = [
+    {id:"h1", name:"Metro General Test Hospital"},
+    {id:"h2", name:"ASC of Sample City"},
+    {id:"h3", name:"Northfield Surgical Center (Synthetic)"},
+    {id:"h4", name:"Placeholder Regional Medical Center"}
+  ];
+
+  var REGIONS = [
+    {id:"rg1", name:"Region North (Synthetic)"},
+    {id:"rg2", name:"Region South (Synthetic)"},
+    {id:"rg3", name:"Region Central (Synthetic)"}
+  ];
+
+  var INSURANCE_TYPES = ["Workers Comp", "Medicare", "Commercial", "Medicaid", "Auto / MVA", "Self Pay"];
+
+  var COMPANIES = [
+    {id:"c1", name:"Sample Payer Co (Synthetic)"},
+    {id:"c2", name:"Placeholder Insurance Group"},
+    {id:"c3", name:"Test Mutual Assurance"}
+  ];
+
+  var BILLERS = [
+    {id:"b0", name:"No Biller"},
+    {id:"b1", name:"Meridian Billing Group"},
+    {id:"b2", name:"Northstar Neuro LLC"},
+    {id:"b3", name:"ANS (Synthetic)"},
+    {id:"b4", name:"Collective Current (Synthetic)"}
+  ];
+
+  var BILLER_ENTITIES = [
+    {id:"e0", name:"No Billing", npi:"", taxId:"", address1:"", city:"", state:"", zip:"", split:0},
+    {id:"e1", name:"Meridian Billing Group", npi:"1912345670", taxId:"47-1234567", address1:"100 Sample Plaza", city:"Sample City", state:"TX", zip:"75001", split:100},
+    {id:"e2", name:"Northstar Neuro LLC", npi:"1922345681", taxId:"52-7654321", address1:"200 Placeholder Ave", city:"Placeholder Falls", state:"CO", zip:"80202", split:100},
+    {id:"e3", name:"ANS Test Entity", npi:"1932345692", taxId:"63-1122334", address1:"300 Demo Blvd", city:"Demo Springs", state:"FL", zip:"33101", split:100},
+    {id:"e4", name:"Collective Current Billing", npi:"1942345703", taxId:"71-9988776", address1:"400 Fixture Row", city:"Fixture Heights", state:"IL", zip:"60007", split:50}
+  ];
+
+  var SURGEON_GROUPS = [
+    {id:"sga", name:"Neurosurgery Panel A (Synthetic)", memberIds:["sg1","sg2","sg3"]}
+  ];
+
+  var READER_GROUPS = [
+    {id:"rga", name:"Home Read Team (Synthetic)", memberIds:["rd1","rd2"]}
+  ];
+
+  function byId(list, id){
+    for(var i = 0; i < list.length; i++){ if(list[i].id === id){ return list[i]; } }
+    return null;
+  }
+  function namesFor(list, ids){
+    return ids.map(function(id){ var m = byId(list, id); return m ? m.name : id; });
+  }
+
+  /* ================= rule set state ================= */
+  var RULES = [
+    {
+      id: "r1", priority: 10,
+      insuranceTypes: ["Workers Comp"],
+      surgeonMode: "specific", surgeonIds: ["sg1", "sg2"], surgeonGroupId: "",
+      hospitalIds: [], regionIds: [], excludedHospitalIds: [],
+      readerMode: "specific", readerIds: [], readerGroupId: "",
+      companyId: "",
+      proBillerId: "b1", proEntityId: "e1",
+      techBillerId: "b1", techEntityId: "e1"
+    },
+    {
+      id: "r2", priority: 20,
+      insuranceTypes: [],
+      surgeonMode: "specific", surgeonIds: [], surgeonGroupId: "",
+      hospitalIds: ["h2"], regionIds: [], excludedHospitalIds: [],
+      readerMode: "specific", readerIds: [], readerGroupId: "",
+      companyId: "",
+      proBillerId: "b3", proEntityId: "e3",
+      techBillerId: "b0", techEntityId: "e0"
+    },
+    {
+      id: "r3", priority: 30,
+      insuranceTypes: ["Medicare"],
+      surgeonMode: "specific", surgeonIds: [], surgeonGroupId: "",
+      hospitalIds: [], regionIds: [], excludedHospitalIds: [],
+      readerMode: "specific", readerIds: [], readerGroupId: "",
+      companyId: "",
+      proBillerId: "b4", proEntityId: "e4",
+      techBillerId: "b0", techEntityId: "e0"
+    },
+    {
+      id: "r4", priority: 5,
+      insuranceTypes: ["Commercial"],
+      surgeonMode: "specific", surgeonIds: [], surgeonGroupId: "",
+      hospitalIds: [], regionIds: [], excludedHospitalIds: [],
+      readerMode: "group", readerIds: [], readerGroupId: "rga",
+      companyId: "",
+      proBillerId: "b2", proEntityId: "e2",
+      techBillerId: "b2", techEntityId: "e2"
+    },
+    {
+      id: "r5", priority: 6,
+      insuranceTypes: ["Commercial"],
+      surgeonMode: "specific", surgeonIds: [], surgeonGroupId: "",
+      hospitalIds: [], regionIds: [], excludedHospitalIds: [],
+      readerMode: "specific", readerIds: ["rd3"], readerGroupId: "",
+      companyId: "",
+      proBillerId: "b3", proEntityId: "e3",
+      techBillerId: "b3", techEntityId: "e3"
+    },
+    {
+      id: "r6", priority: 999,
+      insuranceTypes: [],
+      surgeonMode: "specific", surgeonIds: [], surgeonGroupId: "",
+      hospitalIds: [], regionIds: [], excludedHospitalIds: [],
+      readerMode: "specific", readerIds: [], readerGroupId: "",
+      companyId: "",
+      proBillerId: "b1", proEntityId: "e1",
+      techBillerId: "b0", techEntityId: "e0"
+    }
+  ];
+  var nextRuleSeq = 7;
+  var draftEditingId = null;
+  var sortMode = "priority";
+
+  /* ================= populate static dropdowns ================= */
+  function fillSelect(select, list, opts){
+    opts = opts || {};
+    var placeholder = opts.placeholder;
+    var keepFirst = opts.keepFirst;
+    var firstEls = [];
+    if(keepFirst){
+      for(var k = 0; k < select.options.length; k++){
+        if(select.options[k].value === "" ){ firstEls.push(select.options[k]); }
+      }
+    }
+    select.innerHTML = "";
+    if(placeholder !== undefined){
+      var ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = placeholder;
+      select.appendChild(ph);
+    }
+    list.forEach(function(item){
+      var opt = document.createElement("option");
+      opt.value = item.id !== undefined ? item.id : item;
+      opt.textContent = item.name !== undefined ? item.name : item;
+      select.appendChild(opt);
+    });
+  }
+
+  function fillAllReferenceSelects(){
+    // insurance (string list)
+    fillSelect(document.getElementById("fInsurance"), INSURANCE_TYPES.map(function(t){ return {id:t, name:t}; }));
+    fillSelect(document.getElementById("testInsurance"), INSURANCE_TYPES.map(function(t){ return {id:t, name:t}; }), {placeholder:"-- none --"});
+
+    fillSelect(document.getElementById("fSurgeonSpecific"), SURGEONS);
+    fillSelect(document.getElementById("fSurgeonGroup"), SURGEON_GROUPS, {placeholder:"-- choose a group --"});
+    fillSelect(document.getElementById("testSurgeon"), SURGEONS, {placeholder:"-- none --"});
+    fillSelect(document.getElementById("newSurgeonGroupMembers"), SURGEONS);
+
+    fillSelect(document.getElementById("fReaderSpecific"), READERS);
+    fillSelect(document.getElementById("fReaderGroup"), READER_GROUPS, {placeholder:"-- choose a group --"});
+    fillSelect(document.getElementById("testReader"), READERS, {placeholder:"-- none --"});
+    fillSelect(document.getElementById("newReaderGroupMembers"), READERS);
+
+    fillSelect(document.getElementById("fHospitals"), HOSPITALS);
+    fillSelect(document.getElementById("fExcludedHospitals"), HOSPITALS);
+    fillSelect(document.getElementById("testHospital"), HOSPITALS, {placeholder:"-- none --"});
+
+    fillSelect(document.getElementById("fRegions"), REGIONS);
+    fillSelect(document.getElementById("testRegion"), REGIONS, {placeholder:"-- none --"});
+
+    fillSelect(document.getElementById("fCompany"), COMPANIES, {placeholder:"Any company"});
+    fillSelect(document.getElementById("testCompany"), COMPANIES, {placeholder:"-- none --"});
+
+    fillSelect(document.getElementById("fProBiller"), BILLERS);
+    fillSelect(document.getElementById("fTechBiller"), BILLERS);
+    fillSelect(document.getElementById("fProEntity"), BILLER_ENTITIES);
+    fillSelect(document.getElementById("fTechEntity"), BILLER_ENTITIES);
+  }
+
+  function renderReferenceCards(){
+    var grid = document.getElementById("refGrid");
+    grid.innerHTML = "";
+
+    function card(title, bodyHtml){
+      var div = document.createElement("div");
+      div.className = "ref-card";
+      div.innerHTML = "<h3>" + title + "</h3>" + bodyHtml;
+      grid.appendChild(div);
+    }
+
+    function listHtml(items){
+      return "<ul>" + items.map(function(n){ return "<li>" + n + "</li>"; }).join("") + "</ul>";
+    }
+
+    card("Surgeons (" + SURGEONS.length + ")", listHtml(SURGEONS.map(function(s){ return s.name; })));
+    card("Readers (" + READERS.length + ")", listHtml(READERS.map(function(r){ return r.name; })));
+    card("Hospitals (" + HOSPITALS.length + ")", listHtml(HOSPITALS.map(function(h){ return h.name; })));
+    card("Regions (" + REGIONS.length + ")", listHtml(REGIONS.map(function(r){ return r.name; })));
+    card("Insurance types (" + INSURANCE_TYPES.length + ")", listHtml(INSURANCE_TYPES));
+    card("Companies / payers (" + COMPANIES.length + ")", listHtml(COMPANIES.map(function(c){ return c.name; })));
+    card("Billers (" + BILLERS.length + ")", listHtml(BILLERS.map(function(b){ return b.name; })));
+
+    var groupsHtml = "";
+    groupsHtml += "<div style='margin-bottom:8px'><strong style='font-size:12px'>Surgeon groups</strong>";
+    SURGEON_GROUPS.forEach(function(g){
+      groupsHtml += "<div style='margin:6px 0'><span class='chip'>" + g.name + "</span><div class='chip-row' style='margin-top:4px'>" +
+        namesFor(SURGEONS, g.memberIds).map(function(n){ return "<span class='chip'>" + n + "</span>"; }).join("") + "</div></div>";
+    });
+    groupsHtml += "</div><div><strong style='font-size:12px'>Reader groups</strong>";
+    READER_GROUPS.forEach(function(g){
+      groupsHtml += "<div style='margin:6px 0'><span class='chip'>" + g.name + "</span><div class='chip-row' style='margin-top:4px'>" +
+        namesFor(READERS, g.memberIds).map(function(n){ return "<span class='chip'>" + n + "</span>"; }).join("") + "</div></div>";
+    });
+    groupsHtml += "</div>";
+    card("Groups (first class, reusable)", groupsHtml);
+
+    var entityRows = BILLER_ENTITIES.filter(function(e){ return e.id !== "e0"; }).map(function(e){
+      return "<tr><td>" + e.name + "</td><td>" + e.npi + "</td><td>" + e.taxId + "</td>" +
+        "<td>" + e.city + ", " + e.state + " " + e.zip + "</td><td>" + e.split + "%</td></tr>";
+    }).join("");
+    card("Biller entities (Box 33 roster)",
+      "<table class='entity-table'><thead><tr><th>Entity</th><th>NPI</th><th>Tax ID</th><th>Pay-to</th><th>Split</th></tr></thead><tbody>" +
+      entityRows + "</tbody></table>");
+  }
+
+  document.getElementById("btnCreateSurgeonGroup").addEventListener("click", function(){
+    var nameEl = document.getElementById("newSurgeonGroupName");
+    var membersEl = document.getElementById("newSurgeonGroupMembers");
+    var name = nameEl.value.trim();
+    var members = Array.prototype.slice.call(membersEl.selectedOptions).map(function(o){ return o.value; });
+    if(!name || members.length === 0){
+      showToast("Give the group a name and pick at least one surgeon.");
+      return;
+    }
+    var id = "sg-grp-" + Date.now();
+    SURGEON_GROUPS.push({id:id, name:name, memberIds:members});
+    nameEl.value = "";
+    Array.prototype.forEach.call(membersEl.options, function(o){ o.selected = false; });
+    fillAllReferenceSelects();
+    renderReferenceCards();
+    showToast("Surgeon group \"" + name + "\" created. It is now available on the rule builder.");
+  });
+
+  document.getElementById("btnCreateReaderGroup").addEventListener("click", function(){
+    var nameEl = document.getElementById("newReaderGroupName");
+    var membersEl = document.getElementById("newReaderGroupMembers");
+    var name = nameEl.value.trim();
+    var members = Array.prototype.slice.call(membersEl.selectedOptions).map(function(o){ return o.value; });
+    if(!name || members.length === 0){
+      showToast("Give the group a name and pick at least one reader.");
+      return;
+    }
+    var id = "rd-grp-" + Date.now();
+    READER_GROUPS.push({id:id, name:name, memberIds:members});
+    nameEl.value = "";
+    Array.prototype.forEach.call(membersEl.options, function(o){ o.selected = false; });
+    fillAllReferenceSelects();
+    renderReferenceCards();
+    showToast("Reader group \"" + name + "\" created. It is now available on the rule builder.");
+  });
+
+  /* ================= surgeon / reader mode toggles ================= */
+  function wireModeToggle(specificRadioId, groupRadioId, specificSelectId, groupSelectId){
+    var specificRadio = document.getElementById(specificRadioId);
+    var groupRadio = document.getElementById(groupRadioId);
+    var specificSelect = document.getElementById(specificSelectId);
+    var groupSelect = document.getElementById(groupSelectId);
+    function sync(){
+      if(specificRadio.checked){
+        specificSelect.style.display = "";
+        groupSelect.style.display = "none";
+      } else {
+        specificSelect.style.display = "none";
+        groupSelect.style.display = "";
+      }
+      runEvaluation();
+    }
+    specificRadio.addEventListener("change", sync);
+    groupRadio.addEventListener("change", sync);
+    sync();
+  }
+
+  /* ================= draft rule from the builder form ================= */
+  function selectedValues(select){
+    return Array.prototype.slice.call(select.selectedOptions).map(function(o){ return o.value; });
+  }
+
+  function readDraftRule(){
+    var surgeonMode = document.getElementById("surgeonModeSpecific").checked ? "specific" : "group";
+    var readerMode = document.getElementById("readerModeSpecific").checked ? "specific" : "group";
+    var priority = parseInt(document.getElementById("fPriority").value, 10);
+    if(isNaN(priority)){ priority = 100; }
+    return {
+      id: draftEditingId || "draft-preview",
+      priority: priority,
+      insuranceTypes: selectedValues(document.getElementById("fInsurance")),
+      surgeonMode: surgeonMode,
+      surgeonIds: selectedValues(document.getElementById("fSurgeonSpecific")),
+      surgeonGroupId: document.getElementById("fSurgeonGroup").value,
+      hospitalIds: selectedValues(document.getElementById("fHospitals")),
+      regionIds: selectedValues(document.getElementById("fRegions")),
+      excludedHospitalIds: selectedValues(document.getElementById("fExcludedHospitals")),
+      readerMode: readerMode,
+      readerIds: selectedValues(document.getElementById("fReaderSpecific")),
+      readerGroupId: document.getElementById("fReaderGroup").value,
+      companyId: document.getElementById("fCompany").value,
+      proBillerId: document.getElementById("fProBiller").value,
+      proEntityId: document.getElementById("fProEntity").value,
+      techBillerId: document.getElementById("fTechBiller").value,
+      techEntityId: document.getElementById("fTechEntity").value
+    };
+  }
+
+  function loadRuleIntoForm(rule){
+    document.getElementById("fPriority").value = rule.priority;
+    setSelectedValues(document.getElementById("fInsurance"), rule.insuranceTypes);
+    document.getElementById("surgeonModeSpecific").checked = (rule.surgeonMode === "specific");
+    document.getElementById("surgeonModeGroup").checked = (rule.surgeonMode === "group");
+    setSelectedValues(document.getElementById("fSurgeonSpecific"), rule.surgeonIds);
+    document.getElementById("fSurgeonGroup").value = rule.surgeonGroupId || "";
+    document.getElementById("fHospitals").value = "";
+    setSelectedValues(document.getElementById("fHospitals"), rule.hospitalIds);
+    setSelectedValues(document.getElementById("fRegions"), rule.regionIds);
+    setSelectedValues(document.getElementById("fExcludedHospitals"), rule.excludedHospitalIds);
+    document.getElementById("readerModeSpecific").checked = (rule.readerMode === "specific");
+    document.getElementById("readerModeGroup").checked = (rule.readerMode === "group");
+    setSelectedValues(document.getElementById("fReaderSpecific"), rule.readerIds);
+    document.getElementById("fReaderGroup").value = rule.readerGroupId || "";
+    document.getElementById("fCompany").value = rule.companyId || "";
+    document.getElementById("fProBiller").value = rule.proBillerId;
+    document.getElementById("fProEntity").value = rule.proEntityId;
+    document.getElementById("fTechBiller").value = rule.techBillerId;
+    document.getElementById("fTechEntity").value = rule.techEntityId;
+    document.getElementById("surgeonModeSpecific").dispatchEvent(new Event("change"));
+    document.getElementById("readerModeSpecific").dispatchEvent(new Event("change"));
+  }
+
+  function setSelectedValues(select, values){
+    var set = {};
+    values.forEach(function(v){ set[v] = true; });
+    Array.prototype.forEach.call(select.options, function(o){ o.selected = !!set[o.value]; });
+  }
+
+  function resetDraft(){
+    draftEditingId = null;
+    var maxPriority = RULES.reduce(function(m, r){ return Math.max(m, r.priority); }, 0);
+    document.getElementById("fPriority").value = maxPriority + 10;
+    document.getElementById("fInsurance").value = "";
+    Array.prototype.forEach.call(document.getElementById("fInsurance").options, function(o){ o.selected = false; });
+    document.getElementById("surgeonModeSpecific").checked = true;
+    Array.prototype.forEach.call(document.getElementById("fSurgeonSpecific").options, function(o){ o.selected = false; });
+    document.getElementById("fSurgeonGroup").value = "";
+    Array.prototype.forEach.call(document.getElementById("fHospitals").options, function(o){ o.selected = false; });
+    Array.prototype.forEach.call(document.getElementById("fRegions").options, function(o){ o.selected = false; });
+    Array.prototype.forEach.call(document.getElementById("fExcludedHospitals").options, function(o){ o.selected = false; });
+    document.getElementById("readerModeSpecific").checked = true;
+    Array.prototype.forEach.call(document.getElementById("fReaderSpecific").options, function(o){ o.selected = false; });
+    document.getElementById("fReaderGroup").value = "";
+    document.getElementById("fCompany").value = "";
+    document.getElementById("fProBiller").value = "b0";
+    document.getElementById("fProEntity").value = "e0";
+    document.getElementById("fTechBiller").value = "b0";
+    document.getElementById("fTechEntity").value = "e0";
+    document.getElementById("surgeonModeSpecific").dispatchEvent(new Event("change"));
+    document.getElementById("readerModeSpecific").dispatchEvent(new Event("change"));
+    document.getElementById("editingTag").textContent = "";
+    runEvaluation();
+  }
+
+  document.getElementById("btnResetDraft").addEventListener("click", resetDraft);
+
+  /* ================= engine semantics (mirrors dbo.bOptsF) ================= */
+  function resolveSurgeonSet(rule){
+    if(rule.surgeonMode === "group" && rule.surgeonGroupId){
+      var g = byId(SURGEON_GROUPS, rule.surgeonGroupId);
+      return g ? g.memberIds.slice() : [];
+    }
+    return rule.surgeonIds.slice();
+  }
+
+  function resolveReaderSet(rule){
+    if(rule.readerMode === "group" && rule.readerGroupId){
+      var g = byId(READER_GROUPS, rule.readerGroupId);
+      return g ? g.memberIds.slice() : [];
+    }
+    return rule.readerIds.slice();
+  }
+
+  function ruleMatchesClaim(rule, claim){
+    var surgSet = resolveSurgeonSet(rule);
+    if(surgSet.length && surgSet.indexOf(claim.surgeonId) === -1){ return false; }
+
+    if(rule.insuranceTypes.length && rule.insuranceTypes.indexOf(claim.insuranceType) === -1){ return false; }
+
+    var readSet = resolveReaderSet(rule);
+    if(readSet.length && readSet.indexOf(claim.readerId) === -1){ return false; }
+
+    if(rule.regionIds.length && rule.regionIds.indexOf(claim.regionId) === -1){ return false; }
+
+    if(rule.hospitalIds.length && rule.hospitalIds.indexOf(claim.hospitalId) === -1){ return false; }
+
+    if(rule.excludedHospitalIds.length && claim.hospitalId && rule.excludedHospitalIds.indexOf(claim.hospitalId) !== -1){ return false; }
+
+    if(rule.companyId && rule.companyId !== claim.companyId){ return false; }
+
+    return true;
+  }
+
+  /* Lexicographic specificity vector, most significant dimension first, exactly
+     mirroring dbo.bOptsF's ORDER BY: nw_surg, exact-insurance, nw_read, nw_reg,
+     nw_hosp, has-a-reader-group. This is NOT a count of matched fields: a
+     surgeon-only rule always outranks an insurance+hospital rule. */
+  function specVector(rule){
+    var surgSet = resolveSurgeonSet(rule);
+    var readSet = resolveReaderSet(rule);
+    return [
+      surgSet.length ? 1 : 0,
+      rule.insuranceTypes.length ? 1 : 0,
+      (rule.readerMode === "specific" && readSet.length) ? 1 : 0,
+      rule.regionIds.length ? 1 : 0,
+      rule.hospitalIds.length ? 1 : 0,
+      (rule.readerMode === "group" && rule.readerGroupId) ? 1 : 0
+    ];
+  }
+
+  function cmpSpec(a, b){
+    var va = specVector(a), vb = specVector(b);
+    for(var i = 0; i < va.length; i++){
+      if(vb[i] !== va[i]){ return vb[i] - va[i]; }
+    }
+    return 0;
+  }
+
+  function rankMatches(claim, effectiveRules){
+    return effectiveRules.filter(function(r){ return ruleMatchesClaim(r, claim); })
+      .sort(function(a, b){
+        var c = cmpSpec(a, b);
+        if(c !== 0){ return c; }
+        return a.priority - b.priority;
+      });
+  }
+
+  var SPEC_LABELS = [
+    "Surgeon specific",
+    "Insurance matched exactly",
+    "Reader specific",
+    "Region specific",
+    "Hospital specific",
+    "Uses a reader group"
+  ];
+
+  function describeWinner(rule, claim){
+    var v = specVector(rule);
+    var lines = [];
+    if(v[0]){
+      var surgSet = resolveSurgeonSet(rule);
+      var how = (rule.surgeonMode === "group") ? ("via group \"" + (byId(SURGEON_GROUPS, rule.surgeonGroupId) || {}).name + "\"") : "named directly on the rule";
+      lines.push("Surgeon specific: matches " + (byId(SURGEONS, claim.surgeonId) || {}).name + " (" + how + ").");
+    }
+    if(v[1]){
+      lines.push("Insurance matched exactly: " + claim.insuranceType + ".");
+    }
+    if(v[2]){
+      lines.push("Reader specific: matches " + (byId(READERS, claim.readerId) || {}).name + " (named directly on the rule).");
+    }
+    if(v[3]){
+      lines.push("Region specific: " + (byId(REGIONS, claim.regionId) || {}).name + ".");
+    }
+    if(v[4]){
+      lines.push("Hospital specific: " + (byId(HOSPITALS, claim.hospitalId) || {}).name + ".");
+    }
+    if(v[5]){
+      lines.push("Uses a reader group (" + (byId(READER_GROUPS, rule.readerGroupId) || {}).name + "), a lower-priority match than naming a reader directly.");
+    }
+    if(lines.length === 0){
+      lines.push("Every dimension on this rule is a wildcard, so it only applies as a last-resort default.");
+    }
+    if(rule.companyId){
+      lines.push("Also required Company/Payer = " + (byId(COMPANIES, rule.companyId) || {}).name + ".");
+    }
+    if(rule.excludedHospitalIds.length){
+      lines.push("Excludes hospitals: " + namesFor(HOSPITALS, rule.excludedHospitalIds).join(", ") + ".");
+    }
+    return lines;
+  }
+
+  /* ================= rule set rendering ================= */
+  function summarizeCondition(rule){
+    var parts = [];
+    var surgSet = resolveSurgeonSet(rule);
+    if(surgSet.length){
+      var label = (rule.surgeonMode === "group") ? ("Surgeon group: " + (byId(SURGEON_GROUPS, rule.surgeonGroupId) || {}).name) :
+        ("Surgeons: " + namesFor(SURGEONS, rule.surgeonIds).join(", "));
+      parts.push(label);
+    }
+    if(rule.insuranceTypes.length){ parts.push("Insurance: " + rule.insuranceTypes.join(", ")); }
+    var readSet = resolveReaderSet(rule);
+    if(readSet.length){
+      var rlabel = (rule.readerMode === "group") ? ("Reader group: " + (byId(READER_GROUPS, rule.readerGroupId) || {}).name) :
+        ("Readers: " + namesFor(READERS, rule.readerIds).join(", "));
+      parts.push(rlabel);
+    }
+    if(rule.hospitalIds.length){ parts.push("Hospitals: " + namesFor(HOSPITALS, rule.hospitalIds).join(", ")); }
+    if(rule.regionIds.length){ parts.push("Regions: " + namesFor(REGIONS, rule.regionIds).join(", ")); }
+    if(rule.excludedHospitalIds.length){ parts.push("Excludes: " + namesFor(HOSPITALS, rule.excludedHospitalIds).join(", ")); }
+    if(rule.companyId){ parts.push("Company: " + (byId(COMPANIES, rule.companyId) || {}).name); }
+    if(parts.length === 0){ return "Matches any claim (catch-all default)."; }
+    return parts.join(". ") + ".";
+  }
+
+  function trackHtml(billerId, entityId){
+    var biller = byId(BILLERS, billerId);
+    var entity = byId(BILLER_ENTITIES, entityId);
+    var billerName = biller ? biller.name : "Not set";
+    var entityName = entity ? entity.name : "Not set";
+    return "<div class='biller'>" + billerName + "</div><div class='entity'>" + entityName + "</div>";
+  }
+
+  function renderRuleTable(){
+    var tbody = document.getElementById("ruleTableBody");
+    document.getElementById("ruleCount").textContent = RULES.length;
+    if(RULES.length === 0){
+      tbody.innerHTML = "<tr class='empty-row'><td colspan='5'>No rules yet. Build one above and accept it.</td></tr>";
+      return;
+    }
+    var sorted = RULES.slice();
+    if(sortMode === "priority"){
+      sorted.sort(function(a, b){ return a.priority - b.priority; });
+    } else {
+      sorted.sort(function(a, b){
+        var c = cmpSpec(a, b);
+        if(c !== 0){ return c; }
+        return a.priority - b.priority;
+      });
+    }
+    tbody.innerHTML = "";
+    sorted.forEach(function(rule){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td><span class='pnum'>" + rule.priority + "</span></td>" +
+        "<td class='rule-cond'>" + summarizeCondition(rule) + "</td>" +
+        "<td class='track-cell'>" + trackHtml(rule.proBillerId, rule.proEntityId) + "</td>" +
+        "<td class='track-cell'>" + trackHtml(rule.techBillerId, rule.techEntityId) + "</td>" +
+        "<td class='row-actions'>" +
+          "<button class='btn small' data-action='edit' data-id='" + rule.id + "' type='button'>Edit</button>" +
+          "<button class='btn small danger' data-action='delete' data-id='" + rule.id + "' type='button'>Delete</button>" +
+        "</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("ruleTableBody").addEventListener("click", function(ev){
+    var btn = ev.target.closest("button[data-action]");
+    if(!btn){ return; }
+    var id = btn.getAttribute("data-id");
+    var action = btn.getAttribute("data-action");
+    var rule = byId(RULES, id);
+    if(!rule){ return; }
+    if(action === "edit"){
+      draftEditingId = rule.id;
+      loadRuleIntoForm(rule);
+      document.getElementById("editingTag").textContent = "Editing rule at priority " + rule.priority + ". Accepting below will save changes to this rule.";
+      window.scrollTo({top: document.getElementById("builderSection").offsetTop - 10, behavior: "smooth"});
+      runEvaluation();
+    } else if(action === "delete"){
+      if(window.confirm("Delete this rule from the rule set?")){
+        RULES = RULES.filter(function(r){ return r.id !== id; });
+        if(draftEditingId === id){ resetDraft(); }
+        renderRuleTable();
+        runEvaluation();
+        showToast("Rule deleted from the rule set.");
+      }
+    }
+  });
+
+  document.getElementById("btnSortPriority").addEventListener("click", function(){ sortMode = "priority"; renderRuleTable(); });
+  document.getElementById("btnSortSpecificity").addEventListener("click", function(){ sortMode = "specificity"; renderRuleTable(); });
+
+  /* ================= test bench + why panel + box 33 ================= */
+  function currentClaim(){
+    return {
+      surgeonId: document.getElementById("testSurgeon").value,
+      insuranceType: document.getElementById("testInsurance").value,
+      hospitalId: document.getElementById("testHospital").value,
+      readerId: document.getElementById("testReader").value,
+      regionId: document.getElementById("testRegion").value,
+      companyId: document.getElementById("testCompany").value
+    };
+  }
+
+  function effectiveRuleSet(){
+    var draft = readDraftRule();
+    var withoutEdited = RULES.filter(function(r){ return r.id !== draftEditingId; });
+    return withoutEdited.concat([draft]);
+  }
+
+  function renderBox33(containerId, biller, entity, trackLabel, state){
+    var el = document.getElementById(containerId);
+    var card = el.parentNode;
+    card.className = "box33";
+    if(state === "unassigned"){
+      card.className = "box33 unassigned";
+      el.innerHTML = "<div class='box33-track-tag'>" + trackLabel + "</div><div style='color:var(--red);font-weight:700'>UNASSIGNED, NEEDS BILLER</div><div style='color:var(--muted);font-size:12.5px;margin-top:4px'>No rule matched this claim. In production this claim would sit in an explicit unassigned queue, never silently nowhere.</div>";
+      return;
+    }
+    if(state === "no-billing"){
+      card.className = "box33 no-billing";
+      el.innerHTML = "<div class='box33-track-tag'>" + trackLabel + "</div><div style='color:var(--faint);font-style:italic'>No billing configured for this track by the winning rule.</div>";
+      return;
+    }
+    el.innerHTML =
+      "<div class='box33-track-tag'>" + trackLabel + "</div>" +
+      "<div class='box33-name'>" + entity.name + "</div>" +
+      "<div class='box33-address'>" + entity.address1 + ", " + entity.city + ", " + entity.state + " " + entity.zip + "</div>" +
+      "<div class='box33-sub-row'>" +
+        "<div class='box33-sub'><div class='sub-label'>33a NPI</div><div class='sub-val'>" + entity.npi + "</div></div>" +
+        "<div class='box33-sub'><div class='sub-label'>33b Tax ID</div><div class='sub-val'>" + entity.taxId + "</div></div>" +
+      "</div>" +
+      "<div class='box33-split'>Split: " + entity.split + "% &middot; Biller: " + biller.name + "</div>";
+  }
+
+  function renderTrackWhy(elId, label, winner, runnerUp, claim){
+    var el = document.getElementById(elId);
+    if(!winner){
+      el.innerHTML = "<div class='winner'>" + label + ": no rule matched.</div>" +
+        "<div class='reason'>This claim would go to an explicit \"unassigned, needs biller\" queue, it never silently disappears.</div>";
+      return;
+    }
+    var isDraft = (winner.id === "draft-preview" || winner.id === draftEditingId);
+    var reasons = describeWinner(winner, claim);
+    var tie = runnerUp && cmpSpec(winner, runnerUp) === 0;
+    var html = "<div class='winner'>" + label + " winner: priority " + winner.priority +
+      (isDraft ? "<span class='why-draft-tag'>drafted, not yet saved</span>" : "") + "</div>";
+    html += "<ol>" + reasons.map(function(r){ return "<li>" + r + "</li>"; }).join("") + "</ol>";
+    if(tie){
+      html += "<div class='tie-note'>Tied in specificity with priority " + runnerUp.priority + "; the explicit priority number broke the tie.</div>";
+    }
+    if(runnerUp){
+      html += "<div class='runner-up'>Runner-up: priority " + runnerUp.priority + " (" + summarizeCondition(runnerUp) + ")</div>";
+    } else {
+      html += "<div class='runner-up'>No other rule matched this claim.</div>";
+    }
+    el.innerHTML = html;
+  }
+
+  function runEvaluation(){
+    var claim = currentClaim();
+    var effective = effectiveRuleSet();
+    var matches = rankMatches(claim, effective);
+    var whyPanel = document.getElementById("whyPanel");
+
+    if(matches.length === 0){
+      whyPanel.classList.add("unassigned");
+      renderTrackWhy("whyProTrack", "Pro", null, null, claim);
+      renderTrackWhy("whyTechTrack", "Tech", null, null, claim);
+      renderBox33("box33ProBody", null, null, "Pro claim", "unassigned");
+      renderBox33("box33TechBody", null, null, "Tech claim", "unassigned");
+      return;
+    }
+    whyPanel.classList.remove("unassigned");
+    var winner = matches[0];
+    var runnerUp = matches[1] || null;
+    renderTrackWhy("whyProTrack", "Pro", winner, runnerUp, claim);
+    renderTrackWhy("whyTechTrack", "Tech", winner, runnerUp, claim);
+
+    var proBiller = byId(BILLERS, winner.proBillerId);
+    var proEntity = byId(BILLER_ENTITIES, winner.proEntityId);
+    var techBiller = byId(BILLERS, winner.techBillerId);
+    var techEntity = byId(BILLER_ENTITIES, winner.techEntityId);
+
+    if(!proEntity || proEntity.id === "e0"){
+      renderBox33("box33ProBody", proBiller, proEntity, "Pro claim", "no-billing");
+    } else {
+      renderBox33("box33ProBody", proBiller, proEntity, "Pro claim", "ok");
+    }
+    if(!techEntity || techEntity.id === "e0"){
+      renderBox33("box33TechBody", techBiller, techEntity, "Tech claim", "no-billing");
+    } else {
+      renderBox33("box33TechBody", techBiller, techEntity, "Tech claim", "ok");
+    }
+  }
+
+  document.getElementById("btnRunTest").addEventListener("click", runEvaluation);
+  ["testSurgeon","testInsurance","testHospital","testReader","testRegion","testCompany"].forEach(function(id){
+    document.getElementById(id).addEventListener("change", runEvaluation);
+  });
+
+  var builderInputIds = [
+    "fPriority","fInsurance","fSurgeonSpecific","fSurgeonGroup","fHospitals","fRegions",
+    "fExcludedHospitals","fReaderSpecific","fReaderGroup","fCompany","fProBiller","fProEntity",
+    "fTechBiller","fTechEntity"
+  ];
+  builderInputIds.forEach(function(id){
+    var el = document.getElementById(id);
+    el.addEventListener("change", runEvaluation);
+    el.addEventListener("input", runEvaluation);
+  });
+
+  document.getElementById("btnAcceptRule").addEventListener("click", function(){
+    var draft = readDraftRule();
+    if(draftEditingId){
+      var idx = RULES.findIndex(function(r){ return r.id === draftEditingId; });
+      draft.id = draftEditingId;
+      if(idx >= 0){ RULES[idx] = draft; }
+      showToast("Saved to the rule set. In production this writes to the versioned rule_set store, with no code change and full history.");
+    } else {
+      draft.id = "r" + nextRuleSeq;
+      nextRuleSeq += 1;
+      RULES.push(draft);
+      showToast("Saved to the rule set. In production this writes to the versioned rule_set store, with no code change and full history.");
+    }
+    var wasEditing = !!draftEditingId;
+    resetDraft();
+    renderRuleTable();
+    runEvaluation();
+    if(!wasEditing){
+      // scroll feedback stays put; nothing else to do
+    }
+  });
+
+  /* ================= init ================= */
+  fillAllReferenceSelects();
+  renderReferenceCards();
+  wireModeToggle("surgeonModeSpecific", "surgeonModeGroup", "fSurgeonSpecific", "fSurgeonGroup");
+  wireModeToggle("readerModeSpecific", "readerModeGroup", "fReaderSpecific", "fReaderGroup");
+  document.getElementById("fProBiller").value = "b0";
+  document.getElementById("fProEntity").value = "e0";
+  document.getElementById("fTechBiller").value = "b0";
+  document.getElementById("fTechEntity").value = "e0";
+  renderRuleTable();
+  runEvaluation();
+
+})();
+</script>
+</body>
+</html>
