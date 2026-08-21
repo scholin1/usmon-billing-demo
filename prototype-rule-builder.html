@@ -71,8 +71,40 @@
     font-size:12px;color:var(--teal-dark);background:var(--teal-tint);border:1px solid var(--teal-line);
     border-radius:8px;padding:8px 10px;margin-bottom:16px;display:inline-block;
   }
+  .recap-box{
+    font-size:13px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:8px;padding:14px 16px;
+  }
+  .recap-box p{margin:0 0 6px}
+  .recap-box p:last-child{margin-bottom:0}
+
+  /* step-by-step wizard */
+  .stepper{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+  .step-dot{
+    flex:1;min-width:88px;display:flex;flex-direction:column;align-items:center;gap:6px;
+    background:none;border:none;cursor:pointer;padding:8px 4px;font-family:var(--sans);
+  }
+  .step-dot .num{
+    width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--muted);
+  }
+  .step-dot .label{font-size:11px;color:var(--muted);text-align:center}
+  .step-dot.active .num{background:var(--teal);border-color:var(--teal-dark);color:#fff}
+  .step-dot.active .label{color:var(--ink);font-weight:600}
+  .step-dot:hover .num{border-color:var(--teal)}
+  .step-nav{justify-content:space-between;margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
 
   /* reference data */
+  #referenceDetails{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 24px;margin-bottom:22px;
+  }
+  #referenceDetails summary{cursor:pointer;font-size:16px;font-weight:700;color:var(--ink);list-style:none}
+  #referenceDetails summary::-webkit-details-marker{display:none}
+  #referenceDetails summary:before{content:"+ ";color:var(--teal-dark)}
+  #referenceDetails[open] summary:before{content:"- ";color:var(--teal-dark)}
+  #referenceDetails .details-body{margin-top:16px}
+
   .ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:8px}
   .ref-card{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:14px 16px}
   .ref-card h3{margin:0 0 8px;font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em}
@@ -102,10 +134,40 @@
   .field .hint{font-size:11px;color:var(--faint)}
   .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 18px}
   .form-grid .field{grid-column:span 1}
-  .mode-row{display:flex;gap:16px;margin-bottom:6px;font-size:13px}
-  .mode-row label{display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--muted)}
-  .outputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-top:6px;
-    border-top:1px solid var(--line);padding-top:14px}
+
+  .mode-toggle{display:inline-flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;margin-bottom:8px}
+  .mode-toggle label{
+    margin:0;padding:7px 12px;font-size:12.5px;cursor:pointer;color:var(--muted);background:var(--surface-2);
+    display:flex;align-items:center;gap:5px;position:relative;
+  }
+  .mode-toggle label:first-child{border-right:1px solid var(--line-strong)}
+  .mode-toggle label.active{background:var(--teal);color:#fff;font-weight:600}
+  .mode-toggle input[type="radio"]{position:absolute;opacity:0;width:1px;height:1px}
+
+  .more-conditions{border:1px dashed var(--line-strong);border-radius:8px;padding:10px 14px;margin:6px 0 16px;background:var(--surface-2)}
+  .more-conditions summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--teal-dark);list-style:none}
+  .more-conditions summary::-webkit-details-marker{display:none}
+  .more-conditions summary:before{content:"+ "}
+  .more-conditions[open] summary:before{content:"- "}
+  .more-conditions .more-body{margin-top:14px}
+
+  .tip{
+    display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
+    background:var(--line-strong);color:var(--surface);font-size:10px;margin-left:4px;cursor:help;
+    font-weight:700;vertical-align:middle;
+  }
+
+  .priority-row{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 4px;padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .priority-row label{font-size:12px;color:var(--faint)}
+  .priority-row input{
+    width:90px;font-family:var(--sans);font-size:13px;padding:6px 8px;border-radius:8px;
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+  }
+
+  .outputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-top:6px}
   .outputs-grid h4{grid-column:1/-1;margin:0 0 4px;font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em}
 
   button.btn{
@@ -121,7 +183,7 @@
   .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
 
   /* rule list */
-  .rule-list-head{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;flex-wrap:wrap;gap:8px}
+  .rule-list-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;flex-wrap:wrap;gap:8px}
   .rule-list-head .sort-row{display:flex;gap:8px}
   table.rule-table{width:100%;border-collapse:collapse;font-size:13px}
   table.rule-table th, table.rule-table td{
@@ -159,7 +221,6 @@
   .why-track .winner{font-weight:700;color:var(--teal-dark);margin-bottom:3px}
   .why-panel.unassigned .winner{color:var(--amber)}
   .why-track .reason{color:var(--muted);margin-bottom:2px}
-  .why-track ol{margin:4px 0 4px 18px;padding:0;color:var(--muted)}
   .why-track .runner-up{font-size:12px;color:var(--faint)}
   .why-track .tie-note{font-size:12px;color:var(--amber);margin-top:2px}
   .why-draft-tag{
@@ -167,23 +228,23 @@
     border:1px solid var(--amber-line);border-radius:999px;padding:1px 7px;margin-left:6px;
   }
 
-  /* box 33 mock */
-  .box33-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}
-  .box33{flex:1;min-width:280px;border:2px solid var(--ink);border-radius:4px;background:var(--surface);overflow:hidden}
+  /* box 33 mock, the visual payoff of the Result step */
+  .box33-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px}
+  .box33{flex:1;min-width:280px;border:3px solid var(--ink);border-radius:6px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)}
   .box33 .box33-label{
-    font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;
-    background:var(--ink);color:var(--canvas);padding:5px 8px;
+    font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+    background:var(--ink);color:var(--canvas);padding:7px 10px;
   }
-  .box33 .box33-body{padding:10px 12px}
-  .box33 .box33-track-tag{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
-  .box33 .box33-name{font-size:15px;font-weight:700;margin-bottom:2px}
-  .box33 .box33-address{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .box33 .box33-body{padding:16px 16px 12px}
+  .box33 .box33-track-tag{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+  .box33 .box33-name{font-size:23px;font-weight:800;margin-bottom:4px;line-height:1.2}
+  .box33 .box33-address{font-size:14px;color:var(--muted);margin-bottom:10px}
   .box33-sub-row{display:flex;border-top:1px solid var(--line-strong)}
-  .box33-sub{flex:1;padding:6px 8px;border-right:1px solid var(--line-strong)}
+  .box33-sub{flex:1;padding:7px 9px;border-right:1px solid var(--line-strong)}
   .box33-sub:last-child{border-right:none}
   .box33-sub .sub-label{font-size:9.5px;color:var(--faint);text-transform:uppercase;font-weight:700}
-  .box33-sub .sub-val{font-size:13px;font-family:var(--mono)}
-  .box33-split{padding:6px 8px;border-top:1px solid var(--line-strong);font-size:12.5px;color:var(--muted)}
+  .box33-sub .sub-val{font-size:14px;font-family:var(--mono)}
+  .box33-split{padding:7px 9px;border-top:1px solid var(--line-strong);font-size:13px;color:var(--muted)}
   .box33.empty .box33-body{color:var(--faint);font-style:italic}
   .box33.unassigned{border-color:var(--red)}
   .box33.unassigned .box33-label{background:var(--red)}
@@ -208,6 +269,8 @@
   @media (max-width:640px){
     .box33-row{flex-direction:column}
     .outputs-grid{grid-template-columns:1fr}
+    .step-dot .label{display:none}
+    .step-nav{flex-direction:column;align-items:stretch}
   }
 </style>
 </head>
@@ -223,147 +286,179 @@
     <button id="themeToggleBtn" type="button">Dark mode</button>
   </header>
 
-  <section id="referenceSection">
-    <h2>Reference data</h2>
-    <p class="section-lede">The lists below populate every dropdown on this page.</p>
-    <span class="inline-note">In production these lists load live from the client's data.</span>
-    <div class="ref-grid" id="refGrid"></div>
+  <details id="referenceDetails">
+    <summary>Reference data and groups (surgeons, readers, hospitals, and more)</summary>
+    <div class="details-body">
+      <p class="section-lede">The lists below populate every dropdown on this page.</p>
+      <span class="inline-note">In production these lists load live from the client's data.</span>
+      <div class="ref-grid" id="refGrid"></div>
 
-    <div class="group-form" id="surgeonGroupForm">
-      <div class="field">
-        <label for="newSurgeonGroupName">New surgeon group name</label>
-        <input type="text" id="newSurgeonGroupName" placeholder="e.g. Neurosurgery Panel B (Synthetic)">
-      </div>
-      <div class="field">
-        <label for="newSurgeonGroupMembers">Members</label>
-        <select id="newSurgeonGroupMembers" multiple></select>
-        <span class="hint">Ctrl or Cmd click to select more than one.</span>
-      </div>
-      <button class="btn primary" id="btnCreateSurgeonGroup" type="button">Create surgeon group</button>
-    </div>
-
-    <div class="group-form" id="readerGroupForm">
-      <div class="field">
-        <label for="newReaderGroupName">New reader group name</label>
-        <input type="text" id="newReaderGroupName" placeholder="e.g. Overnight Read Team (Synthetic)">
-      </div>
-      <div class="field">
-        <label for="newReaderGroupMembers">Members</label>
-        <select id="newReaderGroupMembers" multiple></select>
-        <span class="hint">Ctrl or Cmd click to select more than one.</span>
-      </div>
-      <button class="btn primary" id="btnCreateReaderGroup" type="button">Create reader group</button>
-    </div>
-  </section>
-
-  <section id="builderSection">
-    <h2>Rule builder</h2>
-    <p class="section-lede">Every dimension below is optional. Leave it blank and the rule matches any value for that dimension. Selecting more than one value in a list means the rule matches if any one of them is on the claim.</p>
-
-    <form id="ruleForm">
-      <div class="form-grid">
+      <div class="group-form" id="surgeonGroupForm">
         <div class="field">
-          <label for="fPriority">Priority (lower number wins a tie)</label>
-          <input type="number" id="fPriority" value="100" step="1">
+          <label for="newSurgeonGroupName">New surgeon group name</label>
+          <input type="text" id="newSurgeonGroupName" placeholder="e.g. Neurosurgery Panel B (Synthetic)">
         </div>
         <div class="field">
-          <label for="fCompany">Company / Payer</label>
-          <select id="fCompany"><option value="">Any company</option></select>
+          <label for="newSurgeonGroupMembers">Members</label>
+          <select id="newSurgeonGroupMembers" multiple></select>
+          <span class="hint">Ctrl or Cmd click to select more than one.</span>
         </div>
+        <button class="btn primary" id="btnCreateSurgeonGroup" type="button">Create surgeon group</button>
       </div>
 
-      <div class="field">
-        <label for="fInsurance">Insurance type(s)</label>
-        <select id="fInsurance" multiple></select>
+      <div class="group-form" id="readerGroupForm">
+        <div class="field">
+          <label for="newReaderGroupName">New reader group name</label>
+          <input type="text" id="newReaderGroupName" placeholder="e.g. Overnight Read Team (Synthetic)">
+        </div>
+        <div class="field">
+          <label for="newReaderGroupMembers">Members</label>
+          <select id="newReaderGroupMembers" multiple></select>
+          <span class="hint">Ctrl or Cmd click to select more than one.</span>
+        </div>
+        <button class="btn primary" id="btnCreateReaderGroup" type="button">Create reader group</button>
       </div>
+    </div>
+  </details>
+
+  <nav class="stepper" id="stepperNav">
+    <button type="button" class="step-dot" id="stepDot1" data-step="1"><span class="num">1</span><span class="label">Who and what</span></button>
+    <button type="button" class="step-dot" id="stepDot2" data-step="2"><span class="num">2</span><span class="label">Where money goes</span></button>
+    <button type="button" class="step-dot" id="stepDot3" data-step="3"><span class="num">3</span><span class="label">Test it</span></button>
+    <button type="button" class="step-dot" id="stepDot4" data-step="4"><span class="num">4</span><span class="label">Result</span></button>
+    <button type="button" class="step-dot" id="stepDot5" data-step="5"><span class="num">5</span><span class="label">Save</span></button>
+  </nav>
+
+  <form id="ruleForm">
+    <section class="step-panel" id="stepPanel1" data-step="1">
+      <h2>Step 1 of 5: Who and what does this rule apply to?</h2>
+      <p class="section-lede">Fill in only what matters for this rule. Leave a field blank and it matches everyone, that is a wildcard.</p>
 
       <div class="form-grid">
         <div class="field">
-          <div class="mode-row">
-            <label><input type="radio" name="surgeonMode" value="specific" id="surgeonModeSpecific" checked> Specific surgeon(s)</label>
-            <label><input type="radio" name="surgeonMode" value="group" id="surgeonModeGroup"> Surgeon group</label>
+          <label>Surgeon</label>
+          <div class="mode-toggle">
+            <label><input type="radio" name="surgeonMode" value="group" id="surgeonModeGroup" checked> Use a surgeon group</label>
+            <label><input type="radio" name="surgeonMode" value="specific" id="surgeonModeSpecific"> Pick individual surgeons</label>
           </div>
+          <select id="fSurgeonGroup">
+            <option value="">-- choose a group --</option>
+          </select>
           <select id="fSurgeonSpecific" multiple></select>
-          <select id="fSurgeonGroup" style="display:none">
-            <option value="">-- choose a group --</option>
-          </select>
+          <span class="hint">Choosing a group covers everyone in it. You do not need to also pick individual surgeons.</span>
         </div>
         <div class="field">
-          <div class="mode-row">
-            <label><input type="radio" name="readerMode" value="specific" id="readerModeSpecific" checked> Specific reader(s)</label>
-            <label><input type="radio" name="readerMode" value="group" id="readerModeGroup"> Reader group</label>
-          </div>
-          <select id="fReaderSpecific" multiple></select>
-          <select id="fReaderGroup" style="display:none">
-            <option value="">-- choose a group --</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-grid">
-        <div class="field">
-          <label for="fHospitals">Hospital(s)</label>
-          <select id="fHospitals" multiple></select>
-        </div>
-        <div class="field">
-          <label for="fRegions">Region(s)</label>
-          <select id="fRegions" multiple></select>
+          <label for="fInsurance">Insurance type(s)</label>
+          <select id="fInsurance" multiple></select>
+          <span class="hint">Pick more than one and the rule matches any of them.</span>
         </div>
       </div>
 
       <div class="field">
-        <label for="fExcludedHospitals">Excluded hospital(s)</label>
-        <select id="fExcludedHospitals" multiple></select>
-        <span class="hint">A claim at one of these hospitals never matches this rule, even if the Hospital(s) field above is blank.</span>
+        <label for="fHospitals">Hospital(s)</label>
+        <select id="fHospitals" multiple></select>
+        <span class="hint">Leave blank to match any hospital.</span>
       </div>
 
-      <div class="outputs-grid">
-        <h4>Pro track</h4>
-        <h4 style="display:none"></h4>
-        <div class="field">
-          <label for="fProBiller">Pro biller</label>
-          <select id="fProBiller"></select>
+      <details class="more-conditions" id="moreConditionsDetails">
+        <summary>More conditions (reader, region, company/payer, excluded hospital)</summary>
+        <div class="more-body">
+          <div class="form-grid">
+            <div class="field">
+              <label>Reader</label>
+              <div class="mode-toggle">
+                <label><input type="radio" name="readerMode" value="specific" id="readerModeSpecific" checked> Specific reader(s)</label>
+                <label><input type="radio" name="readerMode" value="group" id="readerModeGroup"> Reader group</label>
+              </div>
+              <select id="fReaderSpecific" multiple></select>
+              <select id="fReaderGroup" style="display:none">
+                <option value="">-- choose a group --</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fRegions">Region(s)</label>
+              <select id="fRegions" multiple></select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="fCompany">Company / Payer</label>
+              <select id="fCompany"><option value="">Any company</option></select>
+            </div>
+            <div class="field">
+              <label for="fExcludedHospitals">Excluded hospital(s)</label>
+              <select id="fExcludedHospitals" multiple></select>
+              <span class="hint">A claim at one of these hospitals never matches this rule, even if Hospital(s) above is blank.</span>
+            </div>
+          </div>
         </div>
-        <div class="field">
-          <label for="fProEntity">Pro entity (Box 33)</label>
-          <select id="fProEntity"></select>
-        </div>
-        <h4>Tech track</h4>
-        <h4 style="display:none"></h4>
-        <div class="field">
-          <label for="fTechBiller">Tech biller</label>
-          <select id="fTechBiller"></select>
-        </div>
-        <div class="field">
-          <label for="fTechEntity">Tech entity (Box 33)</label>
-          <select id="fTechEntity"></select>
-        </div>
+      </details>
+
+      <div class="priority-row">
+        <label for="fPriority">Tie-break priority
+          <span class="tip" title="Only used if two rules match a claim equally well. The lower number wins.">?</span>
+        </label>
+        <input type="number" id="fPriority" value="100" step="1">
+        <span class="hint">Most rules can leave this alone.</span>
       </div>
 
       <div class="btn-row">
         <button class="btn" id="btnResetDraft" type="button">Reset / start a new rule</button>
         <span class="hint" id="editingTag" style="align-self:center"></span>
       </div>
-    </form>
 
-    <div class="rule-list-head">
-      <strong style="font-size:14px">Current rule set (<span id="ruleCount">0</span>)</strong>
-      <div class="sort-row">
-        <button class="btn small" id="btnSortPriority" type="button">Sort by priority</button>
-        <button class="btn small" id="btnSortSpecificity" type="button">Sort by specificity rank</button>
+      <div class="btn-row step-nav">
+        <span></span>
+        <button class="btn primary" id="btnStep1Continue" type="button">Continue to Step 2</button>
       </div>
-    </div>
-    <table class="rule-table">
-      <thead>
-        <tr><th>Priority</th><th>Conditions</th><th>Pro</th><th>Tech</th><th>Actions</th></tr>
-      </thead>
-      <tbody id="ruleTableBody"></tbody>
-    </table>
-  </section>
+    </section>
 
-  <section id="testSection">
-    <h2>Test a claim</h2>
-    <p class="section-lede">Pick a synthetic claim. The result below always includes both the saved rule set and whatever rule you are currently drafting above, so you can see the effect before you save it.</p>
+    <section class="step-panel" id="stepPanel2" data-step="2" style="display:none">
+      <h2>Step 2 of 5: Where does the money go?</h2>
+      <p class="section-lede">Pick who bills each part of this claim, and whose name and tax ID print in Box 33.</p>
+
+      <div class="outputs-grid">
+        <h4>Pro track
+          <span class="tip" title="Pro is the surgeon's professional fee claim.">?</span>
+        </h4>
+        <h4 style="display:none"></h4>
+        <div class="field">
+          <label for="fProBiller">Pro biller</label>
+          <select id="fProBiller"></select>
+        </div>
+        <div class="field">
+          <label for="fProEntity">Pro entity (Box 33)
+            <span class="tip" title="The company whose name, address, and tax ID print in Box 33, where the payer sends the check.">?</span>
+          </label>
+          <select id="fProEntity"></select>
+        </div>
+        <h4>Tech track
+          <span class="tip" title="Tech is the facility or technical fee claim, for example the hospital or equipment.">?</span>
+        </h4>
+        <h4 style="display:none"></h4>
+        <div class="field">
+          <label for="fTechBiller">Tech biller</label>
+          <select id="fTechBiller"></select>
+        </div>
+        <div class="field">
+          <label for="fTechEntity">Tech entity (Box 33)
+            <span class="tip" title="The company whose name, address, and tax ID print in Box 33, where the payer sends the check.">?</span>
+          </label>
+          <select id="fTechEntity"></select>
+        </div>
+      </div>
+
+      <div class="btn-row step-nav">
+        <button class="btn" id="btnStep2Back" type="button">Back to Step 1</button>
+        <button class="btn primary" id="btnStep2Continue" type="button">Continue to Step 3</button>
+      </div>
+    </section>
+  </form>
+
+  <section class="step-panel" id="stepPanel3" data-step="3" style="display:none">
+    <h2>Step 3 of 5: Test it</h2>
+    <p class="section-lede">Pick a sample claim to see which rule wins and where its money would go. This always includes the rule you are currently drafting above, even before you save it.</p>
     <div class="tester-row">
       <div class="tester-field">
         <label for="testSurgeon">Surgeon</label>
@@ -394,16 +489,16 @@
       <button class="btn primary" id="btnRunTest" type="button">Run test</button>
     </div>
 
-    <div class="why-panel" id="whyPanel">
-      <div class="why-track" id="whyProTrack"></div>
-      <div class="why-track" id="whyTechTrack"></div>
+    <div class="btn-row step-nav">
+      <button class="btn" id="btnStep3Back" type="button">Back to Step 2</button>
+      <button class="btn primary" id="btnStep3Continue" type="button">Continue to Step 4</button>
     </div>
-    <p class="tie-legacy-note">Both tracks are decided by the same winning rule, the same way the legacy engine's single <code>dbo.fillAutobiller</code> lookup picks one rule and reads its Pro and Tech output columns. When two matching rules tie on every specificity dimension, the legacy system (<code>dbo.bOptsF</code>) breaks the tie unpredictably, by columns nobody chose for that purpose. Here the tie is broken by the explicit priority number you set above, lower wins.</p>
   </section>
 
-  <section id="box33Section">
-    <h2>Box 33 result</h2>
-    <p class="section-lede">A mock of the CMS-1500 Box 33 field, filled in from the winning rule's biller entity for each track.</p>
+  <section class="step-panel" id="stepPanel4" data-step="4" style="display:none">
+    <h2>Step 4 of 5: Result</h2>
+    <p class="section-lede">This is where the test claim's money goes, based on the rule that wins.</p>
+
     <div class="box33-row">
       <div class="box33" id="box33Pro">
         <div class="box33-label">33. Billing Provider Info and Ph # (Pro)</div>
@@ -414,9 +509,51 @@
         <div class="box33-body" id="box33TechBody"></div>
       </div>
     </div>
+
+    <h3 style="margin:22px 0 8px;font-size:14px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em">Why this rule won</h3>
+    <div class="why-panel" id="whyPanel">
+      <div class="why-track" id="whyProTrack"></div>
+      <div class="why-track" id="whyTechTrack"></div>
+    </div>
+    <p class="tie-legacy-note">Both tracks are decided by the same winning rule, the same way the legacy engine's single <code>dbo.fillAutobiller</code> lookup picks one rule and reads its Pro and Tech output columns. When two matching rules tie on every specificity dimension, the legacy system (<code>dbo.bOptsF</code>) breaks the tie unpredictably, by columns nobody chose for that purpose. Here the tie is broken by the explicit priority number you set in Step 1, lower wins.</p>
+
+    <div class="btn-row step-nav">
+      <button class="btn" id="btnStep4Back" type="button">Back to Step 3</button>
+      <button class="btn primary" id="btnStep4Continue" type="button">Continue to Step 5</button>
+    </div>
+  </section>
+
+  <section class="step-panel" id="stepPanel5" data-step="5" style="display:none">
+    <h2>Step 5 of 5: Accept and save</h2>
+    <p class="section-lede">Double-check the summary below, then save this rule to the rule set.</p>
+
+    <div id="acceptRecap" class="recap-box"></div>
+
     <div class="btn-row" style="margin-top:16px">
       <button class="btn primary" id="btnAcceptRule" type="button">Accept and save rule</button>
     </div>
+
+    <div class="btn-row step-nav">
+      <button class="btn" id="btnStep5Back" type="button">Back to Step 4</button>
+      <span></span>
+    </div>
+  </section>
+
+  <section id="ruleListSection">
+    <div class="rule-list-head">
+      <strong style="font-size:14px">Saved rule set (<span id="ruleCount">0</span>)</strong>
+      <div class="sort-row">
+        <button class="btn small" id="btnSortPriority" type="button">Sort by priority</button>
+        <button class="btn small" id="btnSortSpecificity" type="button">Sort by specificity rank</button>
+      </div>
+    </div>
+    <p class="section-lede" style="margin:0 0 14px">Every rule saved so far. Click Edit to load one back into Step 1.</p>
+    <table class="rule-table">
+      <thead>
+        <tr><th>Priority</th><th>Conditions</th><th>Pro</th><th>Tech</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="ruleTableBody"></tbody>
+    </table>
   </section>
 
   <footer class="note">
@@ -464,7 +601,9 @@
     }, 3200);
   }
 
-  /* ================= synthetic reference data ================= */
+  /* ================= synthetic reference data =================
+     Everything in this block is demo-only, and a real client's lists
+     could be dropped in here without touching any logic below. */
   var SURGEONS = [
     {id:"sg1", name:"Dr. A. Sample"},
     {id:"sg2", name:"Dr. B. Example"},
@@ -535,7 +674,9 @@
     return ids.map(function(id){ var m = byId(list, id); return m ? m.name : id; });
   }
 
-  /* ================= rule set state ================= */
+  /* ================= rule set state =================
+     This is the rule set itself. A real client's saved rules would
+     load into this same array shape, with no change to the engine below. */
   var RULES = [
     {
       id: "r1", priority: 10,
@@ -755,6 +896,8 @@
         specificSelect.style.display = "none";
         groupSelect.style.display = "";
       }
+      specificRadio.parentNode.classList.toggle("active", specificRadio.checked);
+      groupRadio.parentNode.classList.toggle("active", groupRadio.checked);
       runEvaluation();
     }
     specificRadio.addEventListener("change", sync);
@@ -829,7 +972,7 @@
     document.getElementById("fPriority").value = maxPriority + 10;
     document.getElementById("fInsurance").value = "";
     Array.prototype.forEach.call(document.getElementById("fInsurance").options, function(o){ o.selected = false; });
-    document.getElementById("surgeonModeSpecific").checked = true;
+    document.getElementById("surgeonModeGroup").checked = true;
     Array.prototype.forEach.call(document.getElementById("fSurgeonSpecific").options, function(o){ o.selected = false; });
     document.getElementById("fSurgeonGroup").value = "";
     Array.prototype.forEach.call(document.getElementById("fHospitals").options, function(o){ o.selected = false; });
@@ -851,7 +994,10 @@
 
   document.getElementById("btnResetDraft").addEventListener("click", resetDraft);
 
-  /* ================= engine semantics (mirrors dbo.bOptsF) ================= */
+  /* ================= engine semantics (mirrors dbo.bOptsF) =================
+     Hard constraint: this whole block (matching, specificity, precedence,
+     and the Box 33 state decision below) is UNCHANGED from the original.
+     Only labels, layout, and wording elsewhere on the page were touched. */
   function resolveSurgeonSet(rule){
     if(rule.surgeonMode === "group" && rule.surgeonGroupId){
       var g = byId(SURGEON_GROUPS, rule.surgeonGroupId);
@@ -922,46 +1068,38 @@
       });
   }
 
-  var SPEC_LABELS = [
-    "Surgeon specific",
-    "Insurance matched exactly",
-    "Reader specific",
-    "Region specific",
-    "Hospital specific",
-    "Uses a reader group"
-  ];
-
+  /* ================= plain-English explanation (presentation only) ================= */
   function describeWinner(rule, claim){
     var v = specVector(rule);
     var lines = [];
     if(v[0]){
       var surgSet = resolveSurgeonSet(rule);
-      var how = (rule.surgeonMode === "group") ? ("via group \"" + (byId(SURGEON_GROUPS, rule.surgeonGroupId) || {}).name + "\"") : "named directly on the rule";
-      lines.push("Surgeon specific: matches " + (byId(SURGEONS, claim.surgeonId) || {}).name + " (" + how + ").");
+      var how = (rule.surgeonMode === "group") ? ("through the group \"" + (byId(SURGEON_GROUPS, rule.surgeonGroupId) || {}).name + "\"") : "directly on the rule";
+      lines.push("it names the surgeon, " + (byId(SURGEONS, claim.surgeonId) || {}).name + ", " + how);
     }
     if(v[1]){
-      lines.push("Insurance matched exactly: " + claim.insuranceType + ".");
+      lines.push("the insurance matches exactly (" + claim.insuranceType + ")");
     }
     if(v[2]){
-      lines.push("Reader specific: matches " + (byId(READERS, claim.readerId) || {}).name + " (named directly on the rule).");
+      lines.push("it names the reader, " + (byId(READERS, claim.readerId) || {}).name + ", directly on the rule");
     }
     if(v[3]){
-      lines.push("Region specific: " + (byId(REGIONS, claim.regionId) || {}).name + ".");
+      lines.push("it is specific to the region " + (byId(REGIONS, claim.regionId) || {}).name);
     }
     if(v[4]){
-      lines.push("Hospital specific: " + (byId(HOSPITALS, claim.hospitalId) || {}).name + ".");
+      lines.push("it is specific to the hospital " + (byId(HOSPITALS, claim.hospitalId) || {}).name);
     }
     if(v[5]){
-      lines.push("Uses a reader group (" + (byId(READER_GROUPS, rule.readerGroupId) || {}).name + "), a lower-priority match than naming a reader directly.");
+      lines.push("it uses a reader group (" + (byId(READER_GROUPS, rule.readerGroupId) || {}).name + "), which counts as less specific than naming a reader directly");
     }
     if(lines.length === 0){
-      lines.push("Every dimension on this rule is a wildcard, so it only applies as a last-resort default.");
+      lines.push("every condition on it is blank, so it only applies as a last resort default");
     }
     if(rule.companyId){
-      lines.push("Also required Company/Payer = " + (byId(COMPANIES, rule.companyId) || {}).name + ".");
+      lines.push("it also required the payer to be " + (byId(COMPANIES, rule.companyId) || {}).name);
     }
     if(rule.excludedHospitalIds.length){
-      lines.push("Excludes hospitals: " + namesFor(HOSPITALS, rule.excludedHospitalIds).join(", ") + ".");
+      lines.push("it excludes claims at " + namesFor(HOSPITALS, rule.excludedHospitalIds).join(", "));
     }
     return lines;
   }
@@ -1041,8 +1179,9 @@
     if(action === "edit"){
       draftEditingId = rule.id;
       loadRuleIntoForm(rule);
-      document.getElementById("editingTag").textContent = "Editing rule at priority " + rule.priority + ". Accepting below will save changes to this rule.";
-      window.scrollTo({top: document.getElementById("builderSection").offsetTop - 10, behavior: "smooth"});
+      document.getElementById("editingTag").textContent = "Editing rule at priority " + rule.priority + ". Accepting in Step 5 will save changes to this rule.";
+      showStep(1);
+      window.scrollTo({top: document.getElementById("stepperNav").offsetTop - 10, behavior: "smooth"});
       runEvaluation();
     } else if(action === "delete"){
       if(window.confirm("Delete this rule from the rule set?")){
@@ -1104,25 +1243,42 @@
   function renderTrackWhy(elId, label, winner, runnerUp, claim){
     var el = document.getElementById(elId);
     if(!winner){
-      el.innerHTML = "<div class='winner'>" + label + ": no rule matched.</div>" +
-        "<div class='reason'>This claim would go to an explicit \"unassigned, needs biller\" queue, it never silently disappears.</div>";
+      el.innerHTML = "<div class='winner'>" + label + ": no rule matched this claim.</div>" +
+        "<div class='reason'>This claim would go to an explicit \"unassigned, needs biller\" queue. It never silently disappears.</div>";
       return;
     }
     var isDraft = (winner.id === "draft-preview" || winner.id === draftEditingId);
     var reasons = describeWinner(winner, claim);
     var tie = runnerUp && cmpSpec(winner, runnerUp) === 0;
-    var html = "<div class='winner'>" + label + " winner: priority " + winner.priority +
-      (isDraft ? "<span class='why-draft-tag'>drafted, not yet saved</span>" : "") + "</div>";
-    html += "<ol>" + reasons.map(function(r){ return "<li>" + r + "</li>"; }).join("") + "</ol>";
+    var sentence = "This rule (priority " + winner.priority + ") wins the " + label + " claim because " + reasons.join(", ") + ".";
+    var html = "<div class='winner'>" + label + (isDraft ? "<span class='why-draft-tag'>drafted, not yet saved</span>" : "") + "</div>";
+    html += "<div class='reason'>" + sentence + "</div>";
     if(tie){
-      html += "<div class='tie-note'>Tied in specificity with priority " + runnerUp.priority + "; the explicit priority number broke the tie.</div>";
-    }
-    if(runnerUp){
-      html += "<div class='runner-up'>Runner-up: priority " + runnerUp.priority + " (" + summarizeCondition(runnerUp) + ")</div>";
+      html += "<div class='tie-note'>It tied on specificity with the rule at priority " + runnerUp.priority + ". Since priority is the tie breaker and lower wins, this one won.</div>";
+    } else if(runnerUp){
+      html += "<div class='runner-up'>The next closest match was the rule at priority " + runnerUp.priority + " (" + summarizeCondition(runnerUp) + ")</div>";
     } else {
       html += "<div class='runner-up'>No other rule matched this claim.</div>";
     }
     el.innerHTML = html;
+  }
+
+  function renderAcceptRecap(){
+    var el = document.getElementById("acceptRecap");
+    if(!el){ return; }
+    var draft = readDraftRule();
+    var proBiller = byId(BILLERS, draft.proBillerId);
+    var proEntity = byId(BILLER_ENTITIES, draft.proEntityId);
+    var techBiller = byId(BILLERS, draft.techBillerId);
+    var techEntity = byId(BILLER_ENTITIES, draft.techEntityId);
+    var condSentence = summarizeCondition(draft);
+    var proText = (proEntity && proEntity.id !== "e0") ?
+      ("Pro claims go to " + proEntity.name + " (billed by " + (proBiller ? proBiller.name : "Not set") + ").") :
+      "No Pro billing is set on this rule yet.";
+    var techText = (techEntity && techEntity.id !== "e0") ?
+      ("Tech claims go to " + techEntity.name + " (billed by " + (techBiller ? techBiller.name : "Not set") + ").") :
+      "No Tech billing is set on this rule yet.";
+    el.innerHTML = "<p><strong>Applies to:</strong> " + condSentence + "</p><p>" + proText + " " + techText + "</p>";
   }
 
   function runEvaluation(){
@@ -1137,6 +1293,7 @@
       renderTrackWhy("whyTechTrack", "Tech", null, null, claim);
       renderBox33("box33ProBody", null, null, "Pro claim", "unassigned");
       renderBox33("box33TechBody", null, null, "Tech claim", "unassigned");
+      renderAcceptRecap();
       return;
     }
     whyPanel.classList.remove("unassigned");
@@ -1160,6 +1317,7 @@
     } else {
       renderBox33("box33TechBody", techBiller, techEntity, "Tech claim", "ok");
     }
+    renderAcceptRecap();
   }
 
   document.getElementById("btnRunTest").addEventListener("click", runEvaluation);
@@ -1200,6 +1358,40 @@
     }
   });
 
+  /* ================= guided step wizard (UI only, no routing) ================= */
+  var STEP_COUNT = 5;
+  var currentStep = 1;
+
+  function showStep(n){
+    for(var i = 1; i <= STEP_COUNT; i++){
+      var panel = document.getElementById("stepPanel" + i);
+      if(panel){ panel.style.display = (i === n) ? "" : "none"; }
+      var dot = document.getElementById("stepDot" + i);
+      if(dot){ dot.classList.toggle("active", i === n); }
+    }
+    currentStep = n;
+    if(n === 3 || n === 4){ runEvaluation(); }
+    if(n === 5){ renderAcceptRecap(); }
+    var nav = document.getElementById("stepperNav");
+    if(nav){ window.scrollTo({top: nav.offsetTop - 10, behavior: "smooth"}); }
+  }
+
+  for(var stepIdx = 1; stepIdx <= STEP_COUNT; stepIdx++){
+    (function(n){
+      var dot = document.getElementById("stepDot" + n);
+      if(dot){ dot.addEventListener("click", function(){ showStep(n); }); }
+    })(stepIdx);
+  }
+
+  document.getElementById("btnStep1Continue").addEventListener("click", function(){ showStep(2); });
+  document.getElementById("btnStep2Back").addEventListener("click", function(){ showStep(1); });
+  document.getElementById("btnStep2Continue").addEventListener("click", function(){ showStep(3); });
+  document.getElementById("btnStep3Back").addEventListener("click", function(){ showStep(2); });
+  document.getElementById("btnStep3Continue").addEventListener("click", function(){ showStep(4); });
+  document.getElementById("btnStep4Back").addEventListener("click", function(){ showStep(3); });
+  document.getElementById("btnStep4Continue").addEventListener("click", function(){ showStep(5); });
+  document.getElementById("btnStep5Back").addEventListener("click", function(){ showStep(4); });
+
   /* ================= init ================= */
   fillAllReferenceSelects();
   renderReferenceCards();
@@ -1211,6 +1403,7 @@
   document.getElementById("fTechEntity").value = "e0";
   renderRuleTable();
   runEvaluation();
+  showStep(1);
 
 })();
 </script>
