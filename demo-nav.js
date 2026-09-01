@@ -41,6 +41,7 @@
     { f: 'prototype-scrub.html', label: 'Claim Scrub', group: 'Form' },
     { f: 'prototype-payments.html', label: 'Payments', group: 'Money' },
     { f: 'prototype-post-payments.html', label: 'Post 835', group: 'Money' },
+    { f: 'prototype-hospital-credits.html', label: 'Hospital Credits', group: 'Money' },
     { f: 'prototype-reports.html', label: 'Reports', group: 'Insights' },
     { f: 'prototype-clearinghouses.html', label: 'Clearinghouses', group: 'Admin' }
   ];
@@ -60,6 +61,7 @@
     'prototype-v5-router.html': 'the Smart Cockpit - everything on one page with a workflow rail down the side and AI review assist.',
     'prototype-cms1500.html': 'the CMS-1500 form - the billers’ main working screen: a prefilled, editable claim form where the reading physician’s Tech Report auto-fills the coding, plus “Coding Assist” that catches codes you might have missed.',
     'prototype-payments.html': 'Payments & Collections - where out-of-network dollars get recovered: post payments per CPT over time, work underpayments and refiles, then close the claim or send it to arbitration to collect more.',
+    'prototype-hospital-credits.html': 'Hospital Credits & Accounts - every hospital gets an account with a running balance. An overpayment simply becomes credit, it stays visible until it is used, and applying it is recorded with a date and a name. Try to spend credit that is not there and it refuses.',
     'prototype-post-payments.html': 'Post Payments - an incoming 835/ERA is auto-reconciled line-by-line against what the system expects; matched lines auto-post and only the discrepancies need your review.'
   };
 
