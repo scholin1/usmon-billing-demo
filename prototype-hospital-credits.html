@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>USMON Pro - Hospital Credits &amp; Accounts (working prototype)</title>
+<style>/* ---------------------------------------------------------------------------
+   One identity for all five screens.
+
+   Every renderer in idr-core/ carries its own copy of a near-identical :root
+   block. This file is that block, once. A renderer adopts it by deleting its
+   own :root and inlining this file's contents at the top of its _CSS string —
+   the pages stay single-file, so nothing here is loaded over a network.
+
+   THE PALETTE IS LIGHT, ALL FIVE SCREENS. See 00-direction.md for why.
+
+   RED IS RESERVED. --risk is spent on a statutory deadline genuinely at risk
+   and on nothing else: not on a low outcome rate, not on a large dollar
+   figure, not on a payer that settles rarely. Anything a reader might weigh
+   but cannot lose a right over uses --warn, or no colour at all. This is the
+   only rule in the file that a reviewer needs to enforce by hand, because CSS
+   cannot check it.
+   --------------------------------------------------------------------------- */
+
+:root{
+
+  /* ---- Ink: four steps, and no fifth ------------------------------------ */
+  --ink:      #16181d;   /* body text, headings, the figure that matters      */
+  --ink-2:    #4d5563;   /* supporting prose, secondary answers              */
+  --ink-3:    #6b7484;   /* labels, sources, counts, footers                 */
+  --ink-4:    #9aa2af;   /* steps not reached yet; the faintest legible step  */
+
+  /* ---- Surfaces --------------------------------------------------------- */
+  --paper:    #ffffff;   /* cards, rows, table bodies                        */
+  --wash:     #fafbfc;   /* page background, inset panels                    */
+  --wash-2:   #f4f6f8;   /* bar tracks, empty progress                       */
+
+  /* ---- Rules ------------------------------------------------------------
+     --line is the default hairline. --line-firm exists because a 1px #e4e6eb
+     rule lands on and off a device pixel down a long list, so half the rows
+     look clickable and half do not. Anything a reader might mistake for an
+     affordance (link underlines, quiet button borders) uses --line-firm. */
+  --line:      #e4e6eb;
+  --line-soft: #f0f1f4;
+  --line-firm: #c8ccd4;
+
+  /* ---- Accent: one, and it means "this goes somewhere" ------------------ */
+  --accent:       #1550c8;
+  --accent-press: #0f43ac;
+  --accent-wash:  #f2f6fd;
+
+  /* ---- Tone: three, matching worklist.Tone / story.Tone ----------------- */
+  --risk:       #b3261e;  /* a statutory deadline at risk. Nothing else.     */
+  --risk-wash:  #fdf4f3;
+  --warn:       #8a5a00;  /* worth a look; no right is lost today            */
+  --warn-wash:  #fdf8f0;
+  /* Amber as a 4px graphic rather than as text. #8a5a00 has the contrast a
+     countdown needs against white, and as a thin vertical bar it reads brown,
+     close enough to --risk to blunt the one rule that matters. A mark only
+     needs 3:1, so it can be the amber it is meant to look like. */
+  --warn-mark:  #b07400;
+  --calm:       #1d6a52;  /* settled, met, resolved                          */
+  --calm-wash:  #f1f7f4;
+
+  /* ---- Reading aids -----------------------------------------------------
+     --band is the only fill used for an interval bar. Deliberately one
+     colour for every rate: a 44% outcome rate coloured red reads as a
+     warning about a payer, which is a characterisation of a named company
+     and is the same objection that removed the temperament badges. The
+     WIDTH of the band carries the uncertainty and its POSITION carries the
+     rate; colour carries nothing, so colour says nothing. */
+  --band:       #5b6b8c;
+  --band-fill:  rgba(91,107,140,.42);
+  --mark:       #16181d;  /* the point inside the band                       */
+
+  /* ---- Type -------------------------------------------------------------
+     Nine sizes. A tenth is a new voice on the page, not a new size. */
+  --font: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --t-micro: 11.5px;   /* uppercase flags                                    */
+  --t-fine:  12.5px;   /* footers, source lines, counts                      */
+  --t-label: 13px;     /* eyebrow labels, section headers                    */
+  --t-small: 13.5px;   /* notes, card notes, disclosure summaries            */
+  --t-mid:   14px;     /* table cells, nav, buttons                          */
+  --t-body:  15px;     /* prose, list sentences                              */
+  --t-lead:  17px;     /* the one sentence at the top of a page              */
+  --t-h2:    21px;     /* the phase name on a claim page                      */
+  --t-h1:    26px;     /* page title                                         */
+
+  --w-mid:  500;
+  --w-bold: 600;
+
+  --lh-tight: 1.35;
+  --lh-body:  1.55;
+  --lh-loose: 1.65;
+
+  /* Negative tracking on large type only; at 15px it closes up the counters */
+  --track-h1: -.02em;
+  --track-h2: -.015em;
+  --track-lg: -.01em;
+  --track-caps: .06em;
+
+  /* ---- Space: 4px grid -------------------------------------------------- */
+  --s1: 4px;   --s2: 8px;   --s3: 12px;  --s4: 16px;
+  --s5: 20px;  --s6: 24px;  --s7: 32px;  --s8: 44px;
+  --s9: 56px;  --s10: 80px;
+
+  /* ---- Shape ------------------------------------------------------------
+     Two radii. No shadows anywhere: a card is a card because it has a rule
+     around it, and a lifted card on a list of twelve is twelve lifted cards. */
+  --r-control: 5px;
+  --r-card:    8px;
+
+  /* ---- Measure ----------------------------------------------------------
+     Prose stops before the eye has to hunt for the next line. The work
+     screens run wider than the reading screens because a queue is scanned
+     in columns and a claim page is read in sentences. */
+  --measure-prose: 66ch;
+  --measure-row:   58ch;
+  --page-board:    1180px;   /* the board: two columns of cards             */
+  --page-list:     1000px;   /* Today: one column of rows plus a right rail */
+  --page-read:     860px;    /* one claim, one question                     */
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--wash);color:var(--ink);font:var(--t-body)/var(--lh-body) var(--font)}
+.wrap{max-width:1120px;margin:0 auto;padding:var(--s7) var(--s5) var(--s10)}
+.bar{background:var(--ink);color:#fff;padding:var(--s3) var(--s5)}
+.bar .in{max-width:1120px;margin:0 auto;display:flex;align-items:baseline;gap:var(--s5)}
+.bar b{font-size:var(--t-body);font-weight:var(--w-bold)}
+.bar span{font-size:var(--t-fine);color:#aeb6c2}
+h1{font-size:var(--t-h1);letter-spacing:var(--track-h1);margin:0 0 var(--s2)}
+.sub{color:var(--ink-2);margin:0 0 var(--s6);max-width:var(--measure-prose)}
+h2{font-size:var(--t-h2);letter-spacing:var(--track-h2);margin:var(--s8) 0 var(--s3)}
+p{max-width:var(--measure-prose)}
+.fine{font-size:var(--t-fine);color:var(--ink-3)}
+button{font:var(--w-mid) var(--t-mid)/1 var(--font);padding:9px 14px;border-radius:var(--r-control);
+       border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.quiet{background:var(--paper);color:var(--ink);border-color:var(--line-firm)}
+button.sm{padding:5px 10px;font-size:var(--t-fine)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{font:var(--t-mid)/1.4 var(--font);padding:8px 10px;border:1px solid var(--line-firm);
+       border-radius:var(--r-control);background:var(--paper);color:var(--ink)}
+label{display:block;font-size:var(--t-label);color:var(--ink-2);margin:0 0 4px}
+
+/* hospital list — the screen that does not exist today */
+.hlist{border:1px solid var(--line);border-radius:var(--r-card);background:var(--paper);overflow:hidden;margin:var(--s4) 0 var(--s7)}
+.hrow{display:grid;grid-template-columns:1fr 130px 150px 120px;gap:var(--s4);align-items:center;
+      padding:var(--s4) var(--s5);border-bottom:1px solid var(--line-soft);cursor:pointer;background:none;
+      width:100%;text-align:left;border-left:3px solid transparent;color:inherit;border-right:0;border-top:0;border-radius:0}
+.hrow:last-child{border-bottom:0}
+.hrow:hover{background:var(--wash)}
+.hrow.on{border-left-color:var(--accent);background:var(--accent-wash)}
+.hrow .nm{font-weight:var(--w-bold);font-size:var(--t-body)}
+.hrow .st{font-size:var(--t-fine);color:var(--ink-3);margin-top:2px}
+.hrow .n{text-align:right;font-variant-numeric:tabular-nums;font-size:var(--t-mid);color:var(--ink-2)}
+.hrow .cr{text-align:right;font-variant-numeric:tabular-nums;font-weight:var(--w-bold);color:var(--accent)}
+
+/* account */
+.acct{border:1px solid var(--line);border-radius:var(--r-card);background:var(--paper);overflow:hidden}
+.ahead{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--s6);
+       padding:var(--s5);border-bottom:1px solid var(--line);background:var(--wash)}
+.ahead h3{margin:0;font-size:var(--t-h2);letter-spacing:var(--track-h2)}
+.ahead .st{font-size:var(--t-fine);color:var(--ink-3);margin-top:var(--s1)}
+.ahead .bal{text-align:right;white-space:nowrap}
+.ahead .bal .v{display:block;font-size:30px;font-weight:var(--w-bold);letter-spacing:var(--track-h1);font-variant-numeric:tabular-nums}
+.ahead .bal .l{display:block;font-size:var(--t-fine);color:var(--ink-3);margin-top:2px}
+.owe .v{color:var(--ink)} .cred .v{color:var(--accent)} .zero .v{color:var(--calm)}
+
+table.led{width:100%;border-collapse:collapse;font-size:var(--t-mid)}
+.led th{background:var(--wash-2);text-align:left;font-size:var(--t-label);padding:var(--s2) var(--s4);
+        border-bottom:1px solid var(--line-firm);position:sticky;top:0}
+.led td{padding:var(--s3) var(--s4);border-bottom:1px solid var(--line-soft);vertical-align:top}
+.led tr:last-child td{border-bottom:0}
+.led .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.led .bal{font-weight:var(--w-bold)}
+.led .kind{font-size:var(--t-micro);letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--ink-3);display:block}
+.led .note{display:block;font-size:var(--t-fine);color:var(--ink-3);margin-top:3px;max-width:52ch;line-height:1.45}
+.led .audit{display:block;font-size:var(--t-fine);color:var(--accent);margin-top:3px}
+.led tr.credited td{background:var(--accent-wash)}
+.led tr.settled td{background:var(--calm-wash)}
+.led tr.reversed td{opacity:.55}
+.led tr.reversed .ref{text-decoration:line-through}
+.led .open{display:inline-block;font-size:var(--t-micro);letter-spacing:var(--track-caps);
+      text-transform:uppercase;color:var(--warn);border:1px solid var(--warn-mark);border-radius:999px;padding:1px 7px;margin-left:6px}
+
+.tools{display:flex;flex-wrap:wrap;gap:var(--s5);padding:var(--s5);border-top:1px solid var(--line);background:var(--wash)}
+.tool{border:1px solid var(--line);border-radius:var(--r-card);background:var(--paper);padding:var(--s4);min-width:270px;flex:1}
+.tool h4{margin:0 0 var(--s3);font-size:var(--t-mid);font-weight:var(--w-bold)}
+.tool .row{display:flex;gap:var(--s2);align-items:flex-end}
+.tool .row > div{flex:1}
+
+.msg{margin:var(--s3) var(--s5) 0;padding:var(--s3) var(--s4);border-radius:var(--r-control);font-size:var(--t-small)}
+.msg.ok{background:var(--calm-wash);border-left:3px solid var(--calm);color:#14523f}
+.msg.no{background:var(--risk-wash);border-left:3px solid var(--risk);color:#8c1e18}
+.msg.hint{background:var(--accent-wash);border-left:3px solid var(--accent);color:#0f3a86}
+
+.callout{border-left:3px solid var(--warn-mark);background:var(--warn-wash);padding:var(--s4) var(--s5);
+         border-radius:0 var(--r-control) var(--r-control) 0;margin:var(--s5) 0}
+.callout > :last-child{margin-bottom:0}
+.callout h4{margin:0 0 var(--s2);font-size:var(--t-mid);color:var(--warn)}
+.try{border:1px dashed var(--line-firm);border-radius:var(--r-card);padding:var(--s5);margin:var(--s6) 0;background:var(--paper)}
+.try h4{margin:0 0 var(--s3)}
+.try ol{margin:0;padding-left:var(--s5);max-width:var(--measure-prose)}
+.try li{margin-bottom:var(--s2)}
+footer{margin-top:var(--s9);padding-top:var(--s4);border-top:1px solid var(--line);font-size:var(--t-fine);color:var(--ink-3)}
+</style></head>
+<body>
+<div class="bar"><div class="in"><b>USMON</b><span>Hospital accounts · working prototype</span></div></div>
+<div style="background:#fdf8f0;border-bottom:1px solid #b07400;padding:10px 20px;font:13px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#8a5a00;text-align:center"><b>Demonstration data.</b> Hospitals, companies and invoice numbers on this page are invented. The findings about the current system are real and were measured against it.</div>
+<div class="wrap">
+<h1>Every hospital has an account</h1>
+<p class="sub">A working prototype, not a picture of one. Every figure below is calculated from
+the entries beneath it, and every button does what it says — including refusing you when the
+answer should be no. The hospitals and invoice numbers are real records from one client's own data.</p>
+
+<div class="callout">
+<h4>The screen that does not exist today</h4>
+<p>This list is the whole idea. USMON has 15,793 hospitals and a balance recorded for
+<b>two</b> of them. There is no account, no running total, and nowhere to answer the question
+"what do we owe this hospital, and what do they owe us." The right-hand column is money already
+sitting unhandled today — Springfield Regional alone is holding <b>$177,550</b> across 262
+overpaid invoices.</p>
+</div>
+
+<div class="hlist" id="hlist"></div>
+
+<h2>The account</h2>
+<div class="acct">
+  <div class="ahead">
+    <div><h3 id="aname"></h3><div class="st" id="astate"></div></div>
+    <div class="bal" id="abox"><span class="v" id="abal"></span><span class="l" id="alabel"></span></div>
+  </div>
+  <div id="msg" class="msg" style="display:none"></div>
+  <div style="max-height:520px;overflow:auto">
+  <table class="led">
+    <thead><tr><th style="width:130px">When</th><th>What</th>
+      <th class="r" style="width:110px">Charge</th><th class="r" style="width:110px">Credit</th>
+      <th class="r" style="width:120px">Balance</th><th style="width:96px"></th></tr></thead>
+    <tbody id="led"></tbody>
+  </table>
+  </div>
+  <div class="tools">
+    <div class="tool">
+      <h4>Record a payment</h4>
+      <div class="row">
+        <div><label for="payAmt">Amount received</label>
+          <input id="payAmt" type="number" step="0.01" placeholder="1900.00" style="width:100%"></div>
+        <button onclick="takePayment()">Record</button>
+      </div>
+      <p class="fine" style="margin:var(--s3) 0 0">Try paying more than is outstanding. Nothing
+      special happens — which is the point.</p>
+    </div>
+    <div class="tool">
+      <h4>Raise the next invoice</h4>
+      <button class="quiet" onclick="raiseInvoice()">Raise next invoice</button>
+      <p class="fine" style="margin:var(--s3) 0 0">The next real invoice for this hospital.
+      Raise one after an overpayment and the credit has somewhere to go.</p>
+    </div>
+    <div class="tool">
+      <h4>Apply credit · <span id="credleft"></span> available</h4>
+      <div class="row">
+        <div><label for="target">To invoice</label>
+          <select id="target" style="width:100%"></select></div>
+        <div style="max-width:120px"><label for="applyAmt">Amount</label>
+          <input id="applyAmt" type="number" step="0.01" placeholder="0.00" style="width:100%"></div>
+        <button id="applyBtn" onclick="applyCredit()">Apply</button>
+      </div>
+      <p class="fine" style="margin:var(--s3) 0 0">Try applying more credit than exists. It
+      refuses, and says why.</p>
+    </div>
+  </div>
+</div>
+
+<div class="try">
+<h4>Five things to try — four are impossible in USMON today</h4>
+<ol>
+<li><b>Record a payment of 2500 against the $1,850 outstanding.</b> The cash clears the open
+invoices oldest first, and the extra $650 becomes credit on the account. Nobody classified it or
+raised a document. Today that $650 is recorded as "received" and disappears from view.</li>
+<li><b>Raise the next invoice.</b> A real later invoice for this hospital. The credit is still
+sitting there, waiting, and visible — which is the whole point.</li>
+<li><b>Apply the credit to it.</b> The balance settles and a line appears under the invoice
+naming the amount, the date and the person who did it. Today's equivalent record has no date and
+no user on it at all.</li>
+<li><b>Try to apply more credit than exists.</b> It refuses. In the live system nothing checks:
+ten credit memos have been applied for <b>$69,726</b> more than they were worth, and another
+<b>$42,856</b> was applied against credit memos that do not exist.</li>
+<li><b>Reverse a payment.</b> The original stays, struck through, with a correcting entry beside
+it. Nothing is ever deleted.</li>
+</ol>
+</div>
+
+<h2>What this replaces</h2>
+<p>Today a biller chooses between eight menu entries — Daily, PO Waiting, Monthly, Weekly, Sent,
+Credit Memo, Write Off, Deleted — which are seven filters over one table plus one separate list.
+Nothing is hard to find because it is hidden; it is hard to find because you must already know
+which of eight doors it is behind. None of them can tell you what a hospital's balance is.</p>
+
+<footer>
+Prototype built 1 September 2026 for the the client conversation. Hospitals, invoice numbers, dates
+and amounts are real records from client 3300, measured against the live database; the worked
+sequence is an illustration built from them. Business data only — no patient information is used
+anywhere in this file, and it holds no connection to any system.
+</footer>
+</div>
+<script>
+const HOSPITALS = [{"id": "bsw", "name": "Springfield Regional Medical Center \u2014 Uptown", "state": "Texas \u2014 DFW", "invoices": 1282, "overpaid": 262, "unhandled": 177550.0}, {"id": "stjo", "name": "Sample Specialists Hospital, Riverton", "state": "Florida", "invoices": 536, "overpaid": 87, "unhandled": 37177.5}, {"id": "stan", "name": "Sample Community Hospital, Fairview", "state": "Florida", "invoices": 484, "overpaid": 31, "unhandled": 14225.0}, {"id": "texs", "name": "Demo Methodist Hospital, Lakeside", "state": "Texas \u2014 San Antonio", "invoices": 94, "overpaid": 44, "unhandled": 12900.0}, {"id": "culv", "name": "Testcase General Hospital, Westport", "state": "California", "invoices": 91, "overpaid": 14, "unhandled": 12910.0}, {"id": "mcnh", "name": "Mockdata Surgery Center, Northfield", "state": "Texas \u2014 DFW", "invoices": 574, "overpaid": 15, "unhandled": 9050.0}];
+const SEED = [{"kind": "invoice", "date": "10-23-2025", "ref": "700118", "desc": "IONM \u2014 1 case", "charge": 400.0}, {"kind": "invoice", "date": "11-21-2025", "ref": "700229", "desc": "IONM \u2014 1 case", "charge": 400.0}, {"kind": "invoice", "date": "12-02-2025", "ref": "700344", "desc": "IONM \u2014 1 case", "charge": 400.0}, {"kind": "invoice", "date": "12-08-2025", "ref": "700451", "desc": "IONM \u2014 2 cases", "charge": 650.0}];
+const NEXT_INVOICES = [{"ref": "700612", "date": "08-12-2026", "desc": "IONM \u2014 1 case", "charge": 400.0}, {"ref": "700738", "date": "08-24-2026", "desc": "IONM \u2014 1 case", "charge": 250.0}, {"ref": "700845", "date": "08-26-2026", "desc": "IONM \u2014 1 case", "charge": 400.0}];
+const USER = "D. Alvarez";
+let current = "bsw";
+let entries = [];
+let seq = 400001;
+let nextIdx = 0;
+
+const money = n => (n < 0 ? "\u2212$" : "$") + Math.abs(n).toLocaleString("en-US",
+                    {minimumFractionDigits:2, maximumFractionDigits:2});
+/* US format throughout — mm-dd-yyyy. Mike asked for it explicitly; ISO reads as a
+   different date to an American biller and this screen is for American billers. */
+const today = () => { const d = new Date();
+  const p = n => String(n).padStart(2,"0");
+  return `${p(d.getMonth()+1)}-${p(d.getDate())}-${d.getFullYear()}`; };
+
+function reset() {
+  entries = SEED.map((e,i) => ({...e, id:i+1, charge:e.charge||0, credit:e.credit||0,
+                                allocations:[], reversed:false, paid:0}));
+  seq = 400001; nextIdx = 0;
+}
+
+/* THE BALANCE IS COMPUTED, NEVER STORED. This one function is the whole argument: a total
+   that is derived cannot disagree with the things it totals. */
+function balanceOf(list = entries) {
+  return list.reduce((b,e) => b + e.charge - e.credit, 0);
+}
+/* UNALLOCATED CREDIT IS NOT THE SAME THING AS A NEGATIVE BALANCE, and conflating them is a
+   mistake an accountant spots in about four seconds. An earlier version returned -balance,
+   so raising a $400 invoice against $650 of credit quietly dropped the credit to $250 while
+   the invoice still showed as open for $400 -- the money counted twice in opposite directions.
+
+   Credit available is what was received and never matched to anything: cash left over after
+   settling invoices, less whatever has since been allocated. The net balance nets it against
+   open invoices, which is a different and also useful number -- both are shown, and they are
+   allowed to disagree, because they answer different questions. */
+function creditAvailable() {
+  const created = entries.reduce((s,e) => s + (e.creditCreated || 0), 0);
+  const used = entries.reduce((s,e) => s + e.allocations.reduce((t,a) => t + a.amount, 0), 0);
+  return Math.max(0, created - used);
+}
+
+/* An invoice is open by what has been SETTLED against it -- by cash or by credit. Without
+   tracking cash against the invoice, a paid invoice went on showing as open forever, which
+   made the whole screen incoherent the moment anyone pressed a button. */
+function outstanding(e) {
+  if (e.kind !== "invoice" || e.reversed) return 0;
+  const byCredit = e.allocations.reduce((s,a) => s + a.amount, 0);
+  return Math.max(0, e.charge - byCredit - (e.paid || 0));
+}
+function openInvoices() { return entries.filter(e => outstanding(e) > 0.004); }
+
+/* Cash settles the OLDEST open invoices first, which is ordinary receivables practice and is
+   what makes "what is still open" answerable. Anything left over is not a special case and
+   needs no decision -- it simply leaves the account below zero, and below zero IS credit. */
+function settleOldestFirst(amount) {
+  let left = amount; const settled = [];
+  for (const inv of openInvoices()) {
+    if (left <= 0.004) break;
+    const take = Math.min(left, outstanding(inv));
+    inv.paid = (inv.paid || 0) + take;
+    settled.push({id: inv.id, amount: take});
+    left -= take;
+  }
+  return {leftover: left, settled};   // leftover cash -> credit on the account
+}
+
+function say(cls, text) {
+  const m = document.getElementById("msg");
+  m.className = "msg " + cls; m.textContent = text; m.style.display = "block";
+}
+function clearSay(){ const m=document.getElementById("msg"); m.style.display="none"; }
+
+function renderHospitals() {
+  document.getElementById("hlist").innerHTML = HOSPITALS.map(h => `
+    <button class="hrow ${h.id===current?"on":""}" onclick="pick('${h.id}')">
+      <div><div class="nm">${h.name}</div><div class="st">${h.state}</div></div>
+      <div class="n">${h.invoices.toLocaleString()}<div class="st">invoices</div></div>
+      <div class="cr">${money(h.unhandled)}<div class="st" style="color:var(--ink-3);font-weight:400">unhandled today</div></div>
+      <div class="n">${h.overpaid}<div class="st">overpaid</div></div>
+    </button>`).join("");
+}
+
+function render() {
+  renderHospitals();
+  const h = HOSPITALS.find(x => x.id === current);
+  const bal = balanceOf();
+  const tone = Math.abs(bal) < 0.005 ? "zero" : (bal < 0 ? "cred" : "owe");
+  const label = Math.abs(bal) < 0.005 ? "settled" : (bal < 0 ? "credit we hold for them" : "owed to us");
+  document.getElementById("aname").textContent = h.name;
+  document.getElementById("astate").textContent =
+    `${h.state} · ${h.invoices.toLocaleString()} invoices on record · showing a worked extract`;
+  document.getElementById("abal").textContent = money(bal);
+  document.getElementById("alabel").textContent = label;
+  document.getElementById("abox").className = "bal " + tone;
+
+  let run = 0;
+  document.getElementById("led").innerHTML = entries.map(e => {
+    run += e.charge - e.credit;
+    const out = outstanding(e);
+    const allocs = e.allocations.map(a =>
+      `<span class="audit">${money(a.amount)} of credit applied ${a.date} by ${a.by}</span>`).join("");
+    return `<tr class="${e.reversed?"reversed":""} ${e.cls||""}">
+      <td><span class="kind">${e.kind}</span>${e.date}</td>
+      <td><span class="ref">${e.ref}</span>${out>0.004?'<span class="open">open '+money(out)+'</span>':""}
+          <span class="note">${e.desc}${e.reversed?" — REVERSED, kept on the account":""}</span>
+          ${e.note?'<span class="note">'+e.note+"</span>":""}${allocs}</td>
+      <td class="r">${e.charge?money(e.charge):"\u2014"}</td>
+      <td class="r">${e.credit?money(e.credit):"\u2014"}</td>
+      <td class="r bal">${money(run)}</td>
+      <td class="r">${e.kind!=="invoice"&&!e.reversed?'<button class="quiet sm" onclick="reverse('+e.id+')">Reverse</button>':""}</td>
+    </tr>`;
+  }).join("");
+
+  const sel = document.getElementById("target");
+  const open = openInvoices();
+  sel.innerHTML = open.length
+    ? open.map(e => `<option value="${e.id}">${e.ref} — ${money(outstanding(e))} open</option>`).join("")
+    : '<option value="">no open invoices</option>';
+  document.getElementById("credleft").textContent = money(creditAvailable());
+  document.getElementById("applyBtn").disabled = creditAvailable() < 0.005 || open.length === 0;
+}
+
+function pick(id) {
+  current = id; reset();
+  if (id !== "bsw") { entries = []; }
+  clearSay();
+  if (id !== "bsw") say("hint", "This account has no worked extract loaded — the demo data is on Springfield Regional. The point of the list is that every hospital HAS an account, which is what does not exist today.");
+  render();
+}
+
+/* Record a payment. An overpayment is not a special case and needs no decision: the account
+   simply goes below zero, and being below zero IS the credit. */
+function takePayment() {
+  const amt = parseFloat(document.getElementById("payAmt").value);
+  if (!(amt > 0)) { say("no", "Enter an amount greater than zero."); return; }
+  const before = balanceOf();
+  const {leftover, settled} = settleOldestFirst(amt);
+  entries.push({id: ++seq, kind:"payment", date: today(), ref:"Cheque " + (41900 + (seq%90)),
+                desc: leftover > 0.004
+                      ? `Hospital payment — ${money(amt - leftover)} settled open invoices, ${money(leftover)} left over`
+                      : "Hospital payment",
+                charge:0, credit:amt, allocations:[], reversed:false,
+                creditCreated: leftover > 0.004 ? leftover : 0, settled,
+                cls: leftover > 0.004 ? "credited" : ""});
+  const after = balanceOf();
+  document.getElementById("payAmt").value = "";
+  render();
+  if (leftover > 0.004)
+    say("ok", `Paid ${money(amt)} against ${money(before)} outstanding. The extra ${money(leftover)} is now credit sitting on this hospital's account — nobody had to notice it, classify it, or raise a document. Raise the next invoice and you can spend it.`);
+  else if (Math.abs(after) < 0.005) say("ok", "Paid in full. The account is settled.");
+  else say("ok", `Payment recorded. ${money(after)} still outstanding.`);
+}
+
+/* Raise the next real invoice, so the credit has somewhere to go -- which is the case Mike
+   described: "apply the credit towards future invoices until the balance is back to zero." */
+function raiseInvoice() {
+  const nxt = NEXT_INVOICES[nextIdx % NEXT_INVOICES.length]; nextIdx++;
+  entries.push({id: ++seq, kind:"invoice", date: nxt.date, ref: nxt.ref, desc: nxt.desc,
+                charge: nxt.charge, credit: 0, allocations: [], reversed: false, paid: 0});
+  render();
+  const avail = creditAvailable();
+  say(avail > 0.004 ? "hint" : "ok",
+      avail > 0.004
+        ? `Invoice ${nxt.ref} raised for ${money(nxt.charge)}. There is ${money(avail)} of credit on this account — apply it below and watch the balance settle.`
+        : `Invoice ${nxt.ref} raised for ${money(nxt.charge)}.`);
+}
+
+/* Apply credit to an open invoice. THE REFUSALS ARE THE POINT -- the live system has no such
+   check, which is how ten credit memos came to be applied for $69,726 more than they were worth. */
+function applyCredit() {
+  const id = parseInt(document.getElementById("target").value, 10);
+  const inv = entries.find(e => e.id === id);
+  const amt = parseFloat(document.getElementById("applyAmt").value);
+  const avail = creditAvailable();
+  if (!inv) { say("no", "Choose an invoice."); return; }
+  if (!(amt > 0)) { say("no", "Enter an amount greater than zero."); return; }
+  if (amt - avail > 0.005) {
+    say("no", `Refused. You are trying to apply ${money(amt)} but only ${money(avail)} of credit exists on this account. In the current system nothing stops this — ten credit memos have been spent for $69,726 more than they were ever worth.`);
+    return;
+  }
+  if (amt - outstanding(inv) > 0.005) {
+    say("no", `Refused. Invoice ${inv.ref} only has ${money(outstanding(inv))} outstanding. A credit cannot overpay an invoice into a second credit.`);
+    return;
+  }
+  inv.allocations.push({amount: amt, date: today(), by: USER});
+  /* CHARGE AND CREDIT ARE BOTH ZERO, and that is not an oversight. Matching a credit to an
+     invoice moves no money: the invoice was counted when it was raised and the credit was
+     counted when the cash arrived, so adding the amount again double-counts it. An earlier
+     version put `charge: amt` here and the account flipped from $250 in credit to $150 owed
+     the moment you used the credit -- caught by driving the screen rather than reading it.
+     The entry earns its place as the audit record, which is the thing the live system lacks. */
+  entries.push({id: ++seq, kind:"allocation", date: today(), ref:`Credit applied to ${inv.ref}`,
+                desc:`${money(amt)} of available credit matched to this invoice`,
+                charge: 0, credit: 0, allocations: [], reversed:false,
+                note:"Matching moves no money — the balance already reflected both sides. What this line adds is the record: how much, against what, when, and by whom. That is precisely what the current system does not keep."});
+  document.getElementById("applyAmt").value = "";
+  render();
+  const left = creditAvailable();
+  say("ok", `${money(amt)} applied to ${inv.ref} by ${USER}. ${left > 0.005 ? money(left) + " of credit remains on the account." : "The credit is now fully used and the account is settled."}`);
+}
+
+/* Nothing is deleted. A reversal is a CONTRA ENTRY -- an equal and opposite fact posted beside
+   the original, which stays exactly where it was. Both are visible and the two cancel.
+
+   The original therefore REMAINS IN THE BALANCE. An earlier version excluded it as well as
+   posting the contra, so reversing a $2,500 payment moved the account by $5,000 and it read
+   $4,750 owed instead of $2,250. The same double-count as the allocation bug, and again only
+   visible by pressing the button. `reversed` is now presentation only -- a strike-through. */
+function reverse(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e || e.reversed) return;
+
+  /* Refuse if this payment's credit has already been spent. Unwinding it would leave credit
+     allocated that was never received -- which is exactly the shape of the $69,726 the live
+     system has already applied beyond what existed. */
+  const spent = entries.reduce((s,x) => s + x.allocations.reduce((t,a) => t + a.amount, 0), 0);
+  const createdElsewhere = entries.filter(x => x !== e && !x.reversed)
+                                  .reduce((s,x) => s + (x.creditCreated || 0), 0);
+  if ((e.creditCreated || 0) > 0 && spent - createdElsewhere > 0.004) {
+    say("no", `Refused. ${money(spent - createdElsewhere)} of the credit this payment created has already been applied to an invoice. Reverse that allocation first — the account will not let credit be spent that was never received.`);
+    return;
+  }
+
+  (e.settled || []).forEach(s => {           // put the invoices it paid back to open
+    const inv = entries.find(x => x.id === s.id);
+    if (inv) inv.paid = Math.max(0, (inv.paid || 0) - s.amount);
+  });
+  e.reversed = true;                          // strike-through only; still counted
+  entries.push({id: ++seq, kind:"correction", date: today(), ref:`Reverses ${e.ref}`,
+                desc:`Entered in error — ${money(e.charge || e.credit)} reversed`,
+                charge: e.credit, credit: e.charge, allocations: [], reversed:false,
+                creditCreated: -(e.creditCreated || 0),
+                note:`Reversed by ${USER}. The original is still on the account above, struck through. Nothing is ever removed, so the account always tells the whole story — including the parts we would rather it did not.`});
+  render();
+  say("ok", "Reversed with a correcting entry. The original is still there, struck through — not deleted, and still counted, with the correction cancelling it.");
+}
+
+window.addEventListener("DOMContentLoaded", () => { reset(); render(); });
+</script><script src="demo-nav.js"></script>
+</body></html>
