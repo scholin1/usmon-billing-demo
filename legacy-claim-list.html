@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex,nofollow,noarchive">
+<meta charset="utf-8">
+<title>USMON Client Connect — Claims</title>
+<!--
+  A MOCK OF THE BILLING SCREEN, BUILT TO SHOW ONE THING: THE DOOR.
+
+  Mike, 09-10-2026: "a biller working on a claim they see the eob coming in, hit a button
+  labelled specifically the action needed with that claim, 'Read EOB'... The button would
+  have to be ON THE CLAIM — such as on the form 1500, or payment popup window, or on the
+  claim row." And: "I would want to make it FEEL like they are not having to login into
+  another application."
+
+  So: the claim list a biller already lives in, and one button per row that opens the live
+  single-claim view in a panel over it. Everything on the left of the Action column is a
+  mock-up. Everything the button opens is real and deployed.
+
+  THE CLAIM NUMBERS ARE REAL mPower CLAIM NUMBERS and every one was checked by hand:
+  each resolves in the billing system to a patient whose owning client is 3300, and each
+  one's stored remittance carries the account number the billing system gives for it, so
+  the single-claim view will render it rather than refuse it. The two greyed rows are real
+  3300 claims for which nothing has been read yet — that state was checked too.
+
+  PATIENT NAMES HERE ARE INVENTED. No name, member id or remittance content from the real
+  data is in this file. Payer, service date and billed total are carried through so the
+  row and the panel agree in front of a client.
+-->
+<style>
+  /* The visual register of an older internal tool, on purpose. The contrast IS the
+     demo: a biller sees their familiar screen, and one button on the row is new. */
+  html, body { margin:0; padding:0; background:#d4d0c8; }
+  body {
+    font-family: Tahoma, "MS Sans Serif", Geneva, Verdana, sans-serif;
+    font-size: 11px; color:#000;
+  }
+  #app { width:1100px; margin:14px auto 28px; border:2px outset #f1efe9; background:#d4d0c8; }
+
+  .titlebar {
+    background: linear-gradient(180deg,#0a246a 0%,#3a6ea5 55%,#0a246a 100%);
+    color:#fff; font-weight:bold; padding:4px 6px; display:flex; align-items:center;
+  }
+  .titlebar .t { flex:1; }
+  .titlebar .btns span {
+    display:inline-block; width:16px; height:14px; line-height:13px; text-align:center;
+    background:#d4d0c8; color:#000; border:1px outset #f1efe9; margin-left:2px;
+    font-family:"Marlett",Tahoma,sans-serif; font-size:10px;
+  }
+
+  .menubar { background:#d4d0c8; border-bottom:1px solid #808080; padding:2px 4px; }
+  .menubar span { padding:2px 7px; display:inline-block; }
+  .menubar span:hover { background:#0a246a; color:#fff; }
+
+  .tabs { padding:6px 6px 0; border-bottom:1px solid #808080; }
+  .tabs .tab {
+    display:inline-block; padding:3px 12px; margin-right:2px; background:#d4d0c8;
+    border:1px solid #808080; border-bottom:none; position:relative; top:1px;
+  }
+  .tabs .tab.on { background:#efedea; font-weight:bold; padding-bottom:4px; }
+
+  .body { background:#efedea; padding:8px; }
+
+  fieldset { border:1px solid #808080; margin:0 0 8px; padding:6px 8px 8px; background:#d4d0c8; }
+  legend { padding:0 4px; font-weight:bold; }
+  .filters label { margin-right:4px; }
+  .filters select, .filters input {
+    font-family:inherit; font-size:11px; border:1px inset #808080; background:#fff;
+    padding:1px 2px; margin-right:12px;
+  }
+  .filters button, .lgbtn {
+    font-family:inherit; font-size:11px; background:#d4d0c8; border:1px outset #f1efe9;
+    padding:2px 10px; cursor:pointer;
+  }
+  .filters button:active, .lgbtn:active { border-style:inset; }
+
+  table.grid { width:100%; border-collapse:collapse; background:#fff; border:1px inset #808080; }
+  table.grid th {
+    background:#d4d0c8; border:1px solid #808080; border-left:none; border-top:none;
+    padding:3px 5px; text-align:left; font-weight:bold; white-space:nowrap;
+  }
+  table.grid td {
+    border-bottom:1px solid #dcdcdc; border-right:1px solid #e8e8e8;
+    padding:3px 5px; white-space:nowrap;
+  }
+  table.grid tr:nth-child(even) td { background:#f5f5f0; }
+  table.grid tr:hover td { background:#e8edf7; }
+  td.money { text-align:right; font-family:"Courier New",monospace; }
+  td.cnum  { font-family:"Courier New",monospace; }
+  td.docs  { color:#333; }
+  .st { font-weight:bold; }
+  .st-deny { color:#8b0000; }
+  .st-eob  { color:#00477a; }
+  .st-part { color:#5a4a00; }
+  .st-wait { color:#666; font-weight:normal; }
+
+  /* The action button. Legacy chrome deliberately — it has to look like it belongs to
+     THIS screen, not like a second product borrowing a row. */
+  .act {
+    font-family:inherit; font-size:11px; background:#d4d0c8; border:1px outset #f1efe9;
+    padding:2px 9px; cursor:pointer; min-width:92px;
+  }
+  .act:active { border-style:inset; }
+  .act:disabled {
+    color:#808080; text-shadow:1px 1px 0 #fff; cursor:default; border:1px outset #eeece7;
+    background:#d4d0c8;
+  }
+  .act.deny { font-weight:bold; }
+
+  .statusbar {
+    border-top:1px solid #fff; background:#d4d0c8; padding:3px 6px; display:flex; gap:6px;
+  }
+  .statusbar .cell { border:1px inset #808080; padding:2px 6px; }
+  .statusbar .cell.grow { flex:1; }
+
+  #hint { margin:6px 0 0; padding:4px 6px; border:1px solid #808080; background:#ffffe1;
+          display:none; }
+  .note { width:1100px; margin:0 auto 30px; color:#444; font-size:11px; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <div class="titlebar">
+    <div class="t">USMON Client Connect &nbsp;—&nbsp; Claims &nbsp;·&nbsp; Client 3300 mPower</div>
+    <div class="btns"><span>_</span><span>&#9723;</span><span>&#10005;</span></div>
+  </div>
+
+  <div class="menubar">
+    <span>File</span><span>Edit</span><span>View</span><span>Claims</span>
+    <span>Patients</span><span>Billing</span><span>Reports</span><span>Window</span><span>Help</span>
+  </div>
+
+  <div class="tabs">
+    <span class="tab on">Claims</span><span class="tab">Patients</span><span class="tab">Payments</span>
+    <span class="tab">Uploads</span><span class="tab">Notes</span><span class="tab">A/R</span>
+  </div>
+
+  <div class="body">
+
+    <fieldset class="filters">
+      <legend>Find claims</legend>
+      <label for="f-client">Client</label>
+      <select id="f-client"><option>3300 &nbsp;mPower</option></select>
+      <label for="f-status">Status</label>
+      <select id="f-status"><option>All open</option><option>Denied</option><option>Paid</option></select>
+      <label for="f-from">Service from</label>
+      <input id="f-from" size="10" value="01-01-2025">
+      <label for="f-to">to</label>
+      <input id="f-to" size="10" value="09-11-2026">
+      <button type="button">Search</button>
+      <button type="button">Clear</button>
+    </fieldset>
+
+    <table class="grid">
+      <thead>
+        <tr>
+          <th style="width:170px">Patient</th>
+          <th style="width:78px">DOS</th>
+          <th>Payer</th>
+          <th style="width:88px">Billed</th>
+          <th style="width:112px">Status</th>
+          <th style="width:78px">Claim #</th>
+          <th style="width:170px">Documents on file</th>
+          <th style="width:108px">Action</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <p id="hint"></p>
+
+  </div>
+
+  <div class="statusbar">
+    <div class="cell grow"><span id="count"></span> claims</div>
+    <div class="cell">Client 3300</div>
+    <div class="cell">mscho</div>
+    <div class="cell">CAPS</div>
+  </div>
+
+</div>
+
+<p class="note">
+  The claim list above is a mock-up of the billing screen, built to show where the button
+  goes. The claim numbers are real and the window a button opens is the live system,
+  showing the remittance actually read off that payer's page.
+</p>
+
+<script>
+"use strict";
+
+// Where the button goes. `claim` is the number printed beside the claim in the billing
+// system; `do` is the ACTION, which is what the button is labelled with. Both names are
+// words rather than codes because a person still types these by hand today.
+var REMIT = "https://dev.remit.usmon.com/";
+var CLIENT = "3300";
+
+// ---------------------------------------------------------------------------------
+// The rows. `docs` is the only field the button's enabled/disabled state reads: it is
+// the document-label list the billing system already holds, which is exactly what would
+// be wired to the real labels. Nothing here infers anything from the claim itself.
+//
+// Patient names are invented. Payer / service date / billed are carried through from the
+// remittance so the row and the panel agree.
+// ---------------------------------------------------------------------------------
+var ROWS = [
+  { pt:"ALVAREZ, RUTH M",    dos:"06-18-2026", payer:"Mount Carmel Health Plan (MediGold)",
+    billed:"1,247.43", status:"EOB received", cls:"st-eob", claim:"4229446",
+    docs:"EOB; Op Report; H&P", act:"Read EOB" },
+
+  { pt:"BOYD, TERRANCE L",   dos:"06-03-2026", payer:"GreatWest Healthcare — Cigna",
+    billed:"24,716.00", status:"EOB received", cls:"st-eob", claim:"4209763",
+    docs:"EOB; Op Report", act:"Read EOB" },
+
+  { pt:"CRANDALL, PEGGY J",  dos:"08-07-2025", payer:"Baylor Scott &amp; White Health Plan",
+    billed:"26,062.00", status:"Denied", cls:"st-deny", claim:"3827837",
+    docs:"EOB; Auth Form; Op Report", act:"Work Denial", deny:true },
+
+  { pt:"DELGADO, MARCUS A",  dos:"05-29-2026", payer:"United Healthcare",
+    billed:"2,040.48", status:"Pt responsibility", cls:"st-part", claim:"4204489",
+    docs:"EOB; H&P", act:"Read EOB" },
+
+  // No document on this claim's list is labelled as a remittance, so there is nothing
+  // for the button to open and it is off. The reason is on hover. Note what it does NOT
+  // say: not "this claim has no EOB" — the list shows what IS on file and the Uploads
+  // tab shows the rest.
+  { pt:"EASTMAN, HAROLD W",  dos:"07-02-2026", payer:"United Healthcare",
+    billed:"18,430.00", status:"Awaiting payer", cls:"st-wait", claim:"4325781",
+    docs:"Op Report; H&P", act:"Read EOB", off:true },
+
+  { pt:"FAIRBANKS, CURTIS",  dos:"06-11-2026", payer:"Palmetto GBA",
+    billed:"1,247.43", status:"EOB received", cls:"st-eob", claim:"4222977",
+    docs:"EOB; Op Report", act:"Read EOB" },
+
+  { pt:"GRIER, WANDA S",     dos:"02-17-2026", payer:"Aetna",
+    billed:"23,692.00", status:"Partial payment", cls:"st-part", claim:"4084734",
+    docs:"EOB; Op Report; H&P", act:"Read EOB" },
+
+  { pt:"HOLLINGS, DEAN R",   dos:"07-09-2026", payer:"Novitas Solutions",
+    billed:"3,118.00", status:"Awaiting payer", cls:"st-wait", claim:"4325726",
+    docs:"Auth Form", act:"Read EOB", off:true },
+
+  { pt:"IRWIN, CAROLYN B",   dos:"05-08-2026", payer:"UnitedHealthcare Community Plan of Ohio",
+    billed:"1,043.49", status:"EOB received", cls:"st-eob", claim:"4181364",
+    docs:"EOB; Op Report", act:"Read EOB" },
+
+  { pt:"JEFFRIES, PAUL T",   dos:"04-04-2025", payer:"Baylor Scott &amp; White Health Plan",
+    billed:"91,246.00", status:"Partial payment", cls:"st-part", claim:"3712984",
+    docs:"EOB; Op Report; H&P", act:"Read EOB" }
+];
+
+var OFF_REASON =
+  "Nothing on this claim's document list is labelled as a remittance, so this button " +
+  "has nothing to open yet. Everything on file for this patient is on the Uploads tab.";
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[<>"]/g, function (c) {
+    return { "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c];
+  });
+}
+
+var tbody = document.getElementById("rows");
+tbody.innerHTML = ROWS.map(function (r) {
+  var btn = r.off
+    ? "<button type='button' class='act' disabled title=\"" + esc(OFF_REASON) + "\">" +
+      esc(r.act) + "</button>"
+    : "<button type='button' class='act" + (r.deny ? " deny" : "") +
+      "' data-claim='" + esc(r.claim) + "'>" + esc(r.act) + "</button>";
+  return "<tr>" +
+    "<td>" + esc(r.pt) + "</td>" +
+    "<td>" + esc(r.dos) + "</td>" +
+    "<td>" + r.payer + "</td>" +
+    "<td class='money'>" + esc(r.billed) + "</td>" +
+    "<td class='st " + r.cls + "'>" + esc(r.status) + "</td>" +
+    "<td class='cnum'>" + esc(r.claim) + "</td>" +
+    "<td class='docs'>" + r.docs + "</td>" +
+    "<td>" + btn + "</td>" +
+  "</tr>";
+}).join("");
+document.getElementById("count").textContent = String(ROWS.length);
+
+// A PANEL OVER THE BILLER'S WORK, NOT A SECOND APPLICATION. Explicit dimensions, no
+// toolbar and no menu bar, and one named window per claim so clicking the same row twice
+// re-focuses the panel instead of stacking another copy of it.
+var hint = document.getElementById("hint");
+function open_(claim) {
+  var url = REMIT + "?client_id=" + encodeURIComponent(CLIENT) +
+            "&claim=" + encodeURIComponent(claim) + "&do=eob";
+  var w = 1180, h = 860;
+  var left = Math.max(0, Math.round((screen.availWidth  - w) / 2));
+  var top  = Math.max(0, Math.round((screen.availHeight - h) / 2.6));
+  var win = window.open(url, "claim_" + claim,
+    "width=" + w + ",height=" + h + ",left=" + left + ",top=" + top +
+    ",toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes");
+  if (!win) {
+    hint.style.display = "block";
+    hint.textContent = "The browser blocked the window. Allow pop-ups for this page, " +
+      "then click the button again.";
+    return;
+  }
+  hint.style.display = "none";
+  try { win.focus(); } catch (e) {}
+}
+
+tbody.addEventListener("click", function (ev) {
+  var b = ev.target;
+  if (!b || b.tagName !== "BUTTON" || b.disabled) return;
+  var claim = b.getAttribute("data-claim");
+  if (claim) open_(claim);
+});
+</script>
+
+</body>
+</html>
