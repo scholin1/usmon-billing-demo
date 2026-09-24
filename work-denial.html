@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work Denial — Henderson, Thomas R — 9900003</title>
+<!--
+  PHASE 2 DEMO — data is invented but clinically realistic for IONM.
+  Opens from legacy-claim-list.html when "Work Denial" is clicked.
+  No network calls. Self-contained. "Open in Remit" links to live dev.remit.usmon.com.
+-->
+<style>
+*, *::before, *::after { box-sizing:border-box; }
+html, body { margin:0; padding:0; background:#d4d0c8; height:100%; overflow:hidden; }
+body {
+  font-family:Tahoma,"MS Sans Serif",Geneva,Verdana,sans-serif;
+  font-size:11px; color:#000;
+  display:flex; flex-direction:column; height:100%;
+}
+
+.titlebar {
+  background:linear-gradient(180deg,#0a246a 0%,#3a6ea5 55%,#0a246a 100%);
+  color:#fff; font-weight:bold; padding:4px 6px;
+  display:flex; align-items:center; flex-shrink:0; gap:8px;
+}
+.titlebar .t { flex:1; }
+.titlebar .remit-link {
+  background:#1a6faf; color:#fff; border:1px solid #4a9fdf;
+  padding:2px 10px; font-size:11px; cursor:pointer; white-space:nowrap;
+  font-family:inherit; font-weight:bold; text-decoration:none;
+}
+.titlebar .remit-link:hover { background:#2280c0; }
+.titlebar .btns span {
+  display:inline-block; width:16px; height:14px; line-height:13px;
+  text-align:center; background:#d4d0c8; color:#000;
+  border:1px outset #f1efe9; margin-left:2px; font-size:10px;
+}
+
+.strip {
+  background:#e8e5df; border-bottom:2px solid #808080;
+  padding:7px 12px; flex-shrink:0;
+  display:flex; align-items:baseline; gap:0;
+}
+.strip-left { flex:1; }
+.strip-patient { font-size:13px; font-weight:bold; color:#0a246a; }
+.strip-meta { margin-top:2px; color:#444; }
+.strip-meta span { margin-right:14px; }
+.strip-meta .lbl { color:#777; }
+.strip-right { text-align:right; }
+.deny-badge {
+  display:inline-block; background:#8b1a1a; color:#fff;
+  padding:2px 9px; font-weight:bold; font-size:11px;
+  border:1px solid #6a0000;
+}
+.deny-code { font-size:10px; color:#555; margin-top:3px; }
+
+.tabbar {
+  background:#d4d0c8; border-bottom:1px solid #808080;
+  padding:5px 8px 0; flex-shrink:0;
+  display:flex; gap:2px;
+}
+.tab {
+  padding:3px 14px 3px; border:1px solid #808080; border-bottom:none;
+  background:#c0bdb5; color:#333; cursor:pointer;
+  position:relative; top:1px; font-family:inherit; font-size:11px;
+  display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+  user-select:none;
+}
+.tab:hover { background:#ccc9c0; }
+.tab.active { background:#fff; color:#0a246a; font-weight:bold; border-bottom:1px solid #fff; }
+.tab .ck { color:#2a6e35; font-size:11px; }
+.tab .num { color:#888; font-size:10px; }
+
+.content {
+  background:#fff; flex:1; overflow-y:auto; padding:18px 22px 10px;
+}
+.pane { display:none; }
+.pane.active { display:block; }
+
+.nav {
+  background:#d4d0c8; border-top:2px solid #808080;
+  padding:5px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0;
+}
+.nav-mid { flex:1; text-align:center; color:#555; font-size:11px; }
+.nbtn {
+  font-family:inherit; font-size:11px; background:#d4d0c8;
+  border:1px outset #f1efe9; padding:3px 14px; cursor:pointer;
+  white-space:nowrap;
+}
+.nbtn:active { border-style:inset; }
+.nbtn[disabled] { color:#999; cursor:default; }
+.nbtn.go { background:#0a246a; color:#fff; border:1px outset #3a6ea5; font-weight:bold; }
+.nbtn.go:active { border-style:inset; }
+
+h2 {
+  font-size:13px; font-weight:bold; color:#0a246a;
+  border-bottom:2px solid #e8e5df; padding-bottom:5px;
+  margin:0 0 14px;
+}
+h3 { font-size:12px; font-weight:bold; color:#333; margin:14px 0 6px; }
+
+.box {
+  border:1px solid #c0bdb8; padding:10px 14px; margin-bottom:14px;
+}
+.box.red   { border-color:#c00; background:#fff8f8; }
+.box.amber { border-color:#d4aa00; background:#fffbe6; }
+.box.green { border-color:#2a6e35; background:#f2faf2; }
+.box.blue  { border-color:#1a6faf; background:#f0f6ff; }
+.box.gray  { background:#f7f6f4; }
+
+.dc { font-size:17px; font-weight:bold; color:#8b1a1a; }
+.dn { font-size:11px; color:#8b1a1a; margin-top:1px; }
+.dp { margin-top:8px; font-size:12px; color:#333; line-height:1.55; }
+
+.sug-lbl { font-weight:bold; font-size:11px; color:#6b5000; margin-bottom:4px; }
+.sug-txt { font-size:12px; color:#333; line-height:1.55; }
+
+table.dt { border-collapse:collapse; width:100%; margin-top:6px; }
+table.dt th { background:#e8e5df; border:1px solid #c8c5c0; padding:4px 8px; font-size:11px; text-align:left; }
+table.dt td { border:1px solid #ddd; padding:4px 8px; font-size:11px; }
+table.dt tr:nth-child(even) td { background:#f7f6f4; }
+
+.fg { display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px 16px; margin-bottom:14px; }
+.fg2 { grid-template-columns:1fr 1fr; }
+.fg4 { grid-template-columns:1fr 1fr 1fr 1fr; }
+.f label { display:block; font-size:10px; color:#666; margin-bottom:2px; letter-spacing:.03em; }
+.f input, .f select {
+  width:100%; font-family:inherit; font-size:12px;
+  border:1px inset #808080; background:#fff; padding:2px 4px;
+}
+.f.warn label { color:#7a5500; font-weight:bold; }
+.f.warn input { background:#fffbe6; border-color:#c8a400; }
+.f-hint { font-size:10px; color:#7a5500; margin-top:2px; }
+
+table.lt { border-collapse:collapse; width:100%; }
+table.lt th {
+  background:#e8e5df; border:1px solid #c8c5c0;
+  padding:4px 6px; font-size:11px; text-align:right;
+}
+table.lt th:first-child { text-align:left; }
+table.lt td { border:1px solid #ddd; padding:2px 4px; }
+table.lt td input {
+  font-family:"Courier New",monospace; font-size:11px;
+  border:none; background:transparent; width:100%; text-align:right;
+}
+table.lt td input:focus { background:#f0f8ff; outline:1px solid #0a246a; }
+table.lt td:first-child input { text-align:left; font-family:inherit; }
+table.lt tfoot td {
+  border-top:2px solid #c8c5c0; background:#e8e5df;
+  padding:3px 6px; font-weight:bold; font-size:11px; text-align:right;
+}
+table.lt tfoot td:first-child { text-align:left; }
+
+textarea.ltr {
+  width:100%; font-family:"Courier New",monospace; font-size:12px; line-height:1.65;
+  border:1px solid #c0bdb8; background:#fafaf8; padding:14px 16px;
+  min-height:320px; resize:vertical;
+}
+
+.note-pre {
+  border:1px solid #c0bdb8; background:#f9f9f7;
+  padding:12px 14px; font-size:12px; line-height:1.65;
+  white-space:pre-wrap; font-family:inherit; margin-bottom:10px;
+}
+
+ul.cl { list-style:none; padding:0; margin:0 0 18px; }
+ul.cl li {
+  padding:8px 0; border-bottom:1px solid #eee;
+  display:flex; align-items:center; gap:10px; font-size:12px;
+}
+ul.cl li .ck {
+  width:18px; height:18px; border:1px solid #bbb;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; flex-shrink:0; background:#f5f5f3;
+}
+ul.cl li.done .ck { border-color:#2a6e35; background:#edf7ed; color:#2a6e35; }
+ul.cl li.done { color:#111; }
+ul.cl li:not(.done) { color:#999; }
+
+.row-btns { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.ibtn {
+  font-family:inherit; font-size:11px; background:#d4d0c8;
+  border:1px outset #f1efe9; padding:3px 12px; cursor:pointer;
+}
+.ibtn:active { border-style:inset; }
+.ibtn.blue { background:#0a246a; color:#fff; border:1px outset #3a6ea5; font-weight:bold; }
+.ibtn.blue:active { border-style:inset; }
+.ibtn.teal { background:#1a6faf; color:#fff; border:1px outset #4a9fdf; font-weight:bold; }
+.ibtn.teal:active { border-style:inset; }
+
+.ok-banner {
+  border:1px solid #2a6e35; background:#edf7ed;
+  padding:8px 12px; color:#1a4a22; font-size:12px;
+  display:none; margin-top:10px;
+}
+
+.sent-state { display:none; text-align:center; padding:28px 20px; }
+.sent-state .icon { font-size:42px; color:#2a6e35; }
+.sent-state h2 { border:none; color:#1a4a22; font-size:16px; margin-top:10px; }
+.sent-state p { color:#444; font-size:12px; margin-top:6px; line-height:1.55; }
+.sent-state .open-remit {
+  display:inline-block; margin-top:18px;
+  background:#1a6faf; color:#fff; border:1px outset #4a9fdf;
+  padding:5px 18px; font-family:inherit; font-size:12px; font-weight:bold;
+  cursor:pointer; text-decoration:none;
+}
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <span class="t">USMON — Work Denial &nbsp;·&nbsp; HENDERSON, THOMAS R &nbsp;·&nbsp; Cigna</span>
+  <a class="remit-link" href="https://dev.remit.usmon.com" target="remit_panel" onclick="openRemit(event)">Open in Remit &#8599;</a>
+  <span class="btns"><span>_</span><span>&#9723;</span><span>&#10005;</span></span>
+</div>
+
+<div class="strip">
+  <div class="strip-left">
+    <div class="strip-patient">HENDERSON, THOMAS R</div>
+    <div class="strip-meta">
+      <span><span class="lbl">DOS</span> 07-14-2026</span>
+      <span><span class="lbl">Payer</span> Cigna Health and Life Insurance</span>
+      <span><span class="lbl">Claim #</span> 9900003</span>
+      <span><span class="lbl">Billed</span> $8,420.00</span>
+    </div>
+  </div>
+  <div class="strip-right">
+    <div class="deny-badge">Denied</div>
+    <div class="deny-code">CO-50 &nbsp;·&nbsp; N115 &nbsp;·&nbsp; MA01</div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <button class="tab active" data-tab="0"><span class="num">1</span> Understand</button>
+  <button class="tab"        data-tab="1"><span class="num">2</span> Correct</button>
+  <button class="tab"        data-tab="2"><span class="num">3</span> Letter</button>
+  <button class="tab"        data-tab="3"><span class="num">4</span> Notes</button>
+  <button class="tab"        data-tab="4"><span class="num">5</span> Send</button>
+</div>
+
+<div class="content">
+
+  <!-- TAB 1: UNDERSTAND -->
+  <div class="pane active" id="pane-0">
+    <h2>Why was this claim denied?</h2>
+
+    <div class="box red">
+      <div class="dc">CO-50 — Medical Necessity Not Established</div>
+      <div class="dn">N115 · MA01</div>
+      <div class="dp">
+        Cigna is denying payment for intraoperative neurophysiological monitoring (IONM)
+        on 07-14-2026 on the grounds that medical necessity was not demonstrated on the
+        claim. This is a documentation denial, not a coverage exclusion — Cigna covers
+        95940/95941 when supported. N115 means the decision was based on clinical guidelines;
+        MA01 means the claim was previously processed and this is a revised determination.
+      </div>
+    </div>
+
+    <div class="box amber">
+      <div class="sug-lbl">Most likely cause</div>
+      <div class="sug-txt">
+        CO-50 on IONM is almost always missing or insufficient clinical documentation.
+        Cigna's guidelines require the operative report to include the surgeon's attestation
+        that IONM was medically necessary for this specific procedure and patient. If the
+        operative report does not include that language — or if it was not submitted — Cigna
+        denies on medical necessity. Check that the attending surgeon signed an IONM
+        attestation and that it was included with the original claim submission.
+      </div>
+    </div>
+
+    <h3>Documents on file for this claim</h3>
+    <table class="dt">
+      <thead>
+        <tr><th>Document</th><th>Status</th><th>Relevant to denial</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>EOB — Cigna, 07-14-2026</td>
+          <td>Received (paper)</td>
+          <td>Yes — CO-50 on all IONM lines</td>
+        </tr>
+        <tr>
+          <td>Operative Report — Dr. R. Grundmeyer</td>
+          <td>On file</td>
+          <td><strong>Yes — check for IONM attestation language</strong></td>
+        </tr>
+        <tr>
+          <td>IONM Attestation Form</td>
+          <td><span style="color:#8b1a1a;font-weight:bold;">Missing</span></td>
+          <td><strong>Critical — required by Cigna guidelines</strong></td>
+        </tr>
+        <tr>
+          <td>Referring physician order</td>
+          <td>On file</td>
+          <td>Yes — supports medical necessity</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Suggested next step</h3>
+    <div class="box green">
+      <div class="sug-txt">
+        Obtain the IONM attestation form signed by Dr. Grundmeyer, confirming medical
+        necessity for 07-14-2026. Attach to a corrected claim submission with the
+        operative report. If the operative report already contains the required language,
+        resubmit with the report as the supporting documentation.
+        Proceed to <strong>Correct</strong> to update the claim, then generate the appeal.
+      </div>
+    </div>
+
+    <div class="box blue">
+      <div class="sug-lbl" style="color:#1a4a7a;">Remit has the paper EOB for this claim</div>
+      <div class="sug-txt" style="color:#1a4a7a;">
+        The paper EOB received from Cigna has been scanned and converted to 835 format.
+        Open Remit to view the full remittance detail, all adjustment codes, and prior
+        payments on this patient.
+        <div style="margin-top:8px;">
+          <a class="ibtn teal" href="https://dev.remit.usmon.com" target="remit_panel"
+             onclick="openRemit(event)" style="display:inline-block;padding:3px 14px;text-decoration:none;">
+            Open this claim in Remit &#8599;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: CORRECT -->
+  <div class="pane" id="pane-1">
+    <h2>Correct this claim</h2>
+    <p style="color:#555;font-size:11px;margin:0 0 14px;">
+      Fields highlighted in yellow are the most likely cause of this denial. Review and correct,
+      then save. Saving rebuilds the 835.
+    </p>
+
+    <h3>Claim identity</h3>
+    <div class="fg">
+      <div class="f"><label>USMON Claim ID</label><input value="9900003" readonly style="background:#f5f5f3;color:#888;"></div>
+      <div class="f"><label>Patient name</label><input value="HENDERSON, THOMAS R"></div>
+      <div class="f"><label>Member ID</label><input value="CIG-00882341-07"></div>
+      <div class="f"><label>Claim # (DCN)</label><input value="20260714-CIG-8234"></div>
+      <div class="f"><label>Service date</label><input value="07-14-2026"></div>
+      <div class="f"><label>Payer</label><input value="Cigna Health and Life Insurance"></div>
+      <div class="f warn">
+        <label>IONM Attestation submitted</label>
+        <select id="attest-field">
+          <option value="">— Not submitted —</option>
+          <option value="yes">Yes — attached to resubmission</option>
+        </select>
+        <div class="f-hint">⚠ Required by Cigna — obtain from Dr. Grundmeyer</div>
+      </div>
+      <div class="f"><label>Rendering NPI</label><input value="1720481093"></div>
+      <div class="f"><label>Provider Tax ID</label><input value="83-2052855"></div>
+    </div>
+
+    <h3>Diagnosis codes</h3>
+    <div class="fg fg4">
+      <div class="f warn">
+        <label>Principal ICD-10</label>
+        <input value="G35">
+        <div class="f-hint">⚠ Confirm supports IONM medical necessity</div>
+      </div>
+      <div class="f"><label>Secondary</label><input value="M48.02"></div>
+      <div class="f"><label>Secondary</label><input value=""></div>
+      <div class="f"><label>Secondary</label><input value=""></div>
+    </div>
+
+    <h3>Service lines</h3>
+    <table class="lt">
+      <thead>
+        <tr>
+          <th style="text-align:left;width:80px">CPT</th>
+          <th style="width:60px">Mod</th>
+          <th style="width:50px">Units</th>
+          <th style="width:110px">Billed</th>
+          <th style="width:110px">Allowed</th>
+          <th style="width:110px">Paid</th>
+          <th style="width:100px">Adjustment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input value="95940" style="font-family:inherit;"></td>
+          <td><input value="TC"></td>
+          <td><input value="8"></td>
+          <td><input value="5,200.00"></td>
+          <td><input value="0.00"></td>
+          <td><input value="0.00"></td>
+          <td><input value="CO-50" style="font-family:inherit;color:#8b1a1a;"></td>
+        </tr>
+        <tr>
+          <td><input value="95941" style="font-family:inherit;"></td>
+          <td><input value="26"></td>
+          <td><input value="8"></td>
+          <td><input value="2,400.00"></td>
+          <td><input value="0.00"></td>
+          <td><input value="0.00"></td>
+          <td><input value="CO-50" style="font-family:inherit;color:#8b1a1a;"></td>
+        </tr>
+        <tr>
+          <td><input value="95927" style="font-family:inherit;"></td>
+          <td><input value="26"></td>
+          <td><input value="1"></td>
+          <td><input value="820.00"></td>
+          <td><input value="0.00"></td>
+          <td><input value="0.00"></td>
+          <td><input value="CO-50" style="font-family:inherit;color:#8b1a1a;"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">Total (billed)</td>
+          <td>$8,420.00</td><td></td><td></td><td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="row-btns" style="margin-top:14px;">
+      <button class="ibtn blue" id="save-btn" onclick="saveCorrection()">Save &amp; rebuild 835</button>
+      <button class="ibtn" onclick="document.getElementById('save-btn').disabled=false;document.getElementById('saved-ok').style.display='none';">Reset</button>
+    </div>
+    <div class="ok-banner" id="saved-ok">
+      Corrections saved. IONM attestation attached. 835 rebuilt with updated claim data.
+    </div>
+  </div>
+
+  <!-- TAB 3: LETTER -->
+  <div class="pane" id="pane-2">
+    <h2>Appeal letter</h2>
+    <p style="color:#555;font-size:11px;margin:0 0 12px;">
+      Pre-written from the claim and denial details. Review and edit before sending.
+    </p>
+    <textarea class="ltr" id="letter-text" spellcheck="true"></textarea>
+    <div class="row-btns">
+      <button class="ibtn" onclick="copyLetter()">Copy to clipboard</button>
+      <button class="ibtn" onclick="window.print()">Print</button>
+    </div>
+    <div class="ok-banner" id="copy-ok">Copied to clipboard.</div>
+  </div>
+
+  <!-- TAB 4: NOTES -->
+  <div class="pane" id="pane-3">
+    <h2>Post to biller notes</h2>
+    <p style="color:#555;font-size:11px;margin:0 0 12px;">
+      This entry will be posted to USMON biller notes for claim 9900003. Edit if needed.
+    </p>
+    <div class="note-pre" id="note-text" contenteditable="true"></div>
+    <div class="row-btns">
+      <button class="ibtn blue" onclick="postNotes()">Post to USMON notes</button>
+    </div>
+    <div class="ok-banner" id="notes-ok">
+      Posted to USMON biller notes for claim 9900003.
+    </div>
+  </div>
+
+  <!-- TAB 5: SEND -->
+  <div class="pane" id="pane-4">
+    <div id="send-form">
+      <h2>Review &amp; send</h2>
+      <ul class="cl" id="checklist">
+        <li id="ck-0"><span class="ck"></span> Denial reviewed — CO-50, missing IONM attestation</li>
+        <li id="ck-1"><span class="ck"></span> Claim corrected — attestation attached, 835 rebuilt</li>
+        <li id="ck-2"><span class="ck"></span> Appeal letter generated</li>
+        <li id="ck-3"><span class="ck"></span> Biller note posted to USMON</li>
+      </ul>
+      <div class="row-btns">
+        <button class="ibtn blue" onclick="doSend('submit')">Submit corrected claim</button>
+        <button class="ibtn"      onclick="doSend('appeal')">Mark as appealed — awaiting response</button>
+      </div>
+      <div class="ok-banner" id="send-ok" style="margin-top:12px;"></div>
+    </div>
+    <div class="sent-state" id="sent-state">
+      <div class="icon">&#10003;</div>
+      <h2 id="sent-head">Corrected claim submitted</h2>
+      <p id="sent-body">
+        Claim 9900003 has been submitted to Cigna with the IONM attestation attached.<br><br>
+        The 835 has been rebuilt and the biller note has been posted to USMON.<br>
+        You can close this window or open the full claim history in Remit.
+      </p>
+      <a class="open-remit" href="https://dev.remit.usmon.com" target="remit_panel"
+         onclick="openRemit(event)">
+        View full claim history in Remit &#8599;
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button class="nbtn" id="btn-prev" onclick="go(-1)" disabled>&#8592; Previous</button>
+  <div class="nav-mid" id="nav-mid">Step 1 of 5 — Understand the denial</div>
+  <button class="nbtn go" id="btn-next" onclick="go(1)">Next &#8594;</button>
+</div>
+
+<script>
+"use strict";
+
+var TODAY = (function() {
+  var d = new Date();
+  var mm = String(d.getMonth()+1).padStart(2,"0");
+  var dd = String(d.getDate()).padStart(2,"0");
+  return mm + "-" + dd + "-" + d.getFullYear();
+})();
+
+var VISITED = [true, false, false, false, false];
+var cur = 0;
+
+var LETTER = [
+  TODAY, "",
+  "Cigna Health and Life Insurance",
+  "Appeals and Grievances Department",
+  "P.O. Box 188004",
+  "Chattanooga, TN 37422",
+  "",
+  "RE:  Appeal of Denial — Reason Code CO-50 (Medical Necessity)",
+  "     Patient:         HENDERSON, THOMAS R",
+  "     Member ID:       CIG-00882341-07",
+  "     Date of Service: 07-14-2026",
+  "     Claim Number:    9900003",
+  "     DCN:             20260714-CIG-8234",
+  "",
+  "Dear Cigna Appeals Department,",
+  "",
+  "We are writing to appeal the denial of the above-referenced claim under",
+  "reason code CO-50 (medical necessity not established) for intraoperative",
+  "neurophysiological monitoring (IONM) services rendered on 07-14-2026.",
+  "",
+  "IONM services (CPT 95940, 95941, 95927) were ordered by the attending",
+  "surgeon, Dr. R. Grundmeyer, M.D., to monitor neural pathway integrity",
+  "during a high-risk spinal procedure on 07-14-2026. Medical necessity",
+  "is established by the nature of the procedure, the patient's diagnosis",
+  "(G35, M48.02), and the documented risk of neurological compromise.",
+  "",
+  "Enclosed with this appeal:",
+  "  1. IONM attestation form signed by Dr. Grundmeyer",
+  "  2. Operative report confirming IONM use and clinical rationale",
+  "  3. Referring physician order",
+  "",
+  "Cigna's own clinical policy (CP.MP.116) recognizes IONM as medically",
+  "necessary for spinal procedures with documented neurological risk.",
+  "The enclosed documentation satisfies each criterion.",
+  "",
+  "We respectfully request reconsideration and payment of this claim in full.",
+  "Please contact our billing office with any questions.",
+  "",
+  "Sincerely,",
+  "",
+  "Billing Office",
+].join("\n");
+
+var NOTE_TEXT = [
+  TODAY + " — Denial worked",
+  "Claim: 9900003  Patient: HENDERSON, THOMAS R",
+  "Payer: Cigna  Denial: CO-50 — medical necessity not established",
+  "Root cause: IONM attestation (Dr. Grundmeyer) missing from original submission",
+  "Action: Attestation obtained and attached to corrected claim.",
+  "        Operative report confirms IONM necessity. 835 rebuilt.",
+  "        Appeal letter sent to Cigna Appeals and Grievances Dept.",
+  "Status: Corrected claim submitted — awaiting payer response.",
+].join("\n");
+
+function updateChecklist() {
+  var labels = [
+    "Denial reviewed — CO-50, missing IONM attestation",
+    "Claim corrected — attestation attached, 835 rebuilt",
+    "Appeal letter generated",
+    "Biller note posted to USMON",
+  ];
+  [0,1,2,3].forEach(function(i) {
+    var li = document.getElementById("ck-" + i);
+    var done = VISITED[i + 1] || (i === 0);
+    li.className = done ? "done" : "";
+    li.querySelector(".ck").textContent = done ? "✓" : "";
+    li.lastChild.textContent = " " + labels[i];
+  });
+}
+
+function showTab(n) {
+  n = Math.max(0, Math.min(4, n));
+  cur = n;
+  VISITED[n] = true;
+  document.querySelectorAll(".pane").forEach(function(p,i) { p.classList.toggle("active", i===n); });
+  document.querySelectorAll(".tab").forEach(function(t,i) {
+    t.classList.toggle("active", i===n);
+    if (i < n) { t.querySelector(".num").textContent = "✓"; t.classList.add("done"); }
+    else { t.querySelector(".num").textContent = String(i+1); t.classList.remove("done"); }
+  });
+  document.getElementById("btn-prev").disabled = (n === 0);
+  var labels = ["Start correction →","Write appeal letter →","Preview notes →","Review & send →", null];
+  var nb = document.getElementById("btn-next");
+  if (labels[n]) { nb.style.display=""; nb.textContent=labels[n]; } else { nb.style.display="none"; }
+  var steps = [
+    "Step 1 of 5 — Understand the denial",
+    "Step 2 of 5 — Correct the claim",
+    "Step 3 of 5 — Write the appeal letter",
+    "Step 4 of 5 — Post to biller notes",
+    "Step 5 of 5 — Review and send",
+  ];
+  document.getElementById("nav-mid").textContent = steps[n];
+  if (n === 4) updateChecklist();
+}
+
+function go(dir) { showTab(cur + dir); }
+
+document.querySelectorAll(".tab").forEach(function(t) {
+  t.addEventListener("click", function() { showTab(parseInt(t.getAttribute("data-tab"),10)); });
+});
+
+function saveCorrection() {
+  var f = document.getElementById("attest-field");
+  if (!f.value) f.value = "yes";
+  document.getElementById("save-btn").disabled = true;
+  document.getElementById("saved-ok").style.display = "block";
+  VISITED[1] = true;
+}
+
+function copyLetter() {
+  var txt = document.getElementById("letter-text").value;
+  if (navigator.clipboard) { navigator.clipboard.writeText(txt); }
+  document.getElementById("copy-ok").style.display = "block";
+  VISITED[2] = true;
+}
+
+function postNotes() {
+  document.getElementById("notes-ok").style.display = "block";
+  VISITED[3] = true;
+}
+
+function doSend(mode) {
+  VISITED[4] = true;
+  document.getElementById("send-form").style.display = "none";
+  var s = document.getElementById("sent-state");
+  s.style.display = "block";
+  if (mode === "appeal") {
+    document.getElementById("sent-head").textContent = "Marked as appealed — awaiting response";
+    document.getElementById("sent-body").innerHTML =
+      "Claim 9900003 has been marked as appealed with Cigna.<br><br>" +
+      "IONM attestation and operative report on file. Biller note posted to USMON.<br>" +
+      "You can close this window or open the full claim history in Remit.";
+  }
+}
+
+function openRemit(e) {
+  e.preventDefault();
+  var w = window.open("https://dev.remit.usmon.com", "remit_panel",
+    "width=1200,height=800,menubar=no,toolbar=no,location=no,status=no");
+  if (!w) { alert("Allow pop-ups for this page to open Remit."); }
+}
+
+document.getElementById("letter-text").value = LETTER;
+document.getElementById("note-text").textContent = NOTE_TEXT;
+showTab(0);
+</script>
+</body>
+</html>
