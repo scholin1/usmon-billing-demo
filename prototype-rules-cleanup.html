@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
 <title>USMON Billing Rules Cleanup Sandbox</title>
 <style>
   :root{
@@ -178,7 +177,7 @@
     <div>
       <h1>Billing Rules Cleanup Sandbox</h1>
       <p class="sub">A safe place to simplify your billing rules before anything goes live.</p>
-      <span class="synthetic-note">Synthetic demo data, no live rules are read or changed</span>
+      <span class="synthetic-note">Monitoring Concepts &middot; client 4700 &middot; 1,339 real rules</span>
     </div>
     <button id="themeToggleBtn" type="button">Dark mode</button>
   </header>
@@ -199,7 +198,7 @@
     </div>
     <div class="hero-readout" id="heroReadout"><strong>0</strong> removed, <strong>0</strong> combined into groups so far</div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-caption"><span>1339</span><span id="progressGoalLabel">Goal: 439</span></div>
+    <div class="progress-caption"><span>1339</span><span id="progressGoalLabel">Goal: 325</span></div>
   </section>
 
   <section id="cleanupSection">
@@ -209,10 +208,10 @@
 
       <div class="card" id="card-dup" data-key="dup">
         <div class="card-top">
-          <p class="card-title">Exact duplicates: 42 rules across 17 groups</p>
-          <span class="card-count">42 removable</span>
+          <p class="card-title">Exact duplicates: 45 rules across 20 groups</p>
+          <span class="card-count">45 removable</span>
         </div>
-        <div class="card-example">Rule #1042 (Medicare, Reader Group B, USN Medicare)<span class="arrow">&rarr;</span>Rule #1043 (identical in every field)<span class="arrow">&rarr;</span>keep #1042, remove #1043</div>
+        <div class="card-example">Rule #6967 (Humana / Medicare Replacement / TRICARE, no surgeon &middot; Collective Current)<span class="arrow">&rarr;</span>Rule #14103 (identical in every field)<span class="arrow">&rarr;</span>keep #6967, remove #14103</div>
         <div class="card-actions">
           <button class="btn primary" id="applyDup" type="button" data-key="dup">Apply</button>
         </div>
@@ -220,14 +219,14 @@
 
       <div class="card" id="card-surgeon" data-key="surgeon">
         <div class="card-top">
-          <p class="card-title">Same rule, different surgeon: 900 rules that only differ by surgeon</p>
-          <span class="card-count">900 &rarr; 130</span>
+          <p class="card-title">Same rule, different surgeon: 859 rules that only differ by surgeon</p>
+          <span class="card-count">859 &rarr; 98</span>
         </div>
         <div class="card-example">
-          Dr. A. Sample, Dr. B. Example, Dr. C. Demo, Dr. D. Sample-Two, Dr. E. Test, Dr. F. Placeholder, Dr. G. Synth, Dr. H. Mock
-          each have their own identical rule routing to Meridian Billing Group / All Types
+          Dr. Raymond Grundmeyer, Dr. Thomas Frimpong, Dr. James Weimar, Dr. Suhel Kotwal, Dr. Zeeshaan Khan, Dr. Robert Moghim, Dr. Mark Sabin, Dr. Christian Lothes
+          each have their own identical rule routing to ANS / Advanced Neuro Solutions, LLC
           <span class="arrow">&rarr;</span>
-          one rule naming the surgeon group &quot;Panel A (8 surgeons)&quot;
+          one rule naming the surgeon group &quot;ANS Panel (8 surgeons)&quot;
         </div>
         <div class="card-actions">
           <button class="btn primary" id="applySurgeon" type="button" data-key="surgeon">Apply</button>
@@ -236,10 +235,10 @@
 
       <div class="card" id="card-noop" data-key="noop">
         <div class="card-top">
-          <p class="card-title">No-op rules: 3 rules with no biller on either track</p>
-          <span class="card-count">3 removable</span>
+          <p class="card-title">No-op rules: 214 rules with no biller on either track</p>
+          <span class="card-count">214 removable</span>
         </div>
-        <div class="card-example">Rule #2210: Pro Biller = blank, Tech Biller = blank<span class="arrow">&rarr;</span>matches a claim, bills nothing, removed</div>
+        <div class="card-example">Rule #1284: Medicare &middot; Richard Stovall, M.D. &middot; Pro = No Billing &middot; Tech = No Billing<span class="arrow">&rarr;</span>matches a claim, bills nothing, removed</div>
         <div class="card-actions">
           <button class="btn primary" id="applyNoop" type="button" data-key="noop">Apply</button>
         </div>
@@ -247,17 +246,16 @@
 
       <div class="card review" id="card-conflict" data-key="conflict">
         <div class="card-top">
-          <p class="card-title">Conflicting defaults: 11 &quot;All Surgeons / All Types&quot; rules that overlap</p>
+          <p class="card-title">Conflicting defaults: 16 Medicare catch-all rules routing to different billers</p>
           <span class="card-count">Needs a decision</span>
         </div>
-        <div class="card-example">Rule #3001: All Surgeons, All Types &rarr; Meridian Billing Group<span class="arrow">&middot;</span>Rule #3002: All Surgeons, All Types &rarr; ANS<span class="arrow">&middot;</span>only one can ever apply to a given claim</div>
+        <div class="card-example">Rule #6965: Medicare, no surgeon &rarr; PABS3<span class="arrow">&middot;</span>Rule #8881: Medicare, no surgeon &rarr; Medisource RCM<span class="arrow">&middot;</span>Rule #10774: Medicare, no surgeon &rarr; USN Medicare<span class="arrow">&middot;</span>only one can win a given claim</div>
         <div class="card-actions">
           <button class="btn review-btn" id="reviewConflict" type="button" data-key="conflict">Mark for review</button>
         </div>
         <div class="review-note" id="conflictNote">
-          These 11 rules all match the exact same claim (every dimension wildcarded) but disagree on who bills it.
-          This can&#39;t be resolved automatically. Flagging it for a human decision: which one is the real client-wide
-          default, and are the other 10 stale or a real distinction nobody wrote down.
+          16 rules all match Medicare claims with no surgeon, no hospital, and no region, but route to different billers (PABS3, Medisource RCM, USN Medicare, and others).
+          This can&#39;t be resolved automatically. Flagging it for a human decision: which one is the real Medicare default, and are the remaining 15 stale or a real distinction nobody documented.
         </div>
       </div>
 
@@ -344,8 +342,8 @@
   </section>
 
   <footer class="note">
-    This is a sandbox mockup on synthetic data. Nothing changes a live system; real cleanup would run on your
-    actual rules with every change reviewable and reversible. Based on an analysis of 1,339 real rules.
+    This is a sandbox mockup. Nothing changes a live system; real cleanup would run on your
+    actual rules with every change reviewable and reversible. Based on a real analysis of Monitoring Concepts (client 4700) &mdash; 1,339 rules exported 09-24-2026.
   </footer>
 
 </div>
@@ -399,9 +397,9 @@
 
   /* ---------- live counter ---------- */
   var START_TOTAL = 1339;
-  var TARGET_TOTAL = 439;
-  var SAVINGS = { dup: 42, surgeon: 770, noop: 3 };
-  var COMBINE_CREDIT = { surgeon: 900 }; // rules folded into groups, not simply deleted
+  var TARGET_TOTAL = 325;
+  var SAVINGS = { dup: 45, surgeon: 761, noop: 214 };
+  var COMBINE_CREDIT = { surgeon: 859 }; // rules folded into groups, not simply deleted
 
   var state = {
     after: START_TOTAL,
