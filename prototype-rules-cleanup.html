@@ -154,6 +154,52 @@
   .tester-result .reason{color:var(--muted)}
   .tester-result .runner-up{margin-top:8px;font-size:12px;color:var(--faint)}
 
+
+  /* regression test section */
+  .reg-summary{
+    display:flex;gap:20px;flex-wrap:wrap;align-items:center;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin-bottom:20px;
+  }
+  .reg-stat{display:flex;flex-direction:column;min-width:120px}
+  .reg-stat .reg-num{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+  .reg-stat .reg-label{font-size:12px;color:var(--faint);margin-top:2px}
+  .reg-pct{display:inline-block;font-size:11px;color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);
+    border-radius:999px;padding:1px 7px;margin-top:3px;width:fit-content;
+  }
+  .reg-badge{
+    margin-left:auto;align-self:center;font-size:13px;font-weight:600;
+    color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);
+    border-radius:999px;padding:5px 14px;white-space:nowrap;
+  }
+  .reg-table-wrap{overflow-x:auto;margin-bottom:4px}
+  table.reg-table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+  table.reg-table th,table.reg-table td{
+    text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;
+  }
+  table.reg-table th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;background:var(--surface-2)}
+  table.reg-table tr.reg-row-hidden{display:none}
+  table.reg-table tr.reg-reviewed td{background:var(--ok-tint)}
+  table.reg-table tr.reg-keep-current td{background:var(--amber-tint)}
+  .reg-reason-tag{
+    display:inline-block;font-size:11px;padding:2px 7px;border-radius:999px;
+    background:var(--surface-2);border:1px solid var(--line);color:var(--muted);white-space:nowrap;
+  }
+  .reg-reason-tag.surgeon{background:var(--teal-tint);border-color:var(--teal-line);color:var(--teal-dark)}
+  .reg-reason-tag.conflict{background:var(--amber-tint);border-color:var(--amber-line);color:var(--amber)}
+  .reg-reason-tag.noop{background:var(--surface-2);border-color:var(--line-strong);color:var(--muted)}
+  .reg-show-more{text-align:center;padding:10px 0 4px}
+  .reg-note{font-size:13px;color:var(--muted);margin:14px 0 0}
+  .reg-apply-row{display:flex;align-items:center;gap:14px;margin-top:16px}
+  .reg-pending{font-size:13px;color:var(--faint)}
+  .accept-btn{
+    font-family:var(--sans);font-size:12px;border-radius:6px;padding:4px 10px;
+    cursor:pointer;border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+  }
+  .accept-btn:hover:not(.accepted){border-color:var(--teal);color:var(--teal-dark)}
+  .accept-btn.accepted{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok);cursor:default}
+  .keep-cb{width:15px;height:15px;cursor:pointer;accent-color:var(--amber)}
+
   footer.note{
     font-size:12px;color:var(--faint);text-align:center;padding:10px 20px 0;
   }
@@ -338,6 +384,56 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+
+  <section id="regressionSection">
+    <h2>Regression Test &#8212; 90-day claim history</h2>
+    <p class="section-lede">Replayed the last 90 days of claims through both the current rules and the proposed cleanup. Any claim that would route differently is listed below for review.</p>
+
+    <div class="reg-summary">
+      <div class="reg-stat">
+        <span class="reg-num">2,847</span>
+        <span class="reg-label">claims tested</span>
+      </div>
+      <div class="reg-stat">
+        <span class="reg-num" style="color:var(--ok)">2,831</span>
+        <span class="reg-label">identical routing</span>
+        <span class="reg-pct">99.4%</span>
+      </div>
+      <div class="reg-stat">
+        <span class="reg-num" style="color:var(--amber)">16</span>
+        <span class="reg-label">flagged for review</span>
+      </div>
+      <span class="reg-badge">&#10003; Safe to apply</span>
+    </div>
+
+    <div class="reg-table-wrap">
+      <table class="reg-table">
+        <thead>
+          <tr>
+            <th>Claim ref</th>
+            <th>Current biller</th>
+            <th></th>
+            <th>Proposed biller</th>
+            <th>Reason</th>
+            <th style="text-align:center">Keep current</th>
+            <th>Accept proposed</th>
+          </tr>
+        </thead>
+        <tbody id="regTableBody"></tbody>
+      </table>
+      <div class="reg-show-more" id="regShowMore">
+        <button class="btn" id="showAllFlaggedBtn" type="button">Show all 16 flagged claims</button>
+      </div>
+    </div>
+
+    <p class="reg-note"><em>16 claims route differently after cleanup. Review each before applying. Check &#8220;Keep current&#8221; to preserve original routing for that claim.</em></p>
+
+    <div class="reg-apply-row">
+      <button class="btn primary" id="applyCleanupBtn" type="button" disabled>Apply cleanup + exceptions</button>
+      <span class="reg-pending" id="regPending">16 of 16 pending review</span>
     </div>
   </section>
 
@@ -615,6 +711,135 @@
     testerResult.classList.add("show");
   });
 
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  var FLAGGED = [
+    {ref:"MC-2026-08-4471",current:"ANS",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+    {ref:"MC-2026-07-3892",current:"Medisource RCM",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-08-1205",current:"PABS3",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-06-7741",current:"No Billing",proposed:"Medisource RCM",reason:"no-op removed",tag:"noop"},
+    {ref:"MC-2026-08-9334",current:"ANS",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+    {ref:"MC-2026-07-5518",current:"Collective Current",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+    {ref:"MC-2026-08-2267",current:"USN Medicare",proposed:"PABS3",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-07-8803",current:"Medisource RCM",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-06-4412",current:"No Billing",proposed:"USN Medicare",reason:"no-op removed",tag:"noop"},
+    {ref:"MC-2026-08-6621",current:"PABS3",proposed:"Medisource RCM",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-07-1093",current:"ANS",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+    {ref:"MC-2026-08-3350",current:"Collective Current",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+    {ref:"MC-2026-07-7788",current:"No Billing",proposed:"PABS3",reason:"no-op removed",tag:"noop"},
+    {ref:"MC-2026-08-5501",current:"USN Medicare",proposed:"PABS3",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-07-2944",current:"PABS3",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+    {ref:"MC-2026-08-8812",current:"Collective Current",proposed:"Medisource RCM",reason:"catch-all conflict",tag:"conflict"}
+  ];
+
+  var SHOW_INITIAL = 5;
+  var reviewed = {};
+  var allVisible = false;
+
+  var tbody = document.getElementById("regTableBody");
+  var showMoreDiv = document.getElementById("regShowMore");
+  var applyBtn = document.getElementById("applyCleanupBtn");
+  var pendingEl = document.getElementById("regPending");
+
+  function buildRows(){
+    tbody.innerHTML = "";
+    FLAGGED.forEach(function(row,i){
+      var tr = document.createElement("tr");
+      tr.dataset.idx = i;
+      if(!allVisible && i >= SHOW_INITIAL){ tr.classList.add("reg-row-hidden"); }
+      if(reviewed[i] === "accept"){ tr.classList.add("reg-reviewed"); }
+      if(reviewed[i] === "keep"){ tr.classList.add("reg-keep-current"); }
+      tr.innerHTML =
+        '<td><code style="font-size:12px;font-family:var(--mono)">' + row.ref + '</code></td>' +
+        '<td>' + row.current + '</td>' +
+        '<td style="color:var(--faint);padding:0 2px">&rarr;</td>' +
+        '<td>' + row.proposed + '</td>' +
+        '<td><span class="reg-reason-tag ' + row.tag + '">' + row.reason + '</span></td>' +
+        '<td style="text-align:center"><input type="checkbox" class="keep-cb" data-idx="' + i + '"' + (reviewed[i]==="keep"?" checked":"") + '></td>' +
+        '<td><button class="accept-btn' + (reviewed[i]==="accept"?" accepted":"") + '" data-idx="' + i + '" type="button">' +
+          (reviewed[i]==="accept"?"&#10003; Accepted":"Accept") +
+        '</button></td>';
+      tbody.appendChild(tr);
+    });
+    showMoreDiv.style.display = (!allVisible && FLAGGED.length > SHOW_INITIAL) ? "" : "none";
+    refreshApply();
+  }
+
+  function refreshApply(){
+    var pending = 0;
+    FLAGGED.forEach(function(_,i){ if(!reviewed[i]){ pending++; } });
+    if(pending === 0){
+      pendingEl.textContent = "All reviewed — ready to apply";
+      applyBtn.disabled = false;
+    } else {
+      pendingEl.textContent = pending + " of " + FLAGGED.length + " pending review";
+      applyBtn.disabled = true;
+    }
+  }
+
+  document.getElementById("showAllFlaggedBtn").addEventListener("click",function(){
+    allVisible = true;
+    tbody.querySelectorAll("tr.reg-row-hidden").forEach(function(r){ r.classList.remove("reg-row-hidden"); });
+    showMoreDiv.style.display = "none";
+  });
+
+  tbody.addEventListener("change",function(e){
+    var t = e.target;
+    if(!t || !t.classList.contains("keep-cb")){ return; }
+    var idx = parseInt(t.dataset.idx,10);
+    var tr = t.closest("tr");
+    if(t.checked){
+      reviewed[idx] = "keep";
+      tr.classList.add("reg-keep-current");
+      tr.classList.remove("reg-reviewed");
+      var ab = tr.querySelector(".accept-btn");
+      if(ab){ ab.classList.remove("accepted"); ab.innerHTML = "Accept"; }
+    } else {
+      delete reviewed[idx];
+      tr.classList.remove("reg-keep-current");
+    }
+    refreshApply();
+  });
+
+  tbody.addEventListener("click",function(e){
+    var t = e.target;
+    if(!t || !t.classList.contains("accept-btn") || t.classList.contains("accepted")){ return; }
+    var idx = parseInt(t.dataset.idx,10);
+    reviewed[idx] = "accept";
+    t.classList.add("accepted");
+    t.innerHTML = "&#10003; Accepted";
+    var tr = t.closest("tr");
+    tr.classList.add("reg-reviewed");
+    tr.classList.remove("reg-keep-current");
+    var cb = tr.querySelector(".keep-cb");
+    if(cb){ cb.checked = false; }
+    refreshApply();
+  });
+
+  applyBtn.addEventListener("click",function(){
+    var kept = Object.keys(reviewed).filter(function(k){ return reviewed[k]==="keep"; }).length;
+    var accepted = Object.keys(reviewed).filter(function(k){ return reviewed[k]==="accept"; }).length;
+    applyBtn.textContent = "Applied";
+    applyBtn.disabled = true;
+    applyBtn.classList.remove("primary");
+    applyBtn.classList.add("applied-btn");
+    pendingEl.textContent = "Cleanup applied. " + kept + " claim" + (kept!==1?"s":"") + " kept on original routing.";
+    var tc = document.getElementById("toastContainer");
+    var el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = "Cleanup applied. " + accepted + " claim" + (accepted!==1?"s":"") + " take new routing; " + kept + " preserved.";
+    tc.appendChild(el);
+    window.setTimeout(function(){ el.classList.add("show"); },10);
+    window.setTimeout(function(){
+      el.classList.remove("show");
+      window.setTimeout(function(){ if(el.parentNode){ el.parentNode.removeChild(el); } },300);
+    },3500);
+  });
+
+  buildRows();
 })();
 </script>
 </body>
