@@ -236,6 +236,22 @@ ul.cl li:not(.done) { color:#999; }
   .email-modal .modal-btns button{padding:5px 16px;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;}
   .email-modal .modal-btns .cancel{border:1px solid #ccc;background:#f4f1ec;}
   .email-modal .modal-btns .submit{border:1px solid #1e8449;background:#27ae60;color:#fff;font-weight:600;}
+
+  .send-btn.mail{background:#5d4e8a;border-color:#4a3c72 #2d2445 #2d2445 #4a3c72;color:#fff;}
+  .send-btn.mail:hover{background:#7060a8;}
+  .mail-modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;}
+  .mail-modal{background:#fff;border-radius:6px;width:460px;padding:20px;font-size:13px;}
+  .mail-modal h3{margin:0 0 4px;font-size:15px;color:#2c3e5a;}
+  .mail-modal .sub{font-size:11px;color:#888;margin-bottom:14px;}
+  .mail-modal .addr-block{background:#f8f6f2;border:1px solid #ddd;border-radius:3px;padding:12px 14px;font-size:12px;line-height:1.7;margin-bottom:14px;font-family:'Courier New',monospace;}
+  .mail-modal .addr-block .attn{font-weight:700;color:#2c3e5a;}
+  .mail-modal .attach-preview{background:#f8f6f2;border:1px solid #ddd;border-radius:3px;padding:8px 10px;margin-bottom:14px;font-size:11px;color:#444;}
+  .mail-modal .attach-preview div{margin-bottom:3px;}
+  .mail-modal .note{font-size:11px;color:#888;margin-bottom:14px;}
+  .mail-modal .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+  .mail-modal .modal-btns button{padding:5px 16px;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;}
+  .mail-modal .modal-btns .cancel{border:1px solid #ccc;background:#f4f1ec;}
+  .mail-modal .modal-btns .submit{border:1px solid #4a3c72;background:#5d4e8a;color:#fff;font-weight:600;}
 </style>
 </head>
 <body>
@@ -521,6 +537,7 @@ ul.cl li:not(.done) { color:#999; }
       <div class="send-actions">
         <button class="send-btn email" onclick="openEmailModal()">&#9993;&nbsp; Email with PDF</button>
         <button class="send-btn print" onclick="window.print()">&#128438;&nbsp; Print / Save PDF</button>
+        <button class="send-btn mail" onclick="openMailModal()">&#9993;&nbsp; Mail</button>
       </div>
       <div class="row-btns">
         <button class="ibtn blue" onclick="doSend('submit')">Submit corrected claim</button>
@@ -728,6 +745,34 @@ function openEmailModal() {
     +'<div class="modal-btns">'
     +'<button class="cancel" onclick="this.closest('.email-modal-bg').remove()">Cancel</button>'
     +'<button class="submit" onclick="this.closest('.email-modal-bg').remove();alert('Email sent — demo mode.')">Send Email</button>'
+    +'</div></div>';
+  document.body.appendChild(bg);
+  bg.addEventListener('click', function(e){ if(e.target===bg) bg.remove(); });
+}
+
+
+function openMailModal() {
+  var checked = [];
+  var labels = ['Appeal_Letter_Henderson_Cigna.pdf','IONM_Attestation_Form.pdf','Operative_Report_Grundmeyer.pdf','EOB_Original_Cigna_07-14-2026.pdf'];
+  for (var i=0;i<4;i++) { var el=document.getElementById('att-'+i); if(el&&el.checked) checked.push(labels[i]); }
+  var attachHtml = checked.map(function(n){ return '<div>&#128196; <b>'+n+'</b></div>'; }).join('') || '<div style="color:#999">No documents selected.</div>';
+  var bg = document.createElement('div');
+  bg.className = 'mail-modal-bg';
+  bg.innerHTML = '<div class="mail-modal">'
+    +'<h3>&#9993;&nbsp; Mail Denial Appeal</h3>'
+    +'<div class="sub">Print the cover sheet and attached documents, then mail to the payer appeals address.</div>'
+    +'<div class="addr-block">'
+    +'<div class="attn">Cigna Healthcare &mdash; Appeals Department</div>'
+    +'<div>PO Box 188004</div>'
+    +'<div>Chattanooga, TN 37422-8004</div>'
+    +'<div style="margin-top:6px;font-size:10px;color:#888;">ATTN: Medical Appeals &mdash; IONM / Claim 9900003</div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#555;margin-bottom:6px;font-weight:600;">Documents to include ('+checked.length+' selected):</div>'
+    +'<div class="attach-preview">'+attachHtml+'</div>'
+    +'<div class="note">&#9432; Print each document separately and include a printed copy of the appeal letter as the cover sheet. Certified mail recommended for appeals.</div>'
+    +'<div class="modal-btns">'
+    +'<button class="cancel" onclick="this.closest('.mail-modal-bg').remove()">Cancel</button>'
+    +'<button class="submit" onclick="this.closest('.mail-modal-bg').remove();window.print()">Print for Mailing</button>'
     +'</div></div>';
   document.body.appendChild(bg);
   bg.addEventListener('click', function(e){ if(e.target===bg) bg.remove(); });
