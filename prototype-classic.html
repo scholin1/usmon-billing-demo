@@ -73,6 +73,13 @@
     box-shadow:inset -1px -1px 0 #9fb0c8, inset 1px 1px 0 #fff}
   .legbtn:hover{background:#eaf1fb}
   .legbtn:active{border-color:var(--btn-lo) var(--btn-hi) var(--btn-hi) var(--btn-lo);box-shadow:inset 1px 1px 0 #9fb0c8}
+  /* Remit action column */
+  .remit-act{font-size:10.5px;font-weight:bold;padding:2px 8px;border:1px solid;cursor:pointer;white-space:nowrap;font-family:var(--leg);}
+  .remit-act.eob{color:#fff;background:#38547f;border-color:#2c4162 #1a2d45 #1a2d45 #2c4162;}
+  .remit-act.eob:hover{background:#4a6a96;}
+  .remit-act.deny{color:#fff;background:#8b1a1a;border-color:#6a0000 #3d0000 #3d0000 #6a0000;}
+  .remit-act.deny:hover{background:#a02020;}
+  .remit-act.off{color:#aaa;background:#e8e5e0;border-color:#b8b0a8;cursor:default;}
   .legbtns .spring{flex:1}
   .legbtns .hint{font-size:10.5px;color:#5a6474}
 
@@ -333,6 +340,7 @@
         <th>Initial Filing Complete</th>
         <th>Email Tech</th>
         <th>CH Messages</th>
+        <th>Remit</th>
       </tr>
     </thead>
     <tbody id="body"></tbody>
@@ -464,7 +472,23 @@ function rowHtml(r){
     '<td style="text-align:center"><input type="checkbox" class="chk" '+(r.filed?'checked':'')+' onchange="dirty('+r.pid+')" aria-label="Initial filing complete"></td>'+
     '<td><span class="celllnk" onclick="t(\'Email to reading tech drafted for claim '+r.claim+' - synthetic.\')">Email Tech</span></td>'+
     '<td><span class="celllnk" onclick="t(\''+r.ch+' clearinghouse message(s) for claim '+r.claim+' - synthetic.\')">Msgs ('+r.ch+')</span></td>'+
+    (function(){
+      var s=r.status;
+      if(s==='Denied'){
+        return '<td><button class="remit-act deny" onclick="openDenial()">Work Denial</button></td>';
+      }else if(s==='Filed - Awaiting ERA'||s==='Partial Payment'||s==='Underpaid'||s==='Paid in Full'||s==='In IDR'){
+        return '<td><button class="remit-act eob" onclick="openEob()">Read EOB</button></td>';
+      }else{
+        return '<td><button class="remit-act off" disabled>&#8212;</button></td>';
+      }
+    })()+
   '</tr>';
+}
+function openDenial(){
+  window.open('https://scholin1.github.io/usmon-billing-demo/work-denial.html','remit_denial','width=1100,height=800,resizable=yes,scrollbars=yes');
+}
+function openEob(){
+  window.open('https://dev.remit.usmon.com','remit_panel','width=1200,height=800,resizable=yes,scrollbars=yes');
 }
 function render(){
   document.getElementById('body').innerHTML=DATA.map(rowHtml).join('');
