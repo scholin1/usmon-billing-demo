@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Paper EOB — Remit Viewer</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;padding:0;background:#e8e5df;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;color:#222;}
+.titlebar{background:#2c3e5a;color:#fff;padding:8px 14px;display:flex;align-items:center;gap:10px;font-size:12px;}
+.logo{font-weight:700;font-size:14px;letter-spacing:.5px;color:#7ec8e3;}
+.claim-id{opacity:.8;}
+.badge{margin-left:auto;background:#27ae60;color:#fff;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;}
+.body{padding:16px;max-width:860px;margin:0 auto;}
+.note{background:#fffbe6;border:1px solid #e8d44d;border-radius:4px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:#6b5900;}
+.card{background:#fff;border:1px solid #ccc;border-radius:4px;margin-bottom:12px;overflow:hidden;}
+.card-head{background:#f4f1ec;border-bottom:1px solid #ddd;padding:7px 12px;font-weight:600;font-size:12px;color:#444;display:flex;align-items:center;gap:8px;}
+.pill{background:#2c3e5a;color:#fff;font-size:10px;padding:1px 8px;border-radius:10px;font-weight:500;}
+.pill.green{background:#27ae60;}
+.card-body{padding:12px;}
+.meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 16px;}
+.meta-item label{display:block;font-size:10px;color:#888;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px;}
+.meta-item span{font-weight:600;color:#222;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:#f4f1ec;padding:6px 8px;text-align:left;font-size:11px;color:#555;border-bottom:2px solid #ddd;white-space:nowrap;}
+th.r,td.r{text-align:right;}
+td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+.adj{font-size:10px;color:#c0392b;display:block;margin-top:1px;}
+.totals td{font-weight:700;background:#f8f6f2;border-top:2px solid #ccc;}
+.remark{font-size:11px;color:#555;margin-top:8px;}
+.remark b{color:#c0392b;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.summary-box{text-align:center;padding:10px;background:#f8f6f2;border-radius:4px;border:1px solid #e0ddd8;}
+.amount{font-size:22px;font-weight:700;color:#2c3e5a;}
+.amount.green{color:#27ae60;}
+.amount.red{color:#c0392b;}
+.summary-box label{font-size:10px;color:#888;display:block;margin-top:2px;text-transform:uppercase;letter-spacing:.4px;}
+.era-line{display:inline-flex;align-items:center;gap:6px;background:#e8f4fd;border:1px solid #aed6f1;color:#1a5276;font-size:11px;padding:4px 10px;border-radius:3px;margin-top:10px;}
+.scan-img{border:1px solid #ccc;border-radius:3px;background:#f9f9f9;padding:12px;text-align:center;color:#aaa;font-size:12px;font-style:italic;height:80px;line-height:56px;}
+</style>
+</head>
+<body>
+<div class="titlebar">
+  <span class="logo">Remit</span>
+  <span style="opacity:.4">|</span>
+  <span class="claim-id">Paper EOB &nbsp;&middot;&nbsp; Devar, M. &nbsp;&middot;&nbsp; Claim 3841209 &nbsp;&middot;&nbsp; Humana</span>
+  <span class="badge green">835 Extracted</span>
+</div>
+
+<div class="body">
+
+  <div class="note">
+    &#128196; This EOB was received as a paper document, scanned, and converted to 835 format by Remit. Demo mode &mdash; no login required.
+  </div>
+
+  <div class="card">
+    <div class="card-head">Claim Summary <span class="pill green">Processed</span></div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="meta-item"><label>Patient</label><span>Devar, M.</span></div>
+        <div class="meta-item"><label>DOS</label><span>08-14-2026</span></div>
+        <div class="meta-item"><label>Payer</label><span>Humana</span></div>
+        <div class="meta-item"><label>Claim #</label><span>3841209</span></div>
+        <div class="meta-item"><label>Check #</label><span>HUM-2026-084471</span></div>
+        <div class="meta-item"><label>Check Date</label><span>09-10-2026</span></div>
+        <div class="meta-item"><label>Rendering NPI</label><span>1487973103</span></div>
+        <div class="meta-item"><label>Billing Entity</label><span>Monitoring Concepts Billing</span></div>
+      </div>
+      <div class="era-line">
+        &#10003; ICN 20260910-HUM-3841209 &nbsp;&middot;&nbsp; 835 transaction received 09-11-2026
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Service Lines <span class="pill">IONM &mdash; Intraoperative Neurophysiological Monitoring</span></div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr>
+            <th>CPT</th><th>Mod</th><th>Description</th><th>Units</th>
+            <th class="r">Billed</th><th class="r">Allowed</th><th class="r">Paid</th><th>Adj Codes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>95940</b></td><td>TC</td><td>Continuous IONM in OR, per hour</td><td>6</td>
+            <td class="r">$7,325.00</td><td class="r">$4,210.80</td><td class="r">$3,368.64</td>
+            <td><span class="adj">CO-45 $3,114.20</span><span class="adj">PR-2 $842.16</span></td>
+          </tr>
+          <tr>
+            <td><b>95941</b></td><td>26</td><td>Remote online real-time IONM, per hour</td><td>6</td>
+            <td class="r">$6,000.00</td><td class="r">$3,540.00</td><td class="r">$2,832.00</td>
+            <td><span class="adj">CO-45 $2,460.00</span><span class="adj">PR-2 $708.00</span></td>
+          </tr>
+          <tr>
+            <td><b>95927</b></td><td>26</td><td>Short-latency somatosensory evoked potential</td><td>1</td>
+            <td class="r">$1,840.00</td><td class="r">$1,024.50</td><td class="r">$819.60</td>
+            <td><span class="adj">CO-45 $815.50</span><span class="adj">PR-2 $204.90</span></td>
+          </tr>
+          <tr>
+            <td><b>95926</b></td><td>26</td><td>SSEP lower limbs</td><td>1</td>
+            <td class="r">$1,840.00</td><td class="r">$1,024.50</td><td class="r">$819.60</td>
+            <td><span class="adj">CO-45 $815.50</span><span class="adj">PR-2 $204.90</span></td>
+          </tr>
+          <tr class="totals">
+            <td colspan="4"><b>Totals</b></td>
+            <td class="r">$17,005.00</td><td class="r">$9,799.80</td><td class="r">$7,839.84</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="remark">
+        <b>CO-45</b> Charge exceeds fee schedule / maximum allowable &nbsp;&middot;&nbsp;
+        <b>PR-2</b> Coinsurance (patient responsibility)
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Payment Summary</div>
+    <div class="card-body">
+      <div class="summary-grid">
+        <div class="summary-box"><div class="amount">$17,005</div><label>Billed</label></div>
+        <div class="summary-box"><div class="amount green">$7,840</div><label>Paid to Provider</label></div>
+        <div class="summary-box"><div class="amount red">$1,755</div><label>Patient Responsibility</label></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#888;">
+        Contractual adjustment (CO-45): $7,205.20 &nbsp;&middot;&nbsp; Prior payments: $0.00 &nbsp;&middot;&nbsp; Net check: $7,839.84
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Original Document</div>
+    <div class="card-body">
+      <div style="font-size:10px;color:#888;margin-bottom:6px;">Scanned paper EOB &mdash; Humana, received 09-08-2026</div>
+      <div class="scan-img">[ Scanned image &mdash; available in full Remit view ]</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
