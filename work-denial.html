@@ -203,6 +203,39 @@ ul.cl li:not(.done) { color:#999; }
   padding:5px 18px; font-family:inherit; font-size:12px; font-weight:bold;
   cursor:pointer; text-decoration:none;
 }
+
+  /* send tab attachments + action bar */
+  .attach-section{margin:14px 0 12px;border:1px solid #dce0e6;border-radius:4px;overflow:hidden;}
+  .attach-head{background:#f4f1ec;padding:6px 12px;font-size:11px;font-weight:600;color:#444;border-bottom:1px solid #dce0e6;}
+  .attach-list{padding:8px 12px;}
+  .attach-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:#333;border-bottom:1px solid #f0eeea;}
+  .attach-item:last-child{border-bottom:none;}
+  .attach-item input[type=checkbox]{accent-color:#2c3e5a;width:14px;height:14px;cursor:pointer;}
+  .attach-item .doc-name{flex:1;font-weight:500;}
+  .attach-item .doc-tag{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600;}
+  .attach-item .doc-tag.appeal{background:#e8f4fd;color:#1a5276;}
+  .attach-item .doc-tag.clinical{background:#e9f7ef;color:#1e8449;}
+  .attach-item .doc-tag.eob{background:#fef9e7;color:#7d6608;}
+  .send-actions{display:flex;gap:8px;margin-bottom:12px;}
+  .send-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border:1px solid;border-radius:3px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .send-btn.email{background:#27ae60;border-color:#1e8449 #145a32 #145a32 #1e8449;color:#fff;}
+  .send-btn.email:hover{background:#2ecc71;}
+  .send-btn.print{background:#f4f1ec;border-color:#aaa #888 #888 #aaa;color:#2c3e5a;}
+  .send-btn.print:hover{background:#fff;}
+  /* email modal */
+  .email-modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;}
+  .email-modal{background:#fff;border-radius:6px;width:440px;padding:20px;font-size:13px;}
+  .email-modal h3{margin:0 0 14px;font-size:15px;color:#2c3e5a;}
+  .email-modal label{display:block;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+  .email-modal input,.email-modal textarea{width:100%;border:1px solid #ccc;border-radius:3px;padding:5px 8px;font-size:12px;font-family:inherit;margin-bottom:10px;}
+  .email-modal textarea{height:60px;resize:vertical;}
+  .email-modal .attach-preview{background:#f8f6f2;border:1px solid #ddd;border-radius:3px;padding:8px 10px;margin-bottom:14px;font-size:11px;color:#444;}
+  .email-modal .attach-preview div{margin-bottom:3px;}
+  .email-modal .attach-preview div:last-child{margin-bottom:0;}
+  .email-modal .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+  .email-modal .modal-btns button{padding:5px 16px;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;}
+  .email-modal .modal-btns .cancel{border:1px solid #ccc;background:#f4f1ec;}
+  .email-modal .modal-btns .submit{border:1px solid #1e8449;background:#27ae60;color:#fff;font-weight:600;}
 </style>
 </head>
 <body>
@@ -460,6 +493,35 @@ ul.cl li:not(.done) { color:#999; }
         <li id="ck-2"><span class="ck"></span> Appeal letter generated</li>
         <li id="ck-3"><span class="ck"></span> Biller note posted to USMON</li>
       </ul>
+      <div class="attach-section">
+        <div class="attach-head">&#128204; Attach documents to send</div>
+        <div class="attach-list">
+          <label class="attach-item">
+            <input type="checkbox" checked id="att-0">
+            <span class="doc-name">Appeal_Letter_Henderson_Cigna.pdf</span>
+            <span class="doc-tag appeal">Appeal</span>
+          </label>
+          <label class="attach-item">
+            <input type="checkbox" checked id="att-1">
+            <span class="doc-name">IONM_Attestation_Form.pdf</span>
+            <span class="doc-tag clinical">Clinical</span>
+          </label>
+          <label class="attach-item">
+            <input type="checkbox" id="att-2">
+            <span class="doc-name">Operative_Report_Grundmeyer.pdf</span>
+            <span class="doc-tag clinical">Clinical</span>
+          </label>
+          <label class="attach-item">
+            <input type="checkbox" id="att-3">
+            <span class="doc-name">EOB_Original_Cigna_07-14-2026.pdf</span>
+            <span class="doc-tag eob">EOB</span>
+          </label>
+        </div>
+      </div>
+      <div class="send-actions">
+        <button class="send-btn email" onclick="openEmailModal()">&#9993;&nbsp; Email with PDF</button>
+        <button class="send-btn print" onclick="window.print()">&#128438;&nbsp; Print / Save PDF</button>
+      </div>
       <div class="row-btns">
         <button class="ibtn blue" onclick="doSend('submit')">Submit corrected claim</button>
         <button class="ibtn"      onclick="doSend('appeal')">Mark as appealed — awaiting response</button>
@@ -647,6 +709,30 @@ function openRemit(e) {
 document.getElementById("letter-text").value = LETTER;
 document.getElementById("note-text").textContent = NOTE_TEXT;
 showTab(0);
+
+function openEmailModal() {
+  var checked = [];
+  var labels = ['Appeal_Letter_Henderson_Cigna.pdf','IONM_Attestation_Form.pdf','Operative_Report_Grundmeyer.pdf','EOB_Original_Cigna_07-14-2026.pdf'];
+  for (var i=0;i<4;i++) { var el=document.getElementById('att-'+i); if(el&&el.checked) checked.push(labels[i]); }
+  var attachHtml = checked.map(function(n){ return '<div>&#128196; <b>'+n+'</b></div>'; }).join('') || '<div style="color:#999">No documents selected.</div>';
+  var bg = document.createElement('div');
+  bg.className = 'email-modal-bg';
+  bg.innerHTML = '<div class="email-modal">'
+    +'<h3>Email with Attachments</h3>'
+    +'<label>To</label><input id="em-to" value="appeals@cigna.com" />'
+    +'<label>CC</label><input id="em-cc" value="gina.sullivan@usneuro.net" />'
+    +'<label>Subject</label><input id="em-sub" value="Appeal — Henderson, Thomas R / CO-50 / Claim 9900003" />'
+    +'<label>Message</label><textarea id="em-body">Please see the attached appeal letter and supporting clinical documentation for the above claim. The IONM attestation confirming medical necessity is included.</textarea>'
+    +'<label>Attachments ('+checked.length+')</label>'
+    +'<div class="attach-preview">'+attachHtml+'</div>'
+    +'<div class="modal-btns">'
+    +'<button class="cancel" onclick="this.closest('.email-modal-bg').remove()">Cancel</button>'
+    +'<button class="submit" onclick="this.closest('.email-modal-bg').remove();alert('Email sent — demo mode.')">Send Email</button>'
+    +'</div></div>';
+  document.body.appendChild(bg);
+  bg.addEventListener('click', function(e){ if(e.target===bg) bg.remove(); });
+}
+
 </script>
 </body>
 </html>
