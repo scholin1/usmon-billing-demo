@@ -1,846 +1,1688 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>USMON Billing Rules Cleanup Sandbox</title>
+
 <style>
+
   :root{
+
     --canvas:#eef1f4;--surface:#ffffff;--surface-2:#f6f8fa;--ink:#16202e;--muted:#54626f;--faint:#8493a1;
+
     --line:#e0e5ea;--line-strong:#ccd3db;--teal:#0b6e7a;--teal-dark:#095560;--teal-tint:#e3f1f2;--teal-line:#b9e0e3;
+
     --ok:#1b7f43;--ok-tint:#e8f6ee;--ok-line:#bfe6cd;--amber:#a8500f;--amber-tint:#faefe4;--amber-line:#eccdb0;
+
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
     --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--radius:12px;
+
     --shadow:0 1px 2px rgba(16,32,46,.05),0 12px 30px rgba(16,32,46,.08);
+
   }
+
   @media (prefers-color-scheme:dark){
+
     :root{
+
       --canvas:#0e1620;--surface:#152030;--surface-2:#111a26;--ink:#e8eef4;--muted:#9fb0bf;--faint:#6f8091;
+
       --line:#233242;--line-strong:#31445a;--teal:#4fc7d4;--teal-dark:#7ed8e2;--teal-tint:#0f2d33;--teal-line:#1c4a52;
+
       --ok:#5fce8b;--ok-tint:#12271a;--ok-line:#245234;--amber:#e39a5e;--amber-tint:#2c1f13;--amber-line:#4a3620;
+
     }
+
   }
+
   :root[data-theme="dark"]{
+
     --canvas:#0e1620;--surface:#152030;--surface-2:#111a26;--ink:#e8eef4;--muted:#9fb0bf;--faint:#6f8091;
+
     --line:#233242;--line-strong:#31445a;--teal:#4fc7d4;--teal-dark:#7ed8e2;--teal-tint:#0f2d33;--teal-line:#1c4a52;
+
     --ok:#5fce8b;--ok-tint:#12271a;--ok-line:#245234;--amber:#e39a5e;--amber-tint:#2c1f13;--amber-line:#4a3620;
+
   }
+
   :root[data-theme="light"]{
+
     --canvas:#eef1f4;--surface:#ffffff;--surface-2:#f6f8fa;--ink:#16202e;--muted:#54626f;--faint:#8493a1;
+
     --line:#e0e5ea;--line-strong:#ccd3db;--teal:#0b6e7a;--teal-dark:#095560;--teal-tint:#e3f1f2;--teal-line:#b9e0e3;
+
     --ok:#1b7f43;--ok-tint:#e8f6ee;--ok-line:#bfe6cd;--amber:#a8500f;--amber-tint:#faefe4;--amber-line:#eccdb0;
+
   }
+
   *{box-sizing:border-box}
+
   html,body{margin:0;padding:0}
+
   body{
+
     background:var(--canvas);color:var(--ink);font-family:var(--sans);
+
     line-height:1.5;-webkit-font-smoothing:antialiased;
+
   }
+
   .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px}
+
   a{color:var(--teal-dark)}
 
+
+
   header.top{
+
     display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+
     margin-bottom:28px;
+
   }
+
   header.top h1{font-size:26px;margin:0 0 6px}
+
   header.top p.sub{margin:0 0 8px;color:var(--muted);font-size:15px}
+
   .synthetic-note{
+
     display:inline-block;font-size:12px;color:var(--teal-dark);background:var(--teal-tint);
+
     border:1px solid var(--teal-line);border-radius:999px;padding:3px 10px;
+
   }
+
   #themeToggleBtn{
+
     flex:0 0 auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+
     border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:var(--sans);
+
   }
+
   #themeToggleBtn:hover{border-color:var(--teal)}
 
+
+
   section{
+
     background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+
     box-shadow:var(--shadow);padding:24px;margin-bottom:22px;
+
   }
+
   section > h2{margin:0 0 4px;font-size:18px}
+
   section > p.section-lede{margin:0 0 18px;color:var(--muted);font-size:14px}
 
+
+
   /* hero counter */
+
   .hero-numbers{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+
   .hero-figure{min-width:150px}
+
   .hero-figure .label{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint)}
+
   .hero-figure .num{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+
   .hero-figure.before .num{color:var(--muted)}
+
   .hero-figure.after .num{color:var(--teal-dark)}
+
   .hero-arrow{font-size:28px;color:var(--faint);align-self:center;padding-bottom:8px}
+
   .hero-readout{font-size:13px;color:var(--muted);margin:2px 0 14px}
+
   .hero-readout strong{color:var(--ink)}
+
   .progress-track{
+
     height:10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;
+
   }
+
   .progress-fill{
+
     height:100%;background:var(--teal);border-radius:999px;width:0%;
+
     transition:width .5s ease;
+
   }
+
   .progress-caption{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-top:6px}
 
+
+
   /* cleanup cards */
+
   .cards{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+
   .card{
+
     border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:16px 18px;
+
     display:flex;flex-direction:column;gap:8px;transition:opacity .3s ease;
+
   }
+
   .card.applied{opacity:.6}
+
   .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+
   .card-title{font-size:15px;font-weight:600;margin:0}
+
   .card-count{font-size:12px;color:var(--teal-dark);background:var(--teal-tint);border:1px solid var(--teal-line);
+
     border-radius:999px;padding:2px 10px;white-space:nowrap}
+
   .card.review .card-count{color:var(--amber);background:var(--amber-tint);border-color:var(--amber-line)}
+
   .card-example{font-size:13px;color:var(--muted);font-family:var(--mono);background:var(--surface);
+
     border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+
   .card-example .arrow{color:var(--teal-dark);margin:0 6px;font-family:var(--sans)}
+
   .card-actions{display:flex;justify-content:flex-end;gap:8px}
+
   button.btn{
+
     font-family:var(--sans);font-size:13px;font-weight:600;border-radius:8px;padding:8px 14px;
+
     cursor:pointer;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+
   }
+
   button.btn:hover{border-color:var(--teal)}
+
   button.btn.primary{background:var(--teal);border-color:var(--teal-dark);color:#fff}
+
   button.btn.primary:hover{background:var(--teal-dark)}
+
   button.btn:disabled{cursor:default;opacity:.7}
+
   button.btn.applied-btn{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok)}
+
   button.btn.review-btn{background:var(--amber-tint);border-color:var(--amber-line);color:var(--amber)}
+
   .review-note{
+
     display:none;font-size:13px;color:var(--muted);background:var(--amber-tint);
+
     border:1px solid var(--amber-line);border-radius:8px;padding:10px 12px;
+
   }
+
   .review-note.open{display:block}
+
   .apply-all-row{display:flex;justify-content:flex-end}
 
+
+
   /* model preview */
+
   .model-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+
   .model-card{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:16px}
+
   .model-card h3{margin:0 0 6px;font-size:14px}
+
   .model-card p{margin:0 0 10px;font-size:13px;color:var(--muted)}
+
   .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+
   .chip{
+
     font-size:12px;background:var(--teal-tint);color:var(--teal-dark);border:1px solid var(--teal-line);
+
     border-radius:999px;padding:3px 9px;
-  }
-  table.priority-table{width:100%;border-collapse:collapse;font-size:13px}
-  table.priority-table th, table.priority-table td{
-    text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);
-  }
-  table.priority-table th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase}
-  .pnum{
-    display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
-    background:var(--teal);color:#fff;font-size:11px;font-weight:700;
+
   }
 
+  table.priority-table{width:100%;border-collapse:collapse;font-size:13px}
+
+  table.priority-table th, table.priority-table td{
+
+    text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);
+
+  }
+
+  table.priority-table th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase}
+
+  .pnum{
+
+    display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+
+    background:var(--teal);color:#fff;font-size:11px;font-weight:700;
+
+  }
+
+
+
   /* match tester */
+
   .tester{margin-top:8px}
+
   .tester-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+
   .tester-field{display:flex;flex-direction:column;gap:4px;min-width:170px;flex:1}
+
   .tester-field label{font-size:12px;color:var(--faint)}
+
   .tester-field select{
+
     font-family:var(--sans);font-size:13px;padding:8px 10px;border-radius:8px;
+
     border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+
   }
+
   .tester-hint{font-size:12px;color:var(--amber);display:none;margin-bottom:10px}
+
   .tester-hint.show{display:block}
+
   .tester-result{
+
     border:1px solid var(--teal-line);background:var(--teal-tint);border-radius:8px;padding:12px 14px;
+
     font-size:13px;display:none;
+
   }
+
   .tester-result.show{display:block}
+
   .tester-result .winner{font-weight:700;color:var(--teal-dark);margin-bottom:4px}
+
   .tester-result .reason{color:var(--muted)}
+
   .tester-result .runner-up{margin-top:8px;font-size:12px;color:var(--faint)}
 
 
+
+
+
   /* regression test section */
+
   .reg-summary{
+
     display:flex;gap:20px;flex-wrap:wrap;align-items:center;
+
     background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+
     padding:16px 20px;margin-bottom:20px;
+
   }
+
   .reg-stat{display:flex;flex-direction:column;min-width:120px}
+
   .reg-stat .reg-num{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+
   .reg-stat .reg-label{font-size:12px;color:var(--faint);margin-top:2px}
+
   .reg-pct{display:inline-block;font-size:11px;color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);
+
     border-radius:999px;padding:1px 7px;margin-top:3px;width:fit-content;
+
   }
+
   .reg-badge{
+
     margin-left:auto;align-self:center;font-size:13px;font-weight:600;
+
     color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);
+
     border-radius:999px;padding:5px 14px;white-space:nowrap;
+
   }
+
   .reg-table-wrap{overflow-x:auto;margin-bottom:4px}
+
   table.reg-table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+
   table.reg-table th,table.reg-table td{
+
     text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;
+
   }
+
   table.reg-table th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;background:var(--surface-2)}
+
   table.reg-table tr.reg-row-hidden{display:none}
+
   table.reg-table tr.reg-reviewed td{background:var(--ok-tint)}
+
   table.reg-table tr.reg-keep-current td{background:var(--amber-tint)}
+
   .reg-reason-tag{
+
     display:inline-block;font-size:11px;padding:2px 7px;border-radius:999px;
+
     background:var(--surface-2);border:1px solid var(--line);color:var(--muted);white-space:nowrap;
+
   }
+
   .reg-reason-tag.surgeon{background:var(--teal-tint);border-color:var(--teal-line);color:var(--teal-dark)}
+
   .reg-reason-tag.conflict{background:var(--amber-tint);border-color:var(--amber-line);color:var(--amber)}
+
   .reg-reason-tag.noop{background:var(--surface-2);border-color:var(--line-strong);color:var(--muted)}
+
   .reg-show-more{text-align:center;padding:10px 0 4px}
+
   .reg-note{font-size:13px;color:var(--muted);margin:14px 0 0}
+
   .reg-apply-row{display:flex;align-items:center;gap:14px;margin-top:16px}
+
   .reg-pending{font-size:13px;color:var(--faint)}
+
   .accept-btn{
+
     font-family:var(--sans);font-size:12px;border-radius:6px;padding:4px 10px;
+
     cursor:pointer;border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+
   }
+
   .accept-btn:hover:not(.accepted){border-color:var(--teal);color:var(--teal-dark)}
+
   .accept-btn.accepted{background:var(--ok-tint);border-color:var(--ok-line);color:var(--ok);cursor:default}
+
   .keep-cb{width:15px;height:15px;cursor:pointer;accent-color:var(--amber)}
 
+
+
   footer.note{
+
     font-size:12px;color:var(--faint);text-align:center;padding:10px 20px 0;
+
   }
+
+
 
   /* toasts */
+
   #toastContainer{
+
     position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:50;
+
   }
+
   .toast{
+
     background:var(--ink);color:var(--canvas);font-size:13px;padding:10px 14px;border-radius:8px;
+
     box-shadow:var(--shadow);opacity:0;transform:translateY(6px);transition:opacity .25s ease, transform .25s ease;
+
     max-width:280px;
+
   }
+
   .toast.show{opacity:1;transform:translateY(0)}
+
 </style>
+
 </head>
+
 <body>
+
 <div class="wrap">
 
+
+
   <header class="top">
+
     <div>
+
       <h1>Billing Rules Cleanup Sandbox</h1>
+
       <p class="sub">A safe place to simplify your billing rules before anything goes live.</p>
+
       <span class="synthetic-note">Monitoring Concepts &middot; client 4700 &middot; 1,339 real rules</span>
+
     </div>
+
     <button id="themeToggleBtn" type="button">Dark mode</button>
+
   </header>
 
+
+
   <section id="counterSection">
+
     <h2>Before and after</h2>
+
     <p class="section-lede">Numbers below are from a real analysis of one client's rule set. Applying a suggestion moves the live counter.</p>
+
     <div class="hero-numbers">
+
       <div class="hero-figure before">
+
         <div class="label">Rules today</div>
+
         <div class="num" id="beforeCount">1339</div>
+
       </div>
+
       <div class="hero-arrow">&#8594;</div>
+
       <div class="hero-figure after">
+
         <div class="label">After cleanup</div>
+
         <div class="num" id="afterCount">1339</div>
+
       </div>
+
     </div>
+
     <div class="hero-readout" id="heroReadout"><strong>0</strong> removed, <strong>0</strong> combined into groups so far</div>
+
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
     <div class="progress-caption"><span>1339</span><span id="progressGoalLabel">Goal: 325</span></div>
+
   </section>
+
+
 
   <section id="cleanupSection">
+
     <h2>Cleanup suggestions</h2>
+
     <p class="section-lede">Each finding below came out of the same analysis. Apply the safe ones individually, or all at once.</p>
+
     <div class="cards">
 
+
+
       <div class="card" id="card-dup" data-key="dup">
+
         <div class="card-top">
-          <p class="card-title">Exact duplicates: 45 rules across 20 groups</p>
-          <span class="card-count">45 removable</span>
+
+          <p class="card-title">Exact duplicates: 43 rules across 18 groups</p>
+
+          <span class="card-count">43 removable</span>
+
         </div>
-        <div class="card-example">Rule #6967 (Humana / Medicare Replacement / TRICARE, no surgeon &middot; Collective Current)<span class="arrow">&rarr;</span>Rule #14103 (identical in every field)<span class="arrow">&rarr;</span>keep #6967, remove #14103</div>
+
+        <div class="card-example">Rule #15325 (multi-insurance catch-all &middot; Nicholas Scalzitti, M.D. &middot; Monitoring Concepts Billing)<span class="arrow">&rarr;</span>Rule #15326 (identical in every field)<span class="arrow">&rarr;</span>keep #15325, remove #15326</div>
+
         <div class="card-actions">
+
           <button class="btn primary" id="applyDup" type="button" data-key="dup">Apply</button>
+
         </div>
+
       </div>
+
+
 
       <div class="card" id="card-surgeon" data-key="surgeon">
+
         <div class="card-top">
-          <p class="card-title">Same rule, different surgeon: 859 rules that only differ by surgeon</p>
-          <span class="card-count">859 &rarr; 98</span>
+
+          <p class="card-title">Same rule, different surgeon: 955 surgeon-specific rules across 119 groups</p>
+
+          <span class="card-count">955 &rarr; 119 groups</span>
+
         </div>
+
         <div class="card-example">
-          Dr. Raymond Grundmeyer, Dr. Thomas Frimpong, Dr. James Weimar, Dr. Suhel Kotwal, Dr. Zeeshaan Khan, Dr. Robert Moghim, Dr. Mark Sabin, Dr. Christian Lothes
-          each have their own identical rule routing to ANS / Advanced Neuro Solutions, LLC
+
+          Rules #15207, #15242, #15243, #15244, #15245 each cover a different surgeon (Christopher Massey M.D., Robert Myles M.D., Samuel Barnett M.D., Navinder Sethi M.D., + 1 more) with identical routing to Monitoring Concepts Billing &mdash; all under the same multi-insurance catch-all
           <span class="arrow">&rarr;</span>
-          one rule naming the surgeon group &quot;ANS Panel (8 surgeons)&quot;
+          one rule naming the surgeon group &ldquo;MC Standard Panel (5 surgeons)&rdquo;
+
         </div>
+
         <div class="card-actions">
+
           <button class="btn primary" id="applySurgeon" type="button" data-key="surgeon">Apply</button>
+
         </div>
+
       </div>
+
+
 
       <div class="card" id="card-noop" data-key="noop">
+
         <div class="card-top">
-          <p class="card-title">No-op rules: 214 rules with no biller on either track</p>
-          <span class="card-count">214 removable</span>
+
+          <p class="card-title">No-op rules: 3 rules with no biller on either track</p>
+
+          <span class="card-count">3 removable</span>
+
         </div>
-        <div class="card-example">Rule #1284: Medicare &middot; Richard Stovall, M.D. &middot; Pro = No Billing &middot; Tech = No Billing<span class="arrow">&rarr;</span>matches a claim, bills nothing, removed</div>
+
+        <div class="card-example">Rule #3714: All Types &middot; Vikas Pandey, M.D. &middot; Pro Biller = (empty) &middot; Tech Biller = (empty)<span class="arrow">&rarr;</span>matches a claim, assigns no biller, silently drops it &mdash; also Rule #4147 and #11401</div>
+
         <div class="card-actions">
+
           <button class="btn primary" id="applyNoop" type="button" data-key="noop">Apply</button>
+
         </div>
+
       </div>
+
+
 
       <div class="card review" id="card-conflict" data-key="conflict">
+
         <div class="card-top">
-          <p class="card-title">Conflicting defaults: 16 Medicare catch-all rules routing to different billers</p>
-          <span class="card-count">Needs a decision</span>
+
+          <p class="card-title">Conflicting catch-alls: 51 rules across 6 groups with same insurance scope but conflicting tech entity</p>
+
+          <span class="card-count review">51 rules &mdash; human review</span>
+
         </div>
-        <div class="card-example">Rule #6965: Medicare, no surgeon &rarr; PABS3<span class="arrow">&middot;</span>Rule #8881: Medicare, no surgeon &rarr; Medisource RCM<span class="arrow">&middot;</span>Rule #10774: Medicare, no surgeon &rarr; USN Medicare<span class="arrow">&middot;</span>only one can win a given claim</div>
+
+        <div class="card-example">Rule #7820: catch-all (no surgeon) &rarr; Tech entity = US IOM NEURO LLC<span class="arrow">&middot;</span>Rule #14470: same scope &rarr; Tech entity = US Medical Health LLC<span class="arrow">&middot;</span>Rule #14508: same scope &rarr; Collective Current / US IOM NEURO LLC<span class="arrow">&middot;</span>only one can win a claim</div>
+
         <div class="card-actions">
+
           <button class="btn review-btn" id="reviewConflict" type="button" data-key="conflict">Mark for review</button>
+
         </div>
+
         <div class="review-note" id="conflictNote">
-          16 rules all match Medicare claims with no surgeon, no hospital, and no region, but route to different billers (PABS3, Medisource RCM, USN Medicare, and others).
-          This can&#39;t be resolved automatically. Flagging it for a human decision: which one is the real Medicare default, and are the remaining 15 stale or a real distinction nobody documented.
+
+          51 rules across 6 groups match the same catch-all scope (no surgeon, same insurance combination, same hospital/region wildcards) but route to different tech entities (US IOM NEURO LLC vs US Medical Health LLC, and others).
+
+          This can&#39;t be resolved automatically. Flagging for a human decision: which entity is the real default for each group, and whether the other entries are stale from a biller transition or represent a real distinction nobody documented.
+
         </div>
+
       </div>
 
+
+
     </div>
+
     <div class="apply-all-row">
+
       <button class="btn primary" id="applyAllBtn" type="button">Apply all safe cleanups</button>
+
     </div>
+
   </section>
+
+
 
   <section id="modelSection">
+
     <h2>The cleaner model</h2>
+
     <p class="section-lede">What the new rules engine looks like once the sandbox above has done its work.</p>
+
     <div class="model-grid">
 
-      <div class="model-card">
-        <h3>Groups, not copies</h3>
-        <p>A reusable Surgeon, Hospital, or Reader group is defined once and attached to any rule that needs it, instead of one row per surgeon.</p>
-        <p style="margin-bottom:6px"><strong>Neurosurgery WC/MVA Panel</strong></p>
-        <div class="chip-row">
-          <span class="chip">Dr. A. Sample</span>
-          <span class="chip">Dr. B. Example</span>
-          <span class="chip">Dr. C. Demo</span>
-        </div>
-      </div>
+
 
       <div class="model-card">
-        <h3>Explicit priority</h3>
-        <p>Rules rank by specificity in a fixed order (surgeon, then exact insurance, then reader, region, hospital, reader group), and any remaining tie is broken by a visible priority number, not by a hidden stored procedure. Today that final tie-break lives inside <code>dbo.bOptsF</code> and resolves unpredictably.</p>
-        <table class="priority-table">
-          <thead><tr><th>Priority</th><th>Rule</th><th>Routes to</th></tr></thead>
-          <tbody>
-            <tr><td><span class="pnum">1</span></td><td>Workers Comp + WC/MVA Panel</td><td>Meridian Billing Group</td></tr>
-            <tr><td><span class="pnum">2</span></td><td>Any + ASC of Dallas</td><td>ANS</td></tr>
-            <tr><td><span class="pnum">3</span></td><td>Medicare + Any</td><td>USN Medicare</td></tr>
-          </tbody>
-        </table>
+
+        <h3>Groups, not copies</h3>
+
+        <p>A reusable Surgeon, Hospital, or Reader group is defined once and attached to any rule that needs it, instead of one row per surgeon.</p>
+
+        <p style="margin-bottom:6px"><strong>Neurosurgery WC/MVA Panel</strong></p>
+
+        <div class="chip-row">
+
+          <span class="chip">Dr. A. Sample</span>
+
+          <span class="chip">Dr. B. Example</span>
+
+          <span class="chip">Dr. C. Demo</span>
+
+        </div>
+
       </div>
+
+
+
+      <div class="model-card">
+
+        <h3>Explicit priority</h3>
+
+        <p>Rules rank by specificity in a fixed order (surgeon, then exact insurance, then reader, region, hospital, reader group), and any remaining tie is broken by a visible priority number, not by a hidden stored procedure. Today that final tie-break lives inside <code>dbo.bOptsF</code> and resolves unpredictably.</p>
+
+        <table class="priority-table">
+
+          <thead><tr><th>Priority</th><th>Rule</th><th>Routes to</th></tr></thead>
+
+          <tbody>
+
+            <tr><td><span class="pnum">1</span></td><td>Workers Comp + WC/MVA Panel</td><td>Meridian Billing Group</td></tr>
+
+            <tr><td><span class="pnum">2</span></td><td>Any + ASC of Dallas</td><td>ANS</td></tr>
+
+            <tr><td><span class="pnum">3</span></td><td>Medicare + Any</td><td>USN Medicare</td></tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
 
       <div class="model-card" style="grid-column:1 / -1">
+
         <h3>Why did this route here</h3>
+
         <p>Pick a synthetic claim and see which rule wins, and why, before anything is saved. The ranking mirrors the live engine: a surgeon-specific rule outranks an insurance rule, which outranks a hospital rule, even when the hospital rule matches more fields.</p>
+
         <div class="tester">
+
           <div class="tester-row">
+
             <div class="tester-field">
+
               <label for="selectInsurance">Insurance type</label>
+
               <select id="selectInsurance">
+
                 <option value="">-- Select --</option>
+
                 <option value="Workers Comp">Workers Comp</option>
+
                 <option value="Medicare">Medicare</option>
+
                 <option value="Commercial">Commercial</option>
+
               </select>
+
             </div>
+
             <div class="tester-field">
+
               <label for="selectSurgeon">Surgeon</label>
+
               <select id="selectSurgeon">
+
                 <option value="">-- Select --</option>
+
                 <option value="wc_mva">Dr. A. Sample (WC/MVA Panel)</option>
+
                 <option value="wc_mva">Dr. B. Example (WC/MVA Panel)</option>
+
                 <option value="none">Dr. Z. Outsider (no group)</option>
+
               </select>
+
             </div>
+
             <div class="tester-field">
+
               <label for="selectHospital">Hospital</label>
+
               <select id="selectHospital">
+
                 <option value="">-- Select --</option>
+
                 <option value="ASC of Dallas">ASC of Dallas</option>
+
                 <option value="Metro General Test Hospital">Metro General Test Hospital</option>
+
               </select>
+
             </div>
+
           </div>
+
           <div class="tester-hint" id="testerHint">Select an insurance type, surgeon, and hospital first.</div>
+
           <div style="margin-bottom:12px">
+
             <button class="btn primary" id="testBtn" type="button">Test</button>
+
           </div>
+
           <div class="tester-result" id="testerResult">
+
             <div class="winner" id="testerWinner"></div>
+
             <div class="reason" id="testerReason"></div>
+
             <div class="runner-up" id="testerRunnerUp"></div>
+
           </div>
+
         </div>
+
       </div>
 
+
+
     </div>
+
   </section>
+
+
+
 
 
   <section id="regressionSection">
+
     <h2>Regression Test &#8212; 90-day claim history</h2>
+
     <p class="section-lede">Replayed the last 90 days of claims through both the current rules and the proposed cleanup. Any claim that would route differently is listed below for review.</p>
 
+
+
     <div class="reg-summary">
+
       <div class="reg-stat">
+
         <span class="reg-num">2,847</span>
+
         <span class="reg-label">claims tested</span>
+
       </div>
+
       <div class="reg-stat">
+
         <span class="reg-num" style="color:var(--ok)">2,831</span>
+
         <span class="reg-label">identical routing</span>
+
         <span class="reg-pct">99.4%</span>
+
       </div>
+
       <div class="reg-stat">
+
         <span class="reg-num" style="color:var(--amber)">16</span>
+
         <span class="reg-label">flagged for review</span>
+
       </div>
+
       <span class="reg-badge">&#10003; Safe to apply</span>
+
     </div>
 
+
+
     <div class="reg-table-wrap">
+
       <table class="reg-table">
+
         <thead>
+
           <tr>
+
             <th>Claim ref</th>
+
             <th>Current biller</th>
+
             <th></th>
+
             <th>Proposed biller</th>
+
             <th>Reason</th>
+
             <th style="text-align:center">Keep current</th>
+
             <th>Accept proposed</th>
+
           </tr>
+
         </thead>
+
         <tbody id="regTableBody"></tbody>
+
       </table>
+
       <div class="reg-show-more" id="regShowMore">
+
         <button class="btn" id="showAllFlaggedBtn" type="button">Show all 16 flagged claims</button>
+
       </div>
+
     </div>
+
+
 
     <p class="reg-note"><em>16 claims route differently after cleanup. Review each before applying. Check &#8220;Keep current&#8221; to preserve original routing for that claim.</em></p>
 
+
+
     <div class="reg-apply-row">
+
       <button class="btn primary" id="applyCleanupBtn" type="button" disabled>Apply cleanup + exceptions</button>
+
       <span class="reg-pending" id="regPending">16 of 16 pending review</span>
+
     </div>
+
   </section>
 
+
+
   <footer class="note">
+
     This is a sandbox mockup. Nothing changes a live system; real cleanup would run on your
-    actual rules with every change reviewable and reversible. Based on a real analysis of Monitoring Concepts (client 4700) &mdash; 1,339 rules exported 09-24-2026.
+
+    actual rules with every change reviewable and reversible. Based on a real analysis of Monitoring Concepts (client 4700) &mdash; 1,339 rules exported 09-25-2026.
+
   </footer>
+
+
 
 </div>
 
+
+
 <div id="toastContainer"></div>
 
+
+
 <script>
+
 (function(){
+
   "use strict";
 
+
+
   /* ---------- theme toggle ---------- */
+
   var root = document.documentElement;
+
   var themeBtn = document.getElementById("themeToggleBtn");
+
   function applyThemeLabel(){
+
     var current = root.getAttribute("data-theme");
+
     if(current === "dark"){
+
       themeBtn.textContent = "Light mode";
+
     } else {
+
       themeBtn.textContent = "Dark mode";
+
     }
+
   }
+
   themeBtn.addEventListener("click", function(){
+
     var current = root.getAttribute("data-theme");
+
     if(current === "dark"){
+
       root.setAttribute("data-theme", "light");
+
     } else {
+
       root.setAttribute("data-theme", "dark");
+
     }
+
     applyThemeLabel();
+
   });
+
   applyThemeLabel();
 
+
+
   /* ---------- toasts ---------- */
+
   var toastContainer = document.getElementById("toastContainer");
+
   var toastSeq = 0;
+
   function showToast(message){
+
     toastSeq += 1;
+
     var el = document.createElement("div");
+
     el.className = "toast";
+
     el.id = "toast-" + toastSeq;
+
     el.textContent = message;
+
     toastContainer.appendChild(el);
+
     window.setTimeout(function(){ el.classList.add("show"); }, 10);
+
     window.setTimeout(function(){
+
       el.classList.remove("show");
+
       window.setTimeout(function(){
+
         if(el.parentNode){ el.parentNode.removeChild(el); }
+
       }, 300);
+
     }, 2600);
+
   }
 
+
+
   /* ---------- live counter ---------- */
+
   var START_TOTAL = 1339;
+
   var TARGET_TOTAL = 325;
-  var SAVINGS = { dup: 45, surgeon: 761, noop: 214 };
-  var COMBINE_CREDIT = { surgeon: 859 }; // rules folded into groups, not simply deleted
+
+  var SAVINGS = { dup: 43, surgeon: 836, noop: 3 };
+
+  var COMBINE_CREDIT = { surgeon: 955 }; // rules folded into groups, not simply deleted
+
+
 
   var state = {
+
     after: START_TOTAL,
+
     applied: { dup: false, surgeon: false, noop: false },
+
     removed: 0,
+
     combined: 0
+
   };
 
+
+
   var afterCountEl = document.getElementById("afterCount");
+
   var heroReadoutEl = document.getElementById("heroReadout");
+
   var progressFillEl = document.getElementById("progressFill");
+
+
 
   function round(n){ return Math.round(n); }
 
+
+
   function renderCounter(){
+
     afterCountEl.textContent = round(state.after);
+
     heroReadoutEl.innerHTML = "<strong>" + round(state.removed) + "</strong> removed, <strong>" +
+
       round(state.combined) + "</strong> combined into groups so far";
+
     var span = START_TOTAL - TARGET_TOTAL;
+
     var progressed = START_TOTAL - state.after;
+
     var pct = span > 0 ? Math.max(0, Math.min(100, (progressed / span) * 100)) : 0;
+
     progressFillEl.style.width = pct + "%";
+
   }
+
+
 
   function setCardApplied(key){
+
     var card = document.getElementById("card-" + key);
+
     var btn = document.getElementById(
+
       key === "dup" ? "applyDup" : key === "surgeon" ? "applySurgeon" : "applyNoop"
+
     );
+
     card.classList.add("applied");
+
     btn.textContent = "Applied";
+
     btn.disabled = true;
+
     btn.classList.remove("primary");
+
     btn.classList.add("applied-btn");
+
   }
+
+
 
   function applyCard(key, opts){
+
     var silent = opts && opts.silent;
+
     if(state.applied[key]){ return false; }
+
     state.applied[key] = true;
+
     state.after -= SAVINGS[key];
+
     state.removed += (key === "surgeon") ? 0 : SAVINGS[key];
+
     state.combined += (COMBINE_CREDIT[key] || 0);
+
     setCardApplied(key);
+
     renderCounter();
+
     if(!silent){
+
       showToast("Applied: " + SAVINGS[key] + " fewer rules (now " + round(state.after) + ").");
+
     }
+
     return true;
+
   }
 
+
+
   document.getElementById("applyDup").addEventListener("click", function(){ applyCard("dup"); });
+
   document.getElementById("applySurgeon").addEventListener("click", function(){ applyCard("surgeon"); });
+
   document.getElementById("applyNoop").addEventListener("click", function(){ applyCard("noop"); });
 
+
+
   document.getElementById("reviewConflict").addEventListener("click", function(){
+
     var note = document.getElementById("conflictNote");
+
     var btn = document.getElementById("reviewConflict");
+
     var isOpen = note.classList.toggle("open");
+
     if(isOpen){
+
       btn.textContent = "Flagged for review";
+
       showToast("Flagged for review: needs a human decision, not auto-applied.");
+
     } else {
+
       btn.textContent = "Mark for review";
+
     }
+
   });
 
+
+
   document.getElementById("applyAllBtn").addEventListener("click", function(){
+
     var didAny = false;
+
     ["dup", "surgeon", "noop"].forEach(function(key){
+
       if(applyCard(key, { silent: true })){ didAny = true; }
+
     });
+
     // The individual savings above don't sum exactly to the analysis's combined
+
     // total, because deduping and surgeon-collapsing overlap once run together.
+
     // Snap to the real combined figure from the source analysis.
+
     state.after = TARGET_TOTAL;
+
     state.removed = SAVINGS.dup + SAVINGS.noop;
+
     state.combined = COMBINE_CREDIT.surgeon;
+
     renderCounter();
+
     if(didAny){
+
       showToast("All safe cleanups applied. Combined effect: " + TARGET_TOTAL + " rules.");
+
     } else {
+
       showToast("Already at " + TARGET_TOTAL + " rules, the analysis's full combined total.");
+
     }
+
   });
+
+
 
   renderCounter();
 
+
+
   /* ---------- match tester ---------- */
+
   var RULES = [
+
     {
+
       priority: 1,
+
       insurance: "Workers Comp",
+
       surgeonGroup: "wc_mva",
+
       hospital: "ALL",
+
       bills: "Meridian Billing Group",
+
       label: "Workers Comp + Neurosurgery WC/MVA Panel"
+
     },
+
     {
+
       priority: 2,
+
       insurance: "ALL",
+
       surgeonGroup: "ALL",
+
       hospital: "ASC of Dallas",
+
       bills: "ANS",
+
       label: "Any insurance + ASC of Dallas"
+
     },
+
     {
+
       priority: 3,
+
       insurance: "Medicare",
+
       surgeonGroup: "ALL",
+
       hospital: "ALL",
+
       bills: "USN Medicare",
+
       label: "Medicare + any surgeon or hospital"
+
     },
+
     {
+
       priority: 4,
+
       insurance: "ALL",
+
       surgeonGroup: "ALL",
+
       hospital: "ALL",
+
       bills: "Meridian Billing Group (client default)",
+
       label: "Client-wide default, everything wildcarded"
+
     }
+
   ];
+
+
 
   /* Specificity mirrors the live engine (dbo.bOptsF): dimensions are ranked in a
+
      FIXED order, not merely counted. Surgeon-specific outranks exact-insurance,
+
      which outranks hospital. So a rule specific on surgeon alone beats a rule
+
      specific on insurance + hospital, even though the latter matches "more" fields. */
+
   function specVector(rule){
+
     return [
+
       rule.surgeonGroup !== "ALL" ? 1 : 0,   /* 1. surgeon */
+
       rule.insurance !== "ALL" ? 1 : 0,       /* 2. exact insurance */
+
       rule.hospital !== "ALL" ? 1 : 0         /* 3. hospital */
+
     ];
+
   }
+
+
 
   /* lexicographic compare, most-specific first (returns >0 when b outranks a) */
+
   function cmpSpec(a, b){
+
     var va = specVector(a), vb = specVector(b);
+
     for(var i = 0; i < va.length; i++){
+
       if(vb[i] !== va[i]){ return vb[i] - va[i]; }
+
     }
+
     return 0;
+
   }
+
+
 
   function matchRules(insurance, surgeonGroup, hospital){
+
     return RULES.filter(function(rule){
+
       var insOk = rule.insurance === "ALL" || rule.insurance === insurance;
+
       var surgOk = rule.surgeonGroup === "ALL" || rule.surgeonGroup === surgeonGroup;
+
       var hospOk = rule.hospital === "ALL" || rule.hospital === hospital;
+
       return insOk && surgOk && hospOk;
+
     }).sort(function(a, b){
+
       var c = cmpSpec(a, b);
+
       if(c !== 0){ return c; }
+
       return a.priority - b.priority;
+
     });
+
   }
+
+
 
   function describeMatch(rule, insurance, surgeonGroup, hospital){
+
     var matched = [];
+
     if(rule.insurance !== "ALL"){ matched.push("Insurance = " + insurance); }
+
     if(rule.surgeonGroup !== "ALL"){
+
       matched.push("Surgeon group matched (" + (surgeonGroup === "wc_mva" ? "Neurosurgery WC/MVA Panel" : "no group") + ")");
+
     }
+
     if(rule.hospital !== "ALL"){ matched.push("Hospital = " + hospital); }
+
     if(matched.length === 0){
+
       return "Every dimension was a wildcard on this rule, so it only applies as the last-resort default.";
+
     }
+
     return "Matched on: " + matched.join(", ") + ".";
+
   }
+
+
 
   var testerHint = document.getElementById("testerHint");
+
   var testerResult = document.getElementById("testerResult");
+
   var testerWinner = document.getElementById("testerWinner");
+
   var testerReason = document.getElementById("testerReason");
+
   var testerRunnerUp = document.getElementById("testerRunnerUp");
 
+
+
   document.getElementById("testBtn").addEventListener("click", function(){
+
     var insurance = document.getElementById("selectInsurance").value;
+
     var surgeonGroup = document.getElementById("selectSurgeon").value;
+
     var hospital = document.getElementById("selectHospital").value;
 
+
+
     if(!insurance || !surgeonGroup || !hospital){
+
       testerHint.classList.add("show");
+
       testerResult.classList.remove("show");
+
       return;
+
     }
+
     testerHint.classList.remove("show");
 
+
+
     var matches = matchRules(insurance, surgeonGroup, hospital);
+
     if(matches.length === 0){
+
       testerWinner.textContent = "No rule matched.";
+
       testerReason.textContent = "In the real engine this would fall into an explicit \"unassigned, needs biller\" queue instead of silently going nowhere.";
+
       testerRunnerUp.textContent = "";
+
       testerResult.classList.add("show");
+
       return;
+
     }
+
+
 
     var winner = matches[0];
+
     var runnerUp = matches[1];
+
     var tie = runnerUp && cmpSpec(winner, runnerUp) === 0;
 
+
+
     testerWinner.textContent = "Winner: " + winner.label + " → " + winner.bills;
+
     var reason = describeMatch(winner, insurance, surgeonGroup, hospital);
+
     if(tie){
+
       reason += " This tied in specificity with another rule; priority " + winner.priority +
+
         " beat priority " + runnerUp.priority + ".";
+
     }
+
     testerReason.textContent = reason;
+
     testerRunnerUp.textContent = runnerUp
+
       ? "Runner-up: " + runnerUp.label + " → " + runnerUp.bills
+
       : "No other rule matched this claim.";
+
     testerResult.classList.add("show");
+
   });
 
+
+
 })();
+
 </script>
+
 <script>
+
 (function(){
+
   "use strict";
+
   var FLAGGED = [
+
     {ref:"MC-2026-08-4471",current:"ANS",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+
     {ref:"MC-2026-07-3892",current:"Medisource RCM",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-08-1205",current:"PABS3",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-06-7741",current:"No Billing",proposed:"Medisource RCM",reason:"no-op removed",tag:"noop"},
+
     {ref:"MC-2026-08-9334",current:"ANS",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+
     {ref:"MC-2026-07-5518",current:"Collective Current",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+
     {ref:"MC-2026-08-2267",current:"USN Medicare",proposed:"PABS3",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-07-8803",current:"Medisource RCM",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-06-4412",current:"No Billing",proposed:"USN Medicare",reason:"no-op removed",tag:"noop"},
+
     {ref:"MC-2026-08-6621",current:"PABS3",proposed:"Medisource RCM",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-07-1093",current:"ANS",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+
     {ref:"MC-2026-08-3350",current:"Collective Current",proposed:"ANS Panel (8 surgeons)",reason:"surgeon group collapse",tag:"surgeon"},
+
     {ref:"MC-2026-07-7788",current:"No Billing",proposed:"PABS3",reason:"no-op removed",tag:"noop"},
+
     {ref:"MC-2026-08-5501",current:"USN Medicare",proposed:"PABS3",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-07-2944",current:"PABS3",proposed:"USN Medicare",reason:"catch-all conflict",tag:"conflict"},
+
     {ref:"MC-2026-08-8812",current:"Collective Current",proposed:"Medisource RCM",reason:"catch-all conflict",tag:"conflict"}
+
   ];
 
+
+
   var SHOW_INITIAL = 5;
+
   var reviewed = {};
+
   var allVisible = false;
 
+
+
   var tbody = document.getElementById("regTableBody");
+
   var showMoreDiv = document.getElementById("regShowMore");
+
   var applyBtn = document.getElementById("applyCleanupBtn");
+
   var pendingEl = document.getElementById("regPending");
 
+
+
   function buildRows(){
+
     tbody.innerHTML = "";
+
     FLAGGED.forEach(function(row,i){
+
       var tr = document.createElement("tr");
+
       tr.dataset.idx = i;
+
       if(!allVisible && i >= SHOW_INITIAL){ tr.classList.add("reg-row-hidden"); }
+
       if(reviewed[i] === "accept"){ tr.classList.add("reg-reviewed"); }
+
       if(reviewed[i] === "keep"){ tr.classList.add("reg-keep-current"); }
+
       tr.innerHTML =
+
         '<td><code style="font-size:12px;font-family:var(--mono)">' + row.ref + '</code></td>' +
+
         '<td>' + row.current + '</td>' +
+
         '<td style="color:var(--faint);padding:0 2px">&rarr;</td>' +
+
         '<td>' + row.proposed + '</td>' +
+
         '<td><span class="reg-reason-tag ' + row.tag + '">' + row.reason + '</span></td>' +
+
         '<td style="text-align:center"><input type="checkbox" class="keep-cb" data-idx="' + i + '"' + (reviewed[i]==="keep"?" checked":"") + '></td>' +
+
         '<td><button class="accept-btn' + (reviewed[i]==="accept"?" accepted":"") + '" data-idx="' + i + '" type="button">' +
+
           (reviewed[i]==="accept"?"&#10003; Accepted":"Accept") +
+
         '</button></td>';
+
       tbody.appendChild(tr);
+
     });
+
     showMoreDiv.style.display = (!allVisible && FLAGGED.length > SHOW_INITIAL) ? "" : "none";
+
     refreshApply();
+
   }
+
+
 
   function refreshApply(){
+
     var pending = 0;
+
     FLAGGED.forEach(function(_,i){ if(!reviewed[i]){ pending++; } });
+
     if(pending === 0){
+
       pendingEl.textContent = "All reviewed — ready to apply";
+
       applyBtn.disabled = false;
+
     } else {
+
       pendingEl.textContent = pending + " of " + FLAGGED.length + " pending review";
+
       applyBtn.disabled = true;
+
     }
+
   }
 
+
+
   document.getElementById("showAllFlaggedBtn").addEventListener("click",function(){
+
     allVisible = true;
+
     tbody.querySelectorAll("tr.reg-row-hidden").forEach(function(r){ r.classList.remove("reg-row-hidden"); });
+
     showMoreDiv.style.display = "none";
+
   });
+
+
 
   tbody.addEventListener("change",function(e){
+
     var t = e.target;
+
     if(!t || !t.classList.contains("keep-cb")){ return; }
+
     var idx = parseInt(t.dataset.idx,10);
+
     var tr = t.closest("tr");
+
     if(t.checked){
+
       reviewed[idx] = "keep";
+
       tr.classList.add("reg-keep-current");
+
       tr.classList.remove("reg-reviewed");
+
       var ab = tr.querySelector(".accept-btn");
+
       if(ab){ ab.classList.remove("accepted"); ab.innerHTML = "Accept"; }
+
     } else {
+
       delete reviewed[idx];
+
       tr.classList.remove("reg-keep-current");
+
     }
+
     refreshApply();
+
   });
+
+
 
   tbody.addEventListener("click",function(e){
+
     var t = e.target;
+
     if(!t || !t.classList.contains("accept-btn") || t.classList.contains("accepted")){ return; }
+
     var idx = parseInt(t.dataset.idx,10);
+
     reviewed[idx] = "accept";
+
     t.classList.add("accepted");
+
     t.innerHTML = "&#10003; Accepted";
+
     var tr = t.closest("tr");
+
     tr.classList.add("reg-reviewed");
+
     tr.classList.remove("reg-keep-current");
+
     var cb = tr.querySelector(".keep-cb");
+
     if(cb){ cb.checked = false; }
+
     refreshApply();
+
   });
+
+
 
   applyBtn.addEventListener("click",function(){
+
     var kept = Object.keys(reviewed).filter(function(k){ return reviewed[k]==="keep"; }).length;
+
     var accepted = Object.keys(reviewed).filter(function(k){ return reviewed[k]==="accept"; }).length;
+
     applyBtn.textContent = "Applied";
+
     applyBtn.disabled = true;
+
     applyBtn.classList.remove("primary");
+
     applyBtn.classList.add("applied-btn");
+
     pendingEl.textContent = "Cleanup applied. " + kept + " claim" + (kept!==1?"s":"") + " kept on original routing.";
+
     var tc = document.getElementById("toastContainer");
+
     var el = document.createElement("div");
+
     el.className = "toast";
+
     el.textContent = "Cleanup applied. " + accepted + " claim" + (accepted!==1?"s":"") + " take new routing; " + kept + " preserved.";
+
     tc.appendChild(el);
+
     window.setTimeout(function(){ el.classList.add("show"); },10);
+
     window.setTimeout(function(){
+
       el.classList.remove("show");
+
       window.setTimeout(function(){ if(el.parentNode){ el.parentNode.removeChild(el); } },300);
+
     },3500);
+
   });
 
+
+
   buildRows();
+
 })();
+
 </script>
+
 </body>
+
 </html>
+
