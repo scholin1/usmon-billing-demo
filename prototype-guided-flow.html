@@ -440,6 +440,41 @@
   .box33.confirmed{border-color:var(--ok);background:var(--ok-tint);box-shadow:0 0 0 3px var(--ok-tint)}
   .box33.confirmed .b33-note{color:var(--ok)}
   .box33 .b33-done{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
+
+  /* VOB: explicit re-verify action, result-differs compare, notify VOB team */
+  .vobbox{margin-top:12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);padding:12px 14px}
+  .vob-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .vob-cost{font-size:11px;color:var(--muted);margin-top:5px;font-weight:600}
+  .vob-sim{margin-left:auto;align-self:center;font-size:11px;color:var(--faint);font-weight:600;border-bottom:1px dashed var(--line-strong)}
+  .vob-sim.on{color:var(--warn);border-bottom-color:var(--warn)}
+  .vob-result{margin-top:12px;display:none}
+  .vob-result.show{display:block}
+  .vob-run{font-size:12.5px;color:var(--muted);font-weight:600}
+  .vob-ok{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);border-radius:8px;padding:9px 12px}
+  .vob-ok.keep{color:var(--muted);background:#fff;border-color:var(--line-strong)}
+  .vob-diff{border:1px solid var(--warn-line);background:var(--warn-tint);border-radius:8px;padding:11px 13px}
+  .vob-diff h4{margin:0 0 9px;font-size:12.5px;color:var(--warn)}
+  .vob-cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:720px){.vob-cmp{grid-template-columns:1fr}}
+  .vob-col{background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 11px}
+  .vob-col.new{border-color:var(--warn-line)}
+  .vob-col h5{margin:0 0 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint)}
+  .vob-col dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:12px}
+  .vob-col dt{color:var(--muted)} .vob-col dd{margin:0;font-family:var(--mono);font-weight:600}
+  .vob-col dd.chg{color:var(--warn);font-weight:800}
+  .vob-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .vob-notify{display:none;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-weight:600}
+  .vob-notify.show{display:flex}
+  .vob-notify select{font:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:5px 8px;background:#fff;color:var(--ink)}
+  /* typed claim notes */
+  .ntype{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;font-family:var(--sans)}
+  .ntype.billing{background:var(--primary-tint);color:var(--primary-dark)}
+  .ntype.eligibility{background:var(--warn-tint);color:var(--warn)}
+  .ntype.coding{background:var(--ai-tint);color:var(--ai-dark)}
+  .ntype.appeal{background:var(--idr-tint);color:var(--idr-dark)}
+  .cnotes{margin-top:4px}
+  .cnote{font-size:12.5px;border-left:3px solid var(--line-strong);background:var(--surface-2);border-radius:0 7px 7px 0;padding:7px 11px;margin-bottom:7px;line-height:1.4}
+  .cnote .who{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-top:2px}
 </style>
 </head>
 <body>
@@ -732,12 +767,37 @@
                 <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
               </div>
             </div>
+            <div class="vobbox" id="vobBox">
+              <div class="vob-row">
+                <div><button class="btn primary sm" onclick="reverifyVOB()">↻ Re-verify eligibility</button>
+                  <div class="vob-cost">Runs a 270/271 check · ~$0.10 · charged to practice</div></div>
+                <button class="btn sm" onclick="openNotifyVOB()">✉ Notify VOB team</button>
+                <a href="#" class="vob-sim" id="vobSim" onclick="return toggleVobSim()">Simulate: result differs</a>
+              </div>
+              <div class="vob-notify" id="vobNotify">Reason
+                <select id="vobReason">
+                  <option>Benefits on file older than payer re-verify window</option>
+                  <option>271 response differs from benefits on file</option>
+                  <option>No 271 response from payer</option>
+                  <option>Policy # does not match payer portal</option>
+                </select>
+                <button class="btn primary sm" onclick="sendNotifyVOB()">Send to VOB team</button>
+                <button class="btn ghost sm" onclick="openNotifyVOB()">Cancel</button>
+              </div>
+              <div class="vob-result" id="vobResult"></div>
+            </div>
           </div>
         </div>
 
         <div class="smartnote">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
           <span><b>Why out-of-network is expected here:</b> charges are set above QPA by design. The remittance will come in low - the real recovery happens later via NSA negotiation and IDR. You don't need to do anything about that now; the clocks are tracked for you.</span>
+        </div>
+
+        <div class="blocktitle">Claim notes</div>
+        <div class="cnotes" id="noteList">
+          <div class="cnote"><span class="ntype eligibility">Eligibility</span>Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
+          <div class="cnote"><span class="ntype coding">Coding</span>Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
         </div>
       </div>
       <div class="stage-foot">
@@ -1289,6 +1349,58 @@
       toast('Exported '+ALL_CLAIMS.length+' claims to CSV (synthetic)');
     }catch(e){toast('Export CSV - '+ALL_CLAIMS.length+' claims (synthetic demo)');}
     return false;
+  }
+
+  /* ---------- VOB: re-verify (270/271), result-differs compare, notify VOB team ---------- */
+  const VOB_ROWS=[['Plan status','Active','Active'],['OON benefits','Active','Active'],['OON deductible','$3,000 · $1,200 met','$5,000 · $0 met'],['OON coinsurance','40%','50%'],['Out-of-pocket max','$9,000','$12,000']];
+  let vobSim=false;
+  function toggleVobSim(){
+    vobSim=!vobSim;
+    const el=document.getElementById('vobSim');
+    el.classList.toggle('on',vobSim);
+    el.textContent=vobSim?'Simulate: result differs ✓':'Simulate: result differs';
+    return false;
+  }
+  function vobCol(title,idx,cls){
+    return '<div class="vob-col '+cls+'"><h5>'+title+'</h5><dl>'+VOB_ROWS.map(r=>'<dt>'+r[0]+'</dt><dd'+(idx===2&&r[1]!==r[2]?' class="chg"':'')+'>'+r[idx]+'</dd>').join('')+'</dl></div>';
+  }
+  function reverifyVOB(){
+    const res=document.getElementById('vobResult');
+    res.className='vob-result show';
+    res.innerHTML='<div class="vob-run">↻ Running 270/271 eligibility check with United Healthcare…</div>';
+    bumpAudit();
+    setTimeout(()=>{
+      if(vobSim){
+        res.innerHTML='<div class="vob-diff"><h4>⚠ The 271 response differs from the benefits on file</h4>'+
+          '<div class="vob-cmp">'+vobCol('Current - on file 10/14/2025',1,'')+vobCol('New - 271 response today',2,'new')+'</div>'+
+          '<div class="vob-acts"><button class="btn primary sm" onclick="acceptVOB()">Accept new</button><button class="btn sm" onclick="keepVOB()">Keep current</button></div></div>';
+      } else {
+        res.innerHTML='<div class="vob-ok">✓ 271 response matches the benefits on file - eligibility re-verified today · logged to audit</div>';
+      }
+    },700);
+  }
+  function acceptVOB(){
+    document.getElementById('vobResult').innerHTML='<div class="vob-ok">✓ New eligibility accepted - benefits on file updated from today\'s 271 · logged to audit</div>';
+    bumpAudit(); toast('New eligibility accepted - benefits updated · logged to audit trail');
+  }
+  function keepVOB(){
+    document.getElementById('vobResult').innerHTML='<div class="vob-ok keep">Kept current benefits on file - the 271 difference is logged to audit</div>';
+    bumpAudit(); toast('Kept current benefits - 271 difference logged');
+  }
+  function openNotifyVOB(){document.getElementById('vobNotify').classList.toggle('show');}
+  function sendNotifyVOB(){
+    const reason=document.getElementById('vobReason').value;
+    addTypedNote('Eligibility','Eligibility re-verification needed — '+reason);
+    document.getElementById('vobNotify').classList.remove('show');
+    toast('VOB team notified - Eligibility note added to the claim');
+  }
+  function addTypedNote(type,text){
+    const div=document.createElement('div');div.className='cnote';
+    const b=document.createElement('span');b.className='ntype '+type.toLowerCase();b.textContent=type;
+    const who=document.createElement('span');who.className='who';who.textContent=document.getElementById('whoLabel').textContent+' · today';
+    div.appendChild(b);div.appendChild(document.createTextNode(text));div.appendChild(who);
+    document.getElementById('noteList').appendChild(div);
+    bumpAudit();
   }
 
   function stubClaim(name){toast(name+' - this demo wires Testcase, Alice end-to-end. Click her row to walk the flow.');}
