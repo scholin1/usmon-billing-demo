@@ -1554,7 +1554,7 @@
   function addNote(){
     const now=new Date();
     const t=String(((now.getHours()+11)%12)+1)+':'+String(now.getMinutes()).padStart(2,'0')+' '+(now.getHours()<12?'AM':'PM');
-    addTl('ch','You','human','Note','12/02 '+t,'Left VM with UHC provider line re: OON underpayment on claim <span class="mono">1000001</span>. Ref <span class="mono">#UHC-8841</span>.');
+    addTl('ch','You','human','Billing note','12/02 '+t,'Left VM with UHC provider line re: OON underpayment on claim <span class="mono">1000001</span>. Ref <span class="mono">#UHC-8841</span>.');
     bumpAudit();
     toast('Note added to the activity timeline - logged');
   }

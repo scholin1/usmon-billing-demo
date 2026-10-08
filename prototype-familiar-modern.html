@@ -363,6 +363,9 @@
   .notespop .naddrow{display:flex;gap:7px;margin-top:10px}
   .notespop textarea{flex:1;font-family:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 8px;resize:vertical;min-height:36px}
   .notespop textarea:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .notespop .naddrow{flex-wrap:wrap}
+  .notespop .ntsel{flex:1 0 100%;font-family:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:5px 8px;background:#fff;color:var(--ink)}
+  .notespop .ntsel.need{border-color:var(--block);box-shadow:0 0 0 3px var(--block-tint)}
 
   /* ============================================================= */
   /* Injected: editable CMS-1500 popup (namespaced c15-* · additive) */
@@ -786,10 +789,12 @@
       <div class="notespop" id="notespop">
         <h4>Claim notes - synthetic</h4>
         <div id="noteList">
-          <div class="note">Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
-          <div class="note">Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
+          <div class="note"><span class="ntype eligibility">Eligibility</span>Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
+          <div class="note"><span class="ntype coding">Coding</span>Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
         </div>
         <div class="naddrow">
+          <select class="ntsel" id="noteType" aria-label="Note type" onchange="this.classList.remove('need')">
+            <option value="">Note type (required)…</option><option>Billing</option><option>Eligibility</option><option>Coding</option><option>Appeal</option></select>
           <textarea id="noteInput" placeholder="Add a note to this claim…"></textarea>
           <button class="btn primary sm" onclick="addNote()">Add note</button>
         </div>
@@ -1334,15 +1339,19 @@
   function toggleNotes(e){e.stopPropagation();const p=document.getElementById('parkpop');if(p)p.classList.remove('show');document.getElementById('notespop').classList.toggle('show');}
   let noteN=2;
   function addNote(){
+    const sel=document.getElementById('noteType');
     const inp=document.getElementById('noteInput');const v=(inp.value||'').trim();
+    if(!sel.value){sel.classList.add('need');sel.focus();toast('Pick a note type first - Billing, Eligibility, Coding or Appeal','info');return;}
     if(!v){inp.focus();return;}
-    const div=document.createElement('div');div.className='note';div.textContent=v;
+    const type=sel.value;
+    const div=document.createElement('div');div.className='note';
+    const b=document.createElement('span');b.className='ntype '+type.toLowerCase();b.textContent=type;
     const who=document.createElement('span');who.className='who';who.textContent=document.getElementById('whoLabel').textContent+' · today';
-    div.appendChild(who);
+    div.appendChild(b);div.appendChild(document.createTextNode(v));div.appendChild(who);
     document.getElementById('noteList').appendChild(div);
-    inp.value='';noteN++;document.getElementById('noteCount').textContent=noteN;
+    inp.value='';sel.value='';noteN++;document.getElementById('noteCount').textContent=noteN;
     bumpAudit();
-    toast('Note added - logged to audit trail','info');
+    toast(type+' note added - logged to audit trail','info');
   }
 
   /* ---------- VOB: re-verify (270/271), result-differs compare, notify VOB team ---------- */
