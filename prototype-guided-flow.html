@@ -153,6 +153,29 @@
   .cr-amt{min-width:120px;font-family:var(--mono);font-weight:700;font-size:14px}
   .cr-flag{margin-left:auto;display:flex;align-items:center;gap:12px}
   .cr-open{color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap}
+  /* queue tabs: Needs review | All claims */
+  .qtabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+  .qtab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 14px;font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:-1px}
+  .qtab:hover{color:var(--ink)}
+  .qtab.on{color:var(--primary);border-bottom-color:var(--primary)}
+  .qtab .qct{font-family:var(--mono);font-size:11px;background:#eef2f7;color:var(--muted);border-radius:999px;padding:1px 7px;margin-left:5px}
+  .qtab.on .qct{background:var(--primary-tint);color:var(--primary-dark)}
+  .inbox-bar .csv{margin-left:auto}
+  .allc{width:100%;border-collapse:collapse;font-size:13px}
+  .allc th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+  .allc th:hover{color:var(--ink)}
+  .allc th.sorted{color:var(--primary)}
+  .allc th .sa{margin-left:4px}
+  .allc th.r,.allc td.r{text-align:right}
+  .allc td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .allc tbody tr{cursor:pointer;transition:.12s}
+  .allc tbody tr:hover{background:var(--surface-2)}
+  .allc tbody tr:last-child td{border-bottom:none}
+  .allc .nm{font-weight:700}
+  .allc .sub{color:var(--muted);font-size:11.5px}
+  .allc .num{font-family:var(--mono);font-weight:700}
+  .aging{font-family:var(--mono);font-weight:700;color:var(--muted)}
+  .aging.warn{color:var(--warn)} .aging.risk{color:var(--block)}
   .starthere{font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--primary-dark);background:#fff;border:1px solid var(--primary-line);border-radius:6px;padding:3px 8px}
 
   /* ---------- guided flow ---------- */
@@ -512,7 +535,29 @@
     </div>
   </div>
 
-  <div class="inbox">
+  <div class="qtabs" role="tablist" aria-label="Claim queue">
+    <button class="qtab on" id="qt-review" role="tab" onclick="setQueue('review')">Needs review<span class="qct"><span class="biller-only">2</span><span class="sup-only">6</span></span></button>
+    <button class="qtab" id="qt-all" role="tab" onclick="setQueue('all')">All claims<span class="qct" id="allCt">8</span></button>
+  </div>
+
+  <div class="inbox" id="queueAll" style="display:none">
+    <div class="inbox-bar">▦ <span><b id="allCt2">8</b> claims · every status · click a header to sort</span>
+      <a href="#" class="btn sm csv" onclick="return exportCSV()">⤓ Export CSV</a></div>
+    <table class="allc" id="allTable">
+      <thead><tr>
+        <th data-k="name" onclick="sortAll('name')">Patient<span class="sa"></span></th>
+        <th data-k="payer" onclick="sortAll('payer')">Payer<span class="sa"></span></th>
+        <th data-k="entity" onclick="sortAll('entity')">Entity (Box 33)<span class="sa"></span></th>
+        <th data-k="charges" class="r" onclick="sortAll('charges')">Charges<span class="sa"></span></th>
+        <th data-k="aged" class="r" onclick="sortAll('aged')">Aging<span class="sa"></span></th>
+        <th data-k="status" onclick="sortAll('status')">Status<span class="sa"></span></th>
+        <th data-k="biller" onclick="sortAll('biller')">Biller<span class="sa"></span></th>
+      </tr></thead>
+      <tbody id="allBody"></tbody>
+    </table>
+  </div>
+
+  <div class="inbox" id="queueReview">
     <div class="inbox-bar">⏱ <span><b><span class="biller-only">2 waiting</span><span class="sup-only">6 waiting</span></b> · sorted by filing deadline</span></div>
     <div class="inbox-sub sup-only">⚑ Needs your review (2)</div>
 
@@ -1192,6 +1237,60 @@
 
   function enterFlow(){resetFlow();show('flow');setNav('review');}
   function exitFlow(){show('inbox');setNav('review');}
+  /* ---------- queue tabs: Needs review | All claims ---------- */
+  const ALL_CLAIMS=[
+    {name:'Testcase, Alice',pid:'100001',claim:'1000001',dos:'10/20/2025',payer:'United Healthcare',entity:'Demo Neurophysiology LLC',charges:48087.92,aged:5,status:'Needs review',pill:'review',biller:'Sample, Dana'},
+    {name:'Sample, David',pid:'100004',claim:'1000002',dos:'10/20/2025',payer:'Humana',entity:'Demo Neurophysiology LLC',charges:61240.00,aged:5,status:'Held for sign-off',pill:'held',biller:'Sample, Dana'},
+    {name:'Mockdata, Ray',pid:'100002',claim:'1000007',dos:'10/18/2025',payer:'Aetna',entity:'Sample IONM Partners LLC',charges:53905.00,aged:7,status:'Ready to file',pill:'ready',biller:'Demo, Alex'},
+    {name:'Demo, Charles',pid:'100005',claim:'1000003',dos:'10/14/2025',payer:'BCBS',entity:'Example Monitoring Group LLC',charges:52030.00,aged:11,status:'Waiting on tech',pill:'held',biller:'Example, Priya'},
+    {name:'Testcase, Bruce',pid:'100009',claim:'1000009',dos:'10/09/2025',payer:'Cigna',entity:'Sample IONM Partners LLC',charges:41880.00,aged:16,status:'Needs review',pill:'review',biller:'Demo, Alex'},
+    {name:'Example, Marta',pid:'100006',claim:'1000004',dos:'06/18/2025',payer:'Mercy Care AZ',entity:'Demo Neurophysiology LLC',charges:30695.01,aged:127,status:'Ready to file',pill:'ready',biller:'Example, Priya'},
+    {name:'Specimen, Tom',pid:'100007',claim:'1000005',dos:'06/18/2025',payer:'Medicare',entity:'Example Monitoring Group LLC',charges:34290.00,aged:129,status:'Needs review',pill:'review',biller:'Mockdata, Sam'},
+    {name:'Sample, Nora',pid:'100008',claim:'1000008',dos:'06/12/2025',payer:'Medicare',entity:'Demo Neurophysiology LLC',charges:29140.00,aged:135,status:'Ready to file',pill:'ready',biller:'Mockdata, Sam'}
+  ];
+  let allSort={k:'aged',dir:-1};
+  function fmtMoney(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function renderAll(){
+    const k=allSort.k, d=allSort.dir;
+    const rows=ALL_CLAIMS.slice().sort((a,b)=>{const x=a[k],y=b[k];return (typeof x==='number'?x-y:String(x).localeCompare(String(y)))*d;});
+    document.getElementById('allBody').innerHTML=rows.map(r=>
+      '<tr onclick="'+(r.claim==='1000001'?'enterFlow()':'stubClaim(\''+r.name+'\')')+'">'+
+      '<td><div class="nm">'+escH(r.name)+'</div><div class="sub mono">PID '+r.pid+' · Claim '+r.claim+' · DOS '+r.dos+'</div></td>'+
+      '<td>'+escH(r.payer)+'</td>'+
+      '<td>'+escH(r.entity)+'</td>'+
+      '<td class="r num">'+fmtMoney(r.charges)+'</td>'+
+      '<td class="r"><span class="aging'+(r.aged>120?' risk':r.aged>90?' warn':'')+'">'+r.aged+'d</span></td>'+
+      '<td><span class="pill '+r.pill+'">'+escH(r.status)+'</span></td>'+
+      '<td>'+escH(r.biller)+'</td></tr>').join('');
+    document.querySelectorAll('#allTable th').forEach(th=>{
+      const on=th.dataset.k===k; th.classList.toggle('sorted',on);
+      th.querySelector('.sa').textContent=on?(d>0?'↑':'↓'):'↕';
+    });
+    document.getElementById('allCt').textContent=ALL_CLAIMS.length;
+    document.getElementById('allCt2').textContent=ALL_CLAIMS.length;
+  }
+  function sortAll(k){allSort=(allSort.k===k)?{k:k,dir:-allSort.dir}:{k:k,dir:1};renderAll();}
+  function setQueue(q){
+    const all=q==='all';
+    document.getElementById('queueAll').style.display=all?'':'none';
+    document.getElementById('queueReview').style.display=all?'none':'';
+    document.getElementById('qt-all').classList.toggle('on',all);
+    document.getElementById('qt-review').classList.toggle('on',!all);
+  }
+  function exportCSV(){
+    const head=['Patient','PID','Claim','DOS','Payer','Entity','Charges','Days aged','Status','Biller'];
+    const lines=[head].concat(ALL_CLAIMS.map(r=>[r.name,r.pid,r.claim,r.dos,r.payer,r.entity,r.charges.toFixed(2),r.aged,r.status,r.biller]));
+    const csv=lines.map(l=>l.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    try{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+      a.download='usmon-all-claims.csv'; document.body.appendChild(a); a.click(); a.remove();
+      toast('Exported '+ALL_CLAIMS.length+' claims to CSV (synthetic)');
+    }catch(e){toast('Export CSV - '+ALL_CLAIMS.length+' claims (synthetic demo)');}
+    return false;
+  }
+
   function stubClaim(name){toast(name+' - this demo wires Testcase, Alice end-to-end. Click her row to walk the flow.');}
 
   /* ---------- supervisor authority: sign-off + oversight controls ---------- */
@@ -1410,6 +1509,7 @@
   }
 
   /* init */
+  renderAll();
   updateAIStage(2); updateAIStage(3);
   updateFlowEntity();
   renderStage();
