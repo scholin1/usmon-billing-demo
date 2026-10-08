@@ -81,6 +81,13 @@
   .remit-act.deny:hover{background:#a02020;}
   .remit-act.off{color:#aaa;background:#e8e5e0;border-color:#b8b0a8;cursor:default;}
   .legbtns .spring{flex:1}
+  .legbtns .showdone{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:bold;color:#12325a;margin-left:6px;white-space:nowrap}
+  .legbtns .showdone input{margin:0}
+  .legrid tr.done td{color:#6a7484}
+  .legrid .pos{font-family:"Consolas","Courier New",monospace;font-weight:bold}
+  .legrid .pos small{font-family:var(--leg);font-weight:normal;color:#5a6474}
+  .legrid .pos.flip{background:#fff3b0!important}
+  .gridnote{margin:-4px 8px 8px;font-size:10px;color:#4a5464}
   .legbtns .hint{font-size:10.5px;color:#5a6474}
 
   /* ---- show / hide columns dropdown (legacy-styled) ---- */
@@ -237,6 +244,8 @@
   <button class="legbtn" onclick="t('Rendering PDF batch for the checked claims...')">Print PDF Batch Now</button>
   <button class="legbtn" onclick="t('Batch download queued for the checked claims.')">Download Batch Now</button>
   <button class="legbtn" onclick="t('Statement CSV export queued.')">Download Statement CSV</button>
+  <button class="legbtn" onclick="t('Export CSV - the rows shown in the grid (synthetic demo).')">Export CSV</button>
+  <button class="legbtn" onclick="t('Print - sends the grid as shown to your printer (synthetic demo).')">Print</button>
   <span class="colbtn-wrap" id="colBtnWrap">
     <button class="legbtn" id="colBtn" aria-label="Columns" aria-haspopup="true" aria-expanded="false" onclick="toggleColMenu()">Columns &#9662;</button>
     <div class="colmenu" id="colMenu" role="group" aria-label="Show or hide columns">
@@ -245,6 +254,7 @@
       <div class="cm-foot"><button class="legbtn" onclick="showAllCols()">Show all</button></div>
     </div>
   </span>
+  <label class="showdone"><input type="checkbox" id="showDone" onchange="render()"> Show completed</label>
   <span class="spring"></span>
   <span class="hint">Classic layout - same records as the Ongoing worklist.</span>
 </div>
@@ -279,8 +289,8 @@
       <div class="fld"><label>Billing Type</label><select><option>Any</option><option>Pro Only</option><option>Tech Only</option><option>Pro+Tech</option></select></div>
       <div class="fld"><label>Payer</label><select><option>Any payer</option><option>Aetna</option><option>BCBS</option><option>Cigna</option><option>UHC</option><option>Humana</option></select></div>
       <div class="fld"><label>Agent</label><select><option>Any agent</option><option>Agent 1</option><option>Agent 2</option></select></div>
-      <div class="fld"><label>Entity</label><select><option>Any entity</option><option>Sample Neurophysiology LLC</option><option>Demo Assessment Services LLC</option></select></div>
-      <div class="fld"><label>Claim Status</label><select><option>Any status</option><option>Filed - Awaiting ERA</option><option>Ready to File</option><option>Underpaid</option><option>In IDR</option></select></div>
+      <div class="fld"><label>Entity</label><select><option>Any entity</option><option>Demo Neurophysiology LLC</option><option>Sample Neurophysiology LLC</option><option>Demo Assessment Services LLC</option></select></div>
+      <div class="fld"><label>Claim Status</label><select><option>Any status</option><option>Filed - Awaiting ERA</option><option>Ready to File</option><option>Underpaid</option><option>In IDR</option><option>Paid in Full</option><option>Closed</option></select></div>
       <div class="fld"><label>Biller</label><select><option>Any biller</option><option>Sample, Dana</option><option>Demo, Alex</option><option>Mockdata, Sam</option></select></div>
     </div>
     <div class="instype">
@@ -317,15 +327,19 @@
         <th>Highlight</th>
         <th>Download</th>
         <th>Claim Status</th>
+        <th>Claim Action</th>
         <th>History</th>
         <th>Facility</th>
+        <th title="Billing entity - CMS-1500 Box 33">Entity</th>
+        <th title="Patient status - drives Box 24B place of service">Inpt / Outpt</th>
+        <th title="Box 24B place of service on every service line">24B POS</th>
         <th>State</th>
         <th>COB</th>
         <th>Insurance</th>
         <th>Comment</th>
         <th>Reader Overlap</th>
-        <th>MC</th>
-        <th>WC</th>
+        <th title="Medicare">MC</th>
+        <th title="Workers' Compensation">WC</th>
         <th>Auth</th>
         <th>CMS 02/12</th>
         <th>Patient Info</th>
@@ -346,10 +360,11 @@
     <tbody id="body"></tbody>
   </table>
 </div>
+<div class="gridnote">MC = Medicare · WC = Workers' Comp</div>
 
 <!-- legacy-style status bar -->
 <div class="statusbar">
-  <span class="sunk">Records: <b id="recCount">12</b> shown</span>
+  <span class="sunk">Records: <b id="recCount">12</b> shown<span id="doneHidden"></span></span>
   <span>Client: <b>USMON (synthetic demo)</b></span>
   <span>Sort: <b>Days Aged (desc)</b></span>
   <span style="margin-left:auto">Classic view is 1 skin over the new USMON engine - not a separate system.</span>
@@ -390,25 +405,33 @@ function toggleSearch(){
 
 /* ---------------- lookups (synthetic) ---------------- */
 var BILLING=['Pro Only','Tech Only','Pro+Tech'];
-var STATUSES=['Filed - Awaiting ERA','Ready to File','Info Pending','Underpaid','In IDR','Partial Payment','Denied','Paid in Full'];
+var STATUSES=['Filed - Awaiting ERA','Ready to File','Info Pending','Underpaid','In IDR','Partial Payment','Denied','Paid in Full','Closed'];
+var DONE_STATUSES=['Paid in Full','Closed'];
+var ACTIONS=['Rebill','Appeal','Send to coding','Hold'];
+var PT_STATUS={Inpatient:'21',Outpatient:'22'};
 var COB=['Primary','Secondary','Tertiary'];
 
-/* ---------------- synthetic rows (12) ---------------- */
+/* ---------------- synthetic rows (14) ---------------- */
 /* No real patient identity, no real client, all invented. */
 var DATA=[
-  {pid:100118, name:'Aster, R.',    dos:'02/14/2026', billing:'Pro+Tech', claim:'1002181', status:'In IDR',                facility:'Sample General',      state:'TX', cob:'Primary',   ins:'UHC',        comment:'2nd IDR request sent 7/09', ro:'r', roT:'Reader overlap conflict with claim 1002177 - review before filing', mc:'y', mcT:'Medicare crossover pending', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8842'}, incomplete:null, charges:48250, aged:112, agedHot:true, idrDays:3, idrT:'IDR initiation window closes in 3 business days', biller:'Sample, Dana', filed:true, ch:2, ai:[]},
-  {pid:100207, name:'Brolin, M.',   dos:'03/02/2026', billing:'Pro Only',  claim:'1002074', status:'Underpaid',            facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Aetna',      comment:'QPA below expected - refile w/ mod 26', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:null, charges:12980, aged:96, agedHot:true, idrDays:6, idrT:'IDR initiation window closes in 6 business days', biller:'Sample, Dana', filed:true, ch:1, ai:['ins','cob']},
-  {pid:100331, name:'Castel, D.',   dos:'06/28/2026', billing:'Pro+Tech', claim:'1003310', status:'Ready to File',         facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'Cigna',      comment:'', ro:'y', roT:'Minor overlap - same DOS, different levels', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'r',t:'No auth on file - may be required',lbl:'none'}, incomplete:'Missing rendering provider NPI (Box 24J). Cannot file until resolved.', charges:33500, aged:9, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:['status']},
-  {pid:100412, name:'Devar, S.',    dos:'05/19/2026', billing:'Tech Only', claim:'1004120', status:'Filed - Awaiting ERA', facility:'Specimen Surgical',   state:'OK', cob:'Primary',   ins:'Humana',     comment:'Tech-fee invoice routed to hospital', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-9014'}, incomplete:null, charges:8760, aged:41, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:1, ai:['billing']},
-  {pid:100566, name:'Eaves, T.',    dos:'01/30/2026', billing:'Pro Only',  claim:'1005660', status:'Denied',               facility:'Mockdata Hospital',   state:'LA', cob:'Secondary', ins:'BCBS',       comment:'Denial CO-97 - appeal drafted', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'r', wcT:'Workers-comp lien on file - confirm allocation', auth:{l:'g',t:'Prior auth on file',lbl:'A-7731'}, incomplete:null, charges:15400, aged:128, agedHot:true, idrDays:null, idrT:'', biller:'Sample, Dana', filed:true, ch:3, ai:[]},
-  {pid:100674, name:'Frell, A.',    dos:'06/11/2026', billing:'Pro+Tech', claim:'1006740', status:'Info Pending',          facility:'Sample General',      state:'TX', cob:'Primary',   ins:'TRICARE',    comment:'Awaiting signed report from reader', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:'Awaiting signed Tech Report from reader. Coding not finalized.', charges:29900, aged:14, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:[]},
-  {pid:100738, name:'Gunter, L.',   dos:'04/07/2026', billing:'Pro Only',  claim:'1007380', status:'Partial Payment',       facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Aetna',      comment:'Posted 40% - balance to IDR', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8120'}, incomplete:null, charges:21750, aged:73, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:2, ai:['status']},
-  {pid:100845, name:'Harlo, P.',    dos:'02/22/2026', billing:'Pro+Tech', claim:'1008450', status:'Underpaid',            facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'UHC',        comment:'OON allowed low - negotiate', ro:'y', roT:'Minor overlap - verify level codes', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8890'}, incomplete:null, charges:52100, aged:96, agedHot:true, idrDays:2, idrT:'IDR initiation window closes in 2 business days', biller:'Sample, Dana', filed:true, ch:1, ai:[]},
-  {pid:100912, name:'Ives, C.',     dos:'06/30/2026', billing:'Pro Only',  claim:'1009120', status:'Ready to File',         facility:'Testcase Ortho Center',state:'TN', cob:'Primary',   ins:'Cigna',      comment:'', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-9200'}, incomplete:null, charges:9650, aged:5, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:['ins']},
-  {pid:101044, name:'Joss, N.',     dos:'05/03/2026', billing:'Tech Only', claim:'1010440', status:'Filed - Awaiting ERA', facility:'Mockdata Hospital',   state:'LA', cob:'Primary',   ins:'Medicare B', comment:'Government case - hospital tech invoice', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Medicare primary confirmed', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8455'}, incomplete:null, charges:6420, aged:52, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:1, ai:[]},
-  {pid:101187, name:'Krell, B.',    dos:'03/18/2026', billing:'Pro+Tech', claim:'1011870', status:'Info Pending',          facility:'Sample General',      state:'TX', cob:'Primary',   ins:'BCBS',       comment:'Payer ID mismatch on entity', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:'Payer ID unresolved for billing entity (Box 33). Confirm before filing.', charges:37800, aged:88, agedHot:false, idrDays:null, idrT:'', biller:'Sample, Dana', filed:false, ch:0, ai:['cob']},
-  {pid:101250, name:'Lund, G.',     dos:'04/25/2026', billing:'Pro Only',  claim:'1012500', status:'Paid in Full',          facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Humana',     comment:'Closed - paid at expected', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8677'}, incomplete:null, charges:18300, aged:60, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:true, ch:2, ai:[]}
+  {pid:100118, entity:'Demo Neurophysiology LLC', name:'Aster, R.',    dos:'02/14/2026', billing:'Pro+Tech', claim:'1002181', status:'In IDR',                facility:'Sample General',      state:'TX', cob:'Primary',   ins:'UHC',        comment:'2nd IDR request sent 7/09', ro:'r', roT:'Reader overlap conflict with claim 1002177 - review before filing', mc:'y', mcT:'Medicare crossover pending', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8842'}, incomplete:null, charges:48250, aged:112, agedHot:true, idrDays:3, idrT:'IDR initiation window closes in 3 business days', biller:'Sample, Dana', filed:true, ch:2, ai:[]},
+  {pid:100207, entity:'Sample Neurophysiology LLC', name:'Brolin, M.',   dos:'03/02/2026', billing:'Pro Only',  claim:'1002074', status:'Underpaid',            facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Aetna',      comment:'QPA below expected - refile w/ mod 26', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:null, charges:12980, aged:96, agedHot:true, idrDays:6, idrT:'IDR initiation window closes in 6 business days', biller:'Sample, Dana', filed:true, ch:1, ai:['ins','cob']},
+  {pid:100331, entity:'Demo Neurophysiology LLC', name:'Castel, D.',   dos:'06/28/2026', billing:'Pro+Tech', claim:'1003310', status:'Ready to File',         facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'Cigna',      comment:'', ro:'y', roT:'Minor overlap - same DOS, different levels', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'r',t:'No auth on file - may be required',lbl:'none'}, incomplete:'Missing rendering provider NPI (Box 24J). Cannot file until resolved.', charges:33500, aged:9, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:['status']},
+  {pid:100412, entity:'Demo Assessment Services LLC', name:'Devar, S.',    dos:'05/19/2026', billing:'Tech Only', claim:'1004120', status:'Filed - Awaiting ERA', facility:'Specimen Surgical',   state:'OK', cob:'Primary',   ins:'Humana',     comment:'Tech-fee invoice routed to hospital', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-9014'}, incomplete:null, charges:8760, aged:41, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:1, ai:['billing']},
+  {pid:100566, entity:'Sample Neurophysiology LLC', name:'Eaves, T.',    dos:'01/30/2026', billing:'Pro Only',  claim:'1005660', status:'Denied',               facility:'Mockdata Hospital',   state:'LA', cob:'Secondary', ins:'BCBS',       comment:'Denial CO-97 - appeal drafted', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'r', wcT:'Workers-comp lien on file - confirm allocation', auth:{l:'g',t:'Prior auth on file',lbl:'A-7731'}, incomplete:null, charges:15400, aged:128, agedHot:true, idrDays:null, idrT:'', biller:'Sample, Dana', filed:true, ch:3, ai:[]},
+  {pid:100674, entity:'Demo Neurophysiology LLC', name:'Frell, A.',    dos:'06/11/2026', billing:'Pro+Tech', claim:'1006740', status:'Info Pending',          facility:'Sample General',      state:'TX', cob:'Primary',   ins:'TRICARE',    comment:'Awaiting signed report from reader', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:'Awaiting signed Tech Report from reader. Coding not finalized.', charges:29900, aged:14, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:[]},
+  {pid:100738, entity:'Demo Assessment Services LLC', name:'Gunter, L.',   dos:'04/07/2026', billing:'Pro Only',  claim:'1007380', status:'Partial Payment',       facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Aetna',      comment:'Posted 40% - balance to IDR', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8120'}, incomplete:null, charges:21750, aged:73, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:2, ai:['status']},
+  {pid:100845, entity:'Demo Neurophysiology LLC', name:'Harlo, P.',    dos:'02/22/2026', billing:'Pro+Tech', claim:'1008450', status:'Underpaid',            facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'UHC',        comment:'OON allowed low - negotiate', ro:'y', roT:'Minor overlap - verify level codes', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8890'}, incomplete:null, charges:52100, aged:96, agedHot:true, idrDays:2, idrT:'IDR initiation window closes in 2 business days', biller:'Sample, Dana', filed:true, ch:1, ai:[]},
+  {pid:100912, entity:'Sample Neurophysiology LLC', name:'Ives, C.',     dos:'06/30/2026', billing:'Pro Only',  claim:'1009120', status:'Ready to File',         facility:'Testcase Ortho Center',state:'TN', cob:'Primary',   ins:'Cigna',      comment:'', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-9200'}, incomplete:null, charges:9650, aged:5, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:false, ch:0, ai:['ins']},
+  {pid:101044, entity:'Demo Assessment Services LLC', name:'Joss, N.',     dos:'05/03/2026', billing:'Tech Only', claim:'1010440', status:'Filed - Awaiting ERA', facility:'Mockdata Hospital',   state:'LA', cob:'Primary',   ins:'Medicare B', comment:'Government case - hospital tech invoice', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Medicare primary confirmed', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8455'}, incomplete:null, charges:6420, aged:52, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:1, ai:[]},
+  {pid:101187, entity:'Demo Neurophysiology LLC', name:'Krell, B.',    dos:'03/18/2026', billing:'Pro+Tech', claim:'1011870', status:'Info Pending',          facility:'Sample General',      state:'TX', cob:'Primary',   ins:'BCBS',       comment:'Payer ID mismatch on entity', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'y',t:'Auth requested, awaiting payer',lbl:'pending'}, incomplete:'Payer ID unresolved for billing entity (Box 33). Confirm before filing.', charges:37800, aged:88, agedHot:false, idrDays:null, idrT:'', biller:'Sample, Dana', filed:false, ch:0, ai:['cob']},
+  {pid:101250, entity:'Sample Neurophysiology LLC', name:'Lund, G.',     dos:'04/25/2026', billing:'Pro Only',  claim:'1012500', status:'Paid in Full',          facility:'Demo Medical Center', state:'FL', cob:'Primary',   ins:'Humana',     comment:'Closed - paid at expected', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8677'}, incomplete:null, charges:18300, aged:60, agedHot:false, idrDays:null, idrT:'', biller:'Demo, Alex', filed:true, ch:2, ai:[]},
+  {pid:101309, entity:'Demo Assessment Services LLC', name:'Marsh, K.',    dos:'03/09/2026', billing:'Pro Only',  claim:'1013090', status:'Paid in Full',          facility:'Example Regional',    state:'GA', cob:'Primary',   ins:'Cigna',      comment:'Paid at expected - posted 8/14', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-8302'}, incomplete:null, charges:14820, aged:44, agedHot:false, idrDays:null, idrT:'', biller:'Mockdata, Sam', filed:true, ch:2, ai:[]},
+  {pid:101415, entity:'Demo Neurophysiology LLC', name:'Nadel, J.',    dos:'01/16/2026', billing:'Pro+Tech', claim:'1014150', status:'Closed',                facility:'Sample General',      state:'TX', cob:'Primary',   ins:'UHC',        comment:'IDR award paid - closed 9/02', ro:'g', roT:'No reader overlap', mc:'g', mcT:'Not a Medicare case', wc:'g', wcT:'No workers-comp lien', auth:{l:'g',t:'Prior auth on file',lbl:'A-7958'}, incomplete:null, charges:41200, aged:131, agedHot:false, idrDays:null, idrT:'', biller:'Sample, Dana', filed:true, ch:4, ai:[]}
 ];
+/* patient status (Box 8) drives Box 24B POS on every service line: Inpatient 21, Outpatient 22 */
+var OUTPATIENT=[100412,100912];
+DATA.forEach(function(r){r.pt=OUTPATIENT.indexOf(r.pid)!==-1?'Outpatient':'Inpatient';r.lines=4+(r.pid%4);});
 
 /* ---------------- helpers ---------------- */
 function money(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -439,7 +462,10 @@ function rowHtml(r){
     : '<span class="complete">Complete</span>';
   var authHtml = light(r.auth.l,r.auth.t)+'<span class="authlbl">'+esc(r.auth.lbl)+'</span>';
 
-  return '<tr data-pid="'+r.pid+'">'+
+  var done=DONE_STATUSES.indexOf(r.status)!==-1;
+  var actOpts='<option value="">Choose...</option>'+ACTIONS.map(function(a){return '<option>'+esc(a)+'</option>';}).join('');
+  var ptOpts=Object.keys(PT_STATUS).map(function(k){return '<option'+(k===r.pt?' selected':'')+'>'+k+'</option>';}).join('');
+  return '<tr data-pid="'+r.pid+'"'+(done?' class="done"':'')+'>'+
     '<td><button class="savelnk" id="save-'+r.pid+'" onclick="saveRow('+r.pid+')">Save</button></td>'+
     '<td><span class="pat" onclick="openCms('+r.pid+')">'+esc(r.name)+'</span></td>'+
     '<td class="mono">'+r.pid+'</td>'+
@@ -449,8 +475,12 @@ function rowHtml(r){
     '<td style="text-align:center"><input type="checkbox" class="chk" onchange="dirty('+r.pid+')" aria-label="Highlight"></td>'+
     '<td style="text-align:center"><input type="checkbox" class="chk" checked aria-label="Include in download"></td>'+
     '<td>'+sel(STATUSES,r.status,'status',r.pid,isAi(r,'status'))+'</td>'+
+    '<td><select class="cellsel" onchange="claimAction('+r.pid+',this)" aria-label="Claim action">'+actOpts+'</select></td>'+
     '<td><span class="celllnk" onclick="t(\'Opening history for claim '+r.claim+' - synthetic.\')">History</span></td>'+
     '<td>'+esc(r.facility)+'</td>'+
+    '<td>'+esc(r.entity)+'</td>'+
+    '<td><select class="cellsel" onchange="setPtStatus('+r.pid+',this.value)" aria-label="Inpatient or outpatient">'+ptOpts+'</select></td>'+
+    '<td class="pos" id="pos-'+r.pid+'" title="Box 24B on all '+r.lines+' service lines">'+PT_STATUS[r.pt]+' <small>&#215;'+r.lines+' lines</small></td>'+
     '<td class="mono">'+esc(r.state)+'</td>'+
     '<td>'+sel(COB,r.cob,'cob',r.pid,isAi(r,'cob'))+'</td>'+
     '<td>'+insCell(r)+'</td>'+
@@ -476,7 +506,7 @@ function rowHtml(r){
       var s=r.status;
       if(s==='Denied'){
         return '<td><button class="remit-act deny" onclick="openDenial()">Work Denial</button></td>';
-      }else if(s==='Filed - Awaiting ERA'||s==='Partial Payment'||s==='Underpaid'||s==='Paid in Full'||s==='In IDR'){
+      }else if(s==='Filed - Awaiting ERA'||s==='Partial Payment'||s==='Underpaid'||s==='Paid in Full'||s==='Closed'||s==='In IDR'){
         return '<td><button class="remit-act eob" onclick="openEob()">Read EOB</button></td>';
       }else{
         return '<td><button class="remit-act off" disabled>&#8212;</button></td>';
@@ -491,9 +521,27 @@ function openEob(){
   window.open('https://scholin1.github.io/usmon-billing-demo/paper-eob-demo.html','remit_eob','width=920,height=720,resizable=yes,scrollbars=yes');
 }
 function render(){
-  document.getElementById('body').innerHTML=DATA.map(rowHtml).join('');
-  document.getElementById('recCount').textContent=DATA.length;
+  var showDone=document.getElementById('showDone').checked;
+  var rows=DATA.filter(function(r){return showDone||DONE_STATUSES.indexOf(r.status)===-1;});
+  document.getElementById('body').innerHTML=rows.map(rowHtml).join('');
+  document.getElementById('recCount').textContent=rows.length;
+  var hidden=DATA.length-rows.length;
+  document.getElementById('doneHidden').textContent=hidden?' ('+hidden+' completed hidden)':'';
   syncCols();
+}
+function findRow(pid){for(var i=0;i<DATA.length;i++){if(DATA[i].pid===pid)return DATA[i];}return null;}
+function claimAction(pid,s){
+  var r=findRow(pid); if(!r||!s.value)return;
+  dirty(pid);
+  toast('Claim '+r.claim+': '+s.value+' queued - Save the row to apply.');
+}
+function setPtStatus(pid,v){
+  var r=findRow(pid); if(!r)return;
+  r.pt=v;
+  var cell=document.getElementById('pos-'+pid);
+  if(cell){cell.innerHTML=PT_STATUS[v]+' <small>&#215;'+r.lines+' lines</small>';cell.classList.add('flip');setTimeout(function(){cell.classList.remove('flip');},900);}
+  dirty(pid);
+  toast(v+' - Box 24B POS set to '+PT_STATUS[v]+' on all '+r.lines+' service lines of claim '+r.claim+'.');
 }
 
 /* ---------------- show / hide columns ---------------- */

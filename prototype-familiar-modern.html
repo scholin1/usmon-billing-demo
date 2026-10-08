@@ -116,6 +116,7 @@
   .tag.bt-pt{color:var(--primary-dark);background:var(--primary-tint)}
   .tag.bt-pro{color:var(--idr-dark);background:var(--idr-tint)}
   .tag.bt-tech{color:var(--hosp-dark);background:var(--hosp-tint)}
+  td.ent{font-size:12px;font-weight:600;white-space:nowrap}
   .net{font-size:11px;font-weight:700;color:var(--idr)}
   .aged{font-family:var(--mono);font-weight:700;font-feature-settings:"tnum" 1}
   .aged.warnc{color:var(--warn)} .aged.riskc{color:var(--block)}
@@ -362,6 +363,9 @@
   .notespop .naddrow{display:flex;gap:7px;margin-top:10px}
   .notespop textarea{flex:1;font-family:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 8px;resize:vertical;min-height:36px}
   .notespop textarea:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .notespop .naddrow{flex-wrap:wrap}
+  .notespop .ntsel{flex:1 0 100%;font-family:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:5px 8px;background:#fff;color:var(--ink)}
+  .notespop .ntsel.need{border-color:var(--block);box-shadow:0 0 0 3px var(--block-tint)}
 
   /* ============================================================= */
   /* Injected: editable CMS-1500 popup (namespaced c15-* · additive) */
@@ -440,6 +444,75 @@
   .c15-box33 .b33done{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
   .c15-smartnote{font-size:12px;color:var(--muted);margin-top:14px;display:flex;align-items:flex-start;gap:8px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:7px;padding:9px 12px}
   .c15-smartnote b{color:var(--ink)}
+
+  /* VOB: explicit re-verify action, result-differs compare, notify VOB team */
+  .vobbox{margin-top:12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);padding:12px 14px}
+  .vob-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .vob-cost{font-size:11px;color:var(--muted);margin-top:5px;font-weight:600}
+  .vob-sim{margin-left:auto;align-self:center;font-size:11px;color:var(--faint);font-weight:600;border-bottom:1px dashed var(--line-strong)}
+  .vob-sim.on{color:var(--warn);border-bottom-color:var(--warn)}
+  .vob-result{margin-top:12px;display:none}
+  .vob-result.show{display:block}
+  .vob-run{font-size:12.5px;color:var(--muted);font-weight:600}
+  .vob-ok{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);border-radius:8px;padding:9px 12px}
+  .vob-ok.keep{color:var(--muted);background:#fff;border-color:var(--line-strong)}
+  .vob-diff{border:1px solid var(--warn-line);background:var(--warn-tint);border-radius:8px;padding:11px 13px}
+  .vob-diff h4{margin:0 0 9px;font-size:12.5px;color:var(--warn)}
+  .vob-cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:720px){.vob-cmp{grid-template-columns:1fr}}
+  .vob-col{background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 11px}
+  .vob-col.new{border-color:var(--warn-line)}
+  .vob-col h5{margin:0 0 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint)}
+  .vob-col dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:12px}
+  .vob-col dt{color:var(--muted)} .vob-col dd{margin:0;font-family:var(--mono);font-weight:600}
+  .vob-col dd.chg{color:var(--warn);font-weight:800}
+  .vob-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .vob-notify{display:none;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-weight:600}
+  .vob-notify.show{display:flex}
+  .vob-notify select{font:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:5px 8px;background:#fff;color:var(--ink)}
+  /* typed claim notes */
+  .ntype{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;font-family:var(--sans)}
+  .ntype.billing{background:var(--primary-tint);color:var(--primary-dark)}
+  .ntype.eligibility{background:var(--warn-tint);color:var(--warn)}
+  .ntype.coding{background:var(--ai-tint);color:var(--ai-dark)}
+  .ntype.appeal{background:var(--idr-tint);color:var(--idr-dark)}
+
+  /* Dx list with provenance + live service-line model (pointers, time, add line) */
+  .dxlist{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+  .dxi{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;flex-wrap:wrap}
+  .dxi:last-child{border-bottom:none}
+  .dxi .dxl{flex:none;width:22px;height:22px;border-radius:6px;background:#eef2f7;color:var(--muted);display:grid;place-items:center;font-weight:800;font-size:11px}
+  .dxi.confirmed .dxl{background:var(--ok-tint);color:var(--ok)}
+  .dxi.changed .dxl{background:var(--warn-tint);color:var(--warn)}
+  .dxi.pending .dxl{background:var(--ai-tint);color:var(--ai-dark)}
+  .dxi .dxc{font-family:var(--mono);font-weight:700;min-width:64px}
+  .dxi .dxd{color:var(--muted)}
+  .prov{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+  .prov.report{background:var(--primary-tint);color:var(--primary-dark);border:1px solid var(--primary-line)}
+  .prov.tech{background:var(--hosp-tint);color:var(--hosp-dark);border:1px solid var(--hosp-line)}
+  .prov.you{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .dxi .dxa{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .dxi .dxa .btn{padding:4px 10px;font-size:11.5px}
+  .dxdone{font-size:12px;font-weight:700;color:var(--ok)} .dxdone.ovr{color:var(--warn)}
+  .dxin{font-family:var(--mono);font-size:12.5px;border:1px solid var(--primary);border-radius:6px;padding:4px 7px;width:96px}
+  .lines input.cin{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 6px;background:#fff;width:72px}
+  .lines input.cin:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .lines input.w-min{width:56px} .lines input.w-u{width:48px} .lines input.w-mod{width:52px} .lines input.w-dx{width:56px} .lines input.w-chg{width:92px}
+  .lines tr.added{background:var(--primary-tint)}
+  .lines tfoot td{font-weight:800;border-top:2px solid var(--line-strong);border-bottom:none}
+  .lines tfoot .tl{font-family:var(--sans);text-align:right;color:var(--muted)}
+  .lines .tna{color:var(--faint)}
+  .lines .rm{background:none;border:none;color:var(--faint);font-weight:800;padding:0 4px;font-size:14px}
+  .lines .rm:hover{color:var(--block)}
+  .dxp{display:inline-flex;align-items:baseline;gap:3px;font-weight:800;border-radius:5px;padding:1px 5px;border:1px solid var(--line-strong);background:#fff;transition:.3s;margin-right:3px}
+  .dxp small{font-weight:600;font-size:10.5px;color:var(--muted)}
+  .dxp.confirmed{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .dxp.changed{border-color:var(--warn-line);background:var(--warn-tint);color:var(--warn)}
+  .dxp.pending{border-color:var(--ai-line);background:var(--ai-tint);color:var(--ai-dark)}
+  .dxp.bad{border-color:var(--block-line);background:var(--block-tint);color:var(--block)}
+  .dxp.flash{box-shadow:0 0 0 3px var(--primary-line)}
+  .lines-foot{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .lines-foot .hint{font-size:11.5px;color:var(--faint);font-weight:600}
 </style>
 </head>
 <body>
@@ -569,6 +642,7 @@
         <th class="sortable" onclick="sortTable('claim',this)">Claim / DOS<span class="cw">&#8597;</span></th>
         <th>Billing type</th>
         <th>Payer</th>
+        <th class="sortable" onclick="sortTable('entity',this)" title="Billing entity - CMS-1500 Box 33">Entity<span class="cw">&#8597;</span></th>
         <th class="sortable" onclick="sortTable('charges',this)">Charges<span class="cw">&#8597;</span></th>
         <th class="sortable sorted" data-dir="desc" onclick="sortTable('aged',this)">Days aged<span class="cw">&#8595;</span></th>
         <th>IDR state</th>
@@ -577,96 +651,104 @@
       </tr></thead>
       <tbody id="wlBody">
         <!-- headline traveling case -->
-        <tr class="rowlink" id="row-alice" data-pat="Testcase, Alice" data-claim="1000001" data-charges="48087.92" data-aged="5" data-status="1" onclick="openClaim()">
+        <tr class="rowlink" id="row-alice" data-pat="Testcase, Alice" data-entity="Demo Neurophysiology LLC" data-claim="1000001" data-charges="48087.92" data-aged="5" data-status="1" onclick="openClaim()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Testcase, Alice</div><div class="sub mono">PID 100001</div></td>
           <td><div class="mono">1000001</div><div class="sub mono">10/20/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>United Healthcare<div class="net">&#9670; Out-of-network</div></td>
-          <td class="mono">$48,087.92</td>
+          <td class="ent">Demo Neurophysiology LLC</td>
+          <td class="mono js-total">$48,087.92</td>
           <td><span class="aged warnc">5d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td id="alice-status"><span class="pill review">&#9650; Needs review</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Sample, David" data-claim="1000002" data-charges="61240.00" data-aged="5" data-status="1" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Sample, David" data-entity="Demo Neurophysiology LLC" data-claim="1000002" data-charges="61240.00" data-aged="5" data-status="1" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Sample, David</div><div class="sub mono">PID 100004</div></td>
           <td><div class="mono">1000002</div><div class="sub mono">10/20/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>Humana<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$61,240.00</td>
           <td><span class="aged warnc">5d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill review">&#9650; Needs review</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Mockdata, Ray" data-claim="1000007" data-charges="53905.00" data-aged="7" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Mockdata, Ray" data-entity="Sample IONM Partners LLC" data-claim="1000007" data-charges="53905.00" data-aged="7" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Mockdata, Ray</div><div class="sub mono">PID 100002</div></td>
           <td><div class="mono">1000007</div><div class="sub mono">10/18/2025</div></td>
           <td><span class="tag bt-pro">PRO ONLY</span></td>
           <td>Aetna<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Sample IONM Partners LLC</td>
           <td class="mono">$53,905.00</td>
           <td><span class="aged">7d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill ready">&#10003; Ready to file</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Demo, Charles" data-claim="1000003" data-charges="52030.00" data-aged="11" data-status="2" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Demo, Charles" data-entity="Example Monitoring Group LLC" data-claim="1000003" data-charges="52030.00" data-aged="11" data-status="2" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Demo, Charles</div><div class="sub mono">PID 100005</div></td>
           <td><div class="mono">1000003</div><div class="sub mono">10/14/2025</div></td>
           <td><span class="tag bt-pro">PRO ONLY</span></td>
           <td>BCBS<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Example Monitoring Group LLC</td>
           <td class="mono">$52,030.00</td>
           <td><span class="aged">11d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill park">&#9208; Waiting on tech</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Testcase, Bruce" data-claim="1000009" data-charges="41880.00" data-aged="16" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Testcase, Bruce" data-entity="Sample IONM Partners LLC" data-claim="1000009" data-charges="41880.00" data-aged="16" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Testcase, Bruce</div><div class="sub mono">PID 100009</div></td>
           <td><div class="mono">1000009</div><div class="sub mono">10/09/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>Cigna<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Sample IONM Partners LLC</td>
           <td class="mono">$41,880.00</td>
           <td><span class="aged">16d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill ready">&#10003; Ready to file</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Example, Marta" data-claim="1000004" data-charges="30695.01" data-aged="127" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Example, Marta" data-entity="Demo Neurophysiology LLC" data-claim="1000004" data-charges="30695.01" data-aged="127" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Example, Marta</div><div class="sub mono">PID 100006</div></td>
           <td><div class="mono">1000004</div><div class="sub mono">06/18/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>Mercy Care AZ<div class="sub">Medicaid HMO · in-network</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$30,695.01</td>
           <td><span class="aged riskc">127d</span></td>
           <td><span class="idrstate na">N/A (Gov)</span></td>
           <td><span class="pill ready">&#10003; Ready to file</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Specimen, Tom" data-claim="1000005" data-charges="34290.00" data-aged="129" data-status="1" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Specimen, Tom" data-entity="Example Monitoring Group LLC" data-claim="1000005" data-charges="34290.00" data-aged="129" data-status="1" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Specimen, Tom</div><div class="sub mono">PID 100007</div></td>
           <td><div class="mono">1000005</div><div class="sub mono">06/18/2025</div></td>
           <td><span class="tag bt-tech">TECH ONLY</span></td>
           <td>Medicare<div class="sub">Government</div></td>
+          <td class="ent">Example Monitoring Group LLC</td>
           <td class="mono">$34,290.00</td>
           <td><span class="aged riskc">129d</span></td>
           <td><span class="idrstate na">N/A (Gov)</span></td>
           <td><span class="pill review">&#9650; Needs review</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Sample, Nora" data-claim="1000008" data-charges="29140.00" data-aged="135" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Sample, Nora" data-entity="Demo Neurophysiology LLC" data-claim="1000008" data-charges="29140.00" data-aged="135" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Sample, Nora</div><div class="sub mono">PID 100008</div></td>
           <td><div class="mono">1000008</div><div class="sub mono">06/12/2025</div></td>
           <td><span class="tag bt-tech">TECH ONLY</span></td>
           <td>Medicare<div class="sub">Government</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$29,140.00</td>
           <td><span class="aged riskc">135d</span></td>
           <td><span class="idrstate na">N/A (Gov)</span></td>
@@ -688,7 +770,8 @@
     <div class="ws-id"><div class="name">Testcase, Alice</div>
       <div class="meta"><span>PID <b class="mono">100001</b></span><span>Claim <b class="mono">1000001</b></span>
         <span>DOS <b class="mono">10/20/2025</b></span><span>Billing <b>Pro + Tech</b></span>
-        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">&#9670; Out-of-network</b></span></div></div>
+        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">&#9670; Out-of-network</b></span>
+        <span>Entity <b id="hdrEntity">Demo Neurophysiology LLC</b> (Box 33)</span></div></div>
     <div class="right">
       <div class="master work" id="masterStatus"><span id="masterIcon">&#9650;</span> <span id="masterLabel">Review in progress</span></div>
       <button class="btn" onclick="togglePark(event)">&#9208; Park / waiting on…</button>
@@ -706,10 +789,12 @@
       <div class="notespop" id="notespop">
         <h4>Claim notes - synthetic</h4>
         <div id="noteList">
-          <div class="note">Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
-          <div class="note">Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
+          <div class="note"><span class="ntype eligibility">Eligibility</span>Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
+          <div class="note"><span class="ntype coding">Coding</span>Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
         </div>
         <div class="naddrow">
+          <select class="ntsel" id="noteType" aria-label="Note type" onchange="this.classList.remove('need')">
+            <option value="">Note type (required)…</option><option>Billing</option><option>Eligibility</option><option>Coding</option><option>Appeal</option></select>
           <textarea id="noteInput" placeholder="Add a note to this claim…"></textarea>
           <button class="btn primary sm" onclick="addNote()">Add note</button>
         </div>
@@ -784,6 +869,25 @@
                   <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
                 </div>
               </div>
+              <div class="vobbox" id="vobBox">
+                <div class="vob-row">
+                  <div><button class="btn primary sm" onclick="reverifyVOB()">↻ Re-verify eligibility</button>
+                    <div class="vob-cost">Runs a 270/271 check · ~$0.10 · charged to practice</div></div>
+                  <button class="btn sm" onclick="openNotifyVOB()">✉ Notify VOB team</button>
+                  <a href="#" class="vob-sim" id="vobSim" onclick="return toggleVobSim()">Simulate: result differs</a>
+                </div>
+                <div class="vob-notify" id="vobNotify">Reason
+                  <select id="vobReason">
+                    <option>Benefits on file older than payer re-verify window</option>
+                    <option>271 response differs from benefits on file</option>
+                    <option>No 271 response from payer</option>
+                    <option>Policy # does not match payer portal</option>
+                  </select>
+                  <button class="btn primary sm" onclick="sendNotifyVOB()">Send to VOB team</button>
+                  <button class="btn ghost sm" onclick="openNotifyVOB()">Cancel</button>
+                </div>
+                <div class="vob-result" id="vobResult"></div>
+              </div>
             </div>
           </div>
           <div class="benefit-cols">
@@ -832,7 +936,7 @@
               </div>
             </div>
           </div>
-          <div class="f col4"><label>Supporting diagnoses (prefilled)</label><div class="val mono">M50.120 · M54.12 · G89.18</div></div>
+          <div class="f col4"><label>Diagnoses - ICD-10 <span class="bx">(Box 21 A–D)</span></label><div class="dxlist" id="dxList"></div></div>
         </div>
         </div>
       </section>
@@ -844,16 +948,11 @@
           <span class="src">From reading neurologist's report</span>
           <button class="revbtn" id="rev-code" onclick="review('code')">Mark reviewed</button></div>
         <div class="sec-body">
-          <table class="lines"><thead><tr><th>#</th><th>CPT (24D)</th><th>Mods</th><th>Units (24G)</th><th>Dx ptr (24E)</th><th>Charge (24F)</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>95887</td><td>26</td><td>1</td><td>A</td><td>$361.25</td>
-                <td id="cell-prov">Demo, Eric MD</td><td class="desc">Needle EMG, non-extremity</td></tr>
-              <tr><td>2</td><td>95909</td><td>26</td><td>1</td><td>A</td><td>$849.15</td><td class="set">Demo, Eric MD</td><td class="desc">Nerve conduction, 7&#8211;8 studies</td></tr>
-              <tr><td>3</td><td>95937</td><td>26</td><td>4</td><td>A B</td><td>$6,332.50</td><td class="set">Demo, Eric MD</td><td class="desc">Neuromuscular junction test</td></tr>
-              <tr><td>4</td><td>95938</td><td>26</td><td id="cell-units">6</td><td>A B</td><td>$11,900.01</td><td class="set">Demo, Eric MD</td><td class="desc">SSEP upper &amp; lower</td></tr>
-              <tr><td>5</td><td>95939</td><td>26</td><td>3</td><td>A</td><td>$17,850.01</td><td class="set">Demo, Eric MD</td><td class="desc">MEP upper &amp; lower</td></tr>
-              <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Demo, Eric MD</td><td class="desc">EEG during surgery</td></tr>
-            </tbody></table>
+          <table class="lines"><thead><tr><th>#</th><th>CPT (24D)</th><th>Mods</th><th>Time</th><th>Units (24G)</th><th>Dx ptr (24E)</th><th>Charge (24F)</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
+            <tbody id="linesBody"></tbody>
+            <tfoot id="linesFoot"></tfoot>
+          </table>
+          <div class="lines-foot"><button class="btn sm" onclick="addLine()">+ Add line</button><span class="hint">Time-based codes (95940, 95941, G0453) derive units from minutes · 95940 and G0453 at 15 min per unit, 95941 at 60</span></div>
           <div class="fgrid" style="margin-top:14px">
             <div class="f col2"><label>Units - line 4 (95938, SSEP) <span class="bx">(Box 24G)</span></label>
               <div class="aif" id="aif-units">
@@ -879,7 +978,7 @@
             </div>
           </div>
           <div class="smartnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-            <span><b>OON pricing applied:</b> charges set at the client's OON fee schedule (&#8776;6&#215; QPA). Charged <span class="mono">$48,087.92</span> total.</span></div>
+            <span><b>OON pricing applied:</b> charges set at the client's OON fee schedule (&#8776;6&#215; QPA). Charged <span class="mono js-total">$48,087.92</span> total.</span></div>
         </div>
       </section>
 
@@ -944,7 +1043,7 @@
         <div class="rgroup v"><h3>Automatic checks <span class="ct">&#10003; 5</span></h3>
           <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Timely filing OK</b><span>UHC · 90-day window · 5d used</span></div></div>
           <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Billing NPI valid (Box 33a)</b><span>Luhn &amp; NPPES check passed</span></div></div>
-          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Charges balance</b><span>6 lines total $48,087.92</span></div></div>
+          <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Charges balance</b><span><span class="js-linecount">6 lines</span> total <span class="js-total">$48,087.92</span></span></div></div>
           <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Dx pointers &amp; POS valid</b><span>Pointers A&#8211;C · POS 21</span></div></div>
           <div class="ritem"><span class="ic d">&#10003;</span><div class="txt"><b>Signature on file (Box 31)</b><span>Demo, Eric MD</span></div></div>
         </div>
@@ -971,7 +1070,7 @@
     <div class="rcpt">
       <span class="k">Claim #</span><span class="v">1000001</span>
       <span class="k">Format</span><span class="v">837P batch</span>
-      <span class="k">Charged</span><span class="v">$48,087.92</span>
+      <span class="k">Charged</span><span class="v js-total">$48,087.92</span>
       <span class="k">Blocking errors</span><span class="v" style="color:var(--ok)">0</span>
       <span class="k">Audit events</span><span class="v" id="successAudit">15</span>
     </div>
@@ -1141,7 +1240,7 @@
                     <td><input class="mono w-chg" value="10,795.00"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
                     <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">EEG monitoring during surgery</td></tr>
                 </tbody>
-                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono">$48,087.92</td><td colspan="5"></td></tr></tfoot>
+                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono js-total">$48,087.92</td><td colspan="5"></td></tr></tfoot>
               </table>
             </div>
           </div>
@@ -1156,11 +1255,11 @@
               <div class="c15-box c15-c3"><span class="bxn">26</span><label>Patient account no.</label><input class="mono" value="100001"></div>
               <div class="c15-box c15-c2"><span class="bxn">27</span><label>Accept assignment</label>
                 <select><option selected>Yes</option><option>No</option></select></div>
-              <div class="c15-box c15-c3"><span class="bxn">28</span><label>Total charge</label><input class="mono" value="$48,087.92"></div>
+              <div class="c15-box c15-c3"><span class="bxn">28</span><label>Total charge</label><input class="mono js-total-in" value="$48,087.92"></div>
             </div>
             <div class="c15-row">
               <div class="c15-box c15-c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
-              <div class="c15-box c15-c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
+              <div class="c15-box c15-c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono js-total-in" value="$48,087.92"></div>
               <div class="c15-box c15-c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
             </div>
             <div class="c15-row">
@@ -1240,16 +1339,214 @@
   function toggleNotes(e){e.stopPropagation();const p=document.getElementById('parkpop');if(p)p.classList.remove('show');document.getElementById('notespop').classList.toggle('show');}
   let noteN=2;
   function addNote(){
+    const sel=document.getElementById('noteType');
     const inp=document.getElementById('noteInput');const v=(inp.value||'').trim();
+    if(!sel.value){sel.classList.add('need');sel.focus();toast('Pick a note type first - Billing, Eligibility, Coding or Appeal','info');return;}
     if(!v){inp.focus();return;}
-    const div=document.createElement('div');div.className='note';div.textContent=v;
+    const type=sel.value;
+    const div=document.createElement('div');div.className='note';
+    const b=document.createElement('span');b.className='ntype '+type.toLowerCase();b.textContent=type;
     const who=document.createElement('span');who.className='who';who.textContent=document.getElementById('whoLabel').textContent+' · today';
-    div.appendChild(who);
+    div.appendChild(b);div.appendChild(document.createTextNode(v));div.appendChild(who);
     document.getElementById('noteList').appendChild(div);
-    inp.value='';noteN++;document.getElementById('noteCount').textContent=noteN;
+    inp.value='';sel.value='';noteN++;document.getElementById('noteCount').textContent=noteN;
     bumpAudit();
-    toast('Note added - logged to audit trail','info');
+    toast(type+' note added - logged to audit trail','info');
   }
+
+  /* ---------- VOB: re-verify (270/271), result-differs compare, notify VOB team ---------- */
+  const VOB_ROWS=[['Plan status','Active','Active'],['OON benefits','Active','Active'],['OON deductible','$3,000 · $1,200 met','$5,000 · $0 met'],['OON coinsurance','40%','50%'],['Out-of-pocket max','$9,000','$12,000']];
+  let vobSim=false;
+  function toggleVobSim(){
+    vobSim=!vobSim;
+    const el=document.getElementById('vobSim');
+    el.classList.toggle('on',vobSim);
+    el.textContent=vobSim?'Simulate: result differs ✓':'Simulate: result differs';
+    return false;
+  }
+  function vobCol(title,idx,cls){
+    return '<div class="vob-col '+cls+'"><h5>'+title+'</h5><dl>'+VOB_ROWS.map(r=>'<dt>'+r[0]+'</dt><dd'+(idx===2&&r[1]!==r[2]?' class="chg"':'')+'>'+r[idx]+'</dd>').join('')+'</dl></div>';
+  }
+  function reverifyVOB(){
+    const res=document.getElementById('vobResult');
+    res.className='vob-result show';
+    res.innerHTML='<div class="vob-run">↻ Running 270/271 eligibility check with United Healthcare…</div>';
+    bumpAudit();
+    setTimeout(()=>{
+      if(vobSim){
+        res.innerHTML='<div class="vob-diff"><h4>⚠ The 271 response differs from the benefits on file</h4>'+
+          '<div class="vob-cmp">'+vobCol('Current - on file 10/14/2025',1,'')+vobCol('New - 271 response today',2,'new')+'</div>'+
+          '<div class="vob-acts"><button class="btn primary sm" onclick="acceptVOB()">Accept new</button><button class="btn sm" onclick="keepVOB()">Keep current</button></div></div>';
+      } else {
+        res.innerHTML='<div class="vob-ok">✓ 271 response matches the benefits on file - eligibility re-verified today · logged to audit</div>';
+      }
+    },700);
+  }
+  function acceptVOB(){
+    document.getElementById('vobResult').innerHTML='<div class="vob-ok">✓ New eligibility accepted - benefits on file updated from today\'s 271 · logged to audit</div>';
+    bumpAudit(); toast('New eligibility accepted - benefits updated · logged to audit trail');
+  }
+  function keepVOB(){
+    document.getElementById('vobResult').innerHTML='<div class="vob-ok keep">Kept current benefits on file - the 271 difference is logged to audit</div>';
+    bumpAudit(); toast('Kept current benefits - 271 difference logged');
+  }
+  function openNotifyVOB(){document.getElementById('vobNotify').classList.toggle('show');}
+  function sendNotifyVOB(){
+    const reason=document.getElementById('vobReason').value;
+    addTypedNote('Eligibility','Eligibility re-verification needed — '+reason);
+    document.getElementById('vobNotify').classList.remove('show');
+    toast('VOB team notified - Eligibility note added to the claim');
+  }
+  function addTypedNote(type,text){
+    const div=document.createElement('div');div.className='note';
+    const b=document.createElement('span');b.className='ntype '+type.toLowerCase();b.textContent=type;
+    const who=document.createElement('span');who.className='who';who.textContent=document.getElementById('whoLabel').textContent+' · today';
+    div.appendChild(b);div.appendChild(document.createTextNode(text));div.appendChild(who);
+    document.getElementById('noteList').appendChild(div);
+    noteN++;document.getElementById('noteCount').textContent=noteN;
+    bumpAudit();
+  }
+
+  function fmtMoney(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  /* ---------- claim model: Dx (with provenance) + service lines ---------- */
+  const TIME_CODES={'95940':15,'95941':60,'G0453':15};   /* minutes per unit */
+  const DX_PROV={report:'From neurologist\'s report · signed 10/21',tech:'Entered by tech',you:'Changed by you · today'};
+  const DX_INIT=[
+    {code:'M50.121',desc:'Cervical disc disorder with radiculopathy, C6–C7',src:'report',principal:true},
+    {code:'M50.120',desc:'Mid-cervical disc disorder, unspecified level',src:'report'},
+    {code:'M54.12',desc:'Radiculopathy, cervical region',src:'report'},
+    {code:'G89.18',desc:'Other acute postprocedural pain',src:'tech'}
+  ];
+  const LINES_INIT=[
+    {cpt:'95887',mod:'26',units:1,dx:'A',charge:361.25,prov:'Demo, Eric MD',desc:'Needle EMG, non-extremity'},
+    {cpt:'95909',mod:'26',units:1,dx:'A',charge:849.15,prov:'Demo, Eric MD',desc:'Nerve conduction, 7–8 studies'},
+    {cpt:'95937',mod:'26',units:4,dx:'A B',charge:6332.50,prov:'Demo, Eric MD',desc:'Neuromuscular junction test'},
+    {cpt:'95938',mod:'26',units:6,dx:'A B',charge:11900.01,prov:'Demo, Eric MD',desc:'SSEP upper & lower',ai:'units'},
+    {cpt:'95939',mod:'26',units:3,dx:'A',charge:17850.01,prov:'Demo, Eric MD',desc:'MEP upper & lower'},
+    {cpt:'95955',mod:'26',units:1,dx:'A',charge:10795.00,prov:'Demo, Eric MD',desc:'EEG during surgery'}
+  ];
+  const DX_LETTERS='ABCDEFGH';
+  let DX=[], LINES=[];
+  function initClaimModel(){
+    DX=DX_INIT.map(d=>Object.assign({state:d.principal?'pending':'source'},d));
+    LINES=LINES_INIT.map(l=>Object.assign({fee:l.charge/l.units},l));
+  }
+  function dxFor(letter){return DX[DX_LETTERS.indexOf(letter)]||null;}
+  function dxDoneHTML(d){return d.state==='changed'?'<span class="dxdone ovr">✎ Changed by you</span>':'<span class="dxdone">✓ Confirmed</span>';}
+  function renderDx(){
+    const el=document.getElementById('dxList'); if(!el)return;
+    el.innerHTML=DX.map((d,i)=>{
+      const L=DX_LETTERS[i];
+      let act;
+      if(d.editing) act='<input class="dxin" id="dxin-'+i+'" value="'+escH(d.code)+'"><button class="btn primary sm" onclick="saveDx('+i+')">Save</button><button class="btn sm" onclick="cancelDx('+i+')">Cancel</button>';
+      else if(d.principal) act=d.state==='pending'?'<button class="btn ghost sm" onclick="jumpAI(\'icd\')">Confirm principal below ↓</button>':dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      else if(d.state==='source') act='<button class="btn sm" onclick="confirmDx('+i+')">✓ Confirm</button><button class="btn sm" onclick="editDx('+i+')">Change</button>';
+      else act=dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      const pk=d.state==='changed'?'you':d.src;
+      return '<div class="dxi '+d.state+'"><span class="dxl">'+L+'</span><span class="dxc">'+escH(d.code)+'</span>'+
+        '<span class="dxd">'+escH(d.desc)+(d.principal?' · principal':'')+'</span>'+
+        '<span class="prov '+pk+'">'+DX_PROV[pk]+'</span><span class="dxa">'+act+'</span></div>';
+    }).join('');
+  }
+  function confirmDx(i){DX[i].state='confirmed';bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);toast('Dx '+DX_LETTERS[i]+' confirmed - service-line pointers updated');}
+  function editDx(i){DX[i].editing=true;renderDx();const inp=document.getElementById('dxin-'+i);if(inp){inp.focus();inp.select();}}
+  function cancelDx(i){DX[i].editing=false;renderDx();}
+  function saveDx(i){
+    const v=(document.getElementById('dxin-'+i).value||'').trim().toUpperCase();
+    DX[i].editing=false;
+    if(v&&v!==DX[i].code){DX[i].code=v;DX[i].desc='ICD-10 description from code lookup';DX[i].state='changed';}
+    else if(DX[i].state==='source')DX[i].state='confirmed';
+    bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);
+    toast('Dx '+DX_LETTERS[i]+' is now '+DX[i].code+' - service-line pointers updated');
+  }
+  function setPrincipalDx(text,mode){
+    const parts=text.split(' - ');
+    DX[0].code=parts[0].trim()||DX[0].code;
+    if(parts[1])DX[0].desc=parts.slice(1).join(' - ').trim();
+    DX[0].state=mode==='overridden'?'changed':'confirmed';
+    renderDx();renderLines();flashPtr('A');
+  }
+  function ptrHTML(dx){
+    return String(dx||'').toUpperCase().split(/[\s,]+/).filter(Boolean).map(L=>{
+      const d=dxFor(L);
+      return '<span class="dxp '+(d?d.state:'bad')+'" data-l="'+escH(L)+'" title="'+(d?L+' = '+escH(d.code):'No diagnosis in slot '+escH(L))+'">'+escH(L)+'<small>'+(d?escH(d.code):'?')+'</small></span>';
+    }).join('');
+  }
+  function flashPtr(L){
+    document.querySelectorAll('#linesBody .dxp[data-l="'+L+'"]').forEach(e=>{e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),900);});
+  }
+  function deriveUnits(l){if(TIME_CODES[l.cpt]&&l.min)l.units=Math.max(1,Math.round(l.min/TIME_CODES[l.cpt]));}
+  function timeHTML(l,i){
+    if(!TIME_CODES[l.cpt])return '<span class="tna" title="Not a time-based code">-</span>';
+    if(l.added)return '<input class="cin w-min" value="'+(l.min||'')+'" placeholder="min" onchange="setMinutes('+i+',this.value)"> min → <b>'+l.units+' u</b>';
+    return (l.min||0)+' min → '+l.units+' u';
+  }
+  function provHTML(l){
+    if(l.prov===null)return '<span class="needs" onclick="jumpAI(\'prov\')">Set provider →</span>';
+    return '<span class="set">'+escH(l.prov)+'</span>';
+  }
+  function unitsHTML(l,i){
+    if(TIME_CODES[l.cpt]&&l.min)return '<b title="Derived from minutes">'+l.units+'</b>';
+    return '<input class="cin w-u" value="'+l.units+'" title="Edit units - the line charge re-prices" onchange="setUnits('+i+',this.value)">';
+  }
+  function reprice(l){if(l.fee)l.charge=Math.round(l.units*l.fee*100)/100;}
+  function syncFormLines(sel){
+    document.querySelectorAll(sel).forEach((tr,i)=>{
+      const l=LINES[i]; if(!l)return; const ins=tr.querySelectorAll('input'); if(ins.length<8)return;
+      ins[5].value=l.dx; ins[6].value=Number(l.charge).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); ins[7].value=l.units;
+    });
+  }
+  function updateTotals(){
+    const t=lineTotal(), txt=fmtMoney(t);
+    document.querySelectorAll('.js-total').forEach(e=>e.textContent=txt);
+    document.querySelectorAll('.js-total-in').forEach(e=>e.value=txt);
+    document.querySelectorAll('.js-linecount').forEach(e=>e.textContent=LINES.length+' lines');
+    const row=document.getElementById('row-alice'); if(row)row.dataset.charges=t.toFixed(2);
+    return t;
+  }
+  function lineTotal(){return LINES.reduce((s,l)=>s+(Number(l.charge)||0),0);}
+  function renderLines(){
+    const body=document.getElementById('linesBody'); if(!body)return;
+    body.innerHTML=LINES.map((l,i)=>{
+      let cls=l.added?'added':'';
+      if(i===0&&l.hot!==undefined)cls=l.hot?'hot':'hot fixed';
+      if(l.added){
+        return '<tr class="'+cls+'"><td>'+(i+1)+'</td>'+
+          '<td><input class="cin" value="'+escH(l.cpt)+'" placeholder="CPT" onchange="setLine('+i+',\'cpt\',this.value)"></td>'+
+          '<td><input class="cin w-mod" value="'+escH(l.mod)+'" onchange="setLine('+i+',\'mod\',this.value)"></td>'+
+          '<td>'+timeHTML(l,i)+'</td><td>'+unitsHTML(l,i)+'</td>'+
+          '<td><input class="cin w-dx" value="'+escH(l.dx)+'" onchange="setLine('+i+',\'dx\',this.value)"> '+ptrHTML(l.dx)+'</td>'+
+          '<td><input class="cin w-chg" value="'+(l.charge?Number(l.charge).toFixed(2):'')+'" placeholder="0.00" onchange="setLine('+i+',\'charge\',this.value)"></td>'+
+          '<td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+' <button class="rm" title="Remove line" onclick="removeLine('+i+')">×</button></td></tr>';
+      }
+      return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+escH(l.cpt)+'</td><td>'+escH(l.mod)+'</td><td>'+timeHTML(l,i)+'</td>'+
+        '<td>'+unitsHTML(l,i)+'</td><td>'+ptrHTML(l.dx)+'</td><td>'+fmtMoney(l.charge)+'</td><td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+'</td></tr>';
+    }).join('');
+    document.getElementById('linesFoot').innerHTML='<tr><td colspan="6" class="tl">Total · '+LINES.length+' lines</td><td>'+fmtMoney(lineTotal())+'</td><td colspan="2"></td></tr>';
+    updateTotals();
+  }
+  function setLine(i,k,v){
+    const l=LINES[i]; v=String(v).trim();
+    if(k==='cpt'){l.cpt=v.toUpperCase();deriveUnits(l);reprice(l);}
+    else if(k==='dx')l.dx=v.toUpperCase();
+    else if(k==='charge'){l.charge=parseFloat(v.replace(/[$,]/g,''))||0;l.fee=l.units?l.charge/l.units:l.charge;}
+    else l[k]=v;
+    renderLines();
+  }
+  function setUnits(i,v){
+    const l=LINES[i]; if(l.units>0&&l.charge)l.fee=l.charge/l.units;
+    l.units=Math.max(0,parseInt(v,10)||0); reprice(l); renderLines(); bumpAudit();
+    toast('Line '+(i+1)+' re-priced: '+l.units+' u × '+fmtMoney(l.fee||0)+' = '+fmtMoney(l.charge)+' · total '+fmtMoney(lineTotal()));
+  }
+  function setMinutes(i,v){const l=LINES[i]; if(l.units>0&&l.charge)l.fee=l.charge/l.units; l.min=Math.max(0,parseInt(v,10)||0);deriveUnits(l);reprice(l);renderLines();}
+  function addLine(){
+    LINES.push({cpt:'',mod:'26',units:1,dx:'A',charge:0,fee:0,prov:'Demo, Eric MD',desc:'Added by you',added:true});
+    renderLines(); bumpAudit();
+    const rows=document.querySelectorAll('#linesBody tr'); const inp=rows.length&&rows[rows.length-1].querySelector('input'); if(inp)inp.focus();
+    toast('Line added - enter CPT, mods, units, Dx pointer and charge. Time-based codes (95940, 95941, G0453) derive units from minutes.');
+  }
+  function removeLine(i){LINES.splice(i,1);renderLines();bumpAudit();toast('Added line removed');}
 
   /* ---------- worklist sort ---------- */
   function sortTable(key,th){
@@ -1307,6 +1604,11 @@
       mode==='overridden'
         ? '<span class="aif-done ovr">✎ Overridden by you · logged to audit</span>'
         : '<span class="aif-done">✓ Confirmed by you · logged to audit</span>';
+    if(key==='icd')setPrincipalDx(document.getElementById('aival-icd').textContent,mode);
+    if(key==='units'){
+      const u=parseInt(document.getElementById('aival-units').textContent.replace(/[^0-9]/g,''),10);
+      const l=LINES.find(x=>x.ai==='units'); if(l&&u>0){l.fee=l.charge/l.units; l.units=u; reprice(l); renderLines();}
+    }
     const item=document.getElementById('ai-item-'+key);
     if(item){item.classList.add('done');item.classList.remove('click');item.onclick=null;
       const ric=document.getElementById('aiic-'+key); if(ric){ric.className='ic '+(mode==='overridden'?'ov':'d'); ric.textContent=(mode==='overridden'?'✎':'✓');}}
@@ -1461,6 +1763,7 @@
   /* drop returns them exactly where they were. Box 33 emphasized.   */
   /* ============================================================= */
   function openCms15(){
+    syncFormLines('#cms15Back .c15-svc tbody tr');
     document.getElementById('cms15Back').classList.add('show');
     document.body.style.overflow='hidden';
     if(typeof bumpAudit==='function')bumpAudit();
@@ -1492,6 +1795,7 @@
   }
   function cms15ConfirmB33(){
     var p=cms15B33Parts();
+    var he=document.getElementById('hdrEntity'); if(he)he.textContent=p[0];
     document.getElementById('cms15B33NPI').value=p[1];
     document.getElementById('cms15B33Box').classList.add('confirmed');
     document.getElementById('cms15B33Tag').style.display='none';
@@ -1502,6 +1806,7 @@
     toast('Box 33 confirmed - payment routes to '+p[0]+' · logged to audit','info');
   }
 
+  initClaimModel(); renderDx(); renderLines();
   update();
 </script>
 <script src="demo-nav.js"></script>

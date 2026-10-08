@@ -149,9 +149,33 @@
   .cr-payer{min-width:150px;font-size:13px}
   .cr-payer .net{font-size:11px;font-weight:700;color:var(--idr);margin-top:1px}
   .cr-payer .net.gov{color:var(--gov)}
+  .cr-payer .ent{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
   .cr-amt{min-width:120px;font-family:var(--mono);font-weight:700;font-size:14px}
   .cr-flag{margin-left:auto;display:flex;align-items:center;gap:12px}
   .cr-open{color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap}
+  /* queue tabs: Needs review | All claims */
+  .qtabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+  .qtab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 14px;font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:-1px}
+  .qtab:hover{color:var(--ink)}
+  .qtab.on{color:var(--primary);border-bottom-color:var(--primary)}
+  .qtab .qct{font-family:var(--mono);font-size:11px;background:#eef2f7;color:var(--muted);border-radius:999px;padding:1px 7px;margin-left:5px}
+  .qtab.on .qct{background:var(--primary-tint);color:var(--primary-dark)}
+  .inbox-bar .csv{margin-left:auto}
+  .allc{width:100%;border-collapse:collapse;font-size:13px}
+  .allc th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint);text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
+  .allc th:hover{color:var(--ink)}
+  .allc th.sorted{color:var(--primary)}
+  .allc th .sa{margin-left:4px}
+  .allc th.r,.allc td.r{text-align:right}
+  .allc td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .allc tbody tr{cursor:pointer;transition:.12s}
+  .allc tbody tr:hover{background:var(--surface-2)}
+  .allc tbody tr:last-child td{border-bottom:none}
+  .allc .nm{font-weight:700}
+  .allc .sub{color:var(--muted);font-size:11.5px}
+  .allc .num{font-family:var(--mono);font-weight:700}
+  .aging{font-family:var(--mono);font-weight:700;color:var(--muted)}
+  .aging.warn{color:var(--warn)} .aging.risk{color:var(--block)}
   .starthere{font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--primary-dark);background:#fff;border:1px solid var(--primary-line);border-radius:6px;padding:3px 8px}
 
   /* ---------- guided flow ---------- */
@@ -333,6 +357,8 @@
   .formview-btn:hover{background:#d9eef0;border-color:var(--primary)}
   .flow-entity{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
   .flow-entity b{color:var(--ink)}
+  .kick .kent{margin-left:8px;text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted);font-size:12px}
+  .kick .kent b{color:var(--ink);font-weight:700}
 
   /* modal shell */
   .modal-back{position:fixed;inset:0;background:rgba(16,32,46,.45);display:none;align-items:flex-start;justify-content:center;z-index:70;padding:34px 18px;overflow:auto}
@@ -414,6 +440,78 @@
   .box33.confirmed{border-color:var(--ok);background:var(--ok-tint);box-shadow:0 0 0 3px var(--ok-tint)}
   .box33.confirmed .b33-note{color:var(--ok)}
   .box33 .b33-done{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
+
+  /* VOB: explicit re-verify action, result-differs compare, notify VOB team */
+  .vobbox{margin-top:12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);padding:12px 14px}
+  .vob-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .vob-cost{font-size:11px;color:var(--muted);margin-top:5px;font-weight:600}
+  .vob-sim{margin-left:auto;align-self:center;font-size:11px;color:var(--faint);font-weight:600;border-bottom:1px dashed var(--line-strong)}
+  .vob-sim.on{color:var(--warn);border-bottom-color:var(--warn)}
+  .vob-result{margin-top:12px;display:none}
+  .vob-result.show{display:block}
+  .vob-run{font-size:12.5px;color:var(--muted);font-weight:600}
+  .vob-ok{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ok);background:var(--ok-tint);border:1px solid var(--ok-line);border-radius:8px;padding:9px 12px}
+  .vob-ok.keep{color:var(--muted);background:#fff;border-color:var(--line-strong)}
+  .vob-diff{border:1px solid var(--warn-line);background:var(--warn-tint);border-radius:8px;padding:11px 13px}
+  .vob-diff h4{margin:0 0 9px;font-size:12.5px;color:var(--warn)}
+  .vob-cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:720px){.vob-cmp{grid-template-columns:1fr}}
+  .vob-col{background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 11px}
+  .vob-col.new{border-color:var(--warn-line)}
+  .vob-col h5{margin:0 0 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--faint)}
+  .vob-col dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:12px}
+  .vob-col dt{color:var(--muted)} .vob-col dd{margin:0;font-family:var(--mono);font-weight:600}
+  .vob-col dd.chg{color:var(--warn);font-weight:800}
+  .vob-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .vob-notify{display:none;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-weight:600}
+  .vob-notify.show{display:flex}
+  .vob-notify select{font:inherit;font-size:12.5px;border:1px solid var(--line-strong);border-radius:7px;padding:5px 8px;background:#fff;color:var(--ink)}
+  /* typed claim notes */
+  .ntype{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;font-family:var(--sans)}
+  .ntype.billing{background:var(--primary-tint);color:var(--primary-dark)}
+  .ntype.eligibility{background:var(--warn-tint);color:var(--warn)}
+  .ntype.coding{background:var(--ai-tint);color:var(--ai-dark)}
+  .ntype.appeal{background:var(--idr-tint);color:var(--idr-dark)}
+  .cnotes{margin-top:4px}
+  .cnote{font-size:12.5px;border-left:3px solid var(--line-strong);background:var(--surface-2);border-radius:0 7px 7px 0;padding:7px 11px;margin-bottom:7px;line-height:1.4}
+  .cnote .who{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-top:2px}
+
+  /* Dx list with provenance + live service-line model (pointers, time, add line) */
+  .dxlist{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+  .dxi{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;flex-wrap:wrap}
+  .dxi:last-child{border-bottom:none}
+  .dxi .dxl{flex:none;width:22px;height:22px;border-radius:6px;background:#eef2f7;color:var(--muted);display:grid;place-items:center;font-weight:800;font-size:11px}
+  .dxi.confirmed .dxl{background:var(--ok-tint);color:var(--ok)}
+  .dxi.changed .dxl{background:var(--warn-tint);color:var(--warn)}
+  .dxi.pending .dxl{background:var(--ai-tint);color:var(--ai-dark)}
+  .dxi .dxc{font-family:var(--mono);font-weight:700;min-width:64px}
+  .dxi .dxd{color:var(--muted)}
+  .prov{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+  .prov.report{background:var(--primary-tint);color:var(--primary-dark);border:1px solid var(--primary-line)}
+  .prov.tech{background:var(--hosp-tint);color:var(--hosp-dark);border:1px solid var(--hosp-line)}
+  .prov.you{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .dxi .dxa{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .dxi .dxa .btn{padding:4px 10px;font-size:11.5px}
+  .dxdone{font-size:12px;font-weight:700;color:var(--ok)} .dxdone.ovr{color:var(--warn)}
+  .dxin{font-family:var(--mono);font-size:12.5px;border:1px solid var(--primary);border-radius:6px;padding:4px 7px;width:96px}
+  .lines input.cin{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 6px;background:#fff;width:72px}
+  .lines input.cin:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .lines input.w-min{width:56px} .lines input.w-u{width:48px} .lines input.w-mod{width:52px} .lines input.w-dx{width:56px} .lines input.w-chg{width:92px}
+  .lines tr.added{background:var(--primary-tint)}
+  .lines tfoot td{font-weight:800;border-top:2px solid var(--line-strong);border-bottom:none}
+  .lines tfoot .tl{font-family:var(--sans);text-align:right;color:var(--muted)}
+  .lines .tna{color:var(--faint)}
+  .lines .rm{background:none;border:none;color:var(--faint);font-weight:800;padding:0 4px;font-size:14px}
+  .lines .rm:hover{color:var(--block)}
+  .dxp{display:inline-flex;align-items:baseline;gap:3px;font-weight:800;border-radius:5px;padding:1px 5px;border:1px solid var(--line-strong);background:#fff;transition:.3s;margin-right:3px}
+  .dxp small{font-weight:600;font-size:10.5px;color:var(--muted)}
+  .dxp.confirmed{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .dxp.changed{border-color:var(--warn-line);background:var(--warn-tint);color:var(--warn)}
+  .dxp.pending{border-color:var(--ai-line);background:var(--ai-tint);color:var(--ai-dark)}
+  .dxp.bad{border-color:var(--block-line);background:var(--block-tint);color:var(--block)}
+  .dxp.flash{box-shadow:0 0 0 3px var(--primary-line)}
+  .lines-foot{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .lines-foot .hint{font-size:11.5px;color:var(--faint);font-weight:600}
 </style>
 </head>
 <body>
@@ -509,27 +607,49 @@
     </div>
   </div>
 
-  <div class="inbox">
+  <div class="qtabs" role="tablist" aria-label="Claim queue">
+    <button class="qtab on" id="qt-review" role="tab" onclick="setQueue('review')">Needs review<span class="qct"><span class="biller-only">2</span><span class="sup-only">6</span></span></button>
+    <button class="qtab" id="qt-all" role="tab" onclick="setQueue('all')">All claims<span class="qct" id="allCt">8</span></button>
+  </div>
+
+  <div class="inbox" id="queueAll" style="display:none">
+    <div class="inbox-bar">▦ <span><b id="allCt2">8</b> claims · every status · click a header to sort</span>
+      <a href="#" class="btn sm csv" onclick="return exportCSV()">⤓ Export CSV</a></div>
+    <table class="allc" id="allTable">
+      <thead><tr>
+        <th data-k="name" onclick="sortAll('name')">Patient<span class="sa"></span></th>
+        <th data-k="payer" onclick="sortAll('payer')">Payer<span class="sa"></span></th>
+        <th data-k="entity" onclick="sortAll('entity')">Entity (Box 33)<span class="sa"></span></th>
+        <th data-k="charges" class="r" onclick="sortAll('charges')">Charges<span class="sa"></span></th>
+        <th data-k="aged" class="r" onclick="sortAll('aged')">Aging<span class="sa"></span></th>
+        <th data-k="status" onclick="sortAll('status')">Status<span class="sa"></span></th>
+        <th data-k="biller" onclick="sortAll('biller')">Biller<span class="sa"></span></th>
+      </tr></thead>
+      <tbody id="allBody"></tbody>
+    </table>
+  </div>
+
+  <div class="inbox" id="queueReview">
     <div class="inbox-bar">⏱ <span><b><span class="biller-only">2 waiting</span><span class="sup-only">6 waiting</span></b> · sorted by filing deadline</span></div>
     <div class="inbox-sub sup-only">⚑ Needs your review (2)</div>
 
     <div class="claimrow headline" onclick="enterFlow()">
       <div class="cr-who"><div class="nm">Testcase, Alice</div><div class="sub mono">PID 100001 · Claim 1000001 · DOS 10/20/2025</div></div>
-      <div class="cr-payer">United Healthcare<div class="net">◆ Out-of-network</div></div>
-      <div class="cr-amt">$48,087.92</div>
+      <div class="cr-payer">United Healthcare<div class="net">◆ Out-of-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
+      <div class="cr-amt js-total">$48,087.92</div>
       <div class="cr-flag"><span class="tag bilr sup-only">👤 Sample, Dana</span><span class="starthere">Start here</span><span class="pill review">✦ AI fields to confirm</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow sup-only" onclick="stubClaim('Mockdata, Ray')">
       <div class="cr-who"><div class="nm">Mockdata, Ray</div><div class="sub mono">PID 100002 · Claim 1000007 · DOS 10/18/2025</div></div>
-      <div class="cr-payer">Aetna<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">Aetna<div class="net">◆ Out-of-network</div><div class="ent">▦ Sample IONM Partners LLC</div></div>
       <div class="cr-amt">$53,905.00</div>
       <div class="cr-flag"><span class="tag bilr">👤 Demo, Alex</span><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow" onclick="stubClaim('Sample, David')">
       <div class="cr-who"><div class="nm">Sample, David</div><div class="sub mono">PID 100004 · Claim 1000002 · DOS 10/20/2025</div></div>
-      <div class="cr-payer">Humana<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">Humana<div class="net">◆ Out-of-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
       <div class="cr-amt">$61,240.00</div>
       <div class="cr-flag">
         <span class="tag bilr sup-only">👤 Sample, Dana</span>
@@ -545,21 +665,21 @@
 
     <div class="claimrow sup-only" onclick="stubClaim('Demo, Charles')">
       <div class="cr-who"><div class="nm">Demo, Charles</div><div class="sub mono">PID 100005 · Claim 1000003 · DOS 10/14/2025</div></div>
-      <div class="cr-payer">BCBS<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">BCBS<div class="net">◆ Out-of-network</div><div class="ent">▦ Example Monitoring Group LLC</div></div>
       <div class="cr-amt">$52,030.00</div>
       <div class="cr-flag"><span class="tag bilr">👤 Example, Priya</span><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow sup-only" onclick="stubClaim('Testcase, Bruce')">
       <div class="cr-who"><div class="nm">Testcase, Bruce</div><div class="sub mono">PID 100009 · Claim 1000009 · DOS 10/09/2025</div></div>
-      <div class="cr-payer">Cigna<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">Cigna<div class="net">◆ Out-of-network</div><div class="ent">▦ Sample IONM Partners LLC</div></div>
       <div class="cr-amt">$41,880.00</div>
       <div class="cr-flag"><span class="tag bilr">👤 Demo, Alex</span><span class="pill needsrev">⚑ Needs review</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow sup-only" onclick="stubClaim('Example, Marta')">
       <div class="cr-who"><div class="nm">Example, Marta</div><div class="sub mono">PID 100006 · Claim 1000004 · DOS 06/18/2025</div></div>
-      <div class="cr-payer">Mercy Care AZ<div class="net gov">● Government in-network</div></div>
+      <div class="cr-payer">Mercy Care AZ<div class="net gov">● Government in-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
       <div class="cr-amt">$30,695.01</div>
       <div class="cr-flag"><span class="tag bilr">👤 Example, Priya</span><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
     </div>
@@ -600,7 +720,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 1 of 5 · Pull</div>
+        <div class="kick">Step 1 of 5 · Pull<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Here's the case we pulled</h2>
         <p class="prompt">Everything below came straight from case #1000001 - your techs entered the demographics and insurance, and the reading neurologist's report set the coding. Take a look and confirm it's the right case.</p>
       </div>
@@ -618,7 +738,9 @@
           <div class="f"><label>Payer</label><div class="val">United Healthcare</div></div>
           <div class="f"><label>Network</label><div class="val" style="color:var(--idr);font-weight:600">Out-of-network</div></div>
           <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5–C7</div></div>
-          <div class="f col2"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f col2"><label>Total charges</label><div class="val mono js-total" style="font-weight:700">$48,087.92</div></div>
+          <div class="f col2"><label>Billing entity (Box 33)</label><div class="val js-entity" style="font-weight:700">Demo Neurophysiology LLC</div></div>
+          <div class="f col2"><label>Billing NPI (Box 33a)</label><div class="val mono js-entity-npi">1000000017</div></div>
         </div>
         <div class="moneystrip">
           <div class="ms-item oon"><span class="msdot"></span>Out-of-network - recovery continues at <b>IDR downstream</b> (No Surprises Act)</div>
@@ -639,7 +761,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 2 of 5 · Verify patient &amp; insurance</div>
+        <div class="kick">Step 2 of 5 · Verify patient &amp; insurance<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Confirm the patient and coverage</h2>
         <p class="prompt">Here's what came from the case - confirm it's right, or fix anything that's off. One benefits item was flagged by AI for a quick check before you continue.</p>
       </div>
@@ -682,12 +804,37 @@
                 <button class="btn sm" onclick="overrideAI('vob')">Edit / Override</button>
               </div>
             </div>
+            <div class="vobbox" id="vobBox">
+              <div class="vob-row">
+                <div><button class="btn primary sm" onclick="reverifyVOB()">↻ Re-verify eligibility</button>
+                  <div class="vob-cost">Runs a 270/271 check · ~$0.10 · charged to practice</div></div>
+                <button class="btn sm" onclick="openNotifyVOB()">✉ Notify VOB team</button>
+                <a href="#" class="vob-sim" id="vobSim" onclick="return toggleVobSim()">Simulate: result differs</a>
+              </div>
+              <div class="vob-notify" id="vobNotify">Reason
+                <select id="vobReason">
+                  <option>Benefits on file older than payer re-verify window</option>
+                  <option>271 response differs from benefits on file</option>
+                  <option>No 271 response from payer</option>
+                  <option>Policy # does not match payer portal</option>
+                </select>
+                <button class="btn primary sm" onclick="sendNotifyVOB()">Send to VOB team</button>
+                <button class="btn ghost sm" onclick="openNotifyVOB()">Cancel</button>
+              </div>
+              <div class="vob-result" id="vobResult"></div>
+            </div>
           </div>
         </div>
 
         <div class="smartnote">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--idr)"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
           <span><b>Why out-of-network is expected here:</b> charges are set above QPA by design. The remittance will come in low - the real recovery happens later via NSA negotiation and IDR. You don't need to do anything about that now; the clocks are tracked for you.</span>
+        </div>
+
+        <div class="blocktitle">Claim notes</div>
+        <div class="cnotes" id="noteList">
+          <div class="cnote"><span class="ntype eligibility">Eligibility</span>Tech confirmed policy # from payer portal; OON benefits active.<span class="who">Mockdata, Sam · 10/21/2025</span></div>
+          <div class="cnote"><span class="ntype coding">Coding</span>Reading neurologist's report attached; principal Dx pending AI confirm.<span class="who">Sample, Dana · 10/21/2025</span></div>
         </div>
       </div>
       <div class="stage-foot">
@@ -704,7 +851,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 3 of 5 · Coding &amp; diagnosis</div>
+        <div class="kick">Step 3 of 5 · Coding &amp; diagnosis<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Coding from the reading report</h2>
         <p class="prompt">The service lines and diagnoses came from the reading neurologist's report. A few AI-suggested fields need your confirmation before we move on - everything else is already set.</p>
       </div>
@@ -712,11 +859,8 @@
         <div class="aibar" id="aibar-3"><span class="aibar-ic">✦</span><span id="aibar-msg-3">AI fields to confirm: <b>3</b> (this stage)</span></div>
 
         <!-- AI field 1: AI-suggested principal ICD-10 -->
-        <div class="dxrow">
-          <span class="dxlabel">Diagnoses (ICD-10)</span>
-          <span class="dxchip">M50.120</span><span class="dxchip">M54.12</span><span class="dxchip">G89.18</span>
-          <span id="dxLead"></span>
-        </div>
+        <div class="blocktitle">Diagnoses (ICD-10) · Box 21</div>
+        <div class="dxlist" id="dxList"></div>
         <div class="fgrid" style="margin-top:6px">
           <div class="f col4"><label>Principal diagnosis (ICD-10)</label>
             <div class="aif" id="aif-icd">
@@ -733,17 +877,11 @@
 
         <div style="margin-top:20px" class="blocktitle">Service lines</div>
         <table class="lines">
-          <thead><tr><th>#</th><th>CPT</th><th>Mods</th><th>Units</th><th>Dx</th><th>Charge</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr class="hot" id="line1"><td>1</td><td>95887</td><td>26</td><td>1</td><td>A</td><td>$361.25</td>
-              <td id="line1prov"><span class="needs" onclick="flashAI('prov')">Set provider →</span></td><td class="desc">Needle EMG, non-extremity</td></tr>
-            <tr><td>2</td><td>95909</td><td>26</td><td>1</td><td>A</td><td>$849.15</td><td class="set">Sample, Alan MD</td><td class="desc">Nerve conduction, 7–8 studies</td></tr>
-            <tr><td>3</td><td>95937</td><td>26</td><td>4</td><td>A B</td><td>$6,332.50</td><td class="set">Sample, Alan MD</td><td class="desc">Neuromuscular junction test</td></tr>
-            <tr id="line4"><td>4</td><td>95938</td><td>26</td><td id="line4units">6</td><td>A B</td><td>$11,900.01</td><td class="set">Sample, Alan MD</td><td class="desc">SSEP upper &amp; lower</td></tr>
-            <tr><td>5</td><td>95939</td><td>26</td><td>3</td><td>A</td><td>$17,850.01</td><td class="set">Sample, Alan MD</td><td class="desc">MEP upper &amp; lower</td></tr>
-            <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Sample, Alan MD</td><td class="desc">EEG during surgery</td></tr>
-          </tbody>
+          <thead><tr><th>#</th><th>CPT</th><th>Mods</th><th>Time</th><th>Units</th><th>Dx ptr</th><th>Charge</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
+          <tbody id="linesBody"></tbody>
+          <tfoot id="linesFoot"></tfoot>
         </table>
+        <div class="lines-foot"><button class="btn sm" onclick="addLine()">+ Add line</button><span class="hint">Time-based codes (95940, 95941, G0453) derive units from minutes · 95940 and G0453 at 15 min per unit, 95941 at 60</span></div>
 
         <div class="fgrid" style="margin-top:16px">
           <div class="f col2"><label>Units - line 4 (95938, SSEP)</label>
@@ -772,7 +910,7 @@
 
         <div class="smartnote">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          <span><b>OON pricing applied:</b> charges set at the client's out-of-network fee schedule (≈6× QPA). Units derived from 268 min of monitoring on file. Charged <span class="mono">$48,087.92</span> total.</span>
+          <span><b>OON pricing applied:</b> charges set at the client's out-of-network fee schedule (≈6× QPA). Units derived from 268 min of monitoring on file. Charged <span class="mono js-total">$48,087.92</span> total.</span>
         </div>
       </div>
       <div class="stage-foot">
@@ -789,7 +927,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 4 of 5 · Review</div>
+        <div class="kick">Step 4 of 5 · Review<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>One last look</h2>
         <p class="prompt">Everything's confirmed. Here's the whole claim in one place - if it all checks out, continue to file.</p>
       </div>
@@ -799,8 +937,8 @@
           <div class="f"><label>Claim #</label><div class="val mono">1000001</div></div>
           <div class="f"><label>Payer</label><div class="val">United Healthcare · OON</div></div>
           <div class="f col2"><label>Principal diagnosis</label><div class="val mono" id="reviewDx">-</div></div>
-          <div class="f"><label>Service lines</label><div class="val">6 lines</div></div>
-          <div class="f"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f"><label>Service lines</label><div class="val js-linecount">6 lines</div></div>
+          <div class="f"><label>Total charges</label><div class="val mono js-total" style="font-weight:700">$48,087.92</div></div>
           <div class="f col2"><label>Billing provider (Box 33)</label><div class="val" id="reviewBox33">Demo Neurophysiology LLC · NPI 1000000017</div></div>
           <div class="f col2"><label>Service facility (Box 32)</label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
         </div>
@@ -831,14 +969,14 @@
     <div class="card" id="fileCard">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 5 of 5 · File</div>
+        <div class="kick">Step 5 of 5 · File<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Ready to file</h2>
         <p class="prompt">This claim is complete and validated. Filing submits an 837P batch to the clearinghouse and moves the claim into Ongoing follow-up.</p>
       </div>
       <div class="stage-body">
         <div class="fgrid">
           <div class="f col2"><label>Claim</label><div class="val">Testcase, Alice · 1000001</div></div>
-          <div class="f"><label>Charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f"><label>Charges</label><div class="val mono js-total" style="font-weight:700">$48,087.92</div></div>
           <div class="f"><label>Channel</label><div class="val" style="color:var(--idr);font-weight:600">Commercial OON → IDR</div></div>
         </div>
         <div class="smartnote">
@@ -976,9 +1114,9 @@
               <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) - A is principal</label>
                 <div class="dxgrid">
                   <div class="dxslot trhi" id="frmBx21slot"><span class="trflag" id="frmBx21flag">✦ from Coding</span><span class="lt">A</span><input class="mono" id="frmBx21a" value="M50.121"></div>
-                  <div class="dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
-                  <div class="dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
-                  <div class="dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
+                  <div class="dxslot"><span class="lt">B</span><input class="mono" id="frmBx21b" value="M50.120"></div>
+                  <div class="dxslot"><span class="lt">C</span><input class="mono" id="frmBx21c" value="M54.12"></div>
+                  <div class="dxslot"><span class="lt">D</span><input class="mono" id="frmBx21d" value="G89.18"></div>
                   <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="-" value=""></div>
                   <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="-" value=""></div>
                   <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="-" value=""></div>
@@ -1038,7 +1176,7 @@
                     <td><input class="mono w-chg" value="10,795.00"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
                     <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">EEG monitoring during surgery</td></tr>
                 </tbody>
-                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono">$48,087.92</td><td colspan="5"></td></tr></tfoot>
+                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono js-total">$48,087.92</td><td colspan="5"></td></tr></tfoot>
               </table>
             </div>
           </div>
@@ -1053,11 +1191,11 @@
               <div class="box c3"><span class="bxn">26</span><label>Patient account no.</label><input class="mono" value="100001"></div>
               <div class="box c2"><span class="bxn">27</span><label>Accept assignment</label>
                 <select><option selected>Yes</option><option>No</option></select></div>
-              <div class="box c3"><span class="bxn">28</span><label>Total charge</label><input class="mono" value="$48,087.92"></div>
+              <div class="box c3"><span class="bxn">28</span><label>Total charge</label><input class="mono js-total-in" value="$48,087.92"></div>
             </div>
             <div class="boxrow">
               <div class="box c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
-              <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
+              <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono js-total-in" value="$48,087.92"></div>
               <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
             </div>
             <div class="boxrow">
@@ -1173,11 +1311,8 @@
       document.getElementById('aival-'+k).textContent=AI_INIT[k].val;
       document.getElementById('aifact-'+k).innerHTML=aiActionsHTML(k);
     });
-    // reset coding-stage side effects
-    document.getElementById('dxLead').innerHTML='';
-    document.getElementById('line4units').textContent='6';
-    const l1=document.getElementById('line1prov'); l1.innerHTML='<span class="needs" onclick="flashAI(\'prov\')">Set provider →</span>';
-    document.getElementById('line1').className='hot';
+    // reset coding-stage model (Dx + service lines)
+    initClaimModel(); renderDx(); renderLines();
     // reset file stage
     document.getElementById('fileCard').style.display='';
     document.getElementById('filedCard').style.display='none';
@@ -1187,6 +1322,253 @@
 
   function enterFlow(){resetFlow();show('flow');setNav('review');}
   function exitFlow(){show('inbox');setNav('review');}
+  /* ---------- claim model: Dx (with provenance) + service lines ---------- */
+  const TIME_CODES={'95940':15,'95941':60,'G0453':15};   /* minutes per unit */
+  const DX_PROV={report:'From neurologist\'s report · signed 10/21',tech:'Entered by tech',you:'Changed by you · today'};
+  const DX_INIT=[
+    {code:'M50.121',desc:'Cervical disc disorder with radiculopathy, C6–C7',src:'report',principal:true},
+    {code:'M50.120',desc:'Mid-cervical disc disorder, unspecified level',src:'report'},
+    {code:'M54.12',desc:'Radiculopathy, cervical region',src:'report'},
+    {code:'G89.18',desc:'Other acute postprocedural pain',src:'tech'}
+  ];
+  const LINES_INIT=[
+    {cpt:'95887',mod:'26',units:1,dx:'A',charge:361.25,prov:null,desc:'Needle EMG, non-extremity'},
+    {cpt:'95909',mod:'26',units:1,dx:'A',charge:849.15,prov:'Sample, Alan MD',desc:'Nerve conduction, 7–8 studies'},
+    {cpt:'95937',mod:'26',units:4,dx:'A B',charge:6332.50,prov:'Sample, Alan MD',desc:'Neuromuscular junction test'},
+    {cpt:'95938',mod:'26',units:6,dx:'A B',charge:11900.01,prov:'Sample, Alan MD',desc:'SSEP upper & lower',ai:'units'},
+    {cpt:'95939',mod:'26',units:3,dx:'A',charge:17850.01,prov:'Sample, Alan MD',desc:'MEP upper & lower'},
+    {cpt:'95955',mod:'26',units:1,dx:'A',charge:10795.00,prov:'Sample, Alan MD',desc:'EEG during surgery'}
+  ];
+  const DX_LETTERS='ABCDEFGH';
+  let DX=[], LINES=[];
+  function initClaimModel(){
+    DX=DX_INIT.map(d=>Object.assign({state:d.principal?'pending':'source'},d));
+    LINES=LINES_INIT.map(l=>Object.assign({fee:l.charge/l.units},l));
+    LINES[0].hot=true;
+  }
+  function dxFor(letter){return DX[DX_LETTERS.indexOf(letter)]||null;}
+  function dxDoneHTML(d){return d.state==='changed'?'<span class="dxdone ovr">✎ Changed by you</span>':'<span class="dxdone">✓ Confirmed</span>';}
+  function renderDx(){
+    const el=document.getElementById('dxList'); if(!el)return;
+    el.innerHTML=DX.map((d,i)=>{
+      const L=DX_LETTERS[i];
+      let act;
+      if(d.editing) act='<input class="dxin" id="dxin-'+i+'" value="'+escH(d.code)+'"><button class="btn primary sm" onclick="saveDx('+i+')">Save</button><button class="btn sm" onclick="cancelDx('+i+')">Cancel</button>';
+      else if(d.principal) act=d.state==='pending'?'<button class="btn ghost sm" onclick="flashAI(\'icd\')">Confirm principal below ↓</button>':dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      else if(d.state==='source') act='<button class="btn sm" onclick="confirmDx('+i+')">✓ Confirm</button><button class="btn sm" onclick="editDx('+i+')">Change</button>';
+      else act=dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      const pk=d.state==='changed'?'you':d.src;
+      return '<div class="dxi '+d.state+'"><span class="dxl">'+L+'</span><span class="dxc">'+escH(d.code)+'</span>'+
+        '<span class="dxd">'+escH(d.desc)+(d.principal?' · principal':'')+'</span>'+
+        '<span class="prov '+pk+'">'+DX_PROV[pk]+'</span><span class="dxa">'+act+'</span></div>';
+    }).join('');
+  }
+  function confirmDx(i){DX[i].state='confirmed';bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);toast('Dx '+DX_LETTERS[i]+' confirmed - service-line pointers updated');}
+  function editDx(i){DX[i].editing=true;renderDx();const inp=document.getElementById('dxin-'+i);if(inp){inp.focus();inp.select();}}
+  function cancelDx(i){DX[i].editing=false;renderDx();}
+  function saveDx(i){
+    const v=(document.getElementById('dxin-'+i).value||'').trim().toUpperCase();
+    DX[i].editing=false;
+    if(v&&v!==DX[i].code){DX[i].code=v;DX[i].desc='ICD-10 description from code lookup';DX[i].state='changed';}
+    else if(DX[i].state==='source')DX[i].state='confirmed';
+    bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);
+    toast('Dx '+DX_LETTERS[i]+' is now '+DX[i].code+' - service-line pointers updated');
+  }
+  function setPrincipalDx(text,mode){
+    const parts=text.split(' - ');
+    DX[0].code=parts[0].trim()||DX[0].code;
+    if(parts[1])DX[0].desc=parts.slice(1).join(' - ').trim();
+    DX[0].state=mode==='overridden'?'changed':'confirmed';
+    renderDx();renderLines();flashPtr('A');
+  }
+  function ptrHTML(dx){
+    return String(dx||'').toUpperCase().split(/[\s,]+/).filter(Boolean).map(L=>{
+      const d=dxFor(L);
+      return '<span class="dxp '+(d?d.state:'bad')+'" data-l="'+escH(L)+'" title="'+(d?L+' = '+escH(d.code):'No diagnosis in slot '+escH(L))+'">'+escH(L)+'<small>'+(d?escH(d.code):'?')+'</small></span>';
+    }).join('');
+  }
+  function flashPtr(L){
+    document.querySelectorAll('#linesBody .dxp[data-l="'+L+'"]').forEach(e=>{e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),900);});
+  }
+  function deriveUnits(l){if(TIME_CODES[l.cpt]&&l.min)l.units=Math.max(1,Math.round(l.min/TIME_CODES[l.cpt]));}
+  function timeHTML(l,i){
+    if(!TIME_CODES[l.cpt])return '<span class="tna" title="Not a time-based code">-</span>';
+    if(l.added)return '<input class="cin w-min" value="'+(l.min||'')+'" placeholder="min" onchange="setMinutes('+i+',this.value)"> min → <b>'+l.units+' u</b>';
+    return (l.min||0)+' min → '+l.units+' u';
+  }
+  function provHTML(l){
+    if(l.prov===null)return '<span class="needs" onclick="flashAI(\'prov\')">Set provider →</span>';
+    return '<span class="set">'+escH(l.prov)+'</span>';
+  }
+  function unitsHTML(l,i){
+    if(TIME_CODES[l.cpt]&&l.min)return '<b title="Derived from minutes">'+l.units+'</b>';
+    return '<input class="cin w-u" value="'+l.units+'" title="Edit units - the line charge re-prices" onchange="setUnits('+i+',this.value)">';
+  }
+  function reprice(l){if(l.fee)l.charge=Math.round(l.units*l.fee*100)/100;}
+  function syncFormLines(sel){
+    document.querySelectorAll(sel).forEach((tr,i)=>{
+      const l=LINES[i]; if(!l)return; const ins=tr.querySelectorAll('input'); if(ins.length<8)return;
+      ins[5].value=l.dx; ins[6].value=Number(l.charge).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); ins[7].value=l.units;
+    });
+  }
+  function updateTotals(){
+    const t=lineTotal(), txt=fmtMoney(t);
+    document.querySelectorAll('.js-total').forEach(e=>e.textContent=txt);
+    document.querySelectorAll('.js-total-in').forEach(e=>e.value=txt);
+    document.querySelectorAll('.js-linecount').forEach(e=>e.textContent=LINES.length+' lines');
+    const a=(typeof ALL_CLAIMS!=='undefined')&&ALL_CLAIMS.find(c=>c.claim==='1000001');
+    if(a&&a.charges!==t){a.charges=t;renderAll();}
+    return t;
+  }
+  function lineTotal(){return LINES.reduce((s,l)=>s+(Number(l.charge)||0),0);}
+  function renderLines(){
+    const body=document.getElementById('linesBody'); if(!body)return;
+    body.innerHTML=LINES.map((l,i)=>{
+      let cls=l.added?'added':'';
+      if(i===0&&l.hot!==undefined)cls=l.hot?'hot':'hot fixed';
+      if(l.added){
+        return '<tr class="'+cls+'"><td>'+(i+1)+'</td>'+
+          '<td><input class="cin" value="'+escH(l.cpt)+'" placeholder="CPT" onchange="setLine('+i+',\'cpt\',this.value)"></td>'+
+          '<td><input class="cin w-mod" value="'+escH(l.mod)+'" onchange="setLine('+i+',\'mod\',this.value)"></td>'+
+          '<td>'+timeHTML(l,i)+'</td><td>'+unitsHTML(l,i)+'</td>'+
+          '<td><input class="cin w-dx" value="'+escH(l.dx)+'" onchange="setLine('+i+',\'dx\',this.value)"> '+ptrHTML(l.dx)+'</td>'+
+          '<td><input class="cin w-chg" value="'+(l.charge?Number(l.charge).toFixed(2):'')+'" placeholder="0.00" onchange="setLine('+i+',\'charge\',this.value)"></td>'+
+          '<td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+' <button class="rm" title="Remove line" onclick="removeLine('+i+')">×</button></td></tr>';
+      }
+      return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+escH(l.cpt)+'</td><td>'+escH(l.mod)+'</td><td>'+timeHTML(l,i)+'</td>'+
+        '<td>'+unitsHTML(l,i)+'</td><td>'+ptrHTML(l.dx)+'</td><td>'+fmtMoney(l.charge)+'</td><td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+'</td></tr>';
+    }).join('');
+    document.getElementById('linesFoot').innerHTML='<tr><td colspan="6" class="tl">Total · '+LINES.length+' lines</td><td>'+fmtMoney(lineTotal())+'</td><td colspan="2"></td></tr>';
+    updateTotals();
+  }
+  function setLine(i,k,v){
+    const l=LINES[i]; v=String(v).trim();
+    if(k==='cpt'){l.cpt=v.toUpperCase();deriveUnits(l);reprice(l);}
+    else if(k==='dx')l.dx=v.toUpperCase();
+    else if(k==='charge'){l.charge=parseFloat(v.replace(/[$,]/g,''))||0;l.fee=l.units?l.charge/l.units:l.charge;}
+    else l[k]=v;
+    renderLines();
+  }
+  function setUnits(i,v){
+    const l=LINES[i]; if(l.units>0&&l.charge)l.fee=l.charge/l.units;
+    l.units=Math.max(0,parseInt(v,10)||0); reprice(l); renderLines(); bumpAudit();
+    toast('Line '+(i+1)+' re-priced: '+l.units+' u × '+fmtMoney(l.fee||0)+' = '+fmtMoney(l.charge)+' · total '+fmtMoney(lineTotal()));
+  }
+  function setMinutes(i,v){const l=LINES[i]; if(l.units>0&&l.charge)l.fee=l.charge/l.units; l.min=Math.max(0,parseInt(v,10)||0);deriveUnits(l);reprice(l);renderLines();}
+  function addLine(){
+    LINES.push({cpt:'',mod:'26',units:1,dx:'A',charge:0,fee:0,prov:'Sample, Alan MD',desc:'Added by you',added:true});
+    renderLines(); bumpAudit();
+    const rows=document.querySelectorAll('#linesBody tr'); const inp=rows.length&&rows[rows.length-1].querySelector('input'); if(inp)inp.focus();
+    toast('Line added - enter CPT, mods, units, Dx pointer and charge. Time-based codes (95940, 95941, G0453) derive units from minutes.');
+  }
+  function removeLine(i){LINES.splice(i,1);renderLines();bumpAudit();toast('Added line removed');}
+
+  /* ---------- queue tabs: Needs review | All claims ---------- */
+  const ALL_CLAIMS=[
+    {name:'Testcase, Alice',pid:'100001',claim:'1000001',dos:'10/20/2025',payer:'United Healthcare',entity:'Demo Neurophysiology LLC',charges:48087.92,aged:5,status:'Needs review',pill:'review',biller:'Sample, Dana'},
+    {name:'Sample, David',pid:'100004',claim:'1000002',dos:'10/20/2025',payer:'Humana',entity:'Demo Neurophysiology LLC',charges:61240.00,aged:5,status:'Held for sign-off',pill:'held',biller:'Sample, Dana'},
+    {name:'Mockdata, Ray',pid:'100002',claim:'1000007',dos:'10/18/2025',payer:'Aetna',entity:'Sample IONM Partners LLC',charges:53905.00,aged:7,status:'Ready to file',pill:'ready',biller:'Demo, Alex'},
+    {name:'Demo, Charles',pid:'100005',claim:'1000003',dos:'10/14/2025',payer:'BCBS',entity:'Example Monitoring Group LLC',charges:52030.00,aged:11,status:'Waiting on tech',pill:'held',biller:'Example, Priya'},
+    {name:'Testcase, Bruce',pid:'100009',claim:'1000009',dos:'10/09/2025',payer:'Cigna',entity:'Sample IONM Partners LLC',charges:41880.00,aged:16,status:'Needs review',pill:'review',biller:'Demo, Alex'},
+    {name:'Example, Marta',pid:'100006',claim:'1000004',dos:'06/18/2025',payer:'Mercy Care AZ',entity:'Demo Neurophysiology LLC',charges:30695.01,aged:127,status:'Ready to file',pill:'ready',biller:'Example, Priya'},
+    {name:'Specimen, Tom',pid:'100007',claim:'1000005',dos:'06/18/2025',payer:'Medicare',entity:'Example Monitoring Group LLC',charges:34290.00,aged:129,status:'Needs review',pill:'review',biller:'Mockdata, Sam'},
+    {name:'Sample, Nora',pid:'100008',claim:'1000008',dos:'06/12/2025',payer:'Medicare',entity:'Demo Neurophysiology LLC',charges:29140.00,aged:135,status:'Ready to file',pill:'ready',biller:'Mockdata, Sam'}
+  ];
+  let allSort={k:'aged',dir:-1};
+  function fmtMoney(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function renderAll(){
+    const k=allSort.k, d=allSort.dir;
+    const rows=ALL_CLAIMS.slice().sort((a,b)=>{const x=a[k],y=b[k];return (typeof x==='number'?x-y:String(x).localeCompare(String(y)))*d;});
+    document.getElementById('allBody').innerHTML=rows.map(r=>
+      '<tr onclick="'+(r.claim==='1000001'?'enterFlow()':'stubClaim(\''+r.name+'\')')+'">'+
+      '<td><div class="nm">'+escH(r.name)+'</div><div class="sub mono">PID '+r.pid+' · Claim '+r.claim+' · DOS '+r.dos+'</div></td>'+
+      '<td>'+escH(r.payer)+'</td>'+
+      '<td>'+escH(r.entity)+'</td>'+
+      '<td class="r num">'+fmtMoney(r.charges)+'</td>'+
+      '<td class="r"><span class="aging'+(r.aged>120?' risk':r.aged>90?' warn':'')+'">'+r.aged+'d</span></td>'+
+      '<td><span class="pill '+r.pill+'">'+escH(r.status)+'</span></td>'+
+      '<td>'+escH(r.biller)+'</td></tr>').join('');
+    document.querySelectorAll('#allTable th').forEach(th=>{
+      const on=th.dataset.k===k; th.classList.toggle('sorted',on);
+      th.querySelector('.sa').textContent=on?(d>0?'↑':'↓'):'↕';
+    });
+    document.getElementById('allCt').textContent=ALL_CLAIMS.length;
+    document.getElementById('allCt2').textContent=ALL_CLAIMS.length;
+  }
+  function sortAll(k){allSort=(allSort.k===k)?{k:k,dir:-allSort.dir}:{k:k,dir:1};renderAll();}
+  function setQueue(q){
+    const all=q==='all';
+    document.getElementById('queueAll').style.display=all?'':'none';
+    document.getElementById('queueReview').style.display=all?'none':'';
+    document.getElementById('qt-all').classList.toggle('on',all);
+    document.getElementById('qt-review').classList.toggle('on',!all);
+  }
+  function exportCSV(){
+    const head=['Patient','PID','Claim','DOS','Payer','Entity','Charges','Days aged','Status','Biller'];
+    const lines=[head].concat(ALL_CLAIMS.map(r=>[r.name,r.pid,r.claim,r.dos,r.payer,r.entity,r.charges.toFixed(2),r.aged,r.status,r.biller]));
+    const csv=lines.map(l=>l.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    try{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+      a.download='usmon-all-claims.csv'; document.body.appendChild(a); a.click(); a.remove();
+      toast('Exported '+ALL_CLAIMS.length+' claims to CSV (synthetic)');
+    }catch(e){toast('Export CSV - '+ALL_CLAIMS.length+' claims (synthetic demo)');}
+    return false;
+  }
+
+  /* ---------- VOB: re-verify (270/271), result-differs compare, notify VOB team ---------- */
+  const VOB_ROWS=[['Plan status','Active','Active'],['OON benefits','Active','Active'],['OON deductible','$3,000 · $1,200 met','$5,000 · $0 met'],['OON coinsurance','40%','50%'],['Out-of-pocket max','$9,000','$12,000']];
+  let vobSim=false;
+  function toggleVobSim(){
+    vobSim=!vobSim;
+    const el=document.getElementById('vobSim');
+    el.classList.toggle('on',vobSim);
+    el.textContent=vobSim?'Simulate: result differs ✓':'Simulate: result differs';
+    return false;
+  }
+  function vobCol(title,idx,cls){
+    return '<div class="vob-col '+cls+'"><h5>'+title+'</h5><dl>'+VOB_ROWS.map(r=>'<dt>'+r[0]+'</dt><dd'+(idx===2&&r[1]!==r[2]?' class="chg"':'')+'>'+r[idx]+'</dd>').join('')+'</dl></div>';
+  }
+  function reverifyVOB(){
+    const res=document.getElementById('vobResult');
+    res.className='vob-result show';
+    res.innerHTML='<div class="vob-run">↻ Running 270/271 eligibility check with United Healthcare…</div>';
+    bumpAudit();
+    setTimeout(()=>{
+      if(vobSim){
+        res.innerHTML='<div class="vob-diff"><h4>⚠ The 271 response differs from the benefits on file</h4>'+
+          '<div class="vob-cmp">'+vobCol('Current - on file 10/14/2025',1,'')+vobCol('New - 271 response today',2,'new')+'</div>'+
+          '<div class="vob-acts"><button class="btn primary sm" onclick="acceptVOB()">Accept new</button><button class="btn sm" onclick="keepVOB()">Keep current</button></div></div>';
+      } else {
+        res.innerHTML='<div class="vob-ok">✓ 271 response matches the benefits on file - eligibility re-verified today · logged to audit</div>';
+      }
+    },700);
+  }
+  function acceptVOB(){
+    document.getElementById('vobResult').innerHTML='<div class="vob-ok">✓ New eligibility accepted - benefits on file updated from today\'s 271 · logged to audit</div>';
+    bumpAudit(); toast('New eligibility accepted - benefits updated · logged to audit trail');
+  }
+  function keepVOB(){
+    document.getElementById('vobResult').innerHTML='<div class="vob-ok keep">Kept current benefits on file - the 271 difference is logged to audit</div>';
+    bumpAudit(); toast('Kept current benefits - 271 difference logged');
+  }
+  function openNotifyVOB(){document.getElementById('vobNotify').classList.toggle('show');}
+  function sendNotifyVOB(){
+    const reason=document.getElementById('vobReason').value;
+    addTypedNote('Eligibility','Eligibility re-verification needed — '+reason);
+    document.getElementById('vobNotify').classList.remove('show');
+    toast('VOB team notified - Eligibility note added to the claim');
+  }
+  function addTypedNote(type,text){
+    const div=document.createElement('div');div.className='cnote';
+    const b=document.createElement('span');b.className='ntype '+type.toLowerCase();b.textContent=type;
+    const who=document.createElement('span');who.className='who';who.textContent=document.getElementById('whoLabel').textContent+' · today';
+    div.appendChild(b);div.appendChild(document.createTextNode(text));div.appendChild(who);
+    document.getElementById('noteList').appendChild(div);
+    bumpAudit();
+  }
+
   function stubClaim(name){toast(name+' - this demo wires Testcase, Alice end-to-end. Click her row to walk the flow.');}
 
   /* ---------- supervisor authority: sign-off + oversight controls ---------- */
@@ -1237,19 +1619,15 @@
   }
   function aiSideEffect(key,mode){
     if(key==='icd'){
-      const code=leadPart(document.getElementById('aival-icd').textContent);
-      const chip=document.createElement('span'); chip.className='dxchip new lead'; chip.textContent=code+' · principal';
-      const lead=document.getElementById('dxLead'); lead.innerHTML=''; lead.appendChild(chip);
+      setPrincipalDx(document.getElementById('aival-icd').textContent,mode);
     }
     if(key==='prov'){
-      const name=leadPart(document.getElementById('aival-prov').textContent);
-      const s=document.createElement('span'); s.className='set'; s.textContent=name;
-      const cell=document.getElementById('line1prov'); cell.innerHTML=''; cell.appendChild(s);
-      document.getElementById('line1').className='hot fixed';
+      LINES[0].prov=leadPart(document.getElementById('aival-prov').textContent);
+      LINES[0].hot=false; renderLines();
     }
     if(key==='units'){
-      const u=document.getElementById('aival-units').textContent.replace(/[^0-9]/g,'')||'6';
-      document.getElementById('line4units').textContent=u;
+      const u=parseInt(document.getElementById('aival-units').textContent.replace(/[^0-9]/g,''),10);
+      const l=LINES.find(x=>x.ai==='units'); if(l&&u>0){l.fee=l.charge/l.units; l.units=u; reprice(l); renderLines();}
     }
   }
   function resolveAI(key,mode){
@@ -1303,9 +1681,7 @@
 
   function refreshReview(){
     document.getElementById('reviewDx').textContent =
-      (aiState.icd!=='pending')
-        ? (leadPart(document.getElementById('dxLead').textContent.replace(' · principal','')) || 'M50.121')
-        : '-';
+      (aiState.icd!=='pending') ? DX[0].code : '-';
   }
 
   /* ---------- stage 5: file ---------- */
@@ -1343,8 +1719,11 @@
     let icd='M50.121';
     const t=document.getElementById('aival-icd');
     if(t){const lp=leadPart(t.textContent);if(lp)icd=lp;}
+    if(DX[0]&&DX[0].state!=='pending')icd=DX[0].code;
+    syncFormLines('#form1500Back .svc tbody tr');
     const a=document.getElementById('frmBx21a');
     if(a)a.value=icd;
+    ['b','c','d'].forEach((x,n)=>{const el=document.getElementById('frmBx21'+x);if(el&&DX[n+1])el.value=DX[n+1].code;});
     // reflect the coding-stage confirm state on the Box 21.A slot
     const slot=document.getElementById('frmBx21slot');
     const flag=document.getElementById('frmBx21flag');
@@ -1400,9 +1779,13 @@
     const npi=document.getElementById('frmB33NPI');
     const rev=document.getElementById('reviewBox33');
     if(rev)rev.textContent=billingEntity+' · NPI '+(npi?npi.value:'1000000017');
+    document.querySelectorAll('.js-entity').forEach(e=>e.textContent=billingEntity);
+    document.querySelectorAll('.js-entity-npi').forEach(e=>e.textContent=npi?npi.value:'1000000017');
   }
 
   /* init */
+  initClaimModel(); renderDx(); renderLines();
+  renderAll();
   updateAIStage(2); updateAIStage(3);
   updateFlowEntity();
   renderStage();
