@@ -473,6 +473,43 @@
   .ntype.eligibility{background:var(--warn-tint);color:var(--warn)}
   .ntype.coding{background:var(--ai-tint);color:var(--ai-dark)}
   .ntype.appeal{background:var(--idr-tint);color:var(--idr-dark)}
+
+  /* Dx list with provenance + live service-line model (pointers, time, add line) */
+  .dxlist{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+  .dxi{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;flex-wrap:wrap}
+  .dxi:last-child{border-bottom:none}
+  .dxi .dxl{flex:none;width:22px;height:22px;border-radius:6px;background:#eef2f7;color:var(--muted);display:grid;place-items:center;font-weight:800;font-size:11px}
+  .dxi.confirmed .dxl{background:var(--ok-tint);color:var(--ok)}
+  .dxi.changed .dxl{background:var(--warn-tint);color:var(--warn)}
+  .dxi.pending .dxl{background:var(--ai-tint);color:var(--ai-dark)}
+  .dxi .dxc{font-family:var(--mono);font-weight:700;min-width:64px}
+  .dxi .dxd{color:var(--muted)}
+  .prov{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+  .prov.report{background:var(--primary-tint);color:var(--primary-dark);border:1px solid var(--primary-line)}
+  .prov.tech{background:var(--hosp-tint);color:var(--hosp-dark);border:1px solid var(--hosp-line)}
+  .prov.you{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .dxi .dxa{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .dxi .dxa .btn{padding:4px 10px;font-size:11.5px}
+  .dxdone{font-size:12px;font-weight:700;color:var(--ok)} .dxdone.ovr{color:var(--warn)}
+  .dxin{font-family:var(--mono);font-size:12.5px;border:1px solid var(--primary);border-radius:6px;padding:4px 7px;width:96px}
+  .lines input.cin{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 6px;background:#fff;width:72px}
+  .lines input.cin:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .lines input.w-min{width:56px} .lines input.w-u{width:48px} .lines input.w-mod{width:52px} .lines input.w-dx{width:56px} .lines input.w-chg{width:92px}
+  .lines tr.added{background:var(--primary-tint)}
+  .lines tfoot td{font-weight:800;border-top:2px solid var(--line-strong);border-bottom:none}
+  .lines tfoot .tl{font-family:var(--sans);text-align:right;color:var(--muted)}
+  .lines .tna{color:var(--faint)}
+  .lines .rm{background:none;border:none;color:var(--faint);font-weight:800;padding:0 4px;font-size:14px}
+  .lines .rm:hover{color:var(--block)}
+  .dxp{display:inline-flex;align-items:baseline;gap:3px;font-weight:800;border-radius:5px;padding:1px 5px;border:1px solid var(--line-strong);background:#fff;transition:.3s;margin-right:3px}
+  .dxp small{font-weight:600;font-size:10.5px;color:var(--muted)}
+  .dxp.confirmed{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .dxp.changed{border-color:var(--warn-line);background:var(--warn-tint);color:var(--warn)}
+  .dxp.pending{border-color:var(--ai-line);background:var(--ai-tint);color:var(--ai-dark)}
+  .dxp.bad{border-color:var(--block-line);background:var(--block-tint);color:var(--block)}
+  .dxp.flash{box-shadow:0 0 0 3px var(--primary-line)}
+  .lines-foot{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .lines-foot .hint{font-size:11.5px;color:var(--faint);font-weight:600}
 </style>
 </head>
 <body>
@@ -894,7 +931,7 @@
               </div>
             </div>
           </div>
-          <div class="f col4"><label>Supporting diagnoses (prefilled)</label><div class="val mono">M50.120 · M54.12 · G89.18</div></div>
+          <div class="f col4"><label>Diagnoses - ICD-10 <span class="bx">(Box 21 A–D)</span></label><div class="dxlist" id="dxList"></div></div>
         </div>
         </div>
       </section>
@@ -906,16 +943,11 @@
           <span class="src">From reading neurologist's report</span>
           <button class="revbtn" id="rev-code" onclick="review('code')">Mark reviewed</button></div>
         <div class="sec-body">
-          <table class="lines"><thead><tr><th>#</th><th>CPT (24D)</th><th>Mods</th><th>Units (24G)</th><th>Dx ptr (24E)</th><th>Charge (24F)</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>95887</td><td>26</td><td>1</td><td>A</td><td>$361.25</td>
-                <td id="cell-prov">Demo, Eric MD</td><td class="desc">Needle EMG, non-extremity</td></tr>
-              <tr><td>2</td><td>95909</td><td>26</td><td>1</td><td>A</td><td>$849.15</td><td class="set">Demo, Eric MD</td><td class="desc">Nerve conduction, 7&#8211;8 studies</td></tr>
-              <tr><td>3</td><td>95937</td><td>26</td><td>4</td><td>A B</td><td>$6,332.50</td><td class="set">Demo, Eric MD</td><td class="desc">Neuromuscular junction test</td></tr>
-              <tr><td>4</td><td>95938</td><td>26</td><td id="cell-units">6</td><td>A B</td><td>$11,900.01</td><td class="set">Demo, Eric MD</td><td class="desc">SSEP upper &amp; lower</td></tr>
-              <tr><td>5</td><td>95939</td><td>26</td><td>3</td><td>A</td><td>$17,850.01</td><td class="set">Demo, Eric MD</td><td class="desc">MEP upper &amp; lower</td></tr>
-              <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Demo, Eric MD</td><td class="desc">EEG during surgery</td></tr>
-            </tbody></table>
+          <table class="lines"><thead><tr><th>#</th><th>CPT (24D)</th><th>Mods</th><th>Time</th><th>Units (24G)</th><th>Dx ptr (24E)</th><th>Charge (24F)</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
+            <tbody id="linesBody"></tbody>
+            <tfoot id="linesFoot"></tfoot>
+          </table>
+          <div class="lines-foot"><button class="btn sm" onclick="addLine()">+ Add line</button><span class="hint">Time-based codes (95940, 95941, G0453) derive units from minutes · 45 min/unit</span></div>
           <div class="fgrid" style="margin-top:14px">
             <div class="f col2"><label>Units - line 4 (95938, SSEP) <span class="bx">(Box 24G)</span></label>
               <div class="aif" id="aif-units">
@@ -1366,6 +1398,127 @@
     bumpAudit();
   }
 
+  function fmtMoney(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  /* ---------- claim model: Dx (with provenance) + service lines ---------- */
+  const TIME_CODES={'95940':45,'95941':45,'G0453':45};   /* minutes per unit */
+  const DX_PROV={report:'From neurologist\'s report · signed 10/21',tech:'Entered by tech',you:'Changed by you · today'};
+  const DX_INIT=[
+    {code:'M50.121',desc:'Cervical disc disorder with radiculopathy, C6–C7',src:'report',principal:true},
+    {code:'M50.120',desc:'Mid-cervical disc disorder, unspecified level',src:'report'},
+    {code:'M54.12',desc:'Radiculopathy, cervical region',src:'report'},
+    {code:'G89.18',desc:'Other acute postprocedural pain',src:'tech'}
+  ];
+  const LINES_INIT=[
+    {cpt:'95887',mod:'26',units:1,dx:'A',charge:361.25,prov:'Demo, Eric MD',desc:'Needle EMG, non-extremity'},
+    {cpt:'95909',mod:'26',units:1,dx:'A',charge:849.15,prov:'Demo, Eric MD',desc:'Nerve conduction, 7–8 studies'},
+    {cpt:'95937',mod:'26',units:4,dx:'A B',charge:6332.50,prov:'Demo, Eric MD',desc:'Neuromuscular junction test'},
+    {cpt:'95938',mod:'26',units:6,dx:'A B',charge:11900.01,prov:'Demo, Eric MD',desc:'SSEP upper & lower',ai:'units'},
+    {cpt:'95939',mod:'26',units:3,dx:'A',charge:17850.01,prov:'Demo, Eric MD',desc:'MEP upper & lower'},
+    {cpt:'95955',mod:'26',units:1,dx:'A',charge:10795.00,prov:'Demo, Eric MD',desc:'EEG during surgery'}
+  ];
+  const DX_LETTERS='ABCDEFGH';
+  let DX=[], LINES=[];
+  function initClaimModel(){
+    DX=DX_INIT.map(d=>Object.assign({state:d.principal?'pending':'source'},d));
+    LINES=LINES_INIT.map(l=>Object.assign({fee:l.charge/l.units},l));
+  }
+  function dxFor(letter){return DX[DX_LETTERS.indexOf(letter)]||null;}
+  function dxDoneHTML(d){return d.state==='changed'?'<span class="dxdone ovr">✎ Changed by you</span>':'<span class="dxdone">✓ Confirmed</span>';}
+  function renderDx(){
+    const el=document.getElementById('dxList'); if(!el)return;
+    el.innerHTML=DX.map((d,i)=>{
+      const L=DX_LETTERS[i];
+      let act;
+      if(d.editing) act='<input class="dxin" id="dxin-'+i+'" value="'+escH(d.code)+'"><button class="btn primary sm" onclick="saveDx('+i+')">Save</button><button class="btn sm" onclick="cancelDx('+i+')">Cancel</button>';
+      else if(d.principal) act=d.state==='pending'?'<button class="btn ghost sm" onclick="jumpAI(\'icd\')">Confirm principal below ↓</button>':dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      else if(d.state==='source') act='<button class="btn sm" onclick="confirmDx('+i+')">✓ Confirm</button><button class="btn sm" onclick="editDx('+i+')">Change</button>';
+      else act=dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      const pk=d.state==='changed'?'you':d.src;
+      return '<div class="dxi '+d.state+'"><span class="dxl">'+L+'</span><span class="dxc">'+escH(d.code)+'</span>'+
+        '<span class="dxd">'+escH(d.desc)+(d.principal?' · principal':'')+'</span>'+
+        '<span class="prov '+pk+'">'+DX_PROV[pk]+'</span><span class="dxa">'+act+'</span></div>';
+    }).join('');
+  }
+  function confirmDx(i){DX[i].state='confirmed';bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);toast('Dx '+DX_LETTERS[i]+' confirmed - service-line pointers updated');}
+  function editDx(i){DX[i].editing=true;renderDx();const inp=document.getElementById('dxin-'+i);if(inp){inp.focus();inp.select();}}
+  function cancelDx(i){DX[i].editing=false;renderDx();}
+  function saveDx(i){
+    const v=(document.getElementById('dxin-'+i).value||'').trim().toUpperCase();
+    DX[i].editing=false;
+    if(v&&v!==DX[i].code){DX[i].code=v;DX[i].desc='ICD-10 description from code lookup';DX[i].state='changed';}
+    else if(DX[i].state==='source')DX[i].state='confirmed';
+    bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);
+    toast('Dx '+DX_LETTERS[i]+' is now '+DX[i].code+' - service-line pointers updated');
+  }
+  function setPrincipalDx(text,mode){
+    const parts=text.split(' - ');
+    DX[0].code=parts[0].trim()||DX[0].code;
+    if(parts[1])DX[0].desc=parts.slice(1).join(' - ').trim();
+    DX[0].state=mode==='overridden'?'changed':'confirmed';
+    renderDx();renderLines();flashPtr('A');
+  }
+  function ptrHTML(dx){
+    return String(dx||'').toUpperCase().split(/[\s,]+/).filter(Boolean).map(L=>{
+      const d=dxFor(L);
+      return '<span class="dxp '+(d?d.state:'bad')+'" data-l="'+escH(L)+'" title="'+(d?L+' = '+escH(d.code):'No diagnosis in slot '+escH(L))+'">'+escH(L)+'<small>'+(d?escH(d.code):'?')+'</small></span>';
+    }).join('');
+  }
+  function flashPtr(L){
+    document.querySelectorAll('#linesBody .dxp[data-l="'+L+'"]').forEach(e=>{e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),900);});
+  }
+  function deriveUnits(l){if(TIME_CODES[l.cpt]&&l.min)l.units=Math.max(1,Math.round(l.min/TIME_CODES[l.cpt]));}
+  function timeHTML(l,i){
+    if(!TIME_CODES[l.cpt])return '<span class="tna" title="Not a time-based code">-</span>';
+    if(l.added)return '<input class="cin w-min" value="'+(l.min||'')+'" placeholder="min" onchange="setMinutes('+i+',this.value)"> min → <b>'+l.units+' u</b>';
+    return (l.min||0)+' min → '+l.units+' u';
+  }
+  function provHTML(l){
+    if(l.prov===null)return '<span class="needs" onclick="jumpAI(\'prov\')">Set provider →</span>';
+    return '<span class="set">'+escH(l.prov)+'</span>';
+  }
+  function unitsHTML(l,i){
+    if(l.added)return '<input class="cin w-u" value="'+l.units+'" onchange="setUnits('+i+',this.value)">';
+    return String(l.units);
+  }
+  function lineTotal(){return LINES.reduce((s,l)=>s+(Number(l.charge)||0),0);}
+  function renderLines(){
+    const body=document.getElementById('linesBody'); if(!body)return;
+    body.innerHTML=LINES.map((l,i)=>{
+      let cls=l.added?'added':'';
+      if(i===0&&l.hot!==undefined)cls=l.hot?'hot':'hot fixed';
+      if(l.added){
+        return '<tr class="'+cls+'"><td>'+(i+1)+'</td>'+
+          '<td><input class="cin" value="'+escH(l.cpt)+'" placeholder="CPT" onchange="setLine('+i+',\'cpt\',this.value)"></td>'+
+          '<td><input class="cin w-mod" value="'+escH(l.mod)+'" onchange="setLine('+i+',\'mod\',this.value)"></td>'+
+          '<td>'+timeHTML(l,i)+'</td><td>'+unitsHTML(l,i)+'</td>'+
+          '<td><input class="cin w-dx" value="'+escH(l.dx)+'" onchange="setLine('+i+',\'dx\',this.value)"> '+ptrHTML(l.dx)+'</td>'+
+          '<td><input class="cin w-chg" value="'+(l.charge?Number(l.charge).toFixed(2):'')+'" placeholder="0.00" onchange="setLine('+i+',\'charge\',this.value)"></td>'+
+          '<td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+' <button class="rm" title="Remove line" onclick="removeLine('+i+')">×</button></td></tr>';
+      }
+      return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+escH(l.cpt)+'</td><td>'+escH(l.mod)+'</td><td>'+timeHTML(l,i)+'</td>'+
+        '<td>'+unitsHTML(l,i)+'</td><td>'+ptrHTML(l.dx)+'</td><td>'+fmtMoney(l.charge)+'</td><td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+'</td></tr>';
+    }).join('');
+    document.getElementById('linesFoot').innerHTML='<tr><td colspan="6" class="tl">Total · '+LINES.length+' lines</td><td>'+fmtMoney(lineTotal())+'</td><td colspan="2"></td></tr>';
+  }
+  function setLine(i,k,v){
+    const l=LINES[i]; v=String(v).trim();
+    if(k==='cpt'){l.cpt=v.toUpperCase();deriveUnits(l);}
+    else if(k==='dx')l.dx=v.toUpperCase();
+    else if(k==='charge'){l.charge=parseFloat(v.replace(/[$,]/g,''))||0;l.fee=l.units?l.charge/l.units:l.charge;}
+    else l[k]=v;
+    renderLines();
+  }
+  function setUnits(i,v){const l=LINES[i];l.units=Math.max(0,parseInt(v,10)||0);renderLines();}
+  function setMinutes(i,v){const l=LINES[i];l.min=Math.max(0,parseInt(v,10)||0);deriveUnits(l);renderLines();}
+  function addLine(){
+    LINES.push({cpt:'',mod:'26',units:1,dx:'A',charge:0,fee:0,prov:'Demo, Eric MD',desc:'Added by you',added:true});
+    renderLines(); bumpAudit();
+    const rows=document.querySelectorAll('#linesBody tr'); const inp=rows.length&&rows[rows.length-1].querySelector('input'); if(inp)inp.focus();
+    toast('Line added - enter CPT, mods, units, Dx pointer and charge. Time-based codes (95940, 95941, G0453) derive units from minutes.');
+  }
+  function removeLine(i){LINES.splice(i,1);renderLines();bumpAudit();toast('Added line removed');}
+
   /* ---------- worklist sort ---------- */
   function sortTable(key,th){
     const tbody=document.getElementById('wlBody');
@@ -1422,6 +1575,7 @@
       mode==='overridden'
         ? '<span class="aif-done ovr">✎ Overridden by you · logged to audit</span>'
         : '<span class="aif-done">✓ Confirmed by you · logged to audit</span>';
+    if(key==='icd')setPrincipalDx(document.getElementById('aival-icd').textContent,mode);
     const item=document.getElementById('ai-item-'+key);
     if(item){item.classList.add('done');item.classList.remove('click');item.onclick=null;
       const ric=document.getElementById('aiic-'+key); if(ric){ric.className='ic '+(mode==='overridden'?'ov':'d'); ric.textContent=(mode==='overridden'?'✎':'✓');}}
@@ -1618,6 +1772,7 @@
     toast('Box 33 confirmed - payment routes to '+p[0]+' · logged to audit','info');
   }
 
+  initClaimModel(); renderDx(); renderLines();
   update();
 </script>
 <script src="demo-nav.js"></script>

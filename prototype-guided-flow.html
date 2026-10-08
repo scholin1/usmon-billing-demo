@@ -475,6 +475,43 @@
   .cnotes{margin-top:4px}
   .cnote{font-size:12.5px;border-left:3px solid var(--line-strong);background:var(--surface-2);border-radius:0 7px 7px 0;padding:7px 11px;margin-bottom:7px;line-height:1.4}
   .cnote .who{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-top:2px}
+
+  /* Dx list with provenance + live service-line model (pointers, time, add line) */
+  .dxlist{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+  .dxi{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;flex-wrap:wrap}
+  .dxi:last-child{border-bottom:none}
+  .dxi .dxl{flex:none;width:22px;height:22px;border-radius:6px;background:#eef2f7;color:var(--muted);display:grid;place-items:center;font-weight:800;font-size:11px}
+  .dxi.confirmed .dxl{background:var(--ok-tint);color:var(--ok)}
+  .dxi.changed .dxl{background:var(--warn-tint);color:var(--warn)}
+  .dxi.pending .dxl{background:var(--ai-tint);color:var(--ai-dark)}
+  .dxi .dxc{font-family:var(--mono);font-weight:700;min-width:64px}
+  .dxi .dxd{color:var(--muted)}
+  .prov{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+  .prov.report{background:var(--primary-tint);color:var(--primary-dark);border:1px solid var(--primary-line)}
+  .prov.tech{background:var(--hosp-tint);color:var(--hosp-dark);border:1px solid var(--hosp-line)}
+  .prov.you{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+  .dxi .dxa{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .dxi .dxa .btn{padding:4px 10px;font-size:11.5px}
+  .dxdone{font-size:12px;font-weight:700;color:var(--ok)} .dxdone.ovr{color:var(--warn)}
+  .dxin{font-family:var(--mono);font-size:12.5px;border:1px solid var(--primary);border-radius:6px;padding:4px 7px;width:96px}
+  .lines input.cin{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 6px;background:#fff;width:72px}
+  .lines input.cin:focus{outline:2px solid var(--primary-tint);border-color:var(--primary)}
+  .lines input.w-min{width:56px} .lines input.w-u{width:48px} .lines input.w-mod{width:52px} .lines input.w-dx{width:56px} .lines input.w-chg{width:92px}
+  .lines tr.added{background:var(--primary-tint)}
+  .lines tfoot td{font-weight:800;border-top:2px solid var(--line-strong);border-bottom:none}
+  .lines tfoot .tl{font-family:var(--sans);text-align:right;color:var(--muted)}
+  .lines .tna{color:var(--faint)}
+  .lines .rm{background:none;border:none;color:var(--faint);font-weight:800;padding:0 4px;font-size:14px}
+  .lines .rm:hover{color:var(--block)}
+  .dxp{display:inline-flex;align-items:baseline;gap:3px;font-weight:800;border-radius:5px;padding:1px 5px;border:1px solid var(--line-strong);background:#fff;transition:.3s;margin-right:3px}
+  .dxp small{font-weight:600;font-size:10.5px;color:var(--muted)}
+  .dxp.confirmed{border-color:var(--ok-line);background:var(--ok-tint);color:var(--ok)}
+  .dxp.changed{border-color:var(--warn-line);background:var(--warn-tint);color:var(--warn)}
+  .dxp.pending{border-color:var(--ai-line);background:var(--ai-tint);color:var(--ai-dark)}
+  .dxp.bad{border-color:var(--block-line);background:var(--block-tint);color:var(--block)}
+  .dxp.flash{box-shadow:0 0 0 3px var(--primary-line)}
+  .lines-foot{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .lines-foot .hint{font-size:11.5px;color:var(--faint);font-weight:600}
 </style>
 </head>
 <body>
@@ -822,11 +859,8 @@
         <div class="aibar" id="aibar-3"><span class="aibar-ic">✦</span><span id="aibar-msg-3">AI fields to confirm: <b>3</b> (this stage)</span></div>
 
         <!-- AI field 1: AI-suggested principal ICD-10 -->
-        <div class="dxrow">
-          <span class="dxlabel">Diagnoses (ICD-10)</span>
-          <span class="dxchip">M50.120</span><span class="dxchip">M54.12</span><span class="dxchip">G89.18</span>
-          <span id="dxLead"></span>
-        </div>
+        <div class="blocktitle">Diagnoses (ICD-10) · Box 21</div>
+        <div class="dxlist" id="dxList"></div>
         <div class="fgrid" style="margin-top:6px">
           <div class="f col4"><label>Principal diagnosis (ICD-10)</label>
             <div class="aif" id="aif-icd">
@@ -843,17 +877,11 @@
 
         <div style="margin-top:20px" class="blocktitle">Service lines</div>
         <table class="lines">
-          <thead><tr><th>#</th><th>CPT</th><th>Mods</th><th>Units</th><th>Dx</th><th>Charge</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr class="hot" id="line1"><td>1</td><td>95887</td><td>26</td><td>1</td><td>A</td><td>$361.25</td>
-              <td id="line1prov"><span class="needs" onclick="flashAI('prov')">Set provider →</span></td><td class="desc">Needle EMG, non-extremity</td></tr>
-            <tr><td>2</td><td>95909</td><td>26</td><td>1</td><td>A</td><td>$849.15</td><td class="set">Sample, Alan MD</td><td class="desc">Nerve conduction, 7–8 studies</td></tr>
-            <tr><td>3</td><td>95937</td><td>26</td><td>4</td><td>A B</td><td>$6,332.50</td><td class="set">Sample, Alan MD</td><td class="desc">Neuromuscular junction test</td></tr>
-            <tr id="line4"><td>4</td><td>95938</td><td>26</td><td id="line4units">6</td><td>A B</td><td>$11,900.01</td><td class="set">Sample, Alan MD</td><td class="desc">SSEP upper &amp; lower</td></tr>
-            <tr><td>5</td><td>95939</td><td>26</td><td>3</td><td>A</td><td>$17,850.01</td><td class="set">Sample, Alan MD</td><td class="desc">MEP upper &amp; lower</td></tr>
-            <tr><td>6</td><td>95955</td><td>26</td><td>1</td><td>A</td><td>$10,795.00</td><td class="set">Sample, Alan MD</td><td class="desc">EEG during surgery</td></tr>
-          </tbody>
+          <thead><tr><th>#</th><th>CPT</th><th>Mods</th><th>Time</th><th>Units</th><th>Dx ptr</th><th>Charge</th><th>Rendering (24J)</th><th>Description</th></tr></thead>
+          <tbody id="linesBody"></tbody>
+          <tfoot id="linesFoot"></tfoot>
         </table>
+        <div class="lines-foot"><button class="btn sm" onclick="addLine()">+ Add line</button><span class="hint">Time-based codes (95940, 95941, G0453) derive units from minutes · 45 min/unit</span></div>
 
         <div class="fgrid" style="margin-top:16px">
           <div class="f col2"><label>Units - line 4 (95938, SSEP)</label>
@@ -1086,9 +1114,9 @@
               <div class="box c12"><span class="bxn">21</span><label>Diagnosis or nature of illness (ICD-10) - A is principal</label>
                 <div class="dxgrid">
                   <div class="dxslot trhi" id="frmBx21slot"><span class="trflag" id="frmBx21flag">✦ from Coding</span><span class="lt">A</span><input class="mono" id="frmBx21a" value="M50.121"></div>
-                  <div class="dxslot"><span class="lt">B</span><input class="mono" value="M50.120"></div>
-                  <div class="dxslot"><span class="lt">C</span><input class="mono" value="M54.12"></div>
-                  <div class="dxslot"><span class="lt">D</span><input class="mono" value="G89.18"></div>
+                  <div class="dxslot"><span class="lt">B</span><input class="mono" id="frmBx21b" value="M50.120"></div>
+                  <div class="dxslot"><span class="lt">C</span><input class="mono" id="frmBx21c" value="M54.12"></div>
+                  <div class="dxslot"><span class="lt">D</span><input class="mono" id="frmBx21d" value="G89.18"></div>
                   <div class="dxslot"><span class="lt">E</span><input class="mono" placeholder="-" value=""></div>
                   <div class="dxslot"><span class="lt">F</span><input class="mono" placeholder="-" value=""></div>
                   <div class="dxslot"><span class="lt">G</span><input class="mono" placeholder="-" value=""></div>
@@ -1283,11 +1311,8 @@
       document.getElementById('aival-'+k).textContent=AI_INIT[k].val;
       document.getElementById('aifact-'+k).innerHTML=aiActionsHTML(k);
     });
-    // reset coding-stage side effects
-    document.getElementById('dxLead').innerHTML='';
-    document.getElementById('line4units').textContent='6';
-    const l1=document.getElementById('line1prov'); l1.innerHTML='<span class="needs" onclick="flashAI(\'prov\')">Set provider →</span>';
-    document.getElementById('line1').className='hot';
+    // reset coding-stage model (Dx + service lines)
+    initClaimModel(); renderDx(); renderLines();
     // reset file stage
     document.getElementById('fileCard').style.display='';
     document.getElementById('filedCard').style.display='none';
@@ -1297,6 +1322,126 @@
 
   function enterFlow(){resetFlow();show('flow');setNav('review');}
   function exitFlow(){show('inbox');setNav('review');}
+  /* ---------- claim model: Dx (with provenance) + service lines ---------- */
+  const TIME_CODES={'95940':45,'95941':45,'G0453':45};   /* minutes per unit */
+  const DX_PROV={report:'From neurologist\'s report · signed 10/21',tech:'Entered by tech',you:'Changed by you · today'};
+  const DX_INIT=[
+    {code:'M50.121',desc:'Cervical disc disorder with radiculopathy, C6–C7',src:'report',principal:true},
+    {code:'M50.120',desc:'Mid-cervical disc disorder, unspecified level',src:'report'},
+    {code:'M54.12',desc:'Radiculopathy, cervical region',src:'report'},
+    {code:'G89.18',desc:'Other acute postprocedural pain',src:'tech'}
+  ];
+  const LINES_INIT=[
+    {cpt:'95887',mod:'26',units:1,dx:'A',charge:361.25,prov:null,desc:'Needle EMG, non-extremity'},
+    {cpt:'95909',mod:'26',units:1,dx:'A',charge:849.15,prov:'Sample, Alan MD',desc:'Nerve conduction, 7–8 studies'},
+    {cpt:'95937',mod:'26',units:4,dx:'A B',charge:6332.50,prov:'Sample, Alan MD',desc:'Neuromuscular junction test'},
+    {cpt:'95938',mod:'26',units:6,dx:'A B',charge:11900.01,prov:'Sample, Alan MD',desc:'SSEP upper & lower',ai:'units'},
+    {cpt:'95939',mod:'26',units:3,dx:'A',charge:17850.01,prov:'Sample, Alan MD',desc:'MEP upper & lower'},
+    {cpt:'95955',mod:'26',units:1,dx:'A',charge:10795.00,prov:'Sample, Alan MD',desc:'EEG during surgery'}
+  ];
+  const DX_LETTERS='ABCDEFGH';
+  let DX=[], LINES=[];
+  function initClaimModel(){
+    DX=DX_INIT.map(d=>Object.assign({state:d.principal?'pending':'source'},d));
+    LINES=LINES_INIT.map(l=>Object.assign({fee:l.charge/l.units},l));
+    LINES[0].hot=true;
+  }
+  function dxFor(letter){return DX[DX_LETTERS.indexOf(letter)]||null;}
+  function dxDoneHTML(d){return d.state==='changed'?'<span class="dxdone ovr">✎ Changed by you</span>':'<span class="dxdone">✓ Confirmed</span>';}
+  function renderDx(){
+    const el=document.getElementById('dxList'); if(!el)return;
+    el.innerHTML=DX.map((d,i)=>{
+      const L=DX_LETTERS[i];
+      let act;
+      if(d.editing) act='<input class="dxin" id="dxin-'+i+'" value="'+escH(d.code)+'"><button class="btn primary sm" onclick="saveDx('+i+')">Save</button><button class="btn sm" onclick="cancelDx('+i+')">Cancel</button>';
+      else if(d.principal) act=d.state==='pending'?'<button class="btn ghost sm" onclick="flashAI(\'icd\')">Confirm principal below ↓</button>':dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      else if(d.state==='source') act='<button class="btn sm" onclick="confirmDx('+i+')">✓ Confirm</button><button class="btn sm" onclick="editDx('+i+')">Change</button>';
+      else act=dxDoneHTML(d)+'<button class="btn ghost sm" onclick="editDx('+i+')">Change</button>';
+      const pk=d.state==='changed'?'you':d.src;
+      return '<div class="dxi '+d.state+'"><span class="dxl">'+L+'</span><span class="dxc">'+escH(d.code)+'</span>'+
+        '<span class="dxd">'+escH(d.desc)+(d.principal?' · principal':'')+'</span>'+
+        '<span class="prov '+pk+'">'+DX_PROV[pk]+'</span><span class="dxa">'+act+'</span></div>';
+    }).join('');
+  }
+  function confirmDx(i){DX[i].state='confirmed';bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);toast('Dx '+DX_LETTERS[i]+' confirmed - service-line pointers updated');}
+  function editDx(i){DX[i].editing=true;renderDx();const inp=document.getElementById('dxin-'+i);if(inp){inp.focus();inp.select();}}
+  function cancelDx(i){DX[i].editing=false;renderDx();}
+  function saveDx(i){
+    const v=(document.getElementById('dxin-'+i).value||'').trim().toUpperCase();
+    DX[i].editing=false;
+    if(v&&v!==DX[i].code){DX[i].code=v;DX[i].desc='ICD-10 description from code lookup';DX[i].state='changed';}
+    else if(DX[i].state==='source')DX[i].state='confirmed';
+    bumpAudit();renderDx();renderLines();flashPtr(DX_LETTERS[i]);
+    toast('Dx '+DX_LETTERS[i]+' is now '+DX[i].code+' - service-line pointers updated');
+  }
+  function setPrincipalDx(text,mode){
+    const parts=text.split(' - ');
+    DX[0].code=parts[0].trim()||DX[0].code;
+    if(parts[1])DX[0].desc=parts.slice(1).join(' - ').trim();
+    DX[0].state=mode==='overridden'?'changed':'confirmed';
+    renderDx();renderLines();flashPtr('A');
+  }
+  function ptrHTML(dx){
+    return String(dx||'').toUpperCase().split(/[\s,]+/).filter(Boolean).map(L=>{
+      const d=dxFor(L);
+      return '<span class="dxp '+(d?d.state:'bad')+'" data-l="'+escH(L)+'" title="'+(d?L+' = '+escH(d.code):'No diagnosis in slot '+escH(L))+'">'+escH(L)+'<small>'+(d?escH(d.code):'?')+'</small></span>';
+    }).join('');
+  }
+  function flashPtr(L){
+    document.querySelectorAll('#linesBody .dxp[data-l="'+L+'"]').forEach(e=>{e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),900);});
+  }
+  function deriveUnits(l){if(TIME_CODES[l.cpt]&&l.min)l.units=Math.max(1,Math.round(l.min/TIME_CODES[l.cpt]));}
+  function timeHTML(l,i){
+    if(!TIME_CODES[l.cpt])return '<span class="tna" title="Not a time-based code">-</span>';
+    if(l.added)return '<input class="cin w-min" value="'+(l.min||'')+'" placeholder="min" onchange="setMinutes('+i+',this.value)"> min → <b>'+l.units+' u</b>';
+    return (l.min||0)+' min → '+l.units+' u';
+  }
+  function provHTML(l){
+    if(l.prov===null)return '<span class="needs" onclick="flashAI(\'prov\')">Set provider →</span>';
+    return '<span class="set">'+escH(l.prov)+'</span>';
+  }
+  function unitsHTML(l,i){
+    if(l.added)return '<input class="cin w-u" value="'+l.units+'" onchange="setUnits('+i+',this.value)">';
+    return String(l.units);
+  }
+  function lineTotal(){return LINES.reduce((s,l)=>s+(Number(l.charge)||0),0);}
+  function renderLines(){
+    const body=document.getElementById('linesBody'); if(!body)return;
+    body.innerHTML=LINES.map((l,i)=>{
+      let cls=l.added?'added':'';
+      if(i===0&&l.hot!==undefined)cls=l.hot?'hot':'hot fixed';
+      if(l.added){
+        return '<tr class="'+cls+'"><td>'+(i+1)+'</td>'+
+          '<td><input class="cin" value="'+escH(l.cpt)+'" placeholder="CPT" onchange="setLine('+i+',\'cpt\',this.value)"></td>'+
+          '<td><input class="cin w-mod" value="'+escH(l.mod)+'" onchange="setLine('+i+',\'mod\',this.value)"></td>'+
+          '<td>'+timeHTML(l,i)+'</td><td>'+unitsHTML(l,i)+'</td>'+
+          '<td><input class="cin w-dx" value="'+escH(l.dx)+'" onchange="setLine('+i+',\'dx\',this.value)"> '+ptrHTML(l.dx)+'</td>'+
+          '<td><input class="cin w-chg" value="'+(l.charge?Number(l.charge).toFixed(2):'')+'" placeholder="0.00" onchange="setLine('+i+',\'charge\',this.value)"></td>'+
+          '<td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+' <button class="rm" title="Remove line" onclick="removeLine('+i+')">×</button></td></tr>';
+      }
+      return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+escH(l.cpt)+'</td><td>'+escH(l.mod)+'</td><td>'+timeHTML(l,i)+'</td>'+
+        '<td>'+unitsHTML(l,i)+'</td><td>'+ptrHTML(l.dx)+'</td><td>'+fmtMoney(l.charge)+'</td><td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+'</td></tr>';
+    }).join('');
+    document.getElementById('linesFoot').innerHTML='<tr><td colspan="6" class="tl">Total · '+LINES.length+' lines</td><td>'+fmtMoney(lineTotal())+'</td><td colspan="2"></td></tr>';
+  }
+  function setLine(i,k,v){
+    const l=LINES[i]; v=String(v).trim();
+    if(k==='cpt'){l.cpt=v.toUpperCase();deriveUnits(l);}
+    else if(k==='dx')l.dx=v.toUpperCase();
+    else if(k==='charge'){l.charge=parseFloat(v.replace(/[$,]/g,''))||0;l.fee=l.units?l.charge/l.units:l.charge;}
+    else l[k]=v;
+    renderLines();
+  }
+  function setUnits(i,v){const l=LINES[i];l.units=Math.max(0,parseInt(v,10)||0);renderLines();}
+  function setMinutes(i,v){const l=LINES[i];l.min=Math.max(0,parseInt(v,10)||0);deriveUnits(l);renderLines();}
+  function addLine(){
+    LINES.push({cpt:'',mod:'26',units:1,dx:'A',charge:0,fee:0,prov:'Sample, Alan MD',desc:'Added by you',added:true});
+    renderLines(); bumpAudit();
+    const rows=document.querySelectorAll('#linesBody tr'); const inp=rows.length&&rows[rows.length-1].querySelector('input'); if(inp)inp.focus();
+    toast('Line added - enter CPT, mods, units, Dx pointer and charge. Time-based codes (95940, 95941, G0453) derive units from minutes.');
+  }
+  function removeLine(i){LINES.splice(i,1);renderLines();bumpAudit();toast('Added line removed');}
+
   /* ---------- queue tabs: Needs review | All claims ---------- */
   const ALL_CLAIMS=[
     {name:'Testcase, Alice',pid:'100001',claim:'1000001',dos:'10/20/2025',payer:'United Healthcare',entity:'Demo Neurophysiology LLC',charges:48087.92,aged:5,status:'Needs review',pill:'review',biller:'Sample, Dana'},
@@ -1453,19 +1598,15 @@
   }
   function aiSideEffect(key,mode){
     if(key==='icd'){
-      const code=leadPart(document.getElementById('aival-icd').textContent);
-      const chip=document.createElement('span'); chip.className='dxchip new lead'; chip.textContent=code+' · principal';
-      const lead=document.getElementById('dxLead'); lead.innerHTML=''; lead.appendChild(chip);
+      setPrincipalDx(document.getElementById('aival-icd').textContent,mode);
     }
     if(key==='prov'){
-      const name=leadPart(document.getElementById('aival-prov').textContent);
-      const s=document.createElement('span'); s.className='set'; s.textContent=name;
-      const cell=document.getElementById('line1prov'); cell.innerHTML=''; cell.appendChild(s);
-      document.getElementById('line1').className='hot fixed';
+      LINES[0].prov=leadPart(document.getElementById('aival-prov').textContent);
+      LINES[0].hot=false; renderLines();
     }
     if(key==='units'){
-      const u=document.getElementById('aival-units').textContent.replace(/[^0-9]/g,'')||'6';
-      document.getElementById('line4units').textContent=u;
+      const u=parseInt(document.getElementById('aival-units').textContent.replace(/[^0-9]/g,''),10);
+      const l=LINES.find(x=>x.ai==='units'); if(l&&u>0){l.units=u; renderLines();}
     }
   }
   function resolveAI(key,mode){
@@ -1519,9 +1660,7 @@
 
   function refreshReview(){
     document.getElementById('reviewDx').textContent =
-      (aiState.icd!=='pending')
-        ? (leadPart(document.getElementById('dxLead').textContent.replace(' · principal','')) || 'M50.121')
-        : '-';
+      (aiState.icd!=='pending') ? DX[0].code : '-';
   }
 
   /* ---------- stage 5: file ---------- */
@@ -1559,8 +1698,10 @@
     let icd='M50.121';
     const t=document.getElementById('aival-icd');
     if(t){const lp=leadPart(t.textContent);if(lp)icd=lp;}
+    if(DX[0]&&DX[0].state!=='pending')icd=DX[0].code;
     const a=document.getElementById('frmBx21a');
     if(a)a.value=icd;
+    ['b','c','d'].forEach((x,n)=>{const el=document.getElementById('frmBx21'+x);if(el&&DX[n+1])el.value=DX[n+1].code;});
     // reflect the coding-stage confirm state on the Box 21.A slot
     const slot=document.getElementById('frmBx21slot');
     const flag=document.getElementById('frmBx21flag');
@@ -1621,6 +1762,7 @@
   }
 
   /* init */
+  initClaimModel(); renderDx(); renderLines();
   renderAll();
   updateAIStage(2); updateAIStage(3);
   updateFlowEntity();
