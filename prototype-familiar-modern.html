@@ -952,7 +952,7 @@
             <tbody id="linesBody"></tbody>
             <tfoot id="linesFoot"></tfoot>
           </table>
-          <div class="lines-foot"><button class="btn sm" onclick="addLine()">+ Add line</button><span class="hint">Time-based codes (95940, 95941, G0453) derive units from minutes · 45 min/unit</span></div>
+          <div class="lines-foot"><button class="btn sm" onclick="addLine()">+ Add line</button><span class="hint">Time-based codes (95940, 95941, G0453) derive units from minutes · 95940 and G0453 at 15 min per unit, 95941 at 60</span></div>
           <div class="fgrid" style="margin-top:14px">
             <div class="f col2"><label>Units - line 4 (95938, SSEP) <span class="bx">(Box 24G)</span></label>
               <div class="aif" id="aif-units">
@@ -1410,7 +1410,7 @@
   function fmtMoney(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
   function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   /* ---------- claim model: Dx (with provenance) + service lines ---------- */
-  const TIME_CODES={'95940':45,'95941':45,'G0453':45};   /* minutes per unit */
+  const TIME_CODES={'95940':15,'95941':60,'G0453':15};   /* minutes per unit */
   const DX_PROV={report:'From neurologist\'s report · signed 10/21',tech:'Entered by tech',you:'Changed by you · today'};
   const DX_INIT=[
     {code:'M50.121',desc:'Cervical disc disorder with radiculopathy, C6–C7',src:'report',principal:true},
