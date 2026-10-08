@@ -636,7 +636,7 @@
     <div class="claimrow headline" onclick="enterFlow()">
       <div class="cr-who"><div class="nm">Testcase, Alice</div><div class="sub mono">PID 100001 · Claim 1000001 · DOS 10/20/2025</div></div>
       <div class="cr-payer">United Healthcare<div class="net">◆ Out-of-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
-      <div class="cr-amt">$48,087.92</div>
+      <div class="cr-amt js-total">$48,087.92</div>
       <div class="cr-flag"><span class="tag bilr sup-only">👤 Sample, Dana</span><span class="starthere">Start here</span><span class="pill review">✦ AI fields to confirm</span><span class="cr-open">Open →</span></div>
     </div>
 
@@ -738,7 +738,7 @@
           <div class="f"><label>Payer</label><div class="val">United Healthcare</div></div>
           <div class="f"><label>Network</label><div class="val" style="color:var(--idr);font-weight:600">Out-of-network</div></div>
           <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5–C7</div></div>
-          <div class="f col2"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f col2"><label>Total charges</label><div class="val mono js-total" style="font-weight:700">$48,087.92</div></div>
           <div class="f col2"><label>Billing entity (Box 33)</label><div class="val js-entity" style="font-weight:700">Demo Neurophysiology LLC</div></div>
           <div class="f col2"><label>Billing NPI (Box 33a)</label><div class="val mono js-entity-npi">1000000017</div></div>
         </div>
@@ -910,7 +910,7 @@
 
         <div class="smartnote">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          <span><b>OON pricing applied:</b> charges set at the client's out-of-network fee schedule (≈6× QPA). Units derived from 268 min of monitoring on file. Charged <span class="mono">$48,087.92</span> total.</span>
+          <span><b>OON pricing applied:</b> charges set at the client's out-of-network fee schedule (≈6× QPA). Units derived from 268 min of monitoring on file. Charged <span class="mono js-total">$48,087.92</span> total.</span>
         </div>
       </div>
       <div class="stage-foot">
@@ -937,8 +937,8 @@
           <div class="f"><label>Claim #</label><div class="val mono">1000001</div></div>
           <div class="f"><label>Payer</label><div class="val">United Healthcare · OON</div></div>
           <div class="f col2"><label>Principal diagnosis</label><div class="val mono" id="reviewDx">-</div></div>
-          <div class="f"><label>Service lines</label><div class="val">6 lines</div></div>
-          <div class="f"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f"><label>Service lines</label><div class="val js-linecount">6 lines</div></div>
+          <div class="f"><label>Total charges</label><div class="val mono js-total" style="font-weight:700">$48,087.92</div></div>
           <div class="f col2"><label>Billing provider (Box 33)</label><div class="val" id="reviewBox33">Demo Neurophysiology LLC · NPI 1000000017</div></div>
           <div class="f col2"><label>Service facility (Box 32)</label><div class="val">Sample Specialists Hospital, Springfield ST</div></div>
         </div>
@@ -976,7 +976,7 @@
       <div class="stage-body">
         <div class="fgrid">
           <div class="f col2"><label>Claim</label><div class="val">Testcase, Alice · 1000001</div></div>
-          <div class="f"><label>Charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f"><label>Charges</label><div class="val mono js-total" style="font-weight:700">$48,087.92</div></div>
           <div class="f"><label>Channel</label><div class="val" style="color:var(--idr);font-weight:600">Commercial OON → IDR</div></div>
         </div>
         <div class="smartnote">
@@ -1176,7 +1176,7 @@
                     <td><input class="mono w-chg" value="10,795.00"></td><td><input class="mono w-u" value="1"></td><td><input class="w-sm" value=""></td>
                     <td><input class="mono w-sm" value="NPI"></td><td><input class="mono w-npi" value="1000000048"></td><td class="desc">EEG monitoring during surgery</td></tr>
                 </tbody>
-                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono">$48,087.92</td><td colspan="5"></td></tr></tfoot>
+                <tfoot><tr><td colspan="7" class="lbl">Total charge (Box 28)</td><td class="mono js-total">$48,087.92</td><td colspan="5"></td></tr></tfoot>
               </table>
             </div>
           </div>
@@ -1191,11 +1191,11 @@
               <div class="box c3"><span class="bxn">26</span><label>Patient account no.</label><input class="mono" value="100001"></div>
               <div class="box c2"><span class="bxn">27</span><label>Accept assignment</label>
                 <select><option selected>Yes</option><option>No</option></select></div>
-              <div class="box c3"><span class="bxn">28</span><label>Total charge</label><input class="mono" value="$48,087.92"></div>
+              <div class="box c3"><span class="bxn">28</span><label>Total charge</label><input class="mono js-total-in" value="$48,087.92"></div>
             </div>
             <div class="boxrow">
               <div class="box c3"><span class="bxn">29</span><label>Amount paid</label><input class="mono" value="$0.00"></div>
-              <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono" value="$48,087.92"></div>
+              <div class="box c3"><span class="bxn">30</span><label>Rsvd for NUCC / balance</label><input class="mono js-total-in" value="$48,087.92"></div>
               <div class="box c6"><span class="bxn">31</span><label>Signature of physician / supplier</label><input value="Sample, Alan MD - signature on file · 10/22/2025"></div>
             </div>
             <div class="boxrow">
@@ -1401,8 +1401,24 @@
     return '<span class="set">'+escH(l.prov)+'</span>';
   }
   function unitsHTML(l,i){
-    if(l.added)return '<input class="cin w-u" value="'+l.units+'" onchange="setUnits('+i+',this.value)">';
-    return String(l.units);
+    if(TIME_CODES[l.cpt]&&l.min)return '<b title="Derived from minutes">'+l.units+'</b>';
+    return '<input class="cin w-u" value="'+l.units+'" title="Edit units - the line charge re-prices" onchange="setUnits('+i+',this.value)">';
+  }
+  function reprice(l){if(l.fee)l.charge=Math.round(l.units*l.fee*100)/100;}
+  function syncFormLines(sel){
+    document.querySelectorAll(sel).forEach((tr,i)=>{
+      const l=LINES[i]; if(!l)return; const ins=tr.querySelectorAll('input'); if(ins.length<8)return;
+      ins[5].value=l.dx; ins[6].value=Number(l.charge).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); ins[7].value=l.units;
+    });
+  }
+  function updateTotals(){
+    const t=lineTotal(), txt=fmtMoney(t);
+    document.querySelectorAll('.js-total').forEach(e=>e.textContent=txt);
+    document.querySelectorAll('.js-total-in').forEach(e=>e.value=txt);
+    document.querySelectorAll('.js-linecount').forEach(e=>e.textContent=LINES.length+' lines');
+    const a=(typeof ALL_CLAIMS!=='undefined')&&ALL_CLAIMS.find(c=>c.claim==='1000001');
+    if(a&&a.charges!==t){a.charges=t;renderAll();}
+    return t;
   }
   function lineTotal(){return LINES.reduce((s,l)=>s+(Number(l.charge)||0),0);}
   function renderLines(){
@@ -1423,17 +1439,22 @@
         '<td>'+unitsHTML(l,i)+'</td><td>'+ptrHTML(l.dx)+'</td><td>'+fmtMoney(l.charge)+'</td><td>'+provHTML(l)+'</td><td class="desc">'+escH(l.desc)+'</td></tr>';
     }).join('');
     document.getElementById('linesFoot').innerHTML='<tr><td colspan="6" class="tl">Total · '+LINES.length+' lines</td><td>'+fmtMoney(lineTotal())+'</td><td colspan="2"></td></tr>';
+    updateTotals();
   }
   function setLine(i,k,v){
     const l=LINES[i]; v=String(v).trim();
-    if(k==='cpt'){l.cpt=v.toUpperCase();deriveUnits(l);}
+    if(k==='cpt'){l.cpt=v.toUpperCase();deriveUnits(l);reprice(l);}
     else if(k==='dx')l.dx=v.toUpperCase();
     else if(k==='charge'){l.charge=parseFloat(v.replace(/[$,]/g,''))||0;l.fee=l.units?l.charge/l.units:l.charge;}
     else l[k]=v;
     renderLines();
   }
-  function setUnits(i,v){const l=LINES[i];l.units=Math.max(0,parseInt(v,10)||0);renderLines();}
-  function setMinutes(i,v){const l=LINES[i];l.min=Math.max(0,parseInt(v,10)||0);deriveUnits(l);renderLines();}
+  function setUnits(i,v){
+    const l=LINES[i]; if(l.units>0&&l.charge)l.fee=l.charge/l.units;
+    l.units=Math.max(0,parseInt(v,10)||0); reprice(l); renderLines(); bumpAudit();
+    toast('Line '+(i+1)+' re-priced: '+l.units+' u × '+fmtMoney(l.fee||0)+' = '+fmtMoney(l.charge)+' · total '+fmtMoney(lineTotal()));
+  }
+  function setMinutes(i,v){const l=LINES[i]; if(l.units>0&&l.charge)l.fee=l.charge/l.units; l.min=Math.max(0,parseInt(v,10)||0);deriveUnits(l);reprice(l);renderLines();}
   function addLine(){
     LINES.push({cpt:'',mod:'26',units:1,dx:'A',charge:0,fee:0,prov:'Sample, Alan MD',desc:'Added by you',added:true});
     renderLines(); bumpAudit();
@@ -1606,7 +1627,7 @@
     }
     if(key==='units'){
       const u=parseInt(document.getElementById('aival-units').textContent.replace(/[^0-9]/g,''),10);
-      const l=LINES.find(x=>x.ai==='units'); if(l&&u>0){l.units=u; renderLines();}
+      const l=LINES.find(x=>x.ai==='units'); if(l&&u>0){l.fee=l.charge/l.units; l.units=u; reprice(l); renderLines();}
     }
   }
   function resolveAI(key,mode){
@@ -1699,6 +1720,7 @@
     const t=document.getElementById('aival-icd');
     if(t){const lp=leadPart(t.textContent);if(lp)icd=lp;}
     if(DX[0]&&DX[0].state!=='pending')icd=DX[0].code;
+    syncFormLines('#form1500Back .svc tbody tr');
     const a=document.getElementById('frmBx21a');
     if(a)a.value=icd;
     ['b','c','d'].forEach((x,n)=>{const el=document.getElementById('frmBx21'+x);if(el&&DX[n+1])el.value=DX[n+1].code;});
