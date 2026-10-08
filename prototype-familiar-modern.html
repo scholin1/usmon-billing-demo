@@ -116,6 +116,7 @@
   .tag.bt-pt{color:var(--primary-dark);background:var(--primary-tint)}
   .tag.bt-pro{color:var(--idr-dark);background:var(--idr-tint)}
   .tag.bt-tech{color:var(--hosp-dark);background:var(--hosp-tint)}
+  td.ent{font-size:12px;font-weight:600;white-space:nowrap}
   .net{font-size:11px;font-weight:700;color:var(--idr)}
   .aged{font-family:var(--mono);font-weight:700;font-feature-settings:"tnum" 1}
   .aged.warnc{color:var(--warn)} .aged.riskc{color:var(--block)}
@@ -569,6 +570,7 @@
         <th class="sortable" onclick="sortTable('claim',this)">Claim / DOS<span class="cw">&#8597;</span></th>
         <th>Billing type</th>
         <th>Payer</th>
+        <th class="sortable" onclick="sortTable('entity',this)" title="Billing entity - CMS-1500 Box 33">Entity<span class="cw">&#8597;</span></th>
         <th class="sortable" onclick="sortTable('charges',this)">Charges<span class="cw">&#8597;</span></th>
         <th class="sortable sorted" data-dir="desc" onclick="sortTable('aged',this)">Days aged<span class="cw">&#8595;</span></th>
         <th>IDR state</th>
@@ -577,96 +579,104 @@
       </tr></thead>
       <tbody id="wlBody">
         <!-- headline traveling case -->
-        <tr class="rowlink" id="row-alice" data-pat="Testcase, Alice" data-claim="1000001" data-charges="48087.92" data-aged="5" data-status="1" onclick="openClaim()">
+        <tr class="rowlink" id="row-alice" data-pat="Testcase, Alice" data-entity="Demo Neurophysiology LLC" data-claim="1000001" data-charges="48087.92" data-aged="5" data-status="1" onclick="openClaim()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Testcase, Alice</div><div class="sub mono">PID 100001</div></td>
           <td><div class="mono">1000001</div><div class="sub mono">10/20/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>United Healthcare<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$48,087.92</td>
           <td><span class="aged warnc">5d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td id="alice-status"><span class="pill review">&#9650; Needs review</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Sample, David" data-claim="1000002" data-charges="61240.00" data-aged="5" data-status="1" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Sample, David" data-entity="Demo Neurophysiology LLC" data-claim="1000002" data-charges="61240.00" data-aged="5" data-status="1" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Sample, David</div><div class="sub mono">PID 100004</div></td>
           <td><div class="mono">1000002</div><div class="sub mono">10/20/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>Humana<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$61,240.00</td>
           <td><span class="aged warnc">5d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill review">&#9650; Needs review</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Mockdata, Ray" data-claim="1000007" data-charges="53905.00" data-aged="7" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Mockdata, Ray" data-entity="Sample IONM Partners LLC" data-claim="1000007" data-charges="53905.00" data-aged="7" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Mockdata, Ray</div><div class="sub mono">PID 100002</div></td>
           <td><div class="mono">1000007</div><div class="sub mono">10/18/2025</div></td>
           <td><span class="tag bt-pro">PRO ONLY</span></td>
           <td>Aetna<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Sample IONM Partners LLC</td>
           <td class="mono">$53,905.00</td>
           <td><span class="aged">7d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill ready">&#10003; Ready to file</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Demo, Charles" data-claim="1000003" data-charges="52030.00" data-aged="11" data-status="2" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Demo, Charles" data-entity="Example Monitoring Group LLC" data-claim="1000003" data-charges="52030.00" data-aged="11" data-status="2" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Demo, Charles</div><div class="sub mono">PID 100005</div></td>
           <td><div class="mono">1000003</div><div class="sub mono">10/14/2025</div></td>
           <td><span class="tag bt-pro">PRO ONLY</span></td>
           <td>BCBS<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Example Monitoring Group LLC</td>
           <td class="mono">$52,030.00</td>
           <td><span class="aged">11d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill park">&#9208; Waiting on tech</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Testcase, Bruce" data-claim="1000009" data-charges="41880.00" data-aged="16" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Testcase, Bruce" data-entity="Sample IONM Partners LLC" data-claim="1000009" data-charges="41880.00" data-aged="16" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Testcase, Bruce</div><div class="sub mono">PID 100009</div></td>
           <td><div class="mono">1000009</div><div class="sub mono">10/09/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>Cigna<div class="net">&#9670; Out-of-network</div></td>
+          <td class="ent">Sample IONM Partners LLC</td>
           <td class="mono">$41,880.00</td>
           <td><span class="aged">16d</span></td>
           <td><span class="idrstate elig">Eligible (OON)</span></td>
           <td><span class="pill ready">&#10003; Ready to file</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Example, Marta" data-claim="1000004" data-charges="30695.01" data-aged="127" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Example, Marta" data-entity="Demo Neurophysiology LLC" data-claim="1000004" data-charges="30695.01" data-aged="127" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Example, Marta</div><div class="sub mono">PID 100006</div></td>
           <td><div class="mono">1000004</div><div class="sub mono">06/18/2025</div></td>
           <td><span class="tag bt-pt">PRO + TECH</span></td>
           <td>Mercy Care AZ<div class="sub">Medicaid HMO · in-network</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$30,695.01</td>
           <td><span class="aged riskc">127d</span></td>
           <td><span class="idrstate na">N/A (Gov)</span></td>
           <td><span class="pill ready">&#10003; Ready to file</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Specimen, Tom" data-claim="1000005" data-charges="34290.00" data-aged="129" data-status="1" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Specimen, Tom" data-entity="Example Monitoring Group LLC" data-claim="1000005" data-charges="34290.00" data-aged="129" data-status="1" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Specimen, Tom</div><div class="sub mono">PID 100007</div></td>
           <td><div class="mono">1000005</div><div class="sub mono">06/18/2025</div></td>
           <td><span class="tag bt-tech">TECH ONLY</span></td>
           <td>Medicare<div class="sub">Government</div></td>
+          <td class="ent">Example Monitoring Group LLC</td>
           <td class="mono">$34,290.00</td>
           <td><span class="aged riskc">129d</span></td>
           <td><span class="idrstate na">N/A (Gov)</span></td>
           <td><span class="pill review">&#9650; Needs review</span></td>
           <td><span class="openbtn">Open &#8594;</span></td></tr>
 
-        <tr class="rowlink" data-pat="Sample, Nora" data-claim="1000008" data-charges="29140.00" data-aged="135" data-status="0" onclick="demoNote()">
+        <tr class="rowlink" data-pat="Sample, Nora" data-entity="Demo Neurophysiology LLC" data-claim="1000008" data-charges="29140.00" data-aged="135" data-status="0" onclick="demoNote()">
           <td><input type="checkbox" onclick="event.stopPropagation()"></td>
           <td><div class="pat">Sample, Nora</div><div class="sub mono">PID 100008</div></td>
           <td><div class="mono">1000008</div><div class="sub mono">06/12/2025</div></td>
           <td><span class="tag bt-tech">TECH ONLY</span></td>
           <td>Medicare<div class="sub">Government</div></td>
+          <td class="ent">Demo Neurophysiology LLC</td>
           <td class="mono">$29,140.00</td>
           <td><span class="aged riskc">135d</span></td>
           <td><span class="idrstate na">N/A (Gov)</span></td>
@@ -688,7 +698,8 @@
     <div class="ws-id"><div class="name">Testcase, Alice</div>
       <div class="meta"><span>PID <b class="mono">100001</b></span><span>Claim <b class="mono">1000001</b></span>
         <span>DOS <b class="mono">10/20/2025</b></span><span>Billing <b>Pro + Tech</b></span>
-        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">&#9670; Out-of-network</b></span></div></div>
+        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">&#9670; Out-of-network</b></span>
+        <span>Entity <b id="hdrEntity">Demo Neurophysiology LLC</b> (Box 33)</span></div></div>
     <div class="right">
       <div class="master work" id="masterStatus"><span id="masterIcon">&#9650;</span> <span id="masterLabel">Review in progress</span></div>
       <button class="btn" onclick="togglePark(event)">&#9208; Park / waiting on…</button>
@@ -1492,6 +1503,7 @@
   }
   function cms15ConfirmB33(){
     var p=cms15B33Parts();
+    var he=document.getElementById('hdrEntity'); if(he)he.textContent=p[0];
     document.getElementById('cms15B33NPI').value=p[1];
     document.getElementById('cms15B33Box').classList.add('confirmed');
     document.getElementById('cms15B33Tag').style.display='none';

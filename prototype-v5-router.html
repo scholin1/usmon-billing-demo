@@ -765,7 +765,8 @@
     <div class="ws-id"><div class="name">Testcase, Alice</div>
       <div class="meta"><span>PID <b class="mono">100001</b></span><span>Claim <b class="mono">1000001</b></span>
         <span>DOS <b class="mono">10/20/2025</b></span><span>Component <b>Pro + Tech</b></span>
-        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">◆ Out-of-network</b></span></div></div>
+        <span>Payer <b>United Healthcare</b></span><span><b style="color:var(--idr)">◆ Out-of-network</b></span>
+        <span>Entity <b id="hdrEntity">Demo Neurophysiology LLC</b> (Box 33)</span></div></div>
     <div class="right">
       <div class="master work" id="masterStatus"><span id="masterIcon">▲</span> <span id="masterLabel">Review in progress</span></div>
       <button class="btn" onclick="togglePark(event)">⏸ Park / waiting on…</button>
@@ -1473,6 +1474,7 @@
   }
   function cms15ConfirmB33(){
     var p=cms15B33Parts();
+    var he=document.getElementById('hdrEntity'); if(he)he.textContent=p[0];
     document.getElementById('cms15B33NPI').value=p[1];
     document.getElementById('cms15B33Box').classList.add('confirmed');
     document.getElementById('cms15B33Tag').style.display='none';

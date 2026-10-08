@@ -149,6 +149,7 @@
   .cr-payer{min-width:150px;font-size:13px}
   .cr-payer .net{font-size:11px;font-weight:700;color:var(--idr);margin-top:1px}
   .cr-payer .net.gov{color:var(--gov)}
+  .cr-payer .ent{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
   .cr-amt{min-width:120px;font-family:var(--mono);font-weight:700;font-size:14px}
   .cr-flag{margin-left:auto;display:flex;align-items:center;gap:12px}
   .cr-open{color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap}
@@ -333,6 +334,8 @@
   .formview-btn:hover{background:#d9eef0;border-color:var(--primary)}
   .flow-entity{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
   .flow-entity b{color:var(--ink)}
+  .kick .kent{margin-left:8px;text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted);font-size:12px}
+  .kick .kent b{color:var(--ink);font-weight:700}
 
   /* modal shell */
   .modal-back{position:fixed;inset:0;background:rgba(16,32,46,.45);display:none;align-items:flex-start;justify-content:center;z-index:70;padding:34px 18px;overflow:auto}
@@ -515,21 +518,21 @@
 
     <div class="claimrow headline" onclick="enterFlow()">
       <div class="cr-who"><div class="nm">Testcase, Alice</div><div class="sub mono">PID 100001 · Claim 1000001 · DOS 10/20/2025</div></div>
-      <div class="cr-payer">United Healthcare<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">United Healthcare<div class="net">◆ Out-of-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
       <div class="cr-amt">$48,087.92</div>
       <div class="cr-flag"><span class="tag bilr sup-only">👤 Sample, Dana</span><span class="starthere">Start here</span><span class="pill review">✦ AI fields to confirm</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow sup-only" onclick="stubClaim('Mockdata, Ray')">
       <div class="cr-who"><div class="nm">Mockdata, Ray</div><div class="sub mono">PID 100002 · Claim 1000007 · DOS 10/18/2025</div></div>
-      <div class="cr-payer">Aetna<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">Aetna<div class="net">◆ Out-of-network</div><div class="ent">▦ Sample IONM Partners LLC</div></div>
       <div class="cr-amt">$53,905.00</div>
       <div class="cr-flag"><span class="tag bilr">👤 Demo, Alex</span><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow" onclick="stubClaim('Sample, David')">
       <div class="cr-who"><div class="nm">Sample, David</div><div class="sub mono">PID 100004 · Claim 1000002 · DOS 10/20/2025</div></div>
-      <div class="cr-payer">Humana<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">Humana<div class="net">◆ Out-of-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
       <div class="cr-amt">$61,240.00</div>
       <div class="cr-flag">
         <span class="tag bilr sup-only">👤 Sample, Dana</span>
@@ -545,21 +548,21 @@
 
     <div class="claimrow sup-only" onclick="stubClaim('Demo, Charles')">
       <div class="cr-who"><div class="nm">Demo, Charles</div><div class="sub mono">PID 100005 · Claim 1000003 · DOS 10/14/2025</div></div>
-      <div class="cr-payer">BCBS<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">BCBS<div class="net">◆ Out-of-network</div><div class="ent">▦ Example Monitoring Group LLC</div></div>
       <div class="cr-amt">$52,030.00</div>
       <div class="cr-flag"><span class="tag bilr">👤 Example, Priya</span><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow sup-only" onclick="stubClaim('Testcase, Bruce')">
       <div class="cr-who"><div class="nm">Testcase, Bruce</div><div class="sub mono">PID 100009 · Claim 1000009 · DOS 10/09/2025</div></div>
-      <div class="cr-payer">Cigna<div class="net">◆ Out-of-network</div></div>
+      <div class="cr-payer">Cigna<div class="net">◆ Out-of-network</div><div class="ent">▦ Sample IONM Partners LLC</div></div>
       <div class="cr-amt">$41,880.00</div>
       <div class="cr-flag"><span class="tag bilr">👤 Demo, Alex</span><span class="pill needsrev">⚑ Needs review</span><span class="cr-open">Open →</span></div>
     </div>
 
     <div class="claimrow sup-only" onclick="stubClaim('Example, Marta')">
       <div class="cr-who"><div class="nm">Example, Marta</div><div class="sub mono">PID 100006 · Claim 1000004 · DOS 06/18/2025</div></div>
-      <div class="cr-payer">Mercy Care AZ<div class="net gov">● Government in-network</div></div>
+      <div class="cr-payer">Mercy Care AZ<div class="net gov">● Government in-network</div><div class="ent">▦ Demo Neurophysiology LLC</div></div>
       <div class="cr-amt">$30,695.01</div>
       <div class="cr-flag"><span class="tag bilr">👤 Example, Priya</span><span class="pill ready">✓ All clear</span><span class="cr-open">Open →</span></div>
     </div>
@@ -600,7 +603,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 1 of 5 · Pull</div>
+        <div class="kick">Step 1 of 5 · Pull<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Here's the case we pulled</h2>
         <p class="prompt">Everything below came straight from case #1000001 - your techs entered the demographics and insurance, and the reading neurologist's report set the coding. Take a look and confirm it's the right case.</p>
       </div>
@@ -619,6 +622,8 @@
           <div class="f"><label>Network</label><div class="val" style="color:var(--idr);font-weight:600">Out-of-network</div></div>
           <div class="f col2"><label>Procedure monitored</label><div class="val">Anterior cervical discectomy &amp; fusion, C5–C7</div></div>
           <div class="f col2"><label>Total charges</label><div class="val mono" style="font-weight:700">$48,087.92</div></div>
+          <div class="f col2"><label>Billing entity (Box 33)</label><div class="val js-entity" style="font-weight:700">Demo Neurophysiology LLC</div></div>
+          <div class="f col2"><label>Billing NPI (Box 33a)</label><div class="val mono js-entity-npi">1000000017</div></div>
         </div>
         <div class="moneystrip">
           <div class="ms-item oon"><span class="msdot"></span>Out-of-network - recovery continues at <b>IDR downstream</b> (No Surprises Act)</div>
@@ -639,7 +644,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 2 of 5 · Verify patient &amp; insurance</div>
+        <div class="kick">Step 2 of 5 · Verify patient &amp; insurance<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Confirm the patient and coverage</h2>
         <p class="prompt">Here's what came from the case - confirm it's right, or fix anything that's off. One benefits item was flagged by AI for a quick check before you continue.</p>
       </div>
@@ -704,7 +709,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 3 of 5 · Coding &amp; diagnosis</div>
+        <div class="kick">Step 3 of 5 · Coding &amp; diagnosis<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Coding from the reading report</h2>
         <p class="prompt">The service lines and diagnoses came from the reading neurologist's report. A few AI-suggested fields need your confirmation before we move on - everything else is already set.</p>
       </div>
@@ -789,7 +794,7 @@
     <div class="card">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 4 of 5 · Review</div>
+        <div class="kick">Step 4 of 5 · Review<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>One last look</h2>
         <p class="prompt">Everything's confirmed. Here's the whole claim in one place - if it all checks out, continue to file.</p>
       </div>
@@ -831,7 +836,7 @@
     <div class="card" id="fileCard">
       <button class="formview-btn" onclick="openForm1500()" title="Open the standard CMS-1500 form for this claim">▦ Form 1500 View</button>
       <div class="stage-head">
-        <div class="kick">Step 5 of 5 · File</div>
+        <div class="kick">Step 5 of 5 · File<span class="kent">· Billing entity (Box 33): <b class="js-entity">Demo Neurophysiology LLC</b></span></div>
         <h2>Ready to file</h2>
         <p class="prompt">This claim is complete and validated. Filing submits an 837P batch to the clearinghouse and moves the claim into Ongoing follow-up.</p>
       </div>
@@ -1400,6 +1405,8 @@
     const npi=document.getElementById('frmB33NPI');
     const rev=document.getElementById('reviewBox33');
     if(rev)rev.textContent=billingEntity+' · NPI '+(npi?npi.value:'1000000017');
+    document.querySelectorAll('.js-entity').forEach(e=>e.textContent=billingEntity);
+    document.querySelectorAll('.js-entity-npi').forEach(e=>e.textContent=npi?npi.value:'1000000017');
   }
 
   /* init */
