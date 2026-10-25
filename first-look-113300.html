@@ -75,9 +75,9 @@ tr.proposed td{background:#fff8e6 !important}
 </section>
 <section id="tab-payments" class="hiddenv">
 <h2>Payments: the posting queue</h2>
-<div class="panel"><p class="sub" style="margin:0 0 10px">The posting engine is Remit's, pointed at the module's tables; payments arrive as events on a queue and the biller confirms what was proposed. One row per incoming post (the module's posting_events). Every money figure here is illustrative.</p>
+<div class="panel"><p class="sub" style="margin:0 0 10px">The posting engine is Remit's, pointed at the module's tables; 835 rows arrive proposed and the biller confirms them. One row per incoming post (the module's posting_events). Every money figure here is illustrative.</p>
 <div class="buckets" style="margin-bottom:12px"><div class="bucket"><div class="n">$1,284.50</div><div class="l">Unapplied cash (illustrative)</div></div><div class="bucket"><div class="n">$600.00</div><div class="l">Pre-payments (illustrative)</div></div><div class="bucket" style="display:flex;flex-direction:column;justify-content:center;gap:6px"><span class="btn sm" data-act="apply">Apply to a claim</span><span class="btn sm primary" data-act="confirmall">Confirm all proposed (<span data-n="nproposed">0</span>)</span></div></div>
-<table class="grid" id="grid-payments"></table><p class="sub"><span data-n="nevents">0</span> posts. Applied means posted to the claim ledgers; Proposed means the 835 was read and awaits the biller's confirm; Queued is still being matched; Rejected goes to a biller.</p></div>
+<table class="grid" id="grid-payments"></table><p class="sub"><span data-n="nevents">0</span> posts. Applied means posted to the claim ledgers; Proposed means the 835 was read and awaits the biller's confirm; Received is still being matched; Rejected goes to a biller.</p></div>
 </section>
 <section id="claimview" class="hiddenv"></section>
 <div id="colmenu"></div>
@@ -342,8 +342,8 @@ function addPayment(c,f){
   toast((paid<0?"Recoupment ":"Payment ")+money(paid)+" posted to claim "+c.seq+", line "+f.line.value+"; balance "+money(c.fin.balance));renderAll();return true;
 }
 var ILLUS_EVENTS=[
- {received:DATA.today,source:"835 via Remit",payer:"Specimen Medicare Plan 2",check:"EFT 10410",claims:3,paid:4120.00,status:"Queued"},
- {received:DATA.today,source:"EOB via Remit",payer:"Demo Aetna Plan 2",check:"CHK 88213",claims:1,paid:612.40,status:"Queued"},
+ {received:DATA.today,source:"835 via Remit",payer:"Specimen Medicare Plan 2",check:"EFT 10410",claims:3,paid:4120.00,status:"Received"},
+ {received:DATA.today,source:"EOB via Remit",payer:"Demo Aetna Plan 2",check:"CHK 88213",claims:1,paid:612.40,status:"Received"},
  {received:DATA.today,source:"835 via Remit",payer:"Synthetic United Plan 1",check:"EFT 10110",claims:1,paid:980.00,status:"Rejected: line not found"}
 ];
 function renderPayments(){
@@ -354,7 +354,7 @@ function renderPayments(){
   var np=0;evs.forEach(function(e){if(e.status==="Proposed, confirm")np++;});
   var tbl=VIEW==="classic"?"legrid":"grid";
   el.innerHTML='<thead><tr><th>Received</th><th>Source</th><th>Payer</th><th>Check or EFT</th><th class="num">Claims touched</th><th class="num">Total paid</th><th>Status</th></tr></thead><tbody>'
-    +evs.map(function(e){var cls=e.status==="Applied"?"paid":e.status==="Proposed, confirm"?"partial":e.status==="Queued"?"await":"denied";return '<tr><td>'+esc(e.received)+'</td><td>'+esc(e.source)+'</td><td>'+esc(e.payer)+'</td><td class="mono">'+esc(e.check)+'</td><td class="num">'+e.claims+'</td><td class="num">'+money(e.paid)+'</td><td>'+(VIEW==="classic"?'<span class="'+(cls==="denied"?"late":"")+'">'+esc(e.status)+'</span>':'<span class="pill '+cls+'">'+esc(e.status)+'</span>')+'</td></tr>';}).join("")+'</tbody>';
+    +evs.map(function(e){var cls=e.status==="Applied"?"paid":e.status==="Proposed, confirm"?"partial":e.status==="Received"?"await":"denied";return '<tr><td>'+esc(e.received)+'</td><td>'+esc(e.source)+'</td><td>'+esc(e.payer)+'</td><td class="mono">'+esc(e.check)+'</td><td class="num">'+e.claims+'</td><td class="num">'+money(e.paid)+'</td><td>'+(VIEW==="classic"?'<span class="'+(cls==="denied"?"late":"")+'">'+esc(e.status)+'</span>':'<span class="pill '+cls+'">'+esc(e.status)+'</span>')+'</td></tr>';}).join("")+'</tbody>';
   el.className=tbl;setN("nproposed",np);setN("nevents",evs.length);
 }
 function buildColMenu(list,anchor){

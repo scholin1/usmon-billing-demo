@@ -71,10 +71,10 @@ tr.proposed td{background:#fff8e6 !important}
 </section>
 <section id="tab-payments" class="hiddenv">
 <h2 class="sect">Payments: the posting queue (<span data-n="nproposed">0</span> proposed, waiting for a confirm)</h2>
-<div class="legbtns" style="border-top:1px solid #b7b3ac"><button class="legbtn" data-act="confirmall">Confirm All Proposed</button><button class="legbtn" data-act="apply">Apply to a Claim</button><span class="spring"></span><span class="hint">The posting engine is Remit's, pointed at the module's tables; payments arrive as events on a queue and the biller confirms what was proposed.</span></div>
+<div class="legbtns" style="border-top:1px solid #b7b3ac"><button class="legbtn" data-act="confirmall">Confirm All Proposed</button><button class="legbtn" data-act="apply">Apply to a Claim</button><span class="spring"></span><span class="hint">The posting engine is Remit's, pointed at the module's tables; 835 rows arrive proposed and the biller confirms them.</span></div>
 <div class="buckets" style="margin:8px"><div class="bucket"><div class="n">$1,284.50</div><div class="l">Unapplied Cash (illustrative)</div></div><div class="bucket"><div class="n">$600.00</div><div class="l">Pre-payments (illustrative)</div></div></div>
 <div class="gridscroll"><table class="legrid" id="grid-payments"></table></div>
-<div class="statusbar"><span class="sunk">Posts: <b data-n="nevents">0</b></span><span>Proposed: <b data-n="nproposed">0</b></span><span style="margin-left:auto">One row per incoming post (posting_events). Applied is on the claim ledgers; Proposed awaits the biller; Queued is being matched; Rejected goes to a biller. All money illustrative.</span></div>
+<div class="statusbar"><span class="sunk">Posts: <b data-n="nevents">0</b></span><span>Proposed: <b data-n="nproposed">0</b></span><span style="margin-left:auto">One row per incoming post (posting_events). Applied is on the claim ledgers; Proposed awaits the biller; Received is being matched; Rejected goes to a biller. All money illustrative.</span></div>
 </section>
 <section id="claimview" class="hiddenv"></section>
 <div id="colmenu"></div>
@@ -339,8 +339,8 @@ function addPayment(c,f){
   toast((paid<0?"Recoupment ":"Payment ")+money(paid)+" posted to claim "+c.seq+", line "+f.line.value+"; balance "+money(c.fin.balance));renderAll();return true;
 }
 var ILLUS_EVENTS=[
- {received:DATA.today,source:"835 via Remit",payer:"Specimen Medicare Plan 2",check:"EFT 10410",claims:3,paid:4120.00,status:"Queued"},
- {received:DATA.today,source:"EOB via Remit",payer:"Demo Aetna Plan 2",check:"CHK 88213",claims:1,paid:612.40,status:"Queued"},
+ {received:DATA.today,source:"835 via Remit",payer:"Specimen Medicare Plan 2",check:"EFT 10410",claims:3,paid:4120.00,status:"Received"},
+ {received:DATA.today,source:"EOB via Remit",payer:"Demo Aetna Plan 2",check:"CHK 88213",claims:1,paid:612.40,status:"Received"},
  {received:DATA.today,source:"835 via Remit",payer:"Synthetic United Plan 1",check:"EFT 10110",claims:1,paid:980.00,status:"Rejected: line not found"}
 ];
 function renderPayments(){
@@ -351,7 +351,7 @@ function renderPayments(){
   var np=0;evs.forEach(function(e){if(e.status==="Proposed, confirm")np++;});
   var tbl=VIEW==="classic"?"legrid":"grid";
   el.innerHTML='<thead><tr><th>Received</th><th>Source</th><th>Payer</th><th>Check or EFT</th><th class="num">Claims touched</th><th class="num">Total paid</th><th>Status</th></tr></thead><tbody>'
-    +evs.map(function(e){var cls=e.status==="Applied"?"paid":e.status==="Proposed, confirm"?"partial":e.status==="Queued"?"await":"denied";return '<tr><td>'+esc(e.received)+'</td><td>'+esc(e.source)+'</td><td>'+esc(e.payer)+'</td><td class="mono">'+esc(e.check)+'</td><td class="num">'+e.claims+'</td><td class="num">'+money(e.paid)+'</td><td>'+(VIEW==="classic"?'<span class="'+(cls==="denied"?"late":"")+'">'+esc(e.status)+'</span>':'<span class="pill '+cls+'">'+esc(e.status)+'</span>')+'</td></tr>';}).join("")+'</tbody>';
+    +evs.map(function(e){var cls=e.status==="Applied"?"paid":e.status==="Proposed, confirm"?"partial":e.status==="Received"?"await":"denied";return '<tr><td>'+esc(e.received)+'</td><td>'+esc(e.source)+'</td><td>'+esc(e.payer)+'</td><td class="mono">'+esc(e.check)+'</td><td class="num">'+e.claims+'</td><td class="num">'+money(e.paid)+'</td><td>'+(VIEW==="classic"?'<span class="'+(cls==="denied"?"late":"")+'">'+esc(e.status)+'</span>':'<span class="pill '+cls+'">'+esc(e.status)+'</span>')+'</td></tr>';}).join("")+'</tbody>';
   el.className=tbl;setN("nproposed",np);setN("nevents",evs.length);
 }
 function buildColMenu(list,anchor){

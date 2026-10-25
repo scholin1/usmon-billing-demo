@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-view="familiar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>XYZ Monitoring · Insurance Billing (demo)</title>
+<link id="theme-familiar" rel="stylesheet" href="theme-familiar.css">
+<link id="theme-classic" rel="stylesheet" href="theme-classic.css" disabled>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">USMON <span>Insurance Billing</span></div>
+  <div class="tenant" id="tenantbox"></div>
+  <nav id="nav" class="menu"></nav>
+  <div class="right">
+    <div id="viewswitch" class="viewswitch" title="Every user can switch views; same data and state"></div>
+    <div class="settings">
+      <button type="button" id="settingsbtn" class="btn sm" data-act="settings-toggle">Settings ▾</button>
+      <div id="settingsmenu" class="settingsmenu"></div>
+    </div>
+    <div id="userbox" class="userbox"></div>
+  </div>
+</header>
+<div class="banner">A clickable mock-up of the module we are building, on synthetic data for a synthetic client. Nothing here is saved anywhere but this browser. Money figures and remittance states are illustrative where the synthetic set does not generate them. The real build starts 10/27/2026 and keeps this vocabulary.</div>
+<main id="scene" class="scene"></main>
+<footer class="statusbar"><span class="sunk" id="statusleft">Demo clock: 10/23/2026</span><span class="sunk">Synthetic data only. No PHI.</span><span class="sunk">USMON Insurance Billing module, mock-up for mPower, build of 10/26/2026</span></footer>
+<div id="dialog" class="dialog-wrap"></div>
+<div id="toasts" class="toasts"></div>
+<script src="data.js"></script>
+<script src="state.js"></script>
+<script src="scenes/home.js"></script>
+<script src="scenes/worklist.js"></script>
+<script src="scenes/notes.js"></script>
+<script src="scenes/claim.js"></script>
+<script src="scenes/assign.js"></script>
+<script src="scenes/settings.js"></script>
+<script src="scenes/payments.js"></script>
+<script src="scenes/denials.js"></script>
+<script src="scenes/idr.js"></script>
+<script src="scenes/inbox.js"></script>
+<script src="scenes/reports.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
