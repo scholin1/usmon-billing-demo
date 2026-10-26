@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>USMON Insurance Billing: a guided test of the mock-up, 10/26/2026</title>
+<style>
+/* USMON Insurance Billing test guide. Self-contained: no external fonts, images or scripts. */
+:root {
+  --ink: #1f2a37;
+  --ink-2: #4b5563;
+  --paper: #fbf7f0;
+  --card: #ffffff;
+  --line: #e7dfd2;
+  --navy: #1a3a5c;
+  --start: #b45309;
+  --start-soft: #fdf3e4;
+  --test: #0f766e;
+  --test-soft: #e6f4f2;
+  --back: #3b4fb8;
+  --back-soft: #eceffb;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.65;
+}
+a { color: var(--navy); }
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 18px 60px; }
+
+/* Title block */
+.hero { text-align: center; padding: 40px 10px 22px; }
+.hero h1 { font-size: 2.1em; line-height: 1.2; margin: 0 0 8px; color: var(--navy); }
+.hero .sub { font-size: 1.1em; color: var(--ink-2); margin: 0 0 6px; }
+.hero .byline { font-size: 0.92em; color: var(--ink-2); margin: 0; }
+
+/* Sticky tabs */
+.topnav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(251, 247, 240, 0.97);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+.topnav .tabs { max-width: 900px; margin: 0 auto; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.tab {
+  flex: 1 1 200px; text-align: center; text-decoration: none; font-weight: 700;
+  font-size: 1.02em; padding: 12px 14px; border-radius: 12px; border: 2px solid; line-height: 1.25;
+}
+.tab small { display: block; font-weight: 500; font-size: 0.78em; opacity: 0.85; }
+.tab.t-start { color: var(--start); border-color: var(--start); background: var(--start-soft); }
+.tab.t-test { color: #fff; border-color: var(--test); background: var(--test); }
+.tab.t-back { color: #fff; border-color: var(--back); background: var(--back); }
+.tab:hover, .tab:focus { filter: brightness(1.06); outline: 3px solid #fcd34d; outline-offset: 2px; }
+
+/* Parts */
+.part {
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+  padding: 10px 34px 34px; margin: 30px 0; box-shadow: 0 2px 10px rgba(80, 60, 30, 0.06);
+}
+.part-head { margin: 0 -34px 24px; padding: 26px 34px 20px; border-radius: 18px 18px 0 0; }
+.part-head h2 { margin: 0; font-size: 1.7em; line-height: 1.2; }
+.part-head p { margin: 6px 0 0; font-size: 1.02em; }
+#start .part-head { background: var(--start-soft); color: var(--start); border-bottom: 3px solid var(--start); }
+#start .part-head p { color: var(--ink); }
+#tests .part-head { background: var(--test); color: #fff; }
+#back .part-head { background: var(--back); color: #fff; }
+
+h3 { font-size: 1.32em; line-height: 1.3; margin: 38px 0 10px; color: var(--navy); }
+h3 .num {
+  display: inline-block; min-width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center;
+  border-radius: 50%; color: #fff; font-size: 0.8em; margin-right: 8px; vertical-align: 2px;
+}
+#start h3 .num { background: var(--start); }
+#tests h3 .num { background: var(--test); }
+#back h3 .num { background: var(--back); }
+h4 { font-size: 1.08em; margin: 22px 0 6px; }
+p { margin: 0 0 14px; }
+
+/* Numbered steps: one action per step */
+ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 10px 0 18px; }
+ol.steps > li { counter-increment: step; position: relative; padding: 4px 0 8px 52px; min-height: 40px; }
+ol.steps > li::before {
+  content: counter(step); position: absolute; left: 0; top: 2px;
+  width: 36px; height: 36px; line-height: 36px; text-align: center; border-radius: 50%;
+  font-weight: 700; font-size: 0.95em; background: #eef2f7; color: var(--navy); border: 2px solid #cbd5e1;
+}
+#start ol.steps > li::before { border-color: var(--start); color: var(--start); background: var(--start-soft); }
+#tests ol.steps > li::before { border-color: var(--test); color: var(--test); background: var(--test-soft); }
+#back ol.steps > li::before { border-color: var(--back); color: var(--back); background: var(--back-soft); }
+ul.plain { padding-left: 1.2em; margin: 6px 0 16px; }
+ul.plain li { margin-bottom: 6px; }
+
+/* Contents box inside a part */
+.contents { background: #f8f5ef; border: 1px solid var(--line); border-radius: 12px; padding: 12px 20px; margin: 4px 0 10px; }
+.contents p { margin: 0 0 4px; font-weight: 700; }
+.contents ol { margin: 0; padding-left: 1.4em; columns: 2; column-gap: 30px; }
+.contents li { margin: 2px 0; break-inside: avoid; }
+
+/* Button names in text */
+b.ui {
+  display: inline-block; background: #eef2f7; border: 1px solid #c8d3e0; border-radius: 6px;
+  padding: 0 7px; font-weight: 700; line-height: 1.45; color: #13283f; white-space: nowrap;
+}
+
+/* Callouts */
+.tip, .warn, .note { border-radius: 10px; padding: 12px 16px; margin: 14px 0; font-size: 0.96em; }
+.tip { background: #eef6ff; border-left: 5px solid #3b82f6; }
+.warn { background: #fff6e5; border-left: 5px solid var(--amber); }
+.note { background: #f4f4f5; border-left: 5px solid #9ca3af; }
+
+/* One test */
+.test { border: 2px solid var(--test); border-radius: 14px; padding: 6px 22px 16px; margin: 26px 0; background: #fff; }
+.test h3 { margin-top: 14px; }
+.test h4 { margin: 16px 0 4px; font-size: 1em; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); font-size: 0.82em; }
+.test .see { background: var(--test-soft); border-radius: 10px; padding: 10px 14px; margin: 6px 0 10px; }
+.test .see p { margin: 0 0 6px; }
+.test .see p:last-child { margin-bottom: 0; }
+.verdict {
+  margin: 12px 0 0; padding: 10px 14px; border: 1.5px dashed #94a3b8; border-radius: 10px;
+  font-size: 0.95em; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+}
+.verdict .q { font-weight: 700; }
+.box { display: inline-block; width: 1.05em; height: 1.05em; border: 2px solid #475569; border-radius: 4px; vertical-align: -3px; margin-right: 5px; background: #fff; }
+.verdict .line { flex: 1 1 200px; border-bottom: 1.5px dotted #94a3b8; min-height: 1.2em; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 0.95em; }
+th, td { border: 1px solid #ddd5c8; padding: 10px 12px; text-align: left; vertical-align: top; }
+th { background: #f3eee5; }
+table.glossary td:first-child { font-weight: 700; width: 30%; }
+
+/* Questions */
+.qa { border: 2px solid var(--back); border-radius: 16px; padding: 6px 22px 10px; margin: 20px 0 10px; background: #f7f8fd; }
+.qa h3 { margin-top: 18px; }
+.qa ol.steps { margin-bottom: 6px; }
+
+.backtop { text-align: right; font-size: 0.85em; margin: 18px 0 0; }
+footer { text-align: center; color: var(--ink-2); font-size: 0.85em; padding: 10px; }
+
+/* Phones */
+@media (max-width: 640px) {
+  body { font-size: 18px; }
+  .part { padding: 6px 18px 24px; border-radius: 14px; }
+  .part-head { margin: 0 -18px 20px; padding: 20px 18px 16px; border-radius: 14px 14px 0 0; }
+  .part-head h2 { font-size: 1.45em; }
+  .hero h1 { font-size: 1.65em; }
+  .tab { flex: 1 1 30%; padding: 9px 6px; font-size: 0.86em; }
+  .tab small { display: none; }
+  .contents ol { columns: 1; }
+  ol.steps > li { padding-left: 46px; }
+  .test { padding: 4px 14px 14px; }
+  th, td { padding: 8px; }
+}
+
+/* Print */
+@media print {
+  @page { size: Letter; margin: 0.6in; }
+  html { scroll-behavior: auto; }
+  body { background: #fff; font-size: 12pt; line-height: 1.5; }
+  .topnav, .backtop { display: none; }
+  .wrap { max-width: none; padding: 0; }
+  .hero { padding-top: 0; }
+  .part { border: none; box-shadow: none; padding: 0; margin: 0; border-radius: 0; }
+  .part-head { margin: 0 0 16px; padding: 12px 14px; border-radius: 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #tests, #back { break-before: page; }
+  .test, .tip, .warn, .note, table, ol.steps > li { break-inside: avoid; }
+  h3, h4 { break-after: avoid; }
+  a { color: inherit; text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<nav class="topnav" aria-label="Guide sections">
+  <div class="tabs">
+    <a class="tab t-start" href="#start">Before you start<small>Five minutes</small></a>
+    <a class="tab t-test" href="#tests">The 15 tests<small>About 45 minutes</small></a>
+    <a class="tab t-back" href="#back">Tell us<small>Five questions, and help</small></a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<header class="hero" id="top">
+  <h1>USMON Insurance Billing: a guided test of the mock-up</h1>
+  <p class="sub">For the mPower billing team: what to click, what you should see, and what to tell us</p>
+  <p class="byline">From the USMON Insurance Billing team · 10/26/2026 · Describes the mock-up build of 10/26/2026</p>
+</header>
+
+<section class="part" id="start">
+  <div class="part-head">
+    <h2>Before you start</h2>
+    <p>Read this part first. It takes about five minutes.</p>
+  </div>
+
+<p>This is a clickable mock-up of the insurance billing module USMON is building. It runs on made-up data for two made-up clients, and nothing you do in it is saved anywhere but your own browser, so click freely. It is not the finished product: the screens show the words, the steps and the order of work we plan to build, and your reactions now will shape what gets built.</p>
+<p>Set aside about 45 minutes. Work through the 15 tests in order, because the later ones build on the earlier ones. For each test, do the steps, compare what you see with what we expect, and mark yes or no. Dollar figures in the mock-up are illustrative; they are there so the screens look real, not to be checked.</p>
+<h3><span class="num">1</span>What you need</h3>
+<ul class="plain">
+  <li><strong>A computer with Chrome, Edge or Safari.</strong> Keep the window wide; the worklists are dense grids and a phone is too small for them.</li>
+  <li><strong>The link:</strong> <a href="https://demo.usmon.com/app/">https://demo.usmon.com/app/</a>. If it does not load, use the backup copy at <a href="https://scholin1.github.io/usmon-billing-demo/app/">https://scholin1.github.io/usmon-billing-demo/app/</a>. The same files are on both.</li>
+  <li><strong>No login.</strong> The mock-up opens with you already signed in as <strong>Pat Sample, an Insurance Biller</strong>. The page greets Pat by name and says "You are not in a view yet." The real module will sign you in with your own USMON account and roles.</li>
+</ul>
+<h3><span class="num">2</span>Four things to know about the mock-up</h3>
+<ul class="plain">
+  <li><strong>Reset demo.</strong> At the top right, click <b class="ui">Settings ▾</b>, then <b class="ui">Reset demo</b> at the bottom of the menu (in red), and confirm. Everything goes back to the start. Do this before you begin if someone else used the browser before you, and any time the demo gets into a strange state.</li>
+  <li><strong>Familiar and Classic.</strong> The two buttons at the top right switch the look. <strong>Familiar</strong> is the new design. <strong>Classic</strong> is the look of the legacy USMON billing screens. Same screens, same data, same buttons; only the look and a few labels change. Test 15 is about this switch.</li>
+  <li><strong>Two made-up clients.</strong> The mock-up holds <strong>XYZ Monitoring Co.</strong> and <strong>USMON Test Amb EEG</strong>. No real client, patient, payer, hospital or staff member exists in it. Names like "Mock Cigna Plan 1", "Specimen, Lorem" and "Sam Fixture" are invented on purpose, and so are the dollar amounts. Please do not type a real patient or client name into it; there is nothing to find.</li>
+  <li><strong>The demo clock is fixed at 10/23/2026</strong>, so every tester sees the same dates and clocks. When a test asks you to pick a date, count from 10/23/2026, not from today.</li>
+</ul>
+<h3><span class="num">3</span>Words to know</h3>
+<p>Billing words the screens use, in plain terms. Each is also explained the first time a test uses it.</p>
+<table class="glossary">
+<thead><tr><th>Word</th><th>What it means here</th></tr></thead>
+<tbody>
+<tr><td>Payer</td><td>The insurance company or program (Medicare, Medicaid, a commercial plan) the claim is sent to.</td></tr>
+<tr><td>Clearinghouse</td><td>The service that carries claims to payers electronically and brings their answers back.</td></tr>
+<tr><td>Box 33 (billing entity)</td><td>The box on the claim form that names who gets paid. The mock-up picks it by a rule; the biller always confirms it before filing.</td></tr>
+<tr><td>Scrub</td><td>The checks a claim must pass before it is filed: patient and insured, payer, diagnosis codes, service lines, rendering provider, Box 33.</td></tr>
+<tr><td>Filing clock</td><td>Days left to file the claim before the payer's time limit runs out. In the mock-up the limit is 90 days from the date of service for every payer.</td></tr>
+<tr><td>835 (remittance)</td><td>The payer's electronic statement of what it paid on a claim, line by line, and why. Also called an ERA or a remit.</td></tr>
+<tr><td>EOB</td><td>Explanation of benefits: the paper version of the same statement.</td></tr>
+<tr><td>CARC code</td><td>Claim adjustment reason code, the payer's short code for why it paid less or nothing, for example CO-45 (charge is over the fee schedule) or CO-4 (modifier problem).</td></tr>
+<tr><td>Recoupment</td><td>Money the payer takes back on a later remittance.</td></tr>
+<tr><td>Out-of-network, IDR</td><td>A claim to a payer you have no contract with. Under the No Surprises Act it gets a 30-day open negotiation, then a short window to start Independent Dispute Resolution (IDR), where a neutral party picks one of the two offers.</td></tr>
+<tr><td>USMON Arbitration</td><td>USMON's own service that files and argues an IDR dispute for you.</td></tr>
+</tbody>
+</table>
+<p class="backtop"><a href="#top">Back to top</a></p>
+</section>
+
+<section class="part" id="tests">
+  <div class="part-head">
+    <h2>The tests</h2>
+    <p>Fifteen short tests, in the order a biller would meet them in a day. Each one tells you exactly what to click and what you should see. If what you see is different, that is useful too: mark no and write a word about it.</p>
+  </div>
+
+<div class="contents">
+  <p>In this section</p>
+  <ol>
+    <li><a href="#t1">Pick a view on the welcome page</a></li>
+    <li><a href="#t2">Switch client</a></li>
+    <li><a href="#t3">Arrivals from legacy</a></li>
+    <li><a href="#t4">Sort, search and columns on New</a></li>
+    <li><a href="#t5">Open a claim and read its Notes first</a></li>
+    <li><a href="#t6">Add a note with a follow-up</a></li>
+    <li><a href="#t7">Prepare, scrub, file, and the acknowledgement</a></li>
+    <li><a href="#t8">Ongoing has different columns on purpose</a></li>
+    <li><a href="#t9">Work a denial</a></li>
+    <li><a href="#t10">Payments: confirm a proposed 835 row and add a payment</a></li>
+    <li><a href="#t11">The Remit add-on: Upload, Validate, Compare, Approve, Post</a></li>
+    <li><a href="#t12">Out-of-network negotiation and send to IDR</a></li>
+    <li><a href="#t13">The Notes page and Export CSV</a></li>
+    <li><a href="#t14">Switch user to Sam Fixture, the supervisor</a></li>
+    <li><a href="#t15">The Classic look</a></li>
+  </ol>
+</div>
+
+<div class="test" id="t1">
+  <h3><span class="num">1</span>Pick a view on the welcome page</h3>
+<p>Legacy USMON asks you to pick a client and a role before it shows counters. The mock-up keeps that habit.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Open <a href="https://demo.usmon.com/app/">https://demo.usmon.com/app/</a>. You land on the welcome page as Pat Sample.</li>
+  <li>On the right, under <strong>Switch Views</strong>, open the dropdown that reads <b class="ui">Choose a view</b>.</li>
+  <li>Pick <b class="ui">XYZ Monitoring - Insurance Biller</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>The line under the greeting now reads <strong>You are currently logged into XYZ Monitoring - Insurance Biller</strong>, and the top bar reads XYZ Monitoring Co., Insurance Biller.</p>
+    <p>A panel called <strong>Your work in XYZ Monitoring</strong> fills with counters: <strong>18</strong> New Insurance Billing, <strong>28</strong> Ongoing Insurance Billing, proposed postings awaiting confirmation, denials to work, send to IDR, follow-ups due, unread messages. Each has an <b class="ui">Open</b> button.</p>
+    <p>A <strong>Go to</strong> panel lists the areas a biller can reach: Worklists, Notes, Payments, Denials, Out-of-network and IDR, Inbox. The top bar shows the same names.</p>
+    <p>A <strong>USMON Legacy</strong> panel lists Patient Records, Tech and Reader Reports, Task Manager and the rest. These stand for the legacy screens that stay in use for about six months after the module ships; clicking one only shows a note, since legacy is not part of this mock-up.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t2">
+  <h3><span class="num">2</span>Switch client</h3>
+<p>A contracted biller can hold a role for more than one client. Pat does.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>In the same <strong>Switch Views</strong> dropdown, pick <b class="ui">USMON Test Amb EEG - Insurance Biller</b>.</li>
+  <li>Read the counters, then pick <b class="ui">XYZ Monitoring - Insurance Biller</b> again. The rest of the tests use XYZ Monitoring.</li>
+  <li>If you like, click <b class="ui">Make this my default view</b>. In the module this is the view that opens when you sign in.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>The counters change with the client: USMON Test Amb EEG shows <strong>2</strong> New and <strong>7</strong> Ongoing. A small message at the bottom right says "Now viewing USMON Test Amb EEG - Insurance Biller."</p>
+    <p>After switching back, XYZ Monitoring shows 18 New and 28 Ongoing again.</p>
+    <p>If you set a default, a line under the dropdown reads "Your default view: XYZ Monitoring - Insurance Biller. It opens when you sign in."</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t3">
+  <h3><span class="num">3</span>Arrivals from legacy</h3>
+<p>Cases signed off in legacy USMON flow into the New worklist on their own. The mock-up has a button to show it happening.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Worklists</b> in the top bar. You land on the <strong>New Insurance Billing</strong> tab.</li>
+  <li>Look at the row of tiles above the grid: Unassigned, Ready to file, Filing clock under 14 days, Rejected, Charges waiting to file.</li>
+  <li>Click <b class="ui">Arrivals from legacy (3 waiting)</b> at the top right of the grid.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>A green message: <strong>3 cases arrived from legacy into New Insurance Billing.</strong></p>
+    <p>Three rows appear with a small <strong>new</strong> badge beside the patient name (Specimen, Exampla; Example, Mockingbird; Mockdata, Specimina). Their status is <strong>New</strong> and their Next button reads <b class="ui">Assign</b>.</p>
+    <p>The tab count goes from 18 to <strong>21</strong>, the Unassigned tile goes up by 3, and the button now reads <strong>Arrivals from legacy (none waiting)</strong>.</p>
+    <p>Each row shows the payer with its class (out-of-network, government or in-network), a filing clock such as "34 left", a readiness strip of six dots with "5 of 6", and the Box 33 entity with a small <strong>confirm</strong> chip.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t4">
+  <h3><span class="num">4</span>Sort, search and columns on New</h3>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click the <strong>Billed</strong> column heading once, then once more.</li>
+  <li>Type <strong>Aetna</strong> in the search box that reads "Find a patient, payer, facility, status". Then clear the box.</li>
+  <li>Click <b class="ui">Columns</b>. In the box that opens, untick <strong>Last note</strong>, then click <b class="ui">Done</b>.</li>
+  <li>Click <b class="ui">Columns</b> again, tick <strong>Last note</strong> back on, and click <b class="ui">Done</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>The first click sorts the grid by billed amount, smallest first, with a small arrow on the heading; the second click flips it to largest first.</p>
+    <p>With Aetna typed, the counter at the top right of the grid reads <strong>6 of 21 claims</strong> and only Aetna rows show. Clearing the box brings every row back.</p>
+    <p>The box is called <strong>Show or hide columns</strong> and lists every column with a tick. Unticking Last note removes that column at once; ticking it brings it back. The note under the title says the choice is kept for this session (per-biller in the module).</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t5">
+  <h3><span class="num">5</span>Open a claim and read its Notes first</h3>
+<p>In legacy, a biller opens a claim and reads the billing notes before anything else. The mock-up puts them first.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>In the search box type <strong>Lorem</strong>.</li>
+  <li>Click the patient name <strong>Specimen, Lorem</strong> on the row with <strong>DOS 10/10/2026</strong> and payer <strong>Fixture Aetna Plan 1</strong>. (There are two patients named Specimen, Lorem; take the 10/10 one.)</li>
+  <li>Read the page from the top, then look at the right-hand column.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>A claim page: the patient's name with a status pill <strong>Prepared</strong>, a header card with patient, case, payer, member id, billed amount, filing clock, biller and Box 33, and a progress strip reading New, Assigned, Prepared, Ready, Filed, Accepted, Remitted, Closed with Prepared lit.</p>
+    <p>Tabs under the header: <strong>Overview, Notes 0, Prepare, Scrub 5/6, File, Track</strong>.</p>
+    <p>At the top of the right-hand column, the <strong>Notes</strong> panel: a type filter (All types), a search box, a "Show system notes" tick, the list (here "No notes yet. The first note on a claim is usually the eligibility check or the filing.") and the <strong>Add note</strong> form under it. The <strong>History</strong> panel sits below it with "Case signed off in legacy".</p>
+    <p>On the left: Service lines, Diagnosis codes, Readiness (5 of 6 green) and the Box 33 billing entity with its confirm chip and a <b class="ui">Change</b> button.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t6">
+  <h3><span class="num">6</span>Add a note with a follow-up</h3>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>In the <strong>Add note</strong> form, set <strong>Type</strong> to <b class="ui">Payer Call</b>.</li>
+  <li>In <strong>Note</strong>, type: Called the payer to check the claim was on file.</li>
+  <li>In <strong>Follow up on</strong>, pick <strong>10/30/2026</strong> (a week after the demo clock).</li>
+  <li>Click <b class="ui">Add note</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>A green message: <strong>Note added (Payer Call); follow-up on 10/30/2026</strong>.</p>
+    <p>The note appears at the top of the list with a <strong>Payer Call</strong> pill, the date 10/23/2026, your name (Pat Sample), the text, and a line "Follow up on 10/30/2026" with a clock reading <strong>7 left</strong> and a <b class="ui">Done</b> button.</p>
+    <p>The panel title now reads <strong>1 note, 1 follow-up open</strong>, and the Notes tab reads <strong>Notes 1</strong>.</p>
+    <p>Under the form: "Notes are kept, never edited; a correction is a new note." There is no edit button on purpose; that is how legacy keeps the record too. The Type list also has "First Level Appeal Pro (notifies the supervisor)"; a note of that type alerts the supervisor.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t7">
+  <h3><span class="num">7</span>Prepare, scrub, file, and the acknowledgement</h3>
+<p>The whole path from a prepared claim to a filed and accepted one, on the same claim. Coding Assist is the add-on that reads the tech report and suggests a code the claim may have missed; you decide.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click the <strong>Prepare</strong> tab. Read the cards: Eligibility (270/271), Insurance type and authorization, Diagnosis codes, Service lines, Coding Assist (missed codes), Rendering provider NPI, Attachments.</li>
+  <li>In <strong>Coding Assist (missed codes)</strong>, read the suggestion "Line 2: 95941 suggested in place of 95926" and the reason under it, then click <b class="ui">Accept</b>.</li>
+  <li>Click <b class="ui">Go to Scrub</b> in the "When this is done" card.</li>
+  <li>On <strong>Scrub</strong>, five checks are green and <strong>Box 33 entity</strong> is amber ("Chosen by rule; confirm before filing"). Click <b class="ui">Confirm</b> on that line.</li>
+  <li>Click <b class="ui">Run scrub</b>.</li>
+  <li>On <strong>File</strong>, leave <b class="ui">Electronic (837) through the clearinghouse</b> selected and click <b class="ui">File</b>.</li>
+  <li>In the <strong>Acknowledgement</strong> card, click <b class="ui">Simulate: accepted (999/277CA clean)</b>. In the module the clearinghouse's answer arrives on its own; here you pick it.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>After Accept: a message <strong>Accepted: line 2 is now 95941</strong>, the suggestion shows <strong>Accepted</strong>, and line 2 in Service lines carries a <strong>changed</strong> pill.</p>
+    <p>After Confirm: <strong>Box 33 confirmed: Mock Medical Health LLC</strong>, the Scrub panel reads <strong>6 of 6 green</strong>, and the header's Box 33 chip reads <strong>confirmed</strong>.</p>
+    <p>After Run scrub: <strong>Ready to file: all 6 checks green</strong>, and you land on the File tab. It names the clearinghouse (Sample Clearinghouse A), today's batch number and the payer. A card on the right, "What happens next", explains the 999 and 277CA in a sentence each.</p>
+    <p>After File: <strong>Filed (837) in batch B-261023-... Waiting for the acknowledgement.</strong> The status pill reads <strong>Filed, awaiting acknowledgement</strong> and a Filing record card appears.</p>
+    <p>After the simulated acceptance: the status pill reads <strong>Accepted by payer</strong>; the card reads <strong>Moved to Ongoing Insurance Billing</strong>; two new tabs appear, <strong>Ledger</strong> and <strong>IDR</strong>; and the back link at the top now reads "Back to Ongoing Insurance Billing".</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t8">
+  <h3><span class="num">8</span>Ongoing has different columns on purpose</h3>
+<p>New is about getting a claim out the door. Ongoing is about the money coming back. The columns say so.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Worklists</b>, then the <strong>Ongoing Insurance Billing</strong> tab.</li>
+  <li>Read the tiles, then the column headings.</li>
+  <li>Find <strong>Specimen, Lorem</strong> (the claim you just filed) and read its row.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>Tiles: Awaiting remittance, Denied or short paid, Out-of-network negotiating or IDR, Collected (illustrative), Open balance (illustrative).</p>
+    <p>Columns: <strong>Patient, Payer, Filed, Billed, Collected, Recoupment, Balance, Last remit, Last note, Follow-up, Status, Biller, Next</strong>. No filing clock or readiness here; those belong to New.</p>
+    <p>Specimen, Lorem shows Filed 10/23/2026 (0 days ago), status <strong>Awaiting remittance</strong>, your Payer Call note under Last note, the 10/30 follow-up with its clock, and <b class="ui">Track</b> as the next step.</p>
+    <p>Other rows read <strong>Paid</strong>, <strong>Recoupment taken</strong>, <strong>Denied CO-4</strong>, <strong>At IDR</strong> or <strong>Closed</strong>, with next steps such as <b class="ui">Work denial</b> or <b class="ui">Bill secondary or statement</b>. Recoupments show as a red negative amount.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t9">
+  <h3><span class="num">9</span>Work a denial</h3>
+<p>The denial screen says in plain words why the payer denied the claim and what to do about it. The appeal letter is drafted for you to edit.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Denials</b> in the top bar. Read the category buttons above the grid (All, Missing information, Modifier problem, Timely filing, Over fee schedule, Bundled, Medical necessity, Authorization, Wrong payer) and the column "What the payer is saying".</li>
+  <li>Find <strong>Example, Pseudo</strong> (code <strong>CO-4</strong>) and click its Next button, <b class="ui">Correct and resubmit</b>.</li>
+  <li>Read <strong>Why was this claim denied?</strong> and <strong>What to do next</strong>.</li>
+  <li>Click the <strong>Overview</strong> tab and look at the Notes panel.</li>
+  <li>Go back to the <strong>Denial</strong> tab and click <b class="ui">Refile corrected claim</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p><strong>Why was this claim denied?</strong> lists the code <strong>CO-4, Modifier problem</strong>; What happened ("Denied in full on 05-10-2026; nothing was allowed"); What the payer is saying ("The procedure code is inconsistent with the modifier used, or a required modifier is missing"); What to do ("Correct the modifier on the service line, 26 for the professional read, TC for the technical part, then refile"); the remark code, the payer, the balance and an <strong>Appeal clock</strong> (180 days from the remittance). Under it, the denied lines from the remittance.</p>
+    <p><strong>What to do next</strong> names the suggested move, <strong>Correct and resubmit</strong>, with a one-line reason, then shows the choices as cards: Correct and resubmit (with <b class="ui">Refile corrected claim</b>), and Appeal on the record with a letter already drafted ("To: Synthetic Medicare Replacement Plan 2, Appeals. Re: Appeal of denial CO-4..."), a list of attachments to tick, and <b class="ui">Send appeal</b>. You can edit the letter before sending.</p>
+    <p>On Overview, this older claim's Notes panel has two notes carried over from legacy, marked <strong>LEGACY</strong>, and rows marked <strong>SYSTEM</strong> written by the system, such as "Clearinghouse accepted the claim (999 and 277CA clean)" and "835 received: Denied CO-4". Untick "Show system notes" to hide those.</p>
+    <p>After Refile: <strong>Corrected claim refiled (frequency code 7). Status: Refiled.</strong> The status pill at the top changes to <strong>Refiled</strong>.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t10">
+  <h3><span class="num">10</span>Payments: confirm a proposed 835 row and add a payment</h3>
+<p>Remittance rows arrive proposed. Nothing posts until a biller confirms it. A payment is always a new row, never an edit of an old one.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Payments</b> in the top bar. You land on the <strong>Proposed postings</strong> tab, one panel per remittance (EFT number).</li>
+  <li>In the first panel, <strong>EFT 10212</strong>, read the row (patient, payer, service line, allowed, paid, adjustments with their codes), then click <b class="ui">Confirm</b>.</li>
+  <li>Click the <strong>Remittances (835)</strong> tab and click <b class="ui">View 835 detail</b> on any card. Read it, then click <b class="ui">Close</b>.</li>
+  <li>Click <b class="ui">Worklists</b>, the <strong>Ongoing Insurance Billing</strong> tab, then the patient name <strong>Example, Pseudo</strong>. Click its <strong>Ledger</strong> tab.</li>
+  <li>In <strong>Add payment</strong>, leave Service line on <strong>G0453</strong>, type <strong>100</strong> in Paid, leave Source on <strong>Manual check</strong>, type <strong>Check 4471</strong> in Check or EFT number, and click <b class="ui">Add payment</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>After Confirm: <strong>Posted $946.40 on line 95925 for Mockdata, Stubbs.</strong> The EFT 10212 panel disappears and the "Proposed, awaiting confirmation" tile drops by one. Resting the mouse on an adjustment code such as CO-45 shows its meaning.</p>
+    <p>The 835 detail opens as a box that reads the remittance in sentences: "The payer says: billed ..., allowed ..., paid ...", one card per service line, and "Adjustments, in plain words".</p>
+    <p>The Ledger tab shows five money tiles (Billed, Collected, Recoupment, Write-off, Balance), the remittance ledger grid with the existing 835 row, the <strong>Add payment</strong> form, and under it the Remit add-on panel for this claim's remittance.</p>
+    <p>After Add payment: <strong>Payment added: $100.00 on line G0453. New row, nothing edited.</strong> A second row appears dated 10/23/2026 with Check 4471 and "Manual check, by Pat Sample"; Collected becomes $100.00 and Balance drops from $4,600.00 to $4,500.00.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t11">
+  <h3><span class="num">11</span>The Remit add-on: Upload, Validate, Compare, Approve, Post</h3>
+<p>Remit reads the 835 and the scanned paper EOB, checks them against the claim and the printed check, and lets you approve and post from one place. In this mock-up, Post runs as a dry run and writes nothing.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Payments</b>, then the <strong>Remit add-on</strong> tab.</li>
+  <li>At the top right of the Remit panel, open the <strong>Remittance</strong> dropdown and pick <b class="ui">EFT 10904 · Fixture Aetna Plan 1 · 1 proposed</b>.</li>
+  <li>In <strong>1. Upload</strong>, click <b class="ui">Use the sample 835 and paper EOB</b>.</li>
+  <li>In <strong>2. Validate</strong>, click <b class="ui">Run validation</b>.</li>
+  <li>Look at <strong>3. Compare</strong>. Rest your mouse on the grey <b class="ui">Compare with the EOB page</b> button.</li>
+  <li>In <strong>4. Approve</strong>, click <b class="ui">Approve</b> on the row for Testcase, Fakey.</li>
+  <li>Click <b class="ui">Post to USMON</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>The four steps across the top (1. Upload, 2. Validate, 3. Compare, 4. Approve) light up one by one.</p>
+    <p>After Upload: "835 and paper EOB received. 835 for EFT 10904 read in full. No paper EOB has been read for this remittance yet."</p>
+    <p>After Validate: a table with one claim, <strong>USMON match: matched</strong>, three service lines each marked <strong>Match</strong>, then a line comparing the 835 total ($1,664.00) with the printed check ($2,538.00, illustrative) marked <strong>Mismatch</strong>. A note explains the USMON match words: matched, not found, account mismatch, belongs to another client.</p>
+    <p>Compare is greyed out because there is no scanned EOB page for this remittance. The button's hover text reads <strong>no scanned page is stored for this claim</strong>, and the card says "No paper EOB has been read for this remittance yet."</p>
+    <p>After Approve: <strong>Approved Testcase, Fakey. Not posted yet: use Post to USMON.</strong> The Review column reads approved and the Post button wakes up with "1 approved claim ready to post".</p>
+    <p>After Post: a box marked <strong>DEMO DRY RUN</strong>: "Nothing was written to USMON. This is what a live post would do", with the one payment line ($416.00 on line 95913, adjustment codes CO-45, PR-2), the billing note it would write ("Payment entered from EOB read by Remit..."), and the document it would file (the 835). The proposed row stays proposed; the "Proposed, awaiting confirmation" tile does not change.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t12">
+  <h3><span class="num">12</span>Out-of-network negotiation and send to IDR</h3>
+<p>An out-of-network denial or short pay gets a 30-day open negotiation. If the payer does not agree, there is a short window to send the dispute to IDR. The mock-up runs the whole path on one claim; the Simulate buttons stand in for the payer.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Denials</b>. Find <strong>Placeholder-Testcase, Mockley</strong> (code <strong>CO-29</strong>, Fixture Aetna Plan 1, out-of-network) and click its Next button, <b class="ui">Appeal on the record</b>.</li>
+  <li>On the Denial tab, scroll to the card <strong>Out-of-network: open negotiation and IDR</strong> and click <b class="ui">Start open negotiation</b>.</li>
+  <li>You land on the claim's <strong>IDR</strong> tab. In the <strong>Clocks</strong> card, click <b class="ui">Simulate: payer responds</b>, then <b class="ui">Payer declines</b>.</li>
+  <li>In <strong>The packet</strong> card, tick a few of the documents, then click <b class="ui">Send to IDR</b>.</li>
+  <li>In the box that opens, leave <strong>USMON Arbitration</strong> selected and click <b class="ui">Send to IDR</b>.</li>
+  <li>Click <b class="ui">Out-of-network and IDR</b> in the top bar.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>After Start: <strong>Open negotiation started; the 30-day clock runs from 10-23-2026.</strong> The IDR tab shows a strip (Initial payment, Open negotiation (30 days), IDR window (4 business days), IDR filed, Decision, Payment) with Open negotiation lit, and a Clocks card: Negotiation <strong>30 left</strong>, ends 11/22/2026; IDR deadline 11/28/2026. The Offers card shows billed $4,200.00, the payer's offer $1,260.00 (30% of billed) and our offer $2,730.00, which you can change and send as a counter-offer.</p>
+    <p>After the payer declines: an amber alert, <strong>The negotiation ended without agreement. Send to IDR before 11/28/2026.</strong> The status pill at the top reads <strong>Send to IDR</strong>.</p>
+    <p>After sending: <strong>Packet sent to USMON Arbitration with our offer of $2,730.00.</strong> The status pill reads <strong>At IDR</strong> and a new card, <strong>Status from USMON Arbitration</strong>, shows Received, Payer notified and Under review, with a <b class="ui">Simulate decision</b> button for later.</p>
+    <p>The <strong>Out-of-network and IDR</strong> page opens with a one-paragraph explanation of the rules, tiles (Negotiating, IDR window open now, <strong>At IDR awaiting decision: 2</strong>, Decided, Dollars in dispute), and a grid where your claim shows Vendor <strong>USMON Arbitration</strong>, status At IDR, and <b class="ui">Await decision</b>.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t13">
+  <h3><span class="num">13</span>The Notes page and Export CSV</h3>
+<p>Every note on every claim for the client, in one list, with the follow-ups that are due.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Notes</b> in the top bar.</li>
+  <li>Read the tiles and the three tabs: <strong>All notes</strong>, <strong>Follow-ups</strong>, <strong>My notes</strong>.</li>
+  <li>Set the <strong>Type</strong> filter to <b class="ui">Payer Call</b>, then click <b class="ui">Clear filters</b>.</li>
+  <li>Click the <strong>Follow-ups</strong> tab.</li>
+  <li>Click <b class="ui">Add note</b>, type <strong>Lorem</strong> in the Claim box to watch the list narrow, then click <b class="ui">Cancel</b>.</li>
+  <li>Back on <strong>All notes</strong>, click <b class="ui">Export CSV</b>.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>The page header reads <strong>Notes, XYZ Monitoring Co. (113300)</strong>. Tiles: Notes filed today, Follow-ups due today or overdue, Follow-ups this week, Notes by me (Pat Sample). Filters: Type, Author (each person, plus Legacy and System), From, To, and a search box.</p>
+    <p>With Type set to Payer Call, the counter reads <strong>1 of 28 notes</strong> (or a little more if you added other notes) and the only row is the note you wrote in test 6. Clear filters brings everything back.</p>
+    <p>The Follow-ups tab shows open follow-ups only, overdue first, with a line like "0 overdue, 0 due today; 1 later". Your 10/30 follow-up is there with its clock and a <b class="ui">Done</b> button.</p>
+    <p>The <strong>Add a note</strong> box has a claim picker that narrows as you type, the same Type, Note date, Note, Correspondence date, Follow-up date and Attachment fields as the claim page, and a <b class="ui">Save note</b> button.</p>
+    <p>Export CSV downloads a file named like <strong>notes-113300-all-2026-10-23.csv</strong> and shows <strong>Exported 28 notes to ...</strong>. The line under the grid explains what goes in the file and that a biller's export never includes private notes.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t14">
+  <h3><span class="num">14</span>Switch user to Sam Fixture, the supervisor</h3>
+<p>A supervisor sees three things a biller does not: the Assignments board, the private part of a note, and Settings. The mock-up lets you switch person with one click; the real module signs each person in with their own roles.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Settings ▾</b> at the top right. Under <strong>Work as</strong>, click <b class="ui">Sam Fixture</b>.</li>
+  <li>Read the top bar and the menu bar, then open <b class="ui">Settings ▾</b> again and read the longer menu.</li>
+  <li>Click <b class="ui">Assignments</b> in the top bar. Read the board, then click <b class="ui">Balance the queue (...)</b>.</li>
+  <li>Click <b class="ui">Worklists</b> and open the claim <strong>Demo, Fakey</strong> (New Insurance Billing). In the Notes panel's Add note form, type a sentence in <strong>Note</strong> and another in <strong>Private note (supervisors and admins only)</strong>, then click <b class="ui">Add note</b>.</li>
+  <li>Click <b class="ui">Settings ▾</b>, then <b class="ui">Work as</b> <b class="ui">Pat Sample</b>. Look at the same claim's Notes panel.</li>
+  <li>Switch back to Sam Fixture the same way. Click <b class="ui">Settings ▾</b>, then <b class="ui">Billing rules</b>. Click <b class="ui">Use this rule</b> on <strong>By facility</strong>, then change the <strong>Facility</strong> dropdown in the Live preview.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>The top bar reads <strong>Sam Fixture, supervisor</strong> and <strong>External Billing Supervisor</strong>. Two items join the menu bar: <strong>Assignments</strong> and <strong>Reports</strong>. The Settings menu gains Billing rules, Box 33 roster, Clearinghouse connections, Users and roles, and Add-ons (Remit on).</p>
+    <p><strong>Assignments</strong> is a board: an <strong>Unassigned</strong> column on the left (amber heading) and one column per biller, with a Move to... dropdown on every claim and tick boxes for a bulk reassign. Balance the queue hands out every unassigned claim round-robin, lightest queue first, and reports it: "... claims assigned round-robin across 4 billers, lightest queue first." The Unassigned column empties and the moves appear under <strong>Assignment history</strong>.</p>
+    <p>As Sam, the new note shows the private text in a shaded amber block labelled <strong>Private note (supervisors and admins)</strong>. As Pat, the same note shows only the public text and a lock line: <strong>A private note exists; your view cannot read it</strong>.</p>
+    <p><strong>Billing rules</strong> shows the question <strong>Which entity goes in Box 33</strong> with three drawn pictures: <strong>By payer</strong>, <strong>By facility</strong>, <strong>By surgeon</strong>, each a small diagram of a claim routed to one entity, with a sentence on when you would use it. The rule in force is marked "Current rule". Under the pictures, <strong>Live preview: your choices</strong> lets you pick a payer, facility and surgeon and shows the entity the current rule would put in Box 33, with a sentence saying why. Switching to By facility changes the answer, and so does changing the facility.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<div class="test" id="t15">
+  <h3><span class="num">15</span>The Classic look</h3>
+<p>Billers who know the legacy screens can keep that look. Same data, same buttons, legacy labels.</p>
+  <h4>What to do</h4>
+<ol class="steps">
+  <li>Click <b class="ui">Worklists</b> so a grid is on screen.</li>
+  <li>Click <b class="ui">Classic</b> at the top right.</li>
+  <li>Look at the worklist, open a claim, and read the top bar and the Settings button.</li>
+  <li>Click <b class="ui">Familiar</b> to switch back.</li>
+</ol>
+  <h4>What you should see</h4>
+  <div class="see">
+    <p>A message: <strong>Switched to the classic view. Same data, same state.</strong></p>
+    <p>The page takes the legacy look: title bars, gridlines, square beveled buttons, denser rows, no rounded cards.</p>
+    <p>Some labels change to the legacy words: the Settings button reads <strong>Setup</strong>, Payments reads <strong>Payment Posting</strong>, Denials reads <strong>Denial Management</strong>, Out-of-network and IDR reads <strong>OON / IDR</strong>, Inbox reads <strong>Messages</strong>; on the New worklist, Patient reads <strong>Patient Name</strong>, Payer reads <strong>Insurance</strong>, Filing clock reads <strong>Days To File</strong>, Readiness reads <strong>Checks</strong>, Status reads <strong>Claim Status</strong> and Next reads <strong>Action</strong>. Everything else is in the same place.</p>
+    <p>Familiar brings the new look back. In the module every user picks their own default and can switch at any time; the choice is remembered per user.</p>
+  </div>
+  <div class="verdict"><span class="q">Did it work for you?</span> <span><span class="box"></span>yes</span> <span><span class="box"></span>no</span> <span>Comment:</span> <span class="line"></span></div>
+</div>
+
+<p class="backtop"><a href="#top">Back to top</a></p>
+</section>
+
+<section class="part" id="back">
+  <div class="part-head">
+    <h2>What we want to hear back</h2>
+    <p>Your marks on the fifteen tests are the first half. The second half is these five questions. Short answers are fine; a sentence each is plenty.</p>
+  </div>
+
+<div class="qa">
+  <h3>Five questions</h3>
+<ol class="steps">
+  <li><strong>What is missing that you use every day?</strong> A column, a screen, a report, a shortcut, a piece of information you always look for. Name it even if it seems small.</li>
+  <li><strong>Which screen would you start your day on?</strong> The welcome page, New Insurance Billing, Ongoing, Notes, Denials, Payments, something else?</li>
+  <li><strong>Was anything confusing?</strong> A word, a button, a step where you did not know what to do next, or something that happened that you did not expect.</li>
+  <li><strong>Familiar or Classic for you?</strong> And why.</li>
+  <li><strong>The one thing you would change</strong> if you could change only one.</li>
+</ol>
+</div>
+<p>Send your marks and your answers to <strong>Mike, by reply</strong> to the message that brought you this guide. A photo of a marked-up printout is fine; so is a few lines in an email. If you would rather talk it through, say so and we will set up a call.</p>
+<h3 id="wrong"><span class="num">!</span>If something goes wrong</h3>
+<ol class="steps">
+  <li><strong>A page looks stale or half drawn:</strong> reload the page once (F5, or Command-R on a Mac). Where you were and what you did are kept.</li>
+  <li><strong>The demo is in a strange state, or you want to start over:</strong> click <b class="ui">Settings ▾</b> at the top right, then <b class="ui">Reset demo</b> at the bottom of the menu, and confirm. Everything goes back to the start.</li>
+  <li><strong>The site does not load:</strong> use the backup copy at <a href="https://scholin1.github.io/usmon-billing-demo/app/">https://scholin1.github.io/usmon-billing-demo/app/</a>. The same files are on both addresses.</li>
+  <li><strong>A button does nothing:</strong> it may be greyed out on purpose. Rest your mouse on it; most greyed buttons explain why (for example "Approve at least one claim first").</li>
+</ol>
+<div class="note">Nothing you type is saved or sent anywhere. The mock-up keeps its state only in your own browser, on your own computer, and Reset demo wipes it. There is no server behind it collecting anything. Even so, please do not type real patient or client names into it; the search boxes only filter the made-up rows.</div>
+<p class="backtop"><a href="#top">Back to top</a></p>
+</section>
+
+<footer>Made-up data only. No patient information. Mock-up of 10/26/2026. USMON. &middot; The mock-up: <a href="index.html">index.html</a> (next to this page) or <a href="https://demo.usmon.com/app/">https://demo.usmon.com/app/</a></footer>
+
+</div>
+</body>
+</html>
