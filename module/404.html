@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" data-view="familiar">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>USMON Insurance Billing</title>
+    <script>
+      // The remembered skin, applied before first paint so Classic does not flash Familiar.
+      // AppProvider writes the same key when the user switches.
+      try {
+        var skin = localStorage.getItem("usmon-billing:skin");
+        if (skin === "classic" || skin === "familiar") {
+          document.documentElement.setAttribute("data-view", skin);
+        }
+      } catch (e) {
+        /* storage blocked: the default skin stands */
+      }
+    </script>
+    <script type="module" crossorigin src="/module/assets/index-C6IvIGlo.js"></script>
+    <link rel="stylesheet" crossorigin href="/module/assets/index-DIMvMHZB.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
