@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Page not found</title>
+<script>
+  // A reload or a typed address under the module lands here, because the host has no page for it.
+  // Send it to the module's own start page on the same site. The module path is a fixed string per
+  // host, never read from the address, and a request for the start page itself is never redirected,
+  // so a missing module cannot loop.
+  (function () {
+    var base = location.hostname.slice(-10) === ".github.io" ? "/usmon-billing-demo/" : "/";
+    var module = base + "module/";
+    var p = location.pathname;
+    if (p.indexOf(module) === 0 && p !== module && p !== module + "index.html") {
+      location.replace(module);
+    }
+  })();
+</script>
+<style>
+  body { font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 15vh auto; max-width: 34em; padding: 0 1em; color: #1b2430; }
+  a { color: #0e6cb8; }
+</style>
+</head>
+<body>
+<h1>Page not found</h1>
+<p>This address is not a page on this site.</p>
+<p><a id="m" href="/module/">Open the insurance billing module</a> or <a id="a" href="/app/">the walk-through</a>.</p>
+<script>
+  if (location.hostname.slice(-10) === ".github.io") {
+    document.getElementById("m").setAttribute("href", "/usmon-billing-demo/module/");
+    document.getElementById("a").setAttribute("href", "/usmon-billing-demo/app/");
+  }
+</script>
+</body>
+</html>
